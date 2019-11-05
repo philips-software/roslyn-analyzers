@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{587845EE-5F8F-4E49-B140-B970758F8A49}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.Test\Philips.CodeAnalysis.Test.csproj", "{604797D1-49B5-4A93-BCBD-C67158EBDD44}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.MsTestAnalyzers", "Philips.CodeAnalysis.MsTestAnalyzers\Philips.CodeAnalysis.MsTestAnalyzers.csproj", "{C3AFD33F-7612-4AD0-8D86-FE1ADCE17923}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.MoqAnalyzers", "Philips.CodeAnalysis.MoqAnalyzers\Philips.CodeAnalysis.MoqAnalyzers.csproj", "{2D91BE55-C1EA-4DDC-A7B7-6FFE58C92206}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Common", "Philips.CodeAnalysis.Common\Philips.CodeAnalysis.Common.csproj", "{3BC2AE47-34A9-4C67-9C54-F4F5F3C0B044}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.MaintainabilityAnalyzers", "Philips.CodeAnalysis.MaintainabilityAnalyzers\Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj", "{46DAFD82-37BA-40F3-902E-1E7A8B33C33A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{604797D1-49B5-4A93-BCBD-C67158EBDD44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{604797D1-49B5-4A93-BCBD-C67158EBDD44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{604797D1-49B5-4A93-BCBD-C67158EBDD44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{604797D1-49B5-4A93-BCBD-C67158EBDD44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3AFD33F-7612-4AD0-8D86-FE1ADCE17923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3AFD33F-7612-4AD0-8D86-FE1ADCE17923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3AFD33F-7612-4AD0-8D86-FE1ADCE17923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AFD33F-7612-4AD0-8D86-FE1ADCE17923}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D91BE55-C1EA-4DDC-A7B7-6FFE58C92206}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D91BE55-C1EA-4DDC-A7B7-6FFE58C92206}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D91BE55-C1EA-4DDC-A7B7-6FFE58C92206}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D91BE55-C1EA-4DDC-A7B7-6FFE58C92206}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BC2AE47-34A9-4C67-9C54-F4F5F3C0B044}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BC2AE47-34A9-4C67-9C54-F4F5F3C0B044}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BC2AE47-34A9-4C67-9C54-F4F5F3C0B044}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BC2AE47-34A9-4C67-9C54-F4F5F3C0B044}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46DAFD82-37BA-40F3-902E-1E7A8B33C33A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46DAFD82-37BA-40F3-902E-1E7A8B33C33A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46DAFD82-37BA-40F3-902E-1E7A8B33C33A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46DAFD82-37BA-40F3-902E-1E7A8B33C33A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B097B395-6AD9-4B96-85C1-EC00A588661E}
+	EndGlobalSection
+EndGlobal

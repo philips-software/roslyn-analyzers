@@ -1,0 +1,68 @@
+// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Philips.CodeAnalysis.Common;
+
+namespace Philips.CodeAnalysis.MsTestAnalyzers
+{
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public class AssertIsTrueParenthesisAnalyzer : DiagnosticAnalyzer
+	{
+		private const string Title = @"Assert.IsTrue/IsFalse Should not be in parenthesis";
+		private const string MessageFormat = @"Do not call IsTrue/IsFalse with parenthesis around the argument";
+		private const string Description = @"Assert.IsTrue((<actual> == <expected>)) => Assert.IsTrue(<expected> == <actual>)";
+		private const string Category = Categories.Maintainability;
+
+		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueParenthesis), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		public override void Initialize(AnalysisContext context)
+		{
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.EnableConcurrentExecution();
+
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
+				{
+					return;
+				}
+
+				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
+			});
+		}
+
+		private void Analyze(SyntaxNodeAnalysisContext context)
+		{
+			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
+			MemberAccessExpressionSyntax memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
+			if (memberAccessExpression == null)
+			{
+				return;
+			}
+
+			string memberName = memberAccessExpression.Name.ToString();
+			if (memberName != "IsTrue" && memberName != "IsFalse")
+			{
+				return;
+			}
+
+			if (invocationExpression.ArgumentList.Arguments.Count == 0)
+			{
+				return;
+			}
+
+			ArgumentSyntax arg0 = invocationExpression.ArgumentList.Arguments[0];
+
+			if (arg0.Expression.Kind() == SyntaxKind.ParenthesizedExpression)
+			{
+				context.ReportDiagnostic(Diagnostic.Create(Rule, arg0.GetLocation()));
+			}
+		}
+	}
+}
