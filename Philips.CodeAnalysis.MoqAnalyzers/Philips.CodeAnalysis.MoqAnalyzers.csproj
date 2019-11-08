@@ -8,10 +8,12 @@
 
   <PropertyGroup>
     <PackageId>Philips.CodeAnalysis.MoqAnalyzers</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
+    <PackageVersion>1.0.0</PackageVersion>
     <Authors>Brian Collamore, Jean-Paul Mayer</Authors>
     <Company>Philips</Company>
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
     <PackageIcon>packageicon.png</PackageIcon>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/39734771</PackageIconUrl>
