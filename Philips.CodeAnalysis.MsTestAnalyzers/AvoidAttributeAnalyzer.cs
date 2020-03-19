@@ -176,7 +176,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				isEnabledByDefault: false);
 
 			var suppressMessageAttribute = new AttributeModel(@"SuppressMessage",
-				@"System.Diagnostics.CodeAnalysis.SuppressMessage",
+				@"System.Diagnostics.CodeAnalysis.SuppressMessageAttribute",
 				@"SuppressMessage not allowed",
 				@"SuppressMessage is not allowed.",
 				@"SuppressMessage results in violations of codified coding guidelines.",
