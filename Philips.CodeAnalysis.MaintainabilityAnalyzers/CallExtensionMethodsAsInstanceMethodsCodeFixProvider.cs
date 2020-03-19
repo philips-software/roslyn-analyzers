@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;

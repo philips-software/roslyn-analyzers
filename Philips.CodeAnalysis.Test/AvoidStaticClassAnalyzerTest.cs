@@ -1,12 +1,4 @@
-﻿#region Header
-// © 2018 Koninklijke Philips N.V.  All rights reserved.
-// Reproduction or transmission in whole or in part, in any form or by any means, 
-// electronic, mechanical or otherwise, is prohibited without the prior  written consent of 
-// the owner.
-// Author:      brian.collamore
-// Date:        3/15/2019 11:29:57 AM
-#endregion
-
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
 using System.Text.RegularExpressions;

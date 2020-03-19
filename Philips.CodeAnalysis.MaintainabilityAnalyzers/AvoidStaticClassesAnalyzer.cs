@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
