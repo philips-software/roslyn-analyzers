@@ -178,6 +178,12 @@ int i = 50;
 		}
 
 		[TestMethod]
+		public void CheckNoCrash()
+		{
+			VerifyNoChange("Assert.IsTrue(");
+		}
+
+		[TestMethod]
 		public void CheckForNoSemanticModel()
 		{
 			const string template = @"
