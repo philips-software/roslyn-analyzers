@@ -14,6 +14,7 @@ namespace Philips.CodeAnalysis.Test
 	{
 		private const string allowedMethodName = @"Foo.AllowedInitializer()
 Foo.AllowedInitializer(Bar)
+Foo.WhitelistedFunction
 ";
 
 		protected override (string name, string content)[] GetAdditionalTexts()
@@ -307,6 +308,31 @@ namespace WpfApp1 {
 
 			VerifyCSharpDiagnostic(baseline, "BedPosOverlayWindow.g.i");
 		}
+
+		[DataRow("NotWhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
+		[DataRow("NotWhitelistedFunction", "", "System.Diagnostics.CodeAnalysis.SuppressMessage")]
+		[DataRow("NotWhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
+		[DataRow("WhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
+		[DataRow("WhitelistedFunction", "", "System.Diagnostics.CodeAnalysis.SuppressMessage")]
+		[DataRow("WhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
+		[DataTestMethod]
+		public void AvoidSupressMessageRaisedInUserCode(string functionName, string usingStatement, string attribute)
+		{
+			string baseline = @"
+				using Microsoft.VisualStudio.TestTools.UnitTesting;
+				{0}
+				class Foo 
+				{{
+				  [{1}(""Microsoft.Performance"", ""CA1801: ReviewUnusedParameters"", MessageId = ""isChecked"")]
+				  public void {2}()
+				  {{
+				  }}
+				}}
+				";
+			string givenText = string.Format(baseline, usingStatement, attribute, functionName);
+			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
+		}
+
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
