@@ -27,6 +27,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Include="..\Philips.CodeAnalysis.Common\AdditionalFilesHelper.cs" Link="Common\AdditionalFilesHelper.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\AttributeDefinition.cs" Link="Common\AttributeDefinition.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\AttributeModel.cs" Link="Common\AttributeModel.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\Categories.cs" Link="Common\Categories.cs" />

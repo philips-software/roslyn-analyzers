@@ -38,6 +38,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidMsFakes = 2041,
 		InitializeComponentMustBeCalledOnce = 2042,
 		DynamicKeywordProhibited = 2044,
+		AvoidStaticClasses = 2045,
 		AvoidPublicMemberVariables = 2047,
 		MockArgumentsMustMatchConstructor = 2048,
 		TestMethodsMustNotBeEmpty = 2050,
