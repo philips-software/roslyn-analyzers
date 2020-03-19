@@ -12,6 +12,7 @@ using System.Collections.Immutable;
 using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.Healthcare.RoslynAnalyzer
 {
