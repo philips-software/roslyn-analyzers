@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			var allArguments = arguments.Arguments;
 
-			var test = allArguments.First()?.Expression;
+			var test = allArguments.FirstOrDefault()?.Expression;
 
 			if (test != null)
 			{
