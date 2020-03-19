@@ -56,6 +56,7 @@ namespace Philips.CodeAnalysis.Common
 		GotoNotAllowed = 2068,
 		NoUnnecessaryStringFormats = 2069,
 		NoProtectedFields = 2070,
+		AvoidDuplicateCode = 2071,
 		EnforceEditorConfig = 2072,
 		ExtensionMethodsCalledLikeInstanceMethods = 2073
 	}
