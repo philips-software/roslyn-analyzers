@@ -1,6 +1,4 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
-
-using System;
+﻿using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -96,21 +94,53 @@ class Foo
 			const string template = @"
 using System;
 
-static class StringHelper
+namespace Philips.Platform
+{
+public static class StringHelper
 {
 	public static string Format(string format, params object[] args)
 	{
 		return string.Empty;
 	}
 }
+}
 
 class Foo
 {
 	public void Test()
 	{
-		string t = StringHelper.Format(""test"");
+		string t = Philips.Platform.StringHelper.Format(""test"");
 	}
 }
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+		}
+
+		[DataRow("{0}")]
+		[DataRow("{1}")]
+		[DataTestMethod]
+		public void DontStringFormatUselessly2a(string arg)
+		{
+			string template = $@"
+using System;
+
+class Log
+{{
+	public void Err(string format, params object[] args)
+	{{
+	}}
+
+	public Log Platform {{ get; }}
+}}
+
+class Foo
+{{
+	public void Test()
+	{{
+		Log.Platform.Err(""{arg}"");
+	}}
+}}
 ";
 
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));

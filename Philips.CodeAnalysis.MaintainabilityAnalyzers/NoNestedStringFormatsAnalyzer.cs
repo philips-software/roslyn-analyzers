@@ -1,6 +1,5 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
-
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -22,6 +21,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private const string UnnecessaryStringFormatDescription = UnnecessaryStringFormatTitle;
 
 		private const string Category = Categories.Maintainability;
+
+		private readonly Regex _formatRegex = new Regex(@"\{\d+\}", RegexOptions.Compiled);
 
 		#endregion
 
@@ -77,11 +78,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
 					{
-						if (((string)argument.ConstantValue.Value) == "{0}" && ArrayContainsString(0, arrayCreation))
+						string formatValue = (string)argument.ConstantValue.Value;
+
+						if (_formatRegex.IsMatch(formatValue))
 						{
-							//string format ala string.format("{0}", 3);
-							operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-							return;
+							if (arrayCreation.Initializer.ElementValues.Length == 0)
+							{
+								//string format ala string.format("{0}");
+								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+								return;
+							}
+
+							if (ArrayContainsString(0, arrayCreation))
+							{
+								//string format ala string.format("{0}", 3);
+								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+								return;
+							}
 						}
 					}
 				}
@@ -101,6 +114,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		private bool ArrayContainsString(int index, IArrayCreationOperation arrayCreation)
 		{
+			if (arrayCreation.Initializer.ElementValues.Length <= index)
+			{
+				return false;
+			}
+
 			if (arrayCreation.Initializer.ElementValues[index].Type.SpecialType == SpecialType.System_String)
 			{
 				return true;
