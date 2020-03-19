@@ -57,5 +57,6 @@ namespace Philips.CodeAnalysis.Common
 		NoUnnecessaryStringFormats = 2069,
 		NoProtectedFields = 2070,
 		EnforceEditorConfig = 2072,
+		ExtensionMethodsCalledLikeInstanceMethods = 2073
 	}
 }
