@@ -1,11 +1,4 @@
-﻿#region Header
-// © 2019 Koninklijke Philips N.V.  All rights reserved.
-// Reproduction or transmission in whole or in part, in any form or by any means, 
-// electronic, mechanical or otherwise, is prohibited without the prior  written consent of 
-// the owner.
-// Author:      Brian.Collamore
-// Date:        12/3/2019
-#endregion
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Immutable;
@@ -14,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.Healthcare.RoslynAnalyzer
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EnforceEditorConfigAnalyzer : DiagnosticAnalyzer
