@@ -59,6 +59,7 @@ namespace Philips.CodeAnalysis.Common
 		NoProtectedFields = 2070,
 		AvoidDuplicateCode = 2071,
 		EnforceEditorConfig = 2072,
-		ExtensionMethodsCalledLikeInstanceMethods = 2073
+		ExtensionMethodsCalledLikeInstanceMethods = 2073,
+		DisallowDisposeRegistration = 2074,
 	}
 }
