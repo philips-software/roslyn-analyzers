@@ -8,7 +8,7 @@
   
   <PropertyGroup>
     <PackageId>Philips.CodeAnalysis.MsTestAnalyzers</PackageId>
-    <PackageVersion>1.0.0</PackageVersion>
+    <PackageVersion>1.0.1</PackageVersion>
     <Authors>Brian Collamore, Jean-Paul Mayer</Authors>
     <Company>Philips</Company>
     <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
