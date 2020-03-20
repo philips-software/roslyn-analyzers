@@ -149,7 +149,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"TestInitialize methods are not deterministic and can create unexpected test results.",
 				DiagnosticIds.AvoidTestInitializeMethod,
 				canBeSuppressed: true,
-				isEnabledByDefault: false);
+				isEnabledByDefault: true);
 
 			var classInitializeAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassInitializeAttribute,
 				@"ClassInitialize methods not allowed",
@@ -157,7 +157,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"ClassInitialize methods are not deterministic and can create unexpected test results.",
 				DiagnosticIds.AvoidClassInitializeMethod,
 				canBeSuppressed: true,
-				isEnabledByDefault: false);
+				isEnabledByDefault: true);
 
 			var classCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassCleanupAttribute,
 				@"ClassCleanup methods not allowed",
@@ -165,7 +165,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"ClassCleanup methods are not deterministic and can create unexpected test results.",
 				DiagnosticIds.AvoidClassCleanupMethod,
 				canBeSuppressed: true,
-				isEnabledByDefault: false);
+				isEnabledByDefault: true);
 
 			var testCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.TestCleanupAttribute,
 				@"TestCleanup methods not allowed",
@@ -173,7 +173,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"TestCleanup methods are not deterministic and can create unexpected test results.",
 				DiagnosticIds.AvoidTestCleanupMethod,
 				canBeSuppressed: true,
-				isEnabledByDefault: false);
+				isEnabledByDefault: true);
 
 			var suppressMessageAttribute = new AttributeModel(@"SuppressMessage",
 				@"System.Diagnostics.CodeAnalysis.SuppressMessageAttribute",
