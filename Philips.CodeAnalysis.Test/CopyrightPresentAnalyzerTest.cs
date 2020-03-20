@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test
 		#region Non-Public Data Members
 
 		private const string ExpectedFixedHeader = @"#region Header
-// ©
+// Â©
 #endregion
 ";
 
@@ -36,10 +36,10 @@ namespace Philips.CodeAnalysis.Test
 		[DataRow(@"#region Header
 #endregion", false, 3)]
 		[DataRow(@"#region Header
-// ©
+// Â©
 #endregion", true, -1)]
-		[DataRow(@"// ©", true, -1)]
-		[DataRow(@"/* ©", true, -1)]
+		[DataRow(@"// Â©", true, -1)]
+		[DataRow(@"/* Â©", true, -1)]
 		[DataRow(@"// Copyright", true, -1)]
 		[DataRow(@"/* Copyright", true, -1)]
 		[DataRow(@"", false, 2)]
