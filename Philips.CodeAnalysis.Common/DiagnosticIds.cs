@@ -30,6 +30,7 @@ namespace Philips.CodeAnalysis.Common
 		CopyrightPresent = 2028,
 		AvoidPragma = 2029,
 		VariableNamingConventions = 2030,
+		AvoidTryParseWithoutCulture = 2031,
 		RemoveEmptyConstructors = 2032,
 		DataTestMethodsHaveDataRows = 2033,
 		TestMethodsMustBeInTestClass = 2034,
