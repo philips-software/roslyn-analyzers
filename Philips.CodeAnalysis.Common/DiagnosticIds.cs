@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Common
 		TestHasTimeoutAttribute = 2012,
 		AvoidIgnoreAttribute = 2013,
 		AvoidOwnerAttribute = 2014,
+		TestHasCategoryAttribute = 2015,
 		AvoidTestInitializeMethod = 2016,
 		AvoidClassInitializeMethod = 2017,
 		AvoidClassCleanupMethod = 2018,
