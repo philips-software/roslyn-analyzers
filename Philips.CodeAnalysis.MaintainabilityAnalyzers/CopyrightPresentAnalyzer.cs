@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			}
 
 			string comment = copyrightSyntax.ToFullString();
-			if (!(comment.StartsWith("// ©") || comment.StartsWith("// Copyright") || comment.StartsWith("/* ©") || comment.StartsWith("/* Copyright")))
+			if (!(comment.Contains("©") || comment.Contains("Copyright")))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, copyrightSyntax.GetLocation());
 				context.ReportDiagnostic(diagnostic);
