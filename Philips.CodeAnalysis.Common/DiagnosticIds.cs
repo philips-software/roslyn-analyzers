@@ -28,6 +28,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidSuppressMessage = 2026,
 		AvoidStaticMethods = 2027,
 		AvoidPragma = 2029,
+		VariableNamingConventions = 2030,
 		RemoveEmptyConstructors = 2032,
 		DataTestMethodsHaveDataRows = 2033,
 		TestMethodsMustBeInTestClass = 2034,
