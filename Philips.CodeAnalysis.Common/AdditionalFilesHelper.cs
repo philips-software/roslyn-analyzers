@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public class AdditionalFilesHelper
+	internal class AdditionalFilesHelper
 	{
 		private readonly ImmutableArray<AdditionalText> _additionalFiles;
 		private readonly string _diagnosticId;
@@ -105,7 +105,7 @@ namespace Philips.CodeAnalysis.Common
 
 	}
 
-	public class ExceptionsOptions
+	internal class ExceptionsOptions
 	{
 		public bool IgnoreExceptionsFile { get; set; } = false;
 		public bool GenerateExceptionsFile { get; set; } = false;
