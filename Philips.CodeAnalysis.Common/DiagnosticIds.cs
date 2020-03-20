@@ -27,6 +27,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidInlineNew = 2021,
 		AvoidSuppressMessage = 2026,
 		AvoidStaticMethods = 2027,
+		CopyrightPresent = 2028,
 		AvoidPragma = 2029,
 		VariableNamingConventions = 2030,
 		RemoveEmptyConstructors = 2032,
