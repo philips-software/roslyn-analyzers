@@ -49,6 +49,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			_interestedAttributes = interestedAttributes;
 		}
 
+		internal AdditionalFilesHelper AdditionalFilesHelper { get; set; }
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
@@ -60,7 +62,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return;
 				}
-
+				AdditionalFilesHelper = new AdditionalFilesHelper(startContext.Options.AdditionalFiles);
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 			});
 		}
