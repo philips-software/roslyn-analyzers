@@ -32,8 +32,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
-			AdditionalFilesHelper helper = new AdditionalFilesHelper(compilationContext.Options.AdditionalFiles, Rule.Id);
-			HashSet<string> exceptions = helper.InitializeExceptions(FileName);
+			AdditionalFilesHelper helper = new AdditionalFilesHelper(compilationContext.Options.AdditionalFiles);
+			HashSet<string> exceptions = helper.InitializeExceptions(FileName, Rule.Id);
 
 			// Add standard exceptions
 			exceptions.Add(@"*.Startup");
