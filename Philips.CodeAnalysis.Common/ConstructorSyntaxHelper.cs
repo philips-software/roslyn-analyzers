@@ -18,14 +18,12 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public static Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
-			Dictionary<ConstructorDeclarationSyntax, IMethodSymbol> map = new Dictionary<ConstructorDeclarationSyntax, IMethodSymbol>();
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new Dictionary<ConstructorDeclarationSyntax, ISymbol>();
 			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new Dictionary<ISymbol, ConstructorDeclarationSyntax>();
 
 			foreach (var ctor in constructors)
 			{
 				IMethodSymbol method = context.SemanticModel.GetDeclaredSymbol(ctor);
-				map[ctor] = method;
 				symbolToCtor[method] = ctor;
 
 				if (ctor.Initializer != null && ctor.Initializer.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword))
@@ -38,8 +36,6 @@ namespace Philips.CodeAnalysis.Common
 			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> result = new Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax>();
 			foreach (var ctor in constructors)
 			{
-				var method = map[ctor];
-
 				if (deferredCtor.TryGetValue(ctor, out var otherCtor))
 				{
 					if (otherCtor != null)
