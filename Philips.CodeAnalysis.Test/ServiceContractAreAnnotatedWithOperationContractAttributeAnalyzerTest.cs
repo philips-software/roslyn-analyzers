@@ -1,5 +1,6 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -29,6 +30,14 @@ namespace Philips.CodeAnalysis.Test
 			return new[] { MetadataReference.CreateFromFile(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll") };
 		}
 
+		private void VerifyCSharpDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
+		{
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				VerifyCSharpDiagnostic(source, null, expected);
+			}
+		}
+
 		#endregion
 
 		#region Public Interface
@@ -40,7 +49,7 @@ namespace Philips.CodeAnalysis.Test
 public interface IFoo { }
 ";
 
-			VerifyCSharpDiagnostic(text);
+			VerifyCSharpDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -51,7 +60,7 @@ public interface IFoo { }
 public interface IFoo { }
 ";
 
-			VerifyCSharpDiagnostic(text);
+			VerifyCSharpDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -66,7 +75,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnostic(text);
+			VerifyCSharpDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -80,7 +89,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnostic(text, new[]
+			VerifyCSharpDiagnosticOnWindows(text, new[]
 			{
 				new DiagnosticResult()
 				{
@@ -109,7 +118,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnostic(text, new[]
+			VerifyCSharpDiagnosticOnWindows(text, new[]
 			{
 				new DiagnosticResult()
 				{
