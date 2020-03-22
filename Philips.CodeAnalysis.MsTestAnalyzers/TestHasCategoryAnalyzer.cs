@@ -12,6 +12,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class TestHasCategoryAttributeAnalyzer : TestMethodDiagnosticAnalyzer
 	{
+		public const string FileName = @"TestsWithUnsupportedCategory.Allowed.txt";
 		private const string Title = @"Test must have an appropriate TestCategory";
 		public const string MessageFormat = @"Test must have an appropriate TestCategory attribute. Check EditorConfig";
 		private const string Description = @"Tests are required to have an appropriate TestCategory to allow running tests category wise.";
@@ -27,6 +28,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
 			Location categoryLocation;
+
+
+			ClassDeclarationSyntax classDeclaration = methodDeclaration.Parent as ClassDeclarationSyntax;
+			if (classDeclaration != null)
+			{
+				var exceptions = AdditionalFilesHelper.LoadExceptions(FileName);
+				if (exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
+					return;
+			}
 
 			if (Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out categoryLocation, out string category))
 			{
