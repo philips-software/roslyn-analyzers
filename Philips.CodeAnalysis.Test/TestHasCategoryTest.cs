@@ -61,6 +61,25 @@ class Foo
 			VerifyError(baseline, category, isError);
 		}
 
+
+		[DataTestMethod]
+		[DataRow(@"Foo1", false)]
+		[DataRow(@"Foo2", true)]
+		public void TestHasCategoryAttributeWhiteListTest(string testName, bool isError)
+		{
+			string baseline = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+class Foo 
+{{
+  [TestMethod, TestCategory(""blah""]
+  public void {0}()
+  {{
+  }}
+}}
+";
+			VerifyError(baseline, testName, isError);
+		}
+
 		private void VerifyError(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
@@ -94,7 +113,9 @@ class Foo
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { (AdditionalFilesHelper.EditorConfig, $"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories = UnitTest") };
+			return new[] { (AdditionalFilesHelper.EditorConfig, $"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories = UnitTest"),
+							(@"TestsWithUnsupportedCategory.Allowed.txt", "Foo.Foo1")
+			};
 		}
 	}
 }
