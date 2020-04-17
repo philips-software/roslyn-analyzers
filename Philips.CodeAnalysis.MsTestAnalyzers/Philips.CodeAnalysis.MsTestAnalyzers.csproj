@@ -23,7 +23,9 @@
     <Copyright>© 2019 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Version>1.0.1</Version>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
   </PropertyGroup>
   
   <ItemGroup>
