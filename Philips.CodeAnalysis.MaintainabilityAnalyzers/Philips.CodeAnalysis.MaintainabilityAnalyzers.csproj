@@ -8,7 +8,6 @@
 
   <PropertyGroup>
     <PackageId>Philips.CodeAnalysis.MaintainabilityAnalyzers</PackageId>
-    <PackageVersion>1.0.3</PackageVersion>
     <Authors>Brian Collamore, Jean-Paul Mayer</Authors>
     <Company>Philips</Company>
     <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
@@ -23,7 +22,9 @@
     <Copyright>© 2019 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
-    <Version>1.0.3</Version>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
