@@ -14,6 +14,14 @@ The immediate developer feedback is a double-edged sword.  If the culture of the
 
 The default token count is 100.  This setting can be controlled by the .editorconfig file, with an entry such as:
 `dotnet_code_quality.PH2071.token_count=50`
+Note that in order for Analyzers to be able to process the .editorconfig, it must be included in the project as an `AdditionalFiles`.  E.g.,:
+```
+  <ItemGroup>
+    <AdditionalFiles Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+```
+  
+[More information](https://developercommunity.visualstudio.com/content/problem/791119/editorconfig-has-stopped-working.html) is available.  Analyzer [PH2072](../Philips.CodeAnalysis.MaintainabilityAnalyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers.md) confirms that the .editorconfig file is visible to analyzers.
 
-Enabling this rule on a legacy code base can yield many hits - too many to be able to enable the analyzer as an error.  To effectuate a 'stop the bleeding' policy, leave the rule's severity at error, and specify a whitelist as follows: add a file to the project named `DuplicateCode.Allowed.txt`.  The file must be specified with the `AdditionalFiles` node in the .csproj file.  Include a single method name per line.  Use the provided Code Fixer to automatically add violations to the whitelist.
+Enabling this rule on a legacy code base can yield many hits - too many to be able to enable the analyzer as an error.  To effectuate a 'stop the bleeding' policy, leave the rule's severity at error, and either use suppressions, or specify a whitelist as follows: add a file to the project named `DuplicateCode.Allowed.txt`.  The file must be specified with the `AdditionalFiles` node in the .csproj file.  Include a single method name per line.  Use the provided Code Fixer to automatically add violations to the whitelist.
 
