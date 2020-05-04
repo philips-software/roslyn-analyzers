@@ -80,6 +80,24 @@ class Foo
 			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
+		[TestMethod]
+		public void HeaderIsDetected2()
+		{
+			string baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+class Foo 
+{{
+  public void Foo()
+  {{
+  }}
+}}
+";
+			string givenText = baseline;
+
+			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.CopyrightPresent) };
+
+			VerifyCSharpDiagnostic(givenText, expected);
+		}
+
 		[DataRow(@"")]
 		[DataRow(@"
 ")]

@@ -43,14 +43,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			}
 
 			var first = node.GetLeadingTrivia();
+
+			if (!first.Any())
+			{
+				CreateDiagnostic(context, node.GetLocation());
+				return;
+			}
+
 			SyntaxTrivia copyrightSyntax = first[0];
 
 			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia))
 			{
 				if (first.Count < 2 || !first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
-					context.ReportDiagnostic(diagnostic);
+					CreateDiagnostic(context, context.Node.GetLocation());
 					return;
 				}
 				copyrightSyntax = first[1];
@@ -59,11 +65,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			string comment = copyrightSyntax.ToFullString();
 			if (!(comment.Contains("©") || comment.Contains("Copyright")))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, copyrightSyntax.GetLocation());
-				context.ReportDiagnostic(diagnostic);
+				CreateDiagnostic(context, copyrightSyntax.GetLocation());
 				return;
 			}
 
+		}
+
+		private static void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		{
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			context.ReportDiagnostic(diagnostic);
 		}
 	}
 }
