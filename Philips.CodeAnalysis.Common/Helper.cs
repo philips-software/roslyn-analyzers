@@ -203,6 +203,39 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
+		public static bool TryGetAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, AttributeDefinition attributeDefinition, out AttributeSyntax attribute)
+		{
+			foreach (AttributeListSyntax syntax in attributeLists)
+			{
+				if (TryGetAttribute(syntax, context, attributeDefinition, out attribute))
+				{
+					return true;
+				}
+			}
+
+			attribute = default;
+			return false;
+		}
+
+		public static bool TryGetAttribute(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, AttributeDefinition attributeDefinition, out AttributeSyntax attribute)
+		{
+			foreach (AttributeSyntax attr in attributes.Attributes)
+			{
+				if (attr.Name.ToString().Contains(attributeDefinition.Name))
+				{
+					IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(attr).Symbol as IMethodSymbol;
+					if (memberSymbol != null && memberSymbol.ToString().StartsWith(attributeDefinition.FullName))
+					{
+						attribute = attr;
+						return true;
+					}
+				}
+			}
+
+			attribute = default;
+			return false;
+		}
+
 		public static bool HasAttribute(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
 		{
 			location = null;

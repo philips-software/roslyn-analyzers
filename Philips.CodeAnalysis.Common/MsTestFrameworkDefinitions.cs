@@ -17,5 +17,6 @@ namespace Philips.CodeAnalysis.Common
 		public static AttributeDefinition TestCategoryAttribute => new MsTestAttributeDefinition("TestCategory");
 		public static AttributeDefinition TimeoutAttribute => new MsTestAttributeDefinition("Timeout");
 		public static AttributeDefinition DescriptionAttribute => new MsTestAttributeDefinition("Description");
+		public static AttributeDefinition DynamicDataAttribute => new MsTestAttributeDefinition("DynamicData");
 	}
 }
