@@ -48,42 +48,40 @@ public class Tests
 			});
 		}
 
-		[TestMethod]
-		public void DataTestMethodsMustHaveDataRows2()
+		[DataRow("DataRow(\"arg\")")]
+		[DataRow("DynamicData(\"test\")")]
+		[DataTestMethod]
+		public void DataTestMethodsMustHaveDataRows2(string arg)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
-{
-	[DataRow(null)]
+{{
+	[{0}]
 	[DataTestMethod]
-	public void Foo() { }
-}";
+	public void Foo() {{ }}
+}}";
 
-			VerifyCSharpDiagnostic(code);
+			VerifyCSharpDiagnostic(string.Format(code, arg));
 		}
 
-		[TestMethod]
-		public void TestMethodsMustNotHaveDataRows()
+		[DataRow("DataRow(\"arg\")")]
+		[DataRow("DynamicData(\"test\")")]
+		[DataTestMethod]
+		public void TestMethodsMustNotHaveDataRows(string arg)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
-{
-	[DataRow(null)]
+{{
+	[{0}]
 	[TestMethod]
-	public void Foo() { }
-}";
+	public void Foo() {{ }}
+}}";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, null) }
-			});
+			VerifyCSharpDiagnostic(string.Format(code, arg), DiagnosticResultHelper.Create(DiagnosticIds.DataTestMethodsHaveDataRows));
 		}
 
 		#endregion

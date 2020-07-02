@@ -1,5 +1,6 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -63,21 +64,36 @@ public class Tests
 			}
 		}
 
-
-		[DataRow("[DataTestMethod]", 1, 1, true)]
-		[DataRow("[DataTestMethod]", 1, 2, false)]
-		[DataRow("[DataTestMethod]", 2, 1, false)]
-		[DataTestMethod]
-		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isCorrect)
+		private static IEnumerable<object[]> DataRowVariants()
 		{
-			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			const string DataTestMethod = "[DataTestMethod]";
+
+			yield return new object[] { DataTestMethod, 1, 1, false, true };
+			yield return new object[] { DataTestMethod, 1, 2, false, false };
+			yield return new object[] { DataTestMethod, 2, 1, false, false };
+			yield return new object[] { DataTestMethod, 1, -1, true, true };
+			yield return new object[] { DataTestMethod, 1, 0, true, false };
+			yield return new object[] { DataTestMethod, 1, 2, true, false };
+			yield return new object[] { DataTestMethod, 2, 1, true, false };
+		}
+
+		[DynamicData(nameof(DataRowVariants), DynamicDataSourceType.Method)]
+		[DataTestMethod]
+		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool isCorrect)
+		{
+			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 [TestClass]
 public class Tests
 {{
+	{3}
 	{2}
 	{0}
 	public void Foo({1}) {{ }}
+
+	private static IEnumerable<object[]> GetVariants()
+	{{ return Array.Empty<object[]>(); }}
 }}";
 
 			string[] parameterListStrings = new string[parameters];
@@ -88,27 +104,28 @@ public class Tests
 
 			string parameterListString = string.Join(',', parameterListStrings);
 
-			string[] dataRowParametersStrings = new string[dataRowParameters];
-			for (int i = 0; i < dataRowParameters; i++)
+			string dataRow = string.Empty;
+
+			if (dataRowParameters >= 0)
 			{
-				dataRowParametersStrings[i] = i.ToString();
+				string[] dataRowParametersStrings = new string[dataRowParameters];
+				for (int i = 0; i < dataRowParameters; i++)
+				{
+					dataRowParametersStrings[i] = i.ToString();
+				}
+
+				dataRow = string.Format($"[DataRow({string.Join(',', dataRowParametersStrings)})]");
 			}
 
-			string dataRow = string.Format($"[DataRow({string.Join(',', dataRowParametersStrings)})]");
+			string code = string.Format(template, testType, parameterListString, dataRow, isDynamicData ? "[DynamicData(nameof(GetVariants))]" : string.Empty);
 
 			if (isCorrect)
 			{
-				VerifyCSharpDiagnostic(string.Format(code, testType, parameterListString, dataRow));
+				VerifyCSharpDiagnostic(code);
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(string.Format(code, testType, parameterListString, dataRow), new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments),
-					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 8, null) },
-					Message = new Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				});
+				VerifyCSharpDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments));
 			}
 		}
 

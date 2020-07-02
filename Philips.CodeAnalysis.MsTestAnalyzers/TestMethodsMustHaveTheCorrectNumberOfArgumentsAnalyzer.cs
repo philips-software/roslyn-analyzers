@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			int expectedNumberOfParameters;
+			int? expectedNumberOfParameters;
 			if (!isDataTestMethod)
 			{
 				expectedNumberOfParameters = 0;
@@ -55,13 +55,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			if (expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
+			if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
 			{
 				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 			}
 		}
 
-		private static bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int expectedNumberOfParameters)
+		private static bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
 		{
 			HashSet<int> dataRowParameters = new HashSet<int>();
 			foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
@@ -72,6 +72,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 
 				dataRowParameters.Add(attribute.ArgumentList.Arguments.Count);
+			}
+
+			if (Helper.TryGetAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out var dynamicDataAttribute))
+			{
+				expectedNumberOfParameters = null;
+
+				return dataRowParameters.Count == 0;
 			}
 
 			if (dataRowParameters.Count == 0)
