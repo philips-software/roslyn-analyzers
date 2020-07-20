@@ -235,8 +235,9 @@ namespace Philips.CodeAnalysis.Test
 				solution = solution.AddMetadataReference(projectId, references);
 			}
 
-
-			solution.Workspace.Options = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
+			OptionSet newOptionSet = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
+			Workspace workspace = solution.Workspace;
+			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(newOptionSet));
 
 			foreach (var m in solution.GetProject(projectId).MetadataReferences)
 			{
