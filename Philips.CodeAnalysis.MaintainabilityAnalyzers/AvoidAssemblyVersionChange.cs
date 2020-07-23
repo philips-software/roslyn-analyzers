@@ -18,7 +18,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		private const string InvalidExpectedVersionTitle = @"The assembly_version specified in the EditorConfig is invalid.";
+		private const string InvalidExpectedVersionMessage = @"The assembly_version {0} specified in the EditorConfig is invalid.";
+		private static DiagnosticDescriptor InvalidExpectedVersionRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), InvalidExpectedVersionTitle,
+			InvalidExpectedVersionMessage, Category, DiagnosticSeverity.Error, true, Description);
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidExpectedVersionRule); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -30,17 +35,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private static void Analyze(CompilationAnalysisContext context)
 		{
 			Version expectedVersion = new Version(@"1.0.0.0");
-			try
+			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
+			string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+			if (!string.IsNullOrWhiteSpace(value))
 			{
-				var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-				string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
-				if (!string.IsNullOrWhiteSpace(value))
+				bool isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
+
+				if (!isParseSuccessful)
 				{
-					expectedVersion = new Version(value.ToString());
+					Diagnostic diagnostic = Diagnostic.Create(InvalidExpectedVersionRule, null, value);
+					context.ReportDiagnostic(diagnostic);
+					return;
 				}
+				expectedVersion = parsedVersion;
 			}
-			catch (Exception)
-			{ }
 
 			Version actualVersion = context.Compilation.Assembly.Identity.Version;
 			if (actualVersion.CompareTo(expectedVersion) != 0)
