@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
-			AdditionalFilesHelper helper = new AdditionalFilesHelper(compilationContext.Options.AdditionalFiles);
+			AdditionalFilesHelper helper = new AdditionalFilesHelper(compilationContext.Options, compilationContext.Compilation);
 			HashSet<string> exceptions = helper.InitializeExceptions(FileName, Rule.Id);
 
 			// Add standard exceptions

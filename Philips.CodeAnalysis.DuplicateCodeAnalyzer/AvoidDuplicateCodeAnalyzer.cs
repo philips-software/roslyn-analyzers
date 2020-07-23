@@ -30,7 +30,21 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public int DefaultDuplicateTokenThreshold = 100;
 
 		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
+		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
+		private static DiagnosticDescriptor InvalidTokenCountRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+
+		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
+		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
+		private static DiagnosticDescriptor TokenCountTooBigRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+
+		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
+		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
+		private static DiagnosticDescriptor TokenCountTooSmallRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -39,13 +53,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
-				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options.AdditionalFiles);
+				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
 				HashSet<string> exceptions = new HashSet<string>();
 				if (!options.IgnoreExceptionsFile)
 				{
 					exceptions = InitializeExceptions(compilationContext.Options.AdditionalFiles);
 				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, exceptions, options.GenerateExceptionsFile);
+				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, exceptions, options.GenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 			});
@@ -67,65 +81,41 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return new HashSet<string>();
 		}
 
-		public virtual EditorConfigOptions InitializeEditorConfigOptions(ImmutableArray<AdditionalText> additionalFiles)
+		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic error)
 		{
+			error = null;
 			EditorConfigOptions options = new EditorConfigOptions(DefaultDuplicateTokenThreshold);
+			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
-			foreach (AdditionalText additionalFile in additionalFiles)
+			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
+			options.IgnoreExceptionsFile = exceptionsOptions.IgnoreExceptionsFile;
+			options.GenerateExceptionsFile = exceptionsOptions.GenerateExceptionsFile;
+
+			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
+			strTokenCount = strTokenCount.Trim();
+			bool isParseSuccessful = int.TryParse(strTokenCount, out int duplicateTokenThreshold);
+
+			if (!isParseSuccessful)
 			{
-				string fileName = Path.GetFileName(additionalFile.Path);
-				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, @".editorconfig"))
-				{
-					LoadEditorConfigOptions(options, additionalFile.GetText());
-				}
+				duplicateTokenThreshold = DefaultDuplicateTokenThreshold;
+				error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
 			}
+
+			const int MaxTokenCount = 100;
+			if (duplicateTokenThreshold > MaxTokenCount)
+			{
+				error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
+				duplicateTokenThreshold = MaxTokenCount;
+			}
+			const int MinTokenCount = 20;
+			if (duplicateTokenThreshold < MinTokenCount)
+			{
+				error = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
+				duplicateTokenThreshold = MinTokenCount;
+			}
+			options.TokenCount = duplicateTokenThreshold;
 
 			return options;
-		}
-
-		public virtual void LoadEditorConfigOptions(EditorConfigOptions options, SourceText text)
-		{
-			if (text == null)
-			{
-				return;
-			}
-			string diagnosticId = Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode);
-
-			foreach (TextLine textLine in text.Lines)
-			{
-				string line = textLine.ToString();
-				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.ignore_exceptions_file"))
-				{
-					options.IgnoreExceptionsFile = true;
-				}
-				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.generate_exceptions_file"))
-				{
-					options.GenerateExceptionsFile = true;
-				}
-				else if (line.Contains($@"dotnet_code_quality.{diagnosticId}.token_count"))
-				{
-					if (line.Contains('='))
-					{
-						string tc = line.Substring(line.IndexOf('=') + 1);
-						tc = tc.Trim();
-						try
-						{
-							int duplicateTokenThreshold = int.Parse(tc);
-							if (duplicateTokenThreshold > 100)
-							{
-								duplicateTokenThreshold = 100;
-							}
-							if (duplicateTokenThreshold < 20)
-							{
-								duplicateTokenThreshold = 20;
-							}
-							options.TokenCount = duplicateTokenThreshold;
-						}
-						catch (Exception) { }
-					}
-				}
-			}
 		}
 
 		public virtual HashSet<string> LoadAllowedMethods(SourceText text)
@@ -146,11 +136,15 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly HashSet<string> _exceptions;
 			private readonly bool _generateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, HashSet<string> exceptions, bool generateExceptionsFile)
+			public CompilationAnalyzer(int duplicateTokenThreshold, HashSet<string> exceptions, bool generateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
 				_exceptions = exceptions;
 				_generateExceptionsFile = generateExceptionsFile;
+				if (configurationError != null)
+				{
+					_diagnostics.Add(configurationError);
+				}
 			}
 
 			public string ToPrettyReference(FileLinePositionSpan fileSpan)

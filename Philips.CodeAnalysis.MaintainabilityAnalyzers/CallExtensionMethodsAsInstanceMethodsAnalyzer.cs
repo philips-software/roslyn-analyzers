@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				return;
 			}
 
-			var semantic = context.Compilation.GetSemanticModel(context.Operation.Syntax.SyntaxTree);
+			var semantic = context.Operation.SemanticModel;
 
 			var statics = semantic.LookupStaticMembers(context.Operation.Syntax.SpanStart);
 

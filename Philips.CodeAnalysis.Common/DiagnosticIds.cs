@@ -67,5 +67,6 @@ namespace Philips.CodeAnalysis.Common
 		EnforceEditorConfig = 2072,
 		ExtensionMethodsCalledLikeInstanceMethods = 2073,
 		DisallowDisposeRegistration = 2074,
+		AvoidAssemblyVersionChange = 2075,
 	}
 }

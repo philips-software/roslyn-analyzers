@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				if (symbol.IsStatic && !symbol.IsExtern)
 				{
 					// We found a static thing being used in this method.  Is the thing ours?
-					if (Equals(symbol.ContainingType, us))
+					if (SymbolEqualityComparer.Default.Equals(symbol.ContainingType, us))
 					{
 						// This method must be static because it references something static of ours.  We are done.
 						return;
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			foreach (ObjectCreationExpressionSyntax objectCreationExpressionSyntax in methodDeclarationSyntax.DescendantNodesAndSelf().OfType<ObjectCreationExpressionSyntax>())
 			{
 				ISymbol objectCreationSymbol = context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax).Symbol;
-				if (Equals(objectCreationSymbol?.ContainingType, us))
+				if (SymbolEqualityComparer.Default.Equals(objectCreationSymbol?.ContainingType, us))
 				{
 					return;
 				}

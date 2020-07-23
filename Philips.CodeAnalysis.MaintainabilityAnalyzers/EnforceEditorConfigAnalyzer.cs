@@ -13,11 +13,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	public class EnforceEditorConfigAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Missing .editorconfig";
-		private const string MessageFormat = @"The project does not have an .editorconfig file.";
+		private const string MessageFormat = @"The project does not have a local .editorconfig file.";
 		private const string Description = @".editorconfig files help enforce and configure Analyzers";
 		private const string Category = Categories.Maintainability;
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceEditorConfig), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceEditorConfig), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		public override void Initialize(AnalysisContext context)
@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 			context.RegisterCompilationAction(compilationContext =>
 			{
-				bool result = IsEditorConfigPresent(compilationContext.Options.AdditionalFiles);
+				bool result = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
 				if (!result)
 				{
 					Diagnostic diagnostic = Diagnostic.Create(Rule, Location.None);
@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			});
 		}
 
-		public virtual bool IsEditorConfigPresent(ImmutableArray<AdditionalText> additionalFiles)
+		public virtual bool IsLocalEditorConfigPresent(ImmutableArray<AdditionalText> additionalFiles)
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{

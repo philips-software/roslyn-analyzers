@@ -16,8 +16,18 @@ namespace Philips.CodeAnalysis.Test
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 10 };
+			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
 		}
+
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			var options = new Dictionary<string, string>
+			{
+				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
+			};
+			return options;
+		}
+
 
 		public class SumHashCalculator : RollingHashCalculator<TokenInfo>
 		{
@@ -264,11 +274,10 @@ namespace Philips.CodeAnalysis.Test
 			VerifyNoDiagnostic(CreateFunctions(method1, method2));
 		}
 
-
 		[DataTestMethod]
-		[DataRow("object obj = new object();", "object obj = new object();")]
-		[DataRow("Bar(); object obj = new object();", "object obj = new object();")]
-		[DataRow("object obj = new object();", "Bar(); object obj = new object();")]
+		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
+		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
+		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
 			VerifyDiagnostic(CreateFunctions(method1, method2));
@@ -283,9 +292,9 @@ class Foo
 {{
   public void Foo()
   {{
-      configFuncs.Add(() => ConfigureItem(1, _pcProxAdapter.PcProxSetCfgFlagsFrcBitCntEx, DefaultForceBitCntEx, out isChanged));
-      configFuncs.Add(() => ConfigureItem(2, _pcProxAdapter.PcProxSetCfgFlagsSndOnRx, DefaultSendOnRx, out isChanged));
-      configFuncs.Add(() => ConfigureItem(3, _pcProxAdapter.PcProxSetCfgFlagsHaltKBSnd, DefaultHaltKBSend, out isChanged));
+	  configFuncs.Add(() => ConfigureItem(1, _pcProxAdapter.PcProxSetCfgFlagsFrcBitCntEx, DefaultForceBitCntEx, out isChanged));
+	  configFuncs.Add(() => ConfigureItem(2, _pcProxAdapter.PcProxSetCfgFlagsSndOnRx, DefaultSendOnRx, out isChanged));
+	  configFuncs.Add(() => ConfigureItem(3, _pcProxAdapter.PcProxSetCfgFlagsHaltKBSnd, DefaultHaltKBSend, out isChanged));
   }}
 }}
 ";
@@ -302,9 +311,9 @@ class Foo
 {{
   public void Foo()
   {{
-      int a = 0;
-      int b = 0;
-      int c = 0;
+	  int a = 0;
+	  int b = 0;
+	  int c = 0;
   }}
 }}
 ";
@@ -321,11 +330,11 @@ class Foo
 {{
   public void Foo()
   {{
-    {0};
+	{0};
   }}
   public void Bar()
   {{
-    {1};
+	{1};
   }}
 }}
 ";
@@ -341,17 +350,19 @@ class Foo
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+			VerifyCSharpDiagnostic(file,
+				new DiagnosticResult()
 				{
-					new DiagnosticResultLocation("Test0.cs", null, null),
-					new DiagnosticResultLocation("Test0.cs", null, null),
+					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+					Message = new Regex("Duplicate code found.+"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", null, null),
+						new DiagnosticResultLocation("Test0.cs", null, null),
+					}
 				}
-			});
+			);
 		}
 	}
 }
