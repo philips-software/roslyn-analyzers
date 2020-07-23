@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Common
@@ -13,19 +14,21 @@ namespace Philips.CodeAnalysis.Common
 	internal class AdditionalFilesHelper
 	{
 		private readonly ImmutableArray<AdditionalText> _additionalFiles;
-
-		public const string EditorConfig = @".editorconfig";
+		private readonly AnalyzerOptions _options;
+		private readonly Compilation _compilation;
 
 		public virtual ExceptionsOptions ExceptionsOptions { get; private set; } = new ExceptionsOptions();
 
-		public AdditionalFilesHelper(ImmutableArray<AdditionalText> additionalFiles)
+		public AdditionalFilesHelper(AnalyzerOptions options, Compilation compilation)
 		{
-			_additionalFiles = additionalFiles;
+			_options = options;
+			_additionalFiles = options.AdditionalFiles;
+			_compilation = compilation;
 		}
 
 		public virtual HashSet<string> InitializeExceptions(string exceptionsFile, string diagnosticId)
 		{
-			ExceptionsOptions = InitializeExceptionsOptions(diagnosticId);
+			ExceptionsOptions = LoadExceptionsOptions(diagnosticId);
 			HashSet<string> exceptions = new HashSet<string>();
 			if (!ExceptionsOptions.IgnoreExceptionsFile)
 			{
@@ -58,48 +61,38 @@ namespace Philips.CodeAnalysis.Common
 			return result;
 		}
 
-
-		public virtual ExceptionsOptions InitializeExceptionsOptions(string diagnosticId)
-		{
-			SourceText lines = RetrieveSourceText(EditorConfig);
-			if (lines != null)
-			{
-				return LoadExceptionsOptions(lines, diagnosticId);
-			}
-			return new ExceptionsOptions();
-		}
-
-		public virtual SourceText RetrieveSourceText(string fileName)
-		{
-			foreach (AdditionalText additionalFile in _additionalFiles)
-			{
-				string currentFileName = Path.GetFileName(additionalFile.Path);
-				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(currentFileName, fileName))
-				{
-					return additionalFile.GetText();
-				}
-			}
-			return null;
-		}
-
-		public virtual ExceptionsOptions LoadExceptionsOptions(SourceText text, string diagnosticId)
+		public virtual ExceptionsOptions LoadExceptionsOptions(string diagnosticId)
 		{
 			ExceptionsOptions options = new ExceptionsOptions();
 
-			foreach (TextLine textLine in text.Lines)
-			{
-				string line = textLine.ToString();
-				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.ignore_exceptions_file"))
-				{
-					options.IgnoreExceptionsFile = true;
-				}
-				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.generate_exceptions_file"))
-				{
-					options.GenerateExceptionsFile = true;
-				}
-			}
+			string ignoreExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
+			options.IgnoreExceptionsFile = !string.IsNullOrWhiteSpace(ignoreExceptionsFile);
+
+			string generateExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"generate_exceptions_file");
+			options.GenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
 			return options;
+		}
+
+		private string GetRawValue(string settingKey)
+		{
+			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(_compilation.SyntaxTrees.First());
+
+#nullable enable
+			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))
+			{
+				if (value == null)
+				{
+					return string.Empty;
+				}
+				return value.ToString();
+			}
+#nullable disable
+			return string.Empty;
+		}
+
+		public virtual string GetValueFromEditorConfig(string diagnosticId, string settingKey)
+		{
+			return GetRawValue($@"dotnet_code_quality.{diagnosticId}.{settingKey}");
 		}
 
 		/// <summary>
@@ -108,31 +101,18 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public virtual List<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
-			SourceText lines = RetrieveSourceText(EditorConfig);
 			List<string> values = new List<string>();
+			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
 
-			if (lines == null)
-				return values;
-
-			foreach (TextLine textLine in lines.Lines)
+			foreach (string v in value.Split(','))
 			{
-				string line = textLine.ToString();
-				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.{settingKey}"))
-				{
-					if (line.Contains('='))
-					{
-						string value = line.Substring(line.IndexOf('=') + 1).Trim();
-						foreach (string v in value.Split(','))
-						{
-							values.Add(v);
-						}
-					}
-					break;
-				}
+				values.Add(v);
 			}
 			return values;
 		}
 	}
+
+
 	internal class ExceptionsOptions
 	{
 		public bool IgnoreExceptionsFile { get; set; } = false;

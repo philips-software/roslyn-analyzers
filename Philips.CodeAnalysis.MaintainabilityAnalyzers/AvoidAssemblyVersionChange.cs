@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
@@ -15,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 		private const string Title = @"Avoid AssemblyVersion change";
 		private const string MessageFormat = @"AssemblyVersion has changed. Actual: {0} Expected: {1}";
-		private const string Description = @"AssemblyVersion breaks compatibility.  If intentional, update EditorConfig.";
+		private const string Description = @"AssemblyVersion breaks compatibility.  If intentional, specify assembly_version in EditorConfig.";
 		private const string Category = Categories.RuntimeFailure;
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
@@ -26,28 +24,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.CompilationUnit);
+			context.RegisterCompilationAction(Analyze);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private static void Analyze(CompilationAnalysisContext context)
 		{
-			var analyzerConfigOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(context.Compilation.SyntaxTrees.First());
-
 			Version expectedVersion = new Version(@"1.0.0.0");
-#nullable enable
-			if (analyzerConfigOptions.TryGetValue(@"dotnet_code_quality.PH2075.assembly_version", out string? value))
+			try
 			{
-				try
+				var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
+				string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+				if (!string.IsNullOrWhiteSpace(value))
 				{
 					expectedVersion = new Version(value.ToString());
 				}
-				catch (Exception)
-				{
-				}
 			}
-#nullable disable
+			catch (Exception)
+			{ }
 
-			//			CompilationUnitSyntax node = (CompilationUnitSyntax)context.Node;
 			Version actualVersion = context.Compilation.Assembly.Identity.Version;
 			if (actualVersion.CompareTo(expectedVersion) != 0)
 			{

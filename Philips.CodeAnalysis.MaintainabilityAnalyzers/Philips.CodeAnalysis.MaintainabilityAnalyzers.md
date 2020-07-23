@@ -25,6 +25,7 @@
 | PH2068  | Avoid goto                                   | Avoid goto.                                                  |
 | PH2069  | Avoid unnecessary string.Format              | Don't call string.Format unnecessarily.                      |
 | PH2070  | Avoid protected fields                       | Avoid protected fields.                                      |
-| PH2072  | Require editorconfig                         | Editorconfig files help enforce and configure Analyzers.     |
+| PH2072  | Require local editorconfig                   | Disabled by default.  As of VS 16.3, [Analyzers can now see settings](https://developercommunity.visualstudio.com/content/problem/791119/editorconfig-has-stopped-working.html) of Editorconfig files in parent folders.|
 | PH2073  | Call extension method as instance            | If Foo is an extension method of MyClass, call it as `MyClass.Foo`. |
 | PH2074  | Avoid register in Dispose                    | Dispose methods should unregister rather than register.      |
+| PH2075  | Avoid AssemblyVersion change                 | Do not accidentally change AssemblyVersion, as it breaks runtime compatibility. Specify the intended `dotnet_code_quality.PH2075.assembly_version` in an .editorconfig specific to the project|

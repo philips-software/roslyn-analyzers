@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -44,6 +45,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"UnitTest", false)]
+		[DataRow(@"ManualTest", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		public void TestHasCategoryAttributeTest2(string category, bool isError)
@@ -113,9 +115,16 @@ class Foo
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { (AdditionalFilesHelper.EditorConfig, $"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories = UnitTest"),
-							(@"TestsWithUnsupportedCategory.Allowed.txt", "Foo.Foo1")
+			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "Foo.Foo1") };
+		}
+
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			var options = new Dictionary<string, string>
+			{
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"UnitTest,ManualTest" }
 			};
+			return options;
 		}
 	}
 }

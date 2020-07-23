@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return;
 				}
-				AdditionalFilesHelper = new AdditionalFilesHelper(startContext.Options.AdditionalFiles);
+				AdditionalFilesHelper = new AdditionalFilesHelper(startContext.Options, startContext.Compilation);
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 			});
 		}
