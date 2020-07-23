@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var options = new Dictionary<string, string>
 			{
-				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"10" }
+				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
 			};
 			return options;
 		}
@@ -274,18 +274,6 @@ namespace Philips.CodeAnalysis.Test
 			VerifyNoDiagnostic(CreateFunctions(method1, method2));
 		}
 
-
-		[DataTestMethod]
-		[DataRow("object obj = new object();", "object obj = new object();")]
-		[DataRow("Bar(); object obj = new object();", "object obj = new object();")]
-		[DataRow("object obj = new object();", "Bar(); object obj = new object();")]
-		public void AvoidDuplicateCodeNoError2(string method1, string method2)
-		{
-			// The duplicate token count is greater than 10; however, loading the config values snaps it to a minimum of 20.
-			VerifyNoDiagnostic(CreateFunctions(method1, method2));
-		}
-
-
 		[DataTestMethod]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
@@ -362,17 +350,19 @@ class Foo
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+			VerifyCSharpDiagnostic(file,
+				new DiagnosticResult()
 				{
-					new DiagnosticResultLocation("Test0.cs", null, null),
-					new DiagnosticResultLocation("Test0.cs", null, null),
+					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+					Message = new Regex("Duplicate code found.+"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", null, null),
+						new DiagnosticResultLocation("Test0.cs", null, null),
+					}
 				}
-			});
+			);
 		}
 	}
 }
