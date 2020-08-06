@@ -92,29 +92,31 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			options.GenerateExceptionsFile = exceptionsOptions.GenerateExceptionsFile;
 
 			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
-			strTokenCount = strTokenCount.Trim();
-			bool isParseSuccessful = int.TryParse(strTokenCount, out int duplicateTokenThreshold);
-
-			if (!isParseSuccessful)
+			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
-				duplicateTokenThreshold = DefaultDuplicateTokenThreshold;
-				error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
-			}
+				strTokenCount = strTokenCount.Trim();
+				bool isParseSuccessful = int.TryParse(strTokenCount, out int duplicateTokenThreshold);
 
-			const int MaxTokenCount = 100;
-			if (duplicateTokenThreshold > MaxTokenCount)
-			{
-				error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
-				duplicateTokenThreshold = MaxTokenCount;
-			}
-			const int MinTokenCount = 20;
-			if (duplicateTokenThreshold < MinTokenCount)
-			{
-				error = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
-				duplicateTokenThreshold = MinTokenCount;
-			}
-			options.TokenCount = duplicateTokenThreshold;
+				if (!isParseSuccessful)
+				{
+					duplicateTokenThreshold = DefaultDuplicateTokenThreshold;
+					error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
+				}
 
+				const int MaxTokenCount = 100;
+				if (duplicateTokenThreshold > MaxTokenCount)
+				{
+					error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
+					duplicateTokenThreshold = MaxTokenCount;
+				}
+				const int MinTokenCount = 20;
+				if (duplicateTokenThreshold < MinTokenCount)
+				{
+					error = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
+					duplicateTokenThreshold = MinTokenCount;
+				}
+				options.TokenCount = duplicateTokenThreshold;
+			}
 			return options;
 		}
 
