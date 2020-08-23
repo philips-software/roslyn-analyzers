@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Benchmark
 	{
 		public static void Main(string[] args)
 		{
-			var summary = BenchmarkRunner.Run<DuplicationDetectorBenchmark>();
+			_ = BenchmarkRunner.Run<DuplicationDetectorBenchmark>();
 		}
 	}
 
@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.Benchmark
 
 					if (rollingTokenSet.IsFull())
 					{
-						Evidence existingEvidence = _library.TryAdd(hash, evidence);
+						_ = _library.TryAdd(hash, evidence);
 					}
 				}
 			});
