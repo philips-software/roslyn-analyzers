@@ -23,7 +23,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override Diagnostic Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			string memberName = memberAccessExpression.Name.ToString();
+			string memberName = memberAccessExpression.Name switch
+			{
+				GenericNameSyntax generic => generic.Identifier.ToString(),
+				SimpleNameSyntax name => name.ToString()
+			};
+
 			if ((memberName != @"AreEqual") && (memberName != @"AreNotEqual"))
 			{
 				return null;
@@ -37,7 +42,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			bool isUsedIncorrectly = false;
-			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList as ArgumentListSyntax;
+			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 			LiteralExpressionSyntax arg0Literal = argumentList.Arguments[0].Expression as LiteralExpressionSyntax;
 			LiteralExpressionSyntax arg1Literal = argumentList.Arguments[1].Expression as LiteralExpressionSyntax;
 			if ((arg1Literal != null) || Helper.IsConstantExpression(argumentList.Arguments[1].Expression, context.SemanticModel))
@@ -49,7 +54,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				else if (arg1Literal != null)
 				{
 					Optional<object> literalValue = context.SemanticModel.GetConstantValue(arg1Literal);
-					if (literalValue.Value == null)
+					if (!literalValue.HasValue)
 					{
 						isUsedIncorrectly = true;
 					}
@@ -58,7 +63,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			else if (arg0Literal != null)
 			{
 				Optional<object> literalValue = context.SemanticModel.GetConstantValue(arg0Literal);
-				if (literalValue.Value == null)
+				if (!literalValue.HasValue)
 				{
 					isUsedIncorrectly = true;
 				}
