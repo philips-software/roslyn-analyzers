@@ -63,6 +63,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			});
 		}
 
+
 		#endregion
 	}
 }

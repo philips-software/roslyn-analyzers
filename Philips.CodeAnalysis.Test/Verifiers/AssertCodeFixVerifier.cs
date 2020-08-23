@@ -66,6 +66,13 @@ namespace Philips.CodeAnalysis.Test
 			VerifyError(methodBody, string.Empty, expectedErrorLineOffset, expectedErrorColumnOffset, error);
 		}
 
+		protected void VerifyNoError(string methodBody)
+		{
+			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
+
+			VerifyCSharpDiagnostic(test);
+		}
+
 		protected override MetadataReference[] GetMetadataReferences()
 		{
 			return _helper.GetMetaDataReferences();
