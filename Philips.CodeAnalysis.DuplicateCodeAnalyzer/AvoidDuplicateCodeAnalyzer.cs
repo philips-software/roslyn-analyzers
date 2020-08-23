@@ -182,7 +182,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						Evidence existingEvidence = _library.TryAdd(hash, evidence);
 						if (existingEvidence != null)
 						{
-
 							Location location = evidence.LocationEnvelope.Contents();
 							Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
 
@@ -266,8 +265,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class Evidence
 	{
-		public LocationEnvelope LocationEnvelope { get; set; } = null;
-		public List<int> Components { get; set; } = new List<int>();
+		private readonly Func<LocationEnvelope> _materializeEnvelope;
+
+		public Evidence(Func<LocationEnvelope> materializeEnvelope, List<int> components, int componentSum)
+		{
+			_materializeEnvelope = materializeEnvelope;
+			Components = components;
+			Hash = componentSum;
+		}
+
+		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
+		public List<int> Components { get; }
+		public int Hash { get; }
 	}
 
 	public class LocationEnvelope
@@ -282,7 +291,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return _location;
 		}
 	}
-
 
 	public class TokenInfo
 	{
@@ -325,7 +333,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private readonly int _base;
 		private readonly int _modulus;
 
-		public RollingHashCalculator(int maxItems, int baseModulus = 2048, int modulus = 1723)
+		public RollingHashCalculator(int maxItems, int baseModulus = 227, int modulus = 1000005)
 		{
 			MaxItems = maxItems;
 			_base = baseModulus;
@@ -342,14 +350,19 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public Queue<T> Components { get { return _components; } }
 
-		public List<int> ToComponentHashes()
+		public (List<int> components, int hash) ToComponentHashes()
 		{
-			var componentHashes = new List<int>();
+			int sum = 0;
+			var componentHashes = new List<int>(Components.Count);
 			foreach (T token in Components)
 			{
-				componentHashes.Add(token.GetHashCode());
+				int hashcode = token.GetHashCode();
+
+				componentHashes.Add(hashcode);
+				sum += hashcode;
 			}
-			return componentHashes;
+
+			return (componentHashes, sum);
 		}
 
 		public int MaxItems { get; private set; }
@@ -406,26 +419,41 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			_hashCalculator = hashCalculator;
 		}
 
-		public virtual LocationEnvelope MakeFullLocationEnvelope(TokenInfo firstToken, TokenInfo lastToken)
+		public virtual Func<LocationEnvelope> MakeFullLocationEnvelope(TokenInfo firstToken, TokenInfo lastToken)
 		{
-			if (firstToken.GetLocationEnvelope().Contents() == null)
-			{
-				return firstToken.GetLocationEnvelope();
-			}
+			LocationEnvelope cache = null;
 
-			int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
-			int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
-			TextSpan textSpan = TextSpan.FromBounds(start, end);
-			Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
-			return new LocationEnvelope(location);
+			return () =>
+			{
+				if (cache != null)
+				{
+					return cache;
+				}
+
+				if (firstToken.GetLocationEnvelope().Contents() == null)
+				{
+					return firstToken.GetLocationEnvelope();
+				}
+
+				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
+				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
+				TextSpan textSpan = TextSpan.FromBounds(start, end);
+				Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
+
+				cache = new LocationEnvelope(location);
+
+				return cache;
+			};
 		}
 
 		public (int, Evidence) Add(TokenInfo token)
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
-			Evidence e = new Evidence();
-			e.Components = _hashCalculator.ToComponentHashes();
-			e.LocationEnvelope = MakeFullLocationEnvelope(firstToken, token);
+
+			(var components, var hash) = _hashCalculator.ToComponentHashes();
+
+			Evidence e = new Evidence(MakeFullLocationEnvelope(firstToken, token), components, hash);
+
 			return (_hashCalculator.HashCode, e);
 		}
 

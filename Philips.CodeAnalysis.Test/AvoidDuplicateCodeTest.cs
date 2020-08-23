@@ -242,27 +242,23 @@ namespace Philips.CodeAnalysis.Test
 		public void DuplicateDictionaryTest()
 		{
 			var dictionary = new DuplicateDetectorDictionary();
-			var e1 = new Evidence();
-			e1.Components = new List<int>();
-			e1.Components.Add(10);
+			var e1 = new Evidence(null, new List<int>() { 10 }, 10);
+
 			Evidence existing = dictionary.TryAdd(1, e1);
 			Assert.IsNull(existing);
 
-			var e2 = new Evidence();
-			e2.Components = new List<int>();
-			e2.Components.Add(20);
+			var e2 = new Evidence(null, new List<int>() { 20 }, 20);
+
 			existing = dictionary.TryAdd(2, e2);
 			Assert.IsNull(existing);
 
-			var e3 = new Evidence();
-			e3.Components = new List<int>();
-			e3.Components.Add(30);
+			var e3 = new Evidence(null, new List<int>() { 30 }, 30);
+
 			existing = dictionary.TryAdd(2, e3);
 			Assert.IsNull(existing);
 
-			var e4 = new Evidence();
-			e4.Components = new List<int>();
-			e4.Components.Add(30);
+			var e4 = new Evidence(null, new List<int>() { 30 }, 30);
+
 			existing = dictionary.TryAdd(2, e4);
 			Assert.IsNotNull(existing);
 		}
