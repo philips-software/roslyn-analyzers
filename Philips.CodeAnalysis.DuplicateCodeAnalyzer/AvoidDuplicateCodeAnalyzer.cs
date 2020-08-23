@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -132,7 +133,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		private class CompilationAnalyzer
 		{
-			private readonly DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
+			private readonly DuplicateDetectorDictionary _library = new OriginalDuplicateDetectorDictionary();
 			private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 			private readonly int _duplicateTokenThreshold;
 			private readonly HashSet<string> _exceptions;
@@ -182,7 +183,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						Evidence existingEvidence = _library.TryAdd(hash, evidence);
 						if (existingEvidence != null)
 						{
-
 							Location location = evidence.LocationEnvelope.Contents();
 							Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
 
@@ -230,12 +230,31 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public bool GenerateExceptionsFile { get; set; } = false;
 	}
 
-	public class DuplicateDetectorDictionary
+	public abstract class DuplicateDetectorDictionary
+	{
+		public abstract string GetCollisions();
+
+		public abstract Evidence TryAdd(int key, Evidence value);
+	}
+	public class OriginalDuplicateDetectorDictionary : DuplicateDetectorDictionary
 	{
 		private readonly Dictionary<int, List<Evidence>> _library = new Dictionary<int, List<Evidence>>();
 		private readonly object _lock = new object();
 
-		public Evidence TryAdd(int key, Evidence value)
+		public override string GetCollisions()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var kvp in _library)
+			{
+				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
+				sb.AppendLine();
+			}
+
+			return sb.ToString();
+		}
+
+		public override Evidence TryAdd(int key, Evidence value)
 		{
 			lock (_lock)
 			{
@@ -263,11 +282,137 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			}
 		}
 	}
+	public class NestedHashDuplicateDetectorDictionary : DuplicateDetectorDictionary
+	{
+		private readonly Dictionary<int, Dictionary<int, List<Evidence>>> _library = new Dictionary<int, Dictionary<int, List<Evidence>>>();
+		private readonly object _lock = new object();
+		public override string GetCollisions()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var kvp in _library)
+			{
+				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
+				foreach (var nested in kvp.Value)
+				{
+					sb.AppendFormat("\t{0}: {1}", nested.Key, nested.Value.Count);
+					sb.AppendLine();
+				}
+			}
+
+			return sb.ToString();
+		}
+		public override Evidence TryAdd(int key, Evidence value)
+		{
+			Dictionary<int, List<Evidence>> nestedHash;
+
+			var sum = value.Components.Sum();
+			lock (_lock)
+			{
+				if (_library.TryGetValue(key, out nestedHash))
+				{
+					if (nestedHash.TryGetValue(sum, out var existingValues))
+					{
+						// We found a potential duplicate.  Is it actually?
+						foreach (Evidence e in existingValues)
+						{
+							if (e.Components.SequenceEqual(value.Components))
+							{
+								// Yes, just return the duplicate information
+								return e;
+							}
+						}
+						// Our key exists already, but not us.  I.e., a hash collision.
+						existingValues.Add(value);
+						return null;
+					}
+
+					nestedHash[sum] = new List<Evidence> { value };
+					return null;
+				}
+
+				_library[key] = new Dictionary<int, List<Evidence>>()
+				{
+					{ sum, new List<Evidence>{ value } },
+				};
+
+				return null;
+			}
+		}
+	}
+	public class NestedHashLockingFixDuplicateDetectorDictionary : DuplicateDetectorDictionary
+	{
+		private readonly Dictionary<int, Dictionary<int, List<Evidence>>> _library = new Dictionary<int, Dictionary<int, List<Evidence>>>();
+		private readonly object _lock = new object();
+		public override string GetCollisions()
+		{
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var kvp in _library)
+			{
+				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
+				foreach (var nested in kvp.Value)
+				{
+					sb.AppendFormat("\t{0}: {1}", nested.Key, nested.Value.Count);
+					sb.AppendLine();
+				}
+			}
+
+			return sb.ToString();
+		}
+		public override Evidence TryAdd(int key, Evidence value)
+		{
+			Dictionary<int, List<Evidence>> nestedHash;
+
+			var sum = value.Components.Sum();
+
+			lock (_lock)
+			{
+				if (!_library.TryGetValue(key, out nestedHash))
+				{
+					_library[key] = nestedHash = new Dictionary<int, List<Evidence>>();
+				}
+			}
+
+			lock (nestedHash)
+			{
+				if (nestedHash.TryGetValue(sum, out var existingValues))
+				{
+					// We found a potential duplicate.  Is it actually?
+					foreach (Evidence e in existingValues)
+					{
+						if (e.Components.SequenceEqual(value.Components))
+						{
+							// Yes, just return the duplicate information
+							return e;
+						}
+					}
+					// Our key exists already, but not us.  I.e., a hash collision.
+					existingValues.Add(value);
+					return null;
+				}
+
+				nestedHash[sum] = new List<Evidence> { value };
+				return null;
+			}
+		}
+	}
 
 	public class Evidence
 	{
-		public LocationEnvelope LocationEnvelope { get; set; } = null;
-		public List<int> Components { get; set; } = new List<int>();
+		private readonly Func<LocationEnvelope> _materializeEnvelope;
+
+
+		public Evidence(Func<LocationEnvelope> materializeEnvelope, List<int> components, int componentSum)
+		{
+			_materializeEnvelope = materializeEnvelope;
+			Components = components;
+			Hash = componentSum;
+		}
+
+		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
+		public List<int> Components { get; }
+		public int Hash { get; }
 	}
 
 	public class LocationEnvelope
@@ -342,14 +487,19 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public Queue<T> Components { get { return _components; } }
 
-		public List<int> ToComponentHashes()
+		public (List<int> components, int hash) ToComponentHashes()
 		{
-			var componentHashes = new List<int>();
+			int sum = 0;
+			var componentHashes = new List<int>(Components.Count);
 			foreach (T token in Components)
 			{
-				componentHashes.Add(token.GetHashCode());
+				int hashcode = token.GetHashCode();
+
+				componentHashes.Add(hashcode);
+				sum += hashcode;
 			}
-			return componentHashes;
+
+			return (componentHashes, sum);
 		}
 
 		public int MaxItems { get; private set; }
@@ -406,26 +556,41 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			_hashCalculator = hashCalculator;
 		}
 
-		public virtual LocationEnvelope MakeFullLocationEnvelope(TokenInfo firstToken, TokenInfo lastToken)
+		public virtual Func<LocationEnvelope> MakeFullLocationEnvelope(TokenInfo firstToken, TokenInfo lastToken)
 		{
-			if (firstToken.GetLocationEnvelope().Contents() == null)
-			{
-				return firstToken.GetLocationEnvelope();
-			}
+			LocationEnvelope cache = null;
 
-			int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
-			int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
-			TextSpan textSpan = TextSpan.FromBounds(start, end);
-			Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
-			return new LocationEnvelope(location);
+			return () =>
+			{
+				if (cache != null)
+				{
+					return cache;
+				}
+
+				if (firstToken.GetLocationEnvelope().Contents() == null)
+				{
+					return firstToken.GetLocationEnvelope();
+				}
+
+				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
+				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
+				TextSpan textSpan = TextSpan.FromBounds(start, end);
+				Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
+
+				cache = new LocationEnvelope(location);
+
+				return cache;
+			};
 		}
 
 		public (int, Evidence) Add(TokenInfo token)
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
-			Evidence e = new Evidence();
-			e.Components = _hashCalculator.ToComponentHashes();
-			e.LocationEnvelope = MakeFullLocationEnvelope(firstToken, token);
+
+			(var components, var hash) = _hashCalculator.ToComponentHashes();
+
+			Evidence e = new Evidence(MakeFullLocationEnvelope(firstToken, token), components, hash);
+
 			return (_hashCalculator.HashCode, e);
 		}
 
