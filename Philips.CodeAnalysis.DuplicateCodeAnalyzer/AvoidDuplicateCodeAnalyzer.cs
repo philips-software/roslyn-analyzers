@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -133,7 +132,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		private class CompilationAnalyzer
 		{
-			private readonly DuplicateDetectorDictionary _library = new OriginalDuplicateDetectorDictionary();
+			private readonly DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
 			private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 			private readonly int _duplicateTokenThreshold;
 			private readonly HashSet<string> _exceptions;
@@ -230,31 +229,12 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public bool GenerateExceptionsFile { get; set; } = false;
 	}
 
-	public abstract class DuplicateDetectorDictionary
-	{
-		public abstract string GetCollisions();
-
-		public abstract Evidence TryAdd(int key, Evidence value);
-	}
-	public class OriginalDuplicateDetectorDictionary : DuplicateDetectorDictionary
+	public class DuplicateDetectorDictionary
 	{
 		private readonly Dictionary<int, List<Evidence>> _library = new Dictionary<int, List<Evidence>>();
 		private readonly object _lock = new object();
 
-		public override string GetCollisions()
-		{
-			StringBuilder sb = new StringBuilder();
-
-			foreach (var kvp in _library)
-			{
-				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
-				sb.AppendLine();
-			}
-
-			return sb.ToString();
-		}
-
-		public override Evidence TryAdd(int key, Evidence value)
+		public Evidence TryAdd(int key, Evidence value)
 		{
 			lock (_lock)
 			{
@@ -282,126 +262,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			}
 		}
 	}
-	public class NestedHashDuplicateDetectorDictionary : DuplicateDetectorDictionary
-	{
-		private readonly Dictionary<int, Dictionary<int, List<Evidence>>> _library = new Dictionary<int, Dictionary<int, List<Evidence>>>();
-		private readonly object _lock = new object();
-		public override string GetCollisions()
-		{
-			StringBuilder sb = new StringBuilder();
-
-			foreach (var kvp in _library)
-			{
-				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
-				foreach (var nested in kvp.Value)
-				{
-					sb.AppendFormat("\t{0}: {1}", nested.Key, nested.Value.Count);
-					sb.AppendLine();
-				}
-			}
-
-			return sb.ToString();
-		}
-		public override Evidence TryAdd(int key, Evidence value)
-		{
-			Dictionary<int, List<Evidence>> nestedHash;
-
-			var sum = value.Components.Sum();
-			lock (_lock)
-			{
-				if (_library.TryGetValue(key, out nestedHash))
-				{
-					if (nestedHash.TryGetValue(sum, out var existingValues))
-					{
-						// We found a potential duplicate.  Is it actually?
-						foreach (Evidence e in existingValues)
-						{
-							if (e.Components.SequenceEqual(value.Components))
-							{
-								// Yes, just return the duplicate information
-								return e;
-							}
-						}
-						// Our key exists already, but not us.  I.e., a hash collision.
-						existingValues.Add(value);
-						return null;
-					}
-
-					nestedHash[sum] = new List<Evidence> { value };
-					return null;
-				}
-
-				_library[key] = new Dictionary<int, List<Evidence>>()
-				{
-					{ sum, new List<Evidence>{ value } },
-				};
-
-				return null;
-			}
-		}
-	}
-	public class NestedHashLockingFixDuplicateDetectorDictionary : DuplicateDetectorDictionary
-	{
-		private readonly Dictionary<int, Dictionary<int, List<Evidence>>> _library = new Dictionary<int, Dictionary<int, List<Evidence>>>();
-		private readonly object _lock = new object();
-		public override string GetCollisions()
-		{
-			StringBuilder sb = new StringBuilder();
-
-			foreach (var kvp in _library)
-			{
-				sb.AppendFormat("{0}: {1}", kvp.Key, kvp.Value.Count);
-				foreach (var nested in kvp.Value)
-				{
-					sb.AppendFormat("\t{0}: {1}", nested.Key, nested.Value.Count);
-					sb.AppendLine();
-				}
-			}
-
-			return sb.ToString();
-		}
-		public override Evidence TryAdd(int key, Evidence value)
-		{
-			Dictionary<int, List<Evidence>> nestedHash;
-
-			var sum = value.Components.Sum();
-
-			lock (_lock)
-			{
-				if (!_library.TryGetValue(key, out nestedHash))
-				{
-					_library[key] = nestedHash = new Dictionary<int, List<Evidence>>();
-				}
-			}
-
-			lock (nestedHash)
-			{
-				if (nestedHash.TryGetValue(sum, out var existingValues))
-				{
-					// We found a potential duplicate.  Is it actually?
-					foreach (Evidence e in existingValues)
-					{
-						if (e.Components.SequenceEqual(value.Components))
-						{
-							// Yes, just return the duplicate information
-							return e;
-						}
-					}
-					// Our key exists already, but not us.  I.e., a hash collision.
-					existingValues.Add(value);
-					return null;
-				}
-
-				nestedHash[sum] = new List<Evidence> { value };
-				return null;
-			}
-		}
-	}
 
 	public class Evidence
 	{
 		private readonly Func<LocationEnvelope> _materializeEnvelope;
-
 
 		public Evidence(Func<LocationEnvelope> materializeEnvelope, List<int> components, int componentSum)
 		{
@@ -427,7 +291,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return _location;
 		}
 	}
-
 
 	public class TokenInfo
 	{
@@ -470,7 +333,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private readonly int _base;
 		private readonly int _modulus;
 
-		public RollingHashCalculator(int maxItems, int baseModulus = 2048, int modulus = 1723)
+		public RollingHashCalculator(int maxItems, int baseModulus = 227, int modulus = 1000005)
 		{
 			MaxItems = maxItems;
 			_base = baseModulus;

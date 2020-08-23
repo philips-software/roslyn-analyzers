@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -69,11 +68,11 @@ namespace Philips.CodeAnalysis.Benchmark
 				}
 			}
 		}
-		private void TestDictionary(DuplicateDetectorDictionary _library, Func<RollingHashCalculator<TokenInfo>> calc = null)
+		private void TestDictionary(DuplicateDetectorDictionary _library, int baseModulus, int modulus)
 		{
 			A.Data.AsParallel().ForAll(kvp =>
 			{
-				var rollingTokenSet = calc == null ? new RollingTokenSet(100) : new RollingTokenSet(calc());
+				var rollingTokenSet = new RollingTokenSet(new RollingHashCalculator<TokenInfo>(100, baseModulus, modulus));
 
 				foreach (var list in kvp.Value)
 				{
@@ -88,52 +87,19 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 
 		[Benchmark]
-		public void Existing()
+		public void OriginalHashParameters()
 		{
-			DuplicateDetectorDictionary _library = new OriginalDuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
 
-			TestDictionary(_library);
+			TestDictionary(_library, 2048, 1723);
 		}
 
 		[Benchmark]
 		public void ExistingBiggerPrimes()
 		{
-			DuplicateDetectorDictionary _library = new OriginalDuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
 
-			TestDictionary(_library, () => new RollingHashCalculator<TokenInfo>(100, 227, 1000005));
-		}
-
-
-		[Benchmark]
-		public void NestedHash()
-		{
-			DuplicateDetectorDictionary _library = new NestedHashDuplicateDetectorDictionary();
-
-			TestDictionary(_library);
-		}
-
-		[Benchmark]
-		public void NestedHashLockingFix()
-		{
-			DuplicateDetectorDictionary _library = new NestedHashDuplicateDetectorDictionary();
-
-			TestDictionary(_library);
-		}
-
-		[Benchmark]
-		public void NestedHashBiggerPrimes()
-		{
-			DuplicateDetectorDictionary _library = new NestedHashDuplicateDetectorDictionary();
-
-			TestDictionary(_library, () => new RollingHashCalculator<TokenInfo>(100, 227, 1000005));
-		}
-
-		[Benchmark]
-		public void NestedHashLockingFixBiggerPrimes()
-		{
-			DuplicateDetectorDictionary _library = new NestedHashDuplicateDetectorDictionary();
-
-			TestDictionary(_library, () => new RollingHashCalculator<TokenInfo>(100, 227, 1000005));
+			TestDictionary(_library, 227, 1000005);
 		}
 	}
 }
