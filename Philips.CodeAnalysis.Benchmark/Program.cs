@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 
 		[Benchmark]
-		public void ExistingBiggerPrimes()
+		public void BiggerPrimes()
 		{
 			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
 
