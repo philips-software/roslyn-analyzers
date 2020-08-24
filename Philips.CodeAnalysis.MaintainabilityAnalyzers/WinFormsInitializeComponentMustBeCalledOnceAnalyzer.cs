@@ -162,9 +162,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		/// <param name="context"></param>
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				if (startContext.Compilation.GetTypeByMetadataName("System.Windows.Forms.ContainerControl") == null)
+				{
+					return;
+				}
+
+				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+			});
 		}
 
 		#endregion
