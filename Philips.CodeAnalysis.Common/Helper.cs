@@ -342,7 +342,7 @@ namespace Philips.CodeAnalysis.Common
 		public static bool IsConstantExpression(ExpressionSyntax expression, SemanticModel semanticModel)
 		{
 			// this assumes you've already checked for literals
-			if (expression is MemberAccessExpressionSyntax memberAccess)
+			if (expression is MemberAccessExpressionSyntax)
 			{
 				// return true for member accesses that resolve to a constant e.g. SurveillanceConstants.TrendWidth
 				Optional<object> constValue = semanticModel.GetConstantValue(expression);
