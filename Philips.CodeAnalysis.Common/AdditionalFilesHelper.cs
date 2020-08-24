@@ -99,9 +99,9 @@ namespace Philips.CodeAnalysis.Common
 		/// Get a list of values (comma separated) for the given setting in editorconfig
 		/// </summary>
 		/// <returns></returns>
-		public virtual List<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
+		public virtual HashSet<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
-			List<string> values = new List<string>();
+			HashSet<string> values = new HashSet<string>();
 			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
 
 			foreach (string v in value.Split(','))

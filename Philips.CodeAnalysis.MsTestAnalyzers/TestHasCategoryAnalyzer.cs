@@ -22,34 +22,46 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		private HashSet<string> _exceptions = new HashSet<string>();
+		private HashSet<string> _allowedCategories = new HashSet<string>();
+
+		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation)
+		{
+			AdditionalFilesHelper helper = new AdditionalFilesHelper(options, compilation);
+
+			_exceptions = helper.LoadExceptions(FileName);
+			_allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
+		}
+
 
 		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
 		{
 			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-			Location categoryLocation;
-
-
-			ClassDeclarationSyntax classDeclaration = methodDeclaration.Parent as ClassDeclarationSyntax;
-			if (classDeclaration != null)
+			if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)
 			{
-				var exceptions = AdditionalFilesHelper.LoadExceptions(FileName);
-				if (exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
+				if (_exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
 					return;
 			}
 
-			if (Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out categoryLocation, out string category))
-			{
-				List<string> allowedCategories = AdditionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
-				if (!allowedCategories.Contains(category.Replace("\"", string.Empty)))
-				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
-					context.ReportDiagnostic(diagnostic);
-				}
-			}
-			else
+			if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation());
+				context.ReportDiagnostic(diagnostic);
+				return;
+			}
+
+			Optional<object> argument = context.SemanticModel.GetConstantValue(argumentSyntax.Expression);
+
+			if (!argument.HasValue)
+			{
+				//this should not be possible.  Attribute values must by compile time constants
+				return;
+			}
+
+			if (!_allowedCategories.Contains((string)argument.Value))
+			{
+				Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

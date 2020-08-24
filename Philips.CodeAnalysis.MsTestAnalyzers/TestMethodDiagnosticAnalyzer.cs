@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -49,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			_interestedAttributes = interestedAttributes;
 		}
 
-		internal AdditionalFilesHelper AdditionalFilesHelper { get; set; }
+		protected virtual void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation) { }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -62,7 +63,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return;
 				}
-				AdditionalFilesHelper = new AdditionalFilesHelper(startContext.Options, startContext.Compilation);
+
+				OnInitializeAnalyzer(startContext.Options, startContext.Compilation);
+
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 			});
 		}
@@ -98,7 +101,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 	public abstract class TestMethodDiagnosticAnalyzer : TestAttributeDiagnosticAnalyzer
 	{
-		public TestMethodDiagnosticAnalyzer() : base(TestAttributes.DataTestMethod | TestAttributes.TestMethod | TestAttributes.TestClass)
+		public TestMethodDiagnosticAnalyzer() : base(TestAttributes.DataTestMethod | TestAttributes.TestMethod)
 		{ }
 
 		protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod);
