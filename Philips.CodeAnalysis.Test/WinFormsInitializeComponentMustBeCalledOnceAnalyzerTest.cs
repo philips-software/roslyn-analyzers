@@ -42,6 +42,13 @@ namespace Philips.CodeAnalysis.Test
 		private string CreateCode(string param1, string param2)
 		{
 			string code = @"
+namespace System.Windows.Forms
+{{
+class ContainerControl {{ }}
+}}
+
+using System.Windows.Forms;
+
 public partial class Foo : ContainerControl
 {{
   public Foo() : this (7)
@@ -71,6 +78,13 @@ class ContainerControl
 		private string CreateCodeWithOutConstructors()
 		{
 			return @"
+namespace System.Windows.Forms
+{{
+class ContainerControl {{ }}
+}}
+
+using System.Windows.Forms;
+
 public partial class Foo : ContainerControl
 {{
 }}
@@ -91,6 +105,13 @@ class ContainerControl
 		private string CreateCodeWithDisjointConstructors()
 		{
 			return @"
+namespace System.Windows.Forms
+{{
+class ContainerControl {{ }}
+}}
+
+using System.Windows.Forms;
+
 public partial class Foo : ContainerControl
 {{
   public Foo() : this (7)
@@ -122,6 +143,13 @@ class ContainerControl
 		private string CreateCodeWithStaticConstructor()
 		{
 			return @"
+namespace System.Windows.Forms
+{{
+class ContainerControl {{ }}
+}}
+
+using System.Windows.Forms;
+
 public partial class Foo : ContainerControl
 {{
   static Foo()
@@ -146,6 +174,13 @@ class ContainerControl
 		private string CreateCodeWithDesignerClass()
 		{
 			return @"
+namespace System.Windows.Forms
+{{
+class ContainerControl {{ }}
+}}
+
+using System.Windows.Forms;
+
 partial class Foo : ContainerControl
 {{
   static Foo()
@@ -193,7 +228,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnFirst(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(4, 16);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult(11, 16);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
 			VerifyCSharpDiagnostic(file, expected);
 		}
@@ -204,7 +239,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnSecond(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(8, 3);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
 			VerifyCSharpDiagnostic(file, expected);
 		}
@@ -215,8 +250,8 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticeOnFirstAndSecond(string file)
 		{
-			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(4, 16);
-			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(8, 3);
+			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(11, 16);
+			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult1, diagnosticResult2 };
 			VerifyCSharpDiagnostic(file, expected);
 		}
@@ -227,7 +262,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnClass(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(2, 22);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult(9, 22);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
 			VerifyCSharpDiagnostic(file, expected);
 		}
