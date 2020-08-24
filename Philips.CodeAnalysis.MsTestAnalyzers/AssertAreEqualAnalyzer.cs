@@ -41,41 +41,51 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
-			bool isUsedIncorrectly = false;
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
-			LiteralExpressionSyntax arg0Literal = argumentList.Arguments[0].Expression as LiteralExpressionSyntax;
-			LiteralExpressionSyntax arg1Literal = argumentList.Arguments[1].Expression as LiteralExpressionSyntax;
-			if ((arg1Literal != null) || Helper.IsConstantExpression(argumentList.Arguments[1].Expression, context.SemanticModel))
+
+			bool arg0Literal = IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			bool arg1Literal = IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+
+			if (!arg0Literal && !arg1Literal)
 			{
-				if ((arg0Literal == null) && !Helper.IsConstantExpression(argumentList.Arguments[0].Expression, context.SemanticModel))
-				{
-					isUsedIncorrectly = true;
-				}
-				else if (arg1Literal != null)
-				{
-					Optional<object> literalValue = context.SemanticModel.GetConstantValue(arg1Literal);
-					if (!literalValue.HasValue)
-					{
-						isUsedIncorrectly = true;
-					}
-				}
-			}
-			else if (arg0Literal != null)
-			{
-				Optional<object> literalValue = context.SemanticModel.GetConstantValue(arg0Literal);
-				if (!literalValue.HasValue)
-				{
-					isUsedIncorrectly = true;
-				}
+				return null;
 			}
 
-			if (isUsedIncorrectly)
+			if (arg0Literal)
+			{
+				return null;
+			}
+
+			if (arg1Literal)
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
 				return diagnostic;
 			}
 
 			return null;
+		}
+
+		private bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
+		{
+			if (expression is LiteralExpressionSyntax literal)
+			{
+				Optional<object> literalValue = semanticModel.GetConstantValue(literal);
+
+				return literalValue.HasValue;
+			}
+
+			var constant = semanticModel.GetConstantValue(expression);
+			if (constant.HasValue)
+			{
+				return true;
+			}
+
+			if (Helper.IsConstantExpression(expression, semanticModel))
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
