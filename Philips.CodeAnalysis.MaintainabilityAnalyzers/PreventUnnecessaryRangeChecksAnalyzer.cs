@@ -1,6 +1,7 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -51,12 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				return;
 			}
 
-			if (!(forEachStatementSyntax.Expression is IdentifierNameSyntax identifier))
-			{
-				return;
-			}
-
-			if (!IsCountGreaterThanZero(ifStatementSyntax.Condition, identifier))
+			if (!IsCountGreaterThanZero(ifStatementSyntax.Condition, forEachStatementSyntax.Expression, context.SemanticModel))
 			{
 				return;
 			}
@@ -90,21 +86,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			return true;
 		}
 
-		private bool IsCountGreaterThanZero(ExpressionSyntax condition, IdentifierNameSyntax identifier)
+		private bool IsCountGreaterThanZero(ExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
 			if (condition is ParenthesizedExpressionSyntax parenthesized)
 			{
-				return IsCountGreaterThanZero(parenthesized.Expression, identifier);
+				return IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
 			}
 
 			if (condition is BinaryExpressionSyntax binaryExpressionSyntax)
 			{
-				return IsCountGreaterThanZero(binaryExpressionSyntax, identifier);
+				return IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
 			}
 
 			return false;
 		}
-		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, IdentifierNameSyntax identifier)
+		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
 			switch (condition.OperatorToken.Kind())
 			{
@@ -130,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				return false;
 			}
 
-			if (!TryGetIdentifiers(condition.Left, out IdentifierNameSyntax ifIdentifier, out IdentifierNameSyntax method))
+			if (!TryGetIdentifiers(condition.Left, out ExpressionSyntax ifExpression, out IdentifierNameSyntax method))
 			{
 				return false;
 			}
@@ -145,16 +141,59 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 					return false;
 			}
 
-			if (ifIdentifier.Identifier.Text != identifier.Identifier.Text)
+			if (foreachExpression is IdentifierNameSyntax identifier && ifExpression is IdentifierNameSyntax ifIdentifier)
 			{
-				return false;
+				if (ifIdentifier.Identifier.Text != identifier.Identifier.Text)
+				{
+					return false;
+				}
 			}
 
+			if (foreachExpression is MemberAccessExpressionSyntax memberAccess && ifExpression is MemberAccessExpressionSyntax ifMemberAccess)
+			{
+				static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
+				{
+					var leftSymbol = model.GetSymbolInfo(left);
+					if (leftSymbol.Symbol is null)
+					{
+						return false;
+					}
+
+					var rightSymbol = model.GetSymbolInfo(right);
+					if (rightSymbol.Symbol is null)
+					{
+						return false;
+					}
+
+					if (!SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol))
+					{
+						return false;
+					}
+
+					return true;
+				}
+
+				var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
+				var ifMemberAccessNodes = ifMemberAccess.DescendantNodesAndSelf().ToList();
+
+				if (foreachMemberAccessNodes.Count != ifMemberAccessNodes.Count)
+				{
+					return false;
+				}
+
+				for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
+				{
+					if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
+					{
+						return false;
+					}
+				}
+			}
 
 			return true;
 		}
 
-		private bool TryGetIdentifiers(ExpressionSyntax expression, out IdentifierNameSyntax ifIdentifier, out IdentifierNameSyntax method)
+		private bool TryGetIdentifiers(ExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
 		{
 			ifIdentifier = null;
 			method = null;
@@ -172,16 +211,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			return false;
 		}
 
-		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out IdentifierNameSyntax ifIdentifier, out IdentifierNameSyntax method)
+		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
 		{
 			ifIdentifier = null;
 			method = null;
-
-			ifIdentifier = expression.Expression as IdentifierNameSyntax;
-			if (ifIdentifier == null)
-			{
-				return false;
-			}
 
 			method = expression.Name as IdentifierNameSyntax;
 
@@ -190,7 +223,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				return false;
 			}
 
-			return true;
+			ifIdentifier = expression.Expression as IdentifierNameSyntax;
+			if (ifIdentifier != null)
+			{
+				return true;
+			}
+
+			ifIdentifier = expression.Expression as MemberAccessExpressionSyntax;
+			if (ifIdentifier != null)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
