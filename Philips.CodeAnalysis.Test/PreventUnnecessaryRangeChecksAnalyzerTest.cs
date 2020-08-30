@@ -85,6 +85,142 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		public void CheckNestedRange(string declaration, string countLengthMethod)
+		{
+			const string template = @"
+public class Container
+{{
+  public {0};
+}}
+
+class Foo
+{{
+  public void test()
+  {{
+    Container container = new Container();
+    // comment
+    if(container.data.{1} > 0)
+    {{
+      foreach (int i in container.data)
+      {{
+      }}
+      //middle comment
+    }}
+    // end comment
+  }}
+}}
+";
+
+			const string fixedTemplate = @"
+public class Container
+{{
+  public {0};
+}}
+
+class Foo
+{{
+  public void test()
+  {{
+    Container container = new Container();
+    // comment
+    foreach (int i in container.data)
+    {{
+    }}
+    //middle comment
+    // end comment
+  }}
+}}
+";
+
+			string errorCode = string.Format(template, declaration, countLengthMethod);
+
+			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+
+			VerifyCSharpFix(errorCode, string.Format(fixedTemplate, declaration));
+		}
+
+		[DataRow("int[] data = new int[0]", "Length")]
+		[DataRow("int[] data = new int[0]", "Count()")]
+		[DataRow("List<int> data = new List<int>()", "Count")]
+		[DataRow("List<int> data = new List<int>()", "Count()")]
+		[DataTestMethod]
+		public void CheckNestedRange2(string declaration, string countLengthMethod)
+		{
+			const string template = @"
+public class Container
+{{
+  public {0};
+}}
+
+class Foo
+{{
+  public void test()
+  {{
+    Container container1 = new Container();
+    Container container2 = new Container();
+    // comment
+    if(container1.data.{1} > 0)
+    {{
+      foreach (int i in container2.data)
+      {{
+      }}
+      //middle comment
+    }}
+    // end comment
+  }}
+}}
+";
+			string errorCode = string.Format(template, declaration, countLengthMethod);
+
+			VerifyCSharpDiagnostic(errorCode);
+		}
+
+		[DataRow("int[] data = new int[0]", "Length")]
+		[DataRow("int[] data = new int[0]", "Count()")]
+		[DataRow("List<int> data = new List<int>()", "Count")]
+		[DataRow("List<int> data = new List<int>()", "Count()")]
+		[DataTestMethod]
+		public void CheckNestedRange3(string declaration, string countLengthMethod)
+		{
+			const string template = @"
+public class OuterContainer
+{{
+  public Container container;
+}}
+
+public class Container
+{{
+  public {0};
+}}
+
+class Foo
+{{
+  public void test()
+  {{
+    OuterContainer container1 = new OuterContainer();
+    OuterContainer container2 = new OuterContainer();
+    // comment
+    if(container1.container.data.{1} > 0)
+    {{
+      foreach (int i in container2.container.data)
+      {{
+      }}
+      //middle comment
+    }}
+    // end comment
+  }}
+}}
+";
+			string errorCode = string.Format(template, declaration, countLengthMethod);
+
+			VerifyCSharpDiagnostic(errorCode);
+		}
+
+		[DataRow("int[] data = new int[0]", "Length")]
+		[DataRow("int[] data = new int[0]", "Count()")]
+		[DataRow("List<int> data = new List<int>()", "Count")]
+		[DataRow("List<int> data = new List<int>()", "Count()")]
+		[DataTestMethod]
 		public void CheckArrayRangeBraces(string declaration, string countLengthMethod)
 		{
 			const string template = @"
