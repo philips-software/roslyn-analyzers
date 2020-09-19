@@ -4,15 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -68,42 +65,6 @@ namespace Philips.CodeAnalysis.Test
 			}
 		}
 
-		private class TestAnalyzerConfigOptions : AnalyzerConfigOptions
-		{
-			private readonly Dictionary<string, string> _options;
-
-			public TestAnalyzerConfigOptions(Dictionary<string, string> options)
-			{
-				_options = options;
-			}
-
-			public override bool TryGetValue(string key, [NotNullWhen(true)] out string value)
-			{
-				return _options.TryGetValue(key, out value);
-			}
-		}
-
-		private class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
-		{
-			private readonly TestAnalyzerConfigOptions _configOptions;
-
-			internal TestAnalyzerConfigOptionsProvider(Dictionary<string, string> options)
-			{
-				_configOptions = new TestAnalyzerConfigOptions(options);
-			}
-
-			public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
-			{
-				return _configOptions;
-			}
-
-			public override AnalyzerConfigOptions GetOptions(AdditionalText textFile)
-			{
-				return _configOptions;
-			}
-		}
-
-
 		/// <summary>
 		/// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
 		/// The returned diagnostics are then ordered by location in the source document.
@@ -142,8 +103,7 @@ namespace Philips.CodeAnalysis.Test
 					additionalTextsBuilder.Add(new TestAdditionalText(name, SourceText.From(content)));
 				}
 
-				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(GetAdditionalAnalyzerConfigOptions());
-				AnalyzerOptions analyzerOptions = new AnalyzerOptions(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
+				AnalyzerOptions analyzerOptions = new AnalyzerOptions(ImmutableArray.ToImmutableArray(additionalTextsBuilder));
 
 				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
@@ -232,11 +192,6 @@ namespace Philips.CodeAnalysis.Test
 			return Array.Empty<(string name, string content)>();
 		}
 
-		protected virtual Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
-		{
-			return new Dictionary<string, string>();
-		}
-
 		/// <summary>
 		/// Create a project using the inputted strings as sources.
 		/// </summary>
@@ -277,10 +232,6 @@ namespace Philips.CodeAnalysis.Test
 			{
 				solution = solution.AddMetadataReference(projectId, references);
 			}
-
-			OptionSet newOptionSet = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
-			Workspace workspace = solution.Workspace;
-			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(newOptionSet));
 
 			foreach (var m in solution.GetProject(projectId).MetadataReferences)
 			{

@@ -19,16 +19,6 @@ namespace Philips.CodeAnalysis.Test
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
-		{
-			var options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
-			};
-			return options;
-		}
-
-
 		public class SumHashCalculator : RollingHashCalculator<TokenInfo>
 		{
 			public SumHashCalculator(int maxItems)
