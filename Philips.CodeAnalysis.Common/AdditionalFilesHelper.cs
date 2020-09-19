@@ -73,26 +73,42 @@ namespace Philips.CodeAnalysis.Common
 			return options;
 		}
 
-		private string GetRawValue(string settingKey)
+		public virtual SourceText RetrieveSourceText(string fileName)
 		{
-			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(_compilation.SyntaxTrees.First());
-
-#nullable enable
-			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))
+			foreach (AdditionalText additionalFile in _additionalFiles)
 			{
-				if (value == null)
+				string currentFileName = Path.GetFileName(additionalFile.Path);
+				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
+				if (comparer.Equals(currentFileName, fileName))
 				{
-					return string.Empty;
+					return additionalFile.GetText();
 				}
-				return value.ToString();
 			}
-#nullable disable
-			return string.Empty;
+			return null;
 		}
+
 
 		public virtual string GetValueFromEditorConfig(string diagnosticId, string settingKey)
 		{
-			return GetRawValue($@"dotnet_code_quality.{diagnosticId}.{settingKey}");
+			SourceText lines = RetrieveSourceText(@".editorconfig");
+			string value = string.Empty;
+
+			if (lines == null)
+				return value;
+
+			foreach (TextLine textLine in lines.Lines)
+			{
+				string line = textLine.ToString();
+				if (line.Contains($@"dotnet_code_quality.{diagnosticId}.{settingKey}"))
+				{
+					if (line.Contains('='))
+					{
+						value = line.Substring(line.IndexOf('=') + 1).Trim();
+					}
+					break;
+				}
+			}
+			return value;
 		}
 
 		/// <summary>

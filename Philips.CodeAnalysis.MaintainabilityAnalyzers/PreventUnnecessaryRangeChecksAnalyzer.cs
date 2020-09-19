@@ -165,7 +165,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 						return false;
 					}
 
-					if (!SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol))
+					if (!Equals(leftSymbol.Symbol, rightSymbol.Symbol))
 					{
 						return false;
 					}
