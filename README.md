@@ -21,3 +21,7 @@ Add the rules using Visual Studio's Package Manager, locating these packages on 
 
 Enabling a new rule on a legacy codebase can be daunting.  Some rules (e.g., Avoid Duplicate Code, Avoid Static Classes) support configuration and whitelisting - again via the .editorconfig.
 
+# Visual Studio 2017 Support
+
+The latest versions are designed for Visual Studio 2019.  Support for legacy Visual Studio 2017, with a slightly reduced feature set, is maintained in the 1.0.x versions of the packages.
+
