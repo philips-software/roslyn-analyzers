@@ -31,6 +31,13 @@ namespace Philips.CodeAnalysis.Test
 			});
 		}
 
+		protected void VerifyNoError(string methodBody)
+		{
+			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
+
+			VerifyCSharpDiagnostic(test);
+		}
+
 		#endregion
 
 		#region Public Interface
