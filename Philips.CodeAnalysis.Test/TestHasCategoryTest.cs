@@ -63,6 +63,32 @@ class Foo
 			VerifyError(baseline, category, isError);
 		}
 
+		[DataTestMethod]
+		[DataRow(@"UnitTest", false)]
+		[DataRow(@"ManualTest", false)]
+		[DataRow(@"NightlyTest", true)]
+		[DataRow(@"", true)]
+		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
+		{
+			string baseline = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class TestDefinitions
+{{
+  public const string {0} = ""blah"";
+}}
+
+class Foo
+{{
+  [TestMethod, TestCategory(TestDefinitions.{0})]
+  public void Foo()
+  {{
+  }}
+}}
+";
+			VerifyError(baseline, category, isError);
+		}
+
 
 		[DataTestMethod]
 		[DataRow(@"Foo1", false)]
@@ -95,7 +121,7 @@ class Foo
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
 						{
-							new DiagnosticResultLocation("Test0.cs", 5, 16)
+							new DiagnosticResultLocation("Test0.cs", null, null)
 						}
 					}
 				};
@@ -122,7 +148,7 @@ class Foo
 		{
 			var options = new Dictionary<string, string>
 			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"UnitTest,ManualTest" }
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTest,TestDefinitions.ManualTest" }
 			};
 			return options;
 		}
