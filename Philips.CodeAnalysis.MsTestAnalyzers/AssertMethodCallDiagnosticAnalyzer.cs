@@ -47,7 +47,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		#endregion
 
 		#region Public Interface
-		public override void Initialize(AnalysisContext context)
+
+		public override sealed void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 			context.EnableConcurrentExecution();

@@ -68,6 +68,7 @@ namespace Philips.CodeAnalysis.Common
 		ExtensionMethodsCalledLikeInstanceMethods = 2073,
 		DisallowDisposeRegistration = 2074,
 		AvoidAssemblyVersionChange = 2075,
+		AssertFail = 2076,
 		AvoidSwitchStatementsWithNoCases = 2077,
 	}
 }
