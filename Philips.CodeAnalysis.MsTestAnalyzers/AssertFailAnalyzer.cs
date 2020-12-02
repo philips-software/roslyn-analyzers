@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (invocation.Parent is not IExpressionStatementOperation expressionOperation)
+			if (!(invocation.Parent is IExpressionStatementOperation expressionOperation))
 			{
 				return;
 			}
@@ -90,43 +90,45 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private bool CheckBlock(IBlockOperation blockOperation, IExpressionStatementOperation expressionOperation, IInvocationOperation invocation)
 		{
-			if (blockOperation.Parent is not IUsingOperation && blockOperation.Parent is not ICatchClauseOperation)
+			if (blockOperation.Parent is IUsingOperation || blockOperation.Parent is ICatchClauseOperation)
 			{
-				if (blockOperation.Operations.Length == 1)
+				return false;
+			}
+
+			if (blockOperation.Operations.Length == 1)
+			{
+				return true;
+			}
+
+			int index = blockOperation.Operations.IndexOf(expressionOperation);
+
+			if (index != blockOperation.Operations.Length - 1)
+			{
+				return false;
+			}
+
+			// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail;
+
+			IOperation previous = blockOperation.Operations[index - 1];
+
+			if (previous is IConditionalOperation conditional && conditional.WhenFalse is null)
+			{
+				static bool IsContinue(IOperation operation)
+				{
+					switch (operation)
+					{
+						case IBranchOperation branch:
+							return branch.Target.Name == "continue";
+						case IBlockOperation block:
+							return block.Operations.Length == 1 && IsContinue(block.Operations[0]);
+						default:
+							return false;
+					}
+				}
+
+				if (IsContinue(conditional.WhenTrue))
 				{
 					return true;
-				}
-
-				int index = blockOperation.Operations.IndexOf(expressionOperation);
-
-				if (index != blockOperation.Operations.Length - 1)
-				{
-					return false;
-				}
-
-				// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail;
-
-				IOperation previous = blockOperation.Operations[index - 1];
-
-				if (previous is IConditionalOperation conditional && conditional.WhenFalse is null)
-				{
-					static bool IsContinue(IOperation operation)
-					{
-						switch (operation)
-						{
-							case IBranchOperation branch:
-								return branch.Target.Name == "continue";
-							case IBlockOperation block:
-								return block.Operations.Length == 1 && IsContinue(block.Operations[0]);
-							default:
-								return false;
-						}
-					}
-
-					if (IsContinue(conditional.WhenTrue))
-					{
-						return true;
-					}
 				}
 			}
 
