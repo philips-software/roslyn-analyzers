@@ -69,5 +69,6 @@ namespace Philips.CodeAnalysis.Common
 		DisallowDisposeRegistration = 2074,
 		AvoidAssemblyVersionChange = 2075,
 		AssertFail = 2076,
+		AvoidSwitchStatementsWithNoCases = 2077,
 	}
 }
