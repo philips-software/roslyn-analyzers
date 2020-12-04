@@ -51,15 +51,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			Optional<object> argument = context.SemanticModel.GetConstantValue(argumentSyntax.Expression);
-
-			if (!argument.HasValue)
+			string value;
+			switch (argumentSyntax.Expression)
 			{
-				//this should not be possible.  Attribute values must by compile time constants
-				return;
+				case MemberAccessExpressionSyntax mae:
+					value = mae.ToString();
+					break;
+				case LiteralExpressionSyntax literal:
+					value = literal.ToString();
+					break;
+				default:
+					return;
 			}
 
-			if (!_allowedCategories.Contains((string)argument.Value))
+			if (!_allowedCategories.Contains(value))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
 				context.ReportDiagnostic(diagnostic);
