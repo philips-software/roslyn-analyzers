@@ -70,5 +70,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidAssemblyVersionChange = 2075,
 		AssertFail = 2076,
 		AvoidSwitchStatementsWithNoCases = 2077,
+		AvoidPrivateKeyProperty = 2088
 	}
 }
