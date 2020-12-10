@@ -13,9 +13,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		#region Non-Public Data Members
 
 		private const string Title = @"Do not use PrivateKey property on X509Certificate2 class";
-		private const string MessageFormat = @"Do not use PrivateKey property on X509Certificate2 class to access the Private Key. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GEtECDsaPrivateKey()";
-		private const string Description = @"Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GEtECDsaPrivateKey()";
+		private const string MessageFormat = @"Do not use PrivateKey property on X509Certificate2 class to access the Private Key. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey().";
+		private const string Description = @"Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey()";
 		private const string Category = Categories.Maintainability;
+		private const string helpUri = @"https://www.pkisolutions.com/accessing-and-using-certificate-private-keys-in-net-framework-net-core/";
 
 		private const string PrivateKeyProperty = @"PrivateKey";
 		private const string ObjectType = @"X509Certificate2";
@@ -36,11 +37,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				return;
 			}
 
-			ITypeSymbol memberSymbol = context.SemanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type;
+			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type;
 
-			if (memberSymbol.Name.Equals(ObjectType))
+			if (typeSymbol.Name.Equals(ObjectType))
 			{
-
 				Diagnostic diagnostic = Diagnostic.Create(Rule, memberAccessExpressionSyntax.GetLocation());
 				context.ReportDiagnostic(diagnostic);
 			}
@@ -53,13 +53,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		#region Public Interface
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: helpUri);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleMemberAccessExpression);
