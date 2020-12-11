@@ -21,3 +21,6 @@ Add the rules using Visual Studio's Package Manager, locating these packages on 
 
 Enabling a new rule on a legacy codebase can be daunting.  Some rules (e.g., Avoid Duplicate Code, Avoid Static Classes) support configuration and whitelisting - again via the .editorconfig.
 
+# Still on Visual Studio 2017?
+
+If you are still working with Visual Studio 2017, use the 1.0.x versions of the analyzers.
