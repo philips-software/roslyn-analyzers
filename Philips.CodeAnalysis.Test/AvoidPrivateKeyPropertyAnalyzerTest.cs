@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers;
 namespace Philips.CodeAnalysis.Test
 {
 	[TestClass]
-	public class AvoidPrivateKeyPropertyTest : DiagnosticVerifier
+	public class AvoidPrivateKeyPropertyAnalyzerTest : DiagnosticVerifier
 	{
 		#region Non-Public Data Members
 
@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidPrivateKeyProperty();
+			return new AvoidPrivateKeyPropertyAnalyzer();
 		}
 
 		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)

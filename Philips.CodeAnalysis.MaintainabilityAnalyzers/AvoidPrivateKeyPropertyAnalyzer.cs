@@ -8,7 +8,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidPrivateKeyProperty : DiagnosticAnalyzer
+	public class AvoidPrivateKeyPropertyAnalyzer : DiagnosticAnalyzer
 	{
 		#region Non-Public Data Members
 
