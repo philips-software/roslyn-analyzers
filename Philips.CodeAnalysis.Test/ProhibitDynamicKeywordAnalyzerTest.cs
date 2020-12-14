@@ -31,6 +31,11 @@ namespace Philips.CodeAnalysis.Test
 		[DataRow(@"void TestMethod(dynamic i) { return 5; }", 1)]
 		[DataRow(@"void TestMethod() { List<dynamic> list = null; }", 1)]
 		[DataRow(@"void TestMethod() { var t = (dynamic)4; }", 2)]
+		[DataRow(@"void TestMethod() { string dynamic = ""test""; }", 0)]
+		[DataRow(@"void TestMethod() { string dynamic = mrModule.DynamicSeries;
+bool isDynamic = !String.IsNullOrEmpty(dynamic) &&
+dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
+ }", 0)]
 		[DataTestMethod]
 		public void CantBeDynamic(string testCode, int errorCount)
 		{
