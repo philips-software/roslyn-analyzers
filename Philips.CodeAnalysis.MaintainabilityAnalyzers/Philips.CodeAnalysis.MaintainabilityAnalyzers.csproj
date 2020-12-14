@@ -30,7 +30,7 @@
     <DevelopmentDependency>true</DevelopmentDependency>
 		<Version>1.2.4</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.2.3.0</FileVersion>
+    <FileVersion>1.2.4.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
