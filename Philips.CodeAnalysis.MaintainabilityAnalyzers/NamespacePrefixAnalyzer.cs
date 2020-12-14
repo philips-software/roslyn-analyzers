@@ -52,11 +52,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
-			//context.RegisterCompilationStartAction(compilationContext =>
-			//{
-			//	compilationContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
-			//});
-
 		}
 
 		#endregion
