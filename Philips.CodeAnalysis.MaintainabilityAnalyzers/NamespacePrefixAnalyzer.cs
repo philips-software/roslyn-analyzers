@@ -18,10 +18,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 
 		private const string TitleForEmptyPrefix = @"Specify the namespace prefix in the .editorconfig file";
-		private const string MessageFormatForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName]";
-		private const string DescriptionForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName]";
+		private const string MessageFormatForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.{0}.namespace_prefix = [OrganizationName].[ProductName]";
+		private const string DescriptionForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.{0}.namespace_prefix = [OrganizationName].[ProductName]";
 		private const string Category = Categories.Naming;
-
 		#endregion
 
 		#region Non-Public Properties/Methods
@@ -49,9 +48,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 
 		#region Public Interface
+		public static readonly string RuleId = Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix);
 
-		public static DiagnosticDescriptor RuleForIncorrectNamespace = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix), TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
-		public static DiagnosticDescriptor RuleForEmptyPrefix = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix), TitleForEmptyPrefix, MessageFormatForEmptyPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForEmptyPrefix);
+		public static DiagnosticDescriptor RuleForIncorrectNamespace = new DiagnosticDescriptor(RuleId, TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
+		public static DiagnosticDescriptor RuleForEmptyPrefix = new DiagnosticDescriptor(RuleId, TitleForEmptyPrefix, string.Format(MessageFormatForEmptyPrefix, RuleId), Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: string.Format(DescriptionForEmptyPrefix, RuleId));
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIncorrectNamespace, RuleForEmptyPrefix); } }
