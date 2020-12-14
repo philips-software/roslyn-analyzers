@@ -29,12 +29,16 @@ namespace Philips.CodeAnalysis.Test
 			";
 
 		private const string configuredPrefix = @"Philips.iX";
+
+		#endregion
+
+		#region Non-Public Properties/Methods
 		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
 		{
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
 		}
 
-		#endregion
+
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			Dictionary<string, string> options = new Dictionary<string, string>
@@ -48,7 +52,10 @@ namespace Philips.CodeAnalysis.Test
 			return new NamespacePrefixAnalyzer();
 		}
 
+		#endregion
 
+
+		#region Test Methods
 		[DataTestMethod]
 		[DataRow("")]
 		[DataRow("test")]
@@ -77,5 +84,7 @@ namespace Philips.CodeAnalysis.Test
 			string code = string.Format(ClassString, configuredPrefix + ".");
 			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
 		}
+
+		#endregion
 	}
 }

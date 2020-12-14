@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		#region Non-Public Data Members
 
 		private const string Title = @"Namespace must use the predefined prefixes";
-		private const string MessageFormat = @"Namespace must use the predefined prefixes. ie. [OrganizationName].[ProductName]";
+		private const string MessageFormat = @"Namespace must use the predefined prefixes configured in the editorconfig file ie. [OrganizationName].[ProductName]";
 		private const string Description = @"Namespace must use the predefined prefixes";
 		private const string Category = Categories.Naming;
 
@@ -34,8 +34,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
-
-
 
 		#endregion
 
