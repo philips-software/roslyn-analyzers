@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,7 +8,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers;
 namespace Philips.CodeAnalysis.Test
 {
 	[TestClass]
-	public class NamespacePrefixAnalyzerTest : DiagnosticVerifier
+	public class NamespacePrefixAnalyzerTest1 : DiagnosticVerifier
 	{
 
 		#region Non-Public Data Members
@@ -38,15 +37,6 @@ namespace Philips.CodeAnalysis.Test
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
 		}
 
-
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
-		{
-			Dictionary<string, string> options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{ NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id }.namespace_prefix", configuredPrefix  }
-			};
-			return options;
-		}
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();
@@ -56,14 +46,12 @@ namespace Philips.CodeAnalysis.Test
 
 
 		#region Test Methods
-		[DataTestMethod]
-		[DataRow("")]
-		[DataRow("test")]
-		[DataRow("Philips.Test")]
-		public void ReportIncorrectNamespacePrefix(string prefix)
+
+		[TestMethod]
+		public void ReportEmptyNamespacePrefix()
 		{
 
-			string code = string.Format(ClassString, prefix);
+			string code = string.Format(ClassString, "");
 			DiagnosticResult expected = new DiagnosticResult
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix),
@@ -76,13 +64,6 @@ namespace Philips.CodeAnalysis.Test
 			};
 
 			VerifyCSharpDiagnostic(code, expected);
-		}
-
-		[TestMethod]
-		public void DoNotReportANamespacePrefixError()
-		{
-			string code = string.Format(ClassString, configuredPrefix + ".");
-			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
 		}
 
 		#endregion

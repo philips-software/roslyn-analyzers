@@ -12,9 +12,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 		#region Non-Public Data Members
 
-		private const string Title = @"Namespace must use the predefined prefixes";
-		private const string MessageFormat = @"Namespace must use the predefined prefixes configured in the editorconfig file ie. [OrganizationName].[ProductName]";
-		private const string Description = @"Namespace must use the predefined prefixes";
+		private const string TitleForIncorrectPrefix = @"Namespace must use  predefined prefixes";
+		private const string MessageFormatForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
+		private const string DescriptionForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
+
+
+		private const string TitleForEmptyPrefix = @"Specify the namespace prefix in the .editorconfig file";
+		private const string MessageFormatForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName]";
+		private const string DescriptionForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName]";
 		private const string Category = Categories.Naming;
 
 		#endregion
@@ -24,13 +29,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 
 			AdditionalFilesHelper additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			string expected_prefix = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"namespace_prefix");
+			string expected_prefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
 			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			string myNamespace = namespaceDeclaration.Name.ToString();
-			if (!myNamespace.StartsWith(expected_prefix))
+			if (string.IsNullOrEmpty(expected_prefix))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, namespaceDeclaration.Name.GetLocation());
+				Diagnostic diagnostic = Diagnostic.Create(RuleForEmptyPrefix, namespaceDeclaration.Name.GetLocation());
+				context.ReportDiagnostic(diagnostic);
+			}
+			else if (!myNamespace.StartsWith(expected_prefix))
+			{
+				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, namespaceDeclaration.Name.GetLocation());
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -40,9 +50,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		#region Public Interface
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor RuleForIncorrectNamespace = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix), TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
+		public static DiagnosticDescriptor RuleForEmptyPrefix = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix), TitleForEmptyPrefix, MessageFormatForEmptyPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForEmptyPrefix);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIncorrectNamespace, RuleForEmptyPrefix); } }
 
 
 		public override void Initialize(AnalysisContext context)
