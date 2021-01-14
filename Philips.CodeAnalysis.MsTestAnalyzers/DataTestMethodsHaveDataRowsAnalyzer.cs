@@ -13,15 +13,24 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class DataTestMethodsHaveDataRowsAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"DataTestMethods must have at least 1 DataRow or 1 DynamicData, TestMethods must have none";
-		public static string MessageFormat = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
+
+		public static string MessageFormatMismatchedCount = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
+
+		public static string MessageFormatIsTestMethod = @"TestMethod has parameterized input data.  Convert to DataTestMethod.";
+		public static string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
+
 		private const string Description = @"DataTestMethods are only executed with DataRows";
 		private const string Category = Categories.Maintainability;
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
-												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static DiagnosticDescriptor RuleShouldBeTestMethod = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+												Title, MessageFormatIsDataTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static DiagnosticDescriptor RuleShouldBeDataTestMethod = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod); } }
 
 		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
 		{
@@ -51,6 +60,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return;
 				}
+
+				if (dataRowCount != 0 && dynamicDataCount != 0)
+				{
+
+					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
+				}
+				else
+				{
+					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
+				}
 			}
 			else
 			{
@@ -58,9 +77,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return;
 				}
-			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
+				context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, methodDeclaration.Identifier.GetLocation()));
+			}
 		}
 	}
 }
