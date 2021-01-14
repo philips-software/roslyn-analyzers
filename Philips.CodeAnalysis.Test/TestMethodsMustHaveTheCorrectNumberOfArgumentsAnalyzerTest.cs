@@ -68,18 +68,21 @@ public class Tests
 		{
 			const string DataTestMethod = "[DataTestMethod]";
 
-			yield return new object[] { DataTestMethod, 1, 1, false, true };
-			yield return new object[] { DataTestMethod, 1, 2, false, false };
-			yield return new object[] { DataTestMethod, 2, 1, false, false };
-			yield return new object[] { DataTestMethod, 1, -1, true, true };
-			yield return new object[] { DataTestMethod, 1, 0, true, false };
-			yield return new object[] { DataTestMethod, 1, 2, true, false };
-			yield return new object[] { DataTestMethod, 2, 1, true, false };
+			foreach (bool hasDisplayName in new[] { true, false })
+			{
+				yield return new object[] { DataTestMethod, 1, 1, false, hasDisplayName, true };
+				yield return new object[] { DataTestMethod, 1, 2, false, hasDisplayName, false };
+				yield return new object[] { DataTestMethod, 2, 1, false, hasDisplayName, false };
+				yield return new object[] { DataTestMethod, 1, -1, true, hasDisplayName, true };
+				yield return new object[] { DataTestMethod, 1, 0, true, hasDisplayName, false };
+				yield return new object[] { DataTestMethod, 1, 2, true, hasDisplayName, false };
+				yield return new object[] { DataTestMethod, 2, 1, true, hasDisplayName, false };
+			}
 		}
 
 		[DynamicData(nameof(DataRowVariants), DynamicDataSourceType.Method)]
 		[DataTestMethod]
-		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool isCorrect)
+		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -108,13 +111,20 @@ public class Tests
 
 			if (dataRowParameters >= 0)
 			{
-				string[] dataRowParametersStrings = new string[dataRowParameters];
+				List<string> dataRowParametersStrings = new List<string>();
 				for (int i = 0; i < dataRowParameters; i++)
 				{
-					dataRowParametersStrings[i] = i.ToString();
+					dataRowParametersStrings.Add(i.ToString());
 				}
 
-				dataRow = string.Format($"[DataRow({string.Join(',', dataRowParametersStrings)})]");
+				if (hasDisplayName)
+				{
+					dataRowParametersStrings.Add("DisplayName = \"blah\"");
+				}
+
+				string dataRowText = string.Format($"[DataRow({string.Join(',', dataRowParametersStrings)})]");
+
+				dataRow = dataRowText;
 			}
 
 			string code = string.Format(template, testType, parameterListString, dataRow, isDynamicData ? "[DynamicData(nameof(GetVariants))]" : string.Empty);

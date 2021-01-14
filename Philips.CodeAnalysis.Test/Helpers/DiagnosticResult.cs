@@ -114,5 +114,13 @@ namespace Philips.CodeAnalysis.Test
 				Severity = DiagnosticSeverity.Error,
 			};
 		}
+
+		public static DiagnosticResult[] CreateArray(DiagnosticIds diagnosticId, Regex message = null)
+		{
+			return new DiagnosticResult[]
+			{
+				Create(diagnosticId, message),
+			};
+		}
 	}
 }

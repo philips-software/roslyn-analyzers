@@ -71,7 +71,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				dataRowParameters.Add(attribute.ArgumentList.Arguments.Count);
+				int argumentCount = 0;
+				foreach (var argument in attribute.ArgumentList.Arguments)
+				{
+					if (argument.NameEquals != null && argument.NameEquals.Name.Identifier.ValueText == @"DisplayName")
+					{
+						continue;
+					}
+
+					argumentCount++;
+				}
+				dataRowParameters.Add(argumentCount);
 			}
 
 			if (Helper.TryGetAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out var dynamicDataAttribute))

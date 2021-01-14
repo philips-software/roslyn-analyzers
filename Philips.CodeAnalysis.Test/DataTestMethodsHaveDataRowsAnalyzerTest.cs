@@ -1,5 +1,6 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -48,40 +49,56 @@ public class Tests
 			});
 		}
 
-		[DataRow("DataRow(\"arg\")")]
-		[DataRow("DynamicData(\"test\")")]
+		[DataRow("[DataRow(\"arg\")]", false)]
+		[DataRow("[DynamicData(\"test\")]", false)]
+		[DataRow("[DynamicData(\"test\"), DynamicData(\"test2\")]", true)]
+		[DataRow("[DataRow(\"arg\"), DynamicData(\"test\"), DynamicData(\"test2\")]", true)]
+		[DataRow("", true)]
 		[DataTestMethod]
-		public void DataTestMethodsMustHaveDataRows2(string arg)
+		public void DataTestMethodsMustHaveDataRows2(string arg, bool isError)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
 {{
-	[{0}]
+	{0}
 	[DataTestMethod]
 	public void Foo() {{ }}
 }}";
 
-			VerifyCSharpDiagnostic(string.Format(code, arg));
+			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			if (isError)
+			{
+				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
+			}
+
+			VerifyCSharpDiagnostic(string.Format(code, arg), expected);
 		}
 
-		[DataRow("DataRow(\"arg\")")]
-		[DataRow("DynamicData(\"test\")")]
+		[DataRow("[DataRow(\"arg\")]", true)]
+		[DataRow("[DynamicData(\"test\")]", true)]
+		[DataRow("", false)]
 		[DataTestMethod]
-		public void TestMethodsMustNotHaveDataRows(string arg)
+		public void TestMethodsMustNotHaveDataRows(string arg, bool isError)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
 {{
-	[{0}]
+	{0}
 	[TestMethod]
 	public void Foo() {{ }}
 }}";
 
-			VerifyCSharpDiagnostic(string.Format(code, arg), DiagnosticResultHelper.Create(DiagnosticIds.DataTestMethodsHaveDataRows));
+			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			if (isError)
+			{
+				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
+			}
+
+			VerifyCSharpDiagnostic(string.Format(code, arg), expected);
 		}
 
 		#endregion
