@@ -71,7 +71,8 @@ namespace Philips.CodeAnalysis.Common
 		AssertFail = 2076,
 		AvoidSwitchStatementsWithNoCases = 2077,
 		AvoidPrivateKeyProperty = 2078,
-		NamespacePrefix = 2079
+		NamespacePrefix = 2079,
+		NoHardcodedPaths = 2080
 
 	}
 }
