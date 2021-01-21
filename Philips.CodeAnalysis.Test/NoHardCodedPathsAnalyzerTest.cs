@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test
 		}
 
 		[TestMethod]
-		public void CatchesHardCodedPaths()
+		public void CatchesHardCodedAbsoluteWindowsPaths()
 		{
 			const string template = @"
 using System;
@@ -23,6 +23,42 @@ class Foo
 	public void Test()
 	{
 		string path = @""c:\users\Bin\example.xml"";
+	}
+}
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+
+		}
+
+		[TestMethod]
+		public void CatchesHardCodedAbsoluteLinuxPaths()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""/boot/grub/grub.conf"";
+	}
+}
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+
+		}
+
+		[TestMethod]
+		public void CatchesHardCodedAbsoluteWindowsPathWithDoubleSlash()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""c:\\users\\Bin\\example.xml"";
 	}
 }
 ";
@@ -170,6 +206,8 @@ class Foo
 		}
 
 	}
+
+
 
 
 }
