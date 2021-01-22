@@ -12,7 +12,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	 * Analyzer for hardcoded absolute path. 
 	 * Reports diagnostics if an absolute path is used,
 	 * For example: c:\users\Bin\example.xml - Windows & /home/kt/abc.sql - Linux
-	 * 
 	 */
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoHardCodedPathsAnalyzer : DiagnosticAnalyzer
@@ -34,6 +33,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			LiteralExpressionSyntax stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
 			// Get the text value of the string literal expression.
 			string pathValue = stringLiteralExpressionNode.Token.ValueText;
+
+			//if the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
+			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/')) return;
+
 			// If the pattern matches the text value, report the diagnostic.
 			if (WindowsPattern.IsMatch(pathValue) || LinuxPattern.IsMatch(pathValue))
 			{

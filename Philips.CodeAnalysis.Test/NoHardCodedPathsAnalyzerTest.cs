@@ -26,7 +26,6 @@ class Foo
 	}
 }
 ";
-
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
@@ -44,7 +43,6 @@ class Foo
 	}
 }
 ";
-
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
@@ -62,7 +60,6 @@ class Foo
 	}
 }
 ";
-
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
@@ -81,7 +78,6 @@ class Foo
 	}
 }
 ";
-
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
@@ -110,7 +106,6 @@ class Foo
 	}
 }
 ";
-
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
@@ -206,8 +201,4 @@ class Foo
 		}
 
 	}
-
-
-
-
 }
