@@ -33,14 +33,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		private static void OnMethod(SyntaxNodeAnalysisContext context)
 		{
-			if (context == null)
+			if (context is null)
 			{
 				return;
 			}
 
 			BaseMethodDeclarationSyntax node = (BaseMethodDeclarationSyntax)context.Node;
 
-			if (node == null)
+			if (node is null)
 			{
 				return;
 			}
