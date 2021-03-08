@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		#region Non-Public Properties/Methods
 
 		private static DiagnosticDescriptor NestedRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
-		private static DiagnosticDescriptor UnnecessaryRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: UnnecessaryStringFormatDescription);
+		private static DiagnosticDescriptor UnnecessaryRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
 
 		private void Analyze(CompilationStartAnalysisContext context)
 		{
