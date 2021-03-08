@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			}
 			else if (onlyInterpolation is IInterpolationOperation interpolationOperation)
 			{
-				if (interpolationOperation.FormatString is not null)
+				if (!(interpolationOperation.FormatString is null))
 				{
 					//has a format, ignore
 					return;
