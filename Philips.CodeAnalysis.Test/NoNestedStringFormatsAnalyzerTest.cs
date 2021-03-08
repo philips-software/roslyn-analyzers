@@ -547,5 +547,51 @@ class Foo
 
 			VerifyCSharpDiagnostic(template);
 		}
+
+		[DataRow(@"$""{Environment.NewLine}""")]
+		[DataRow(@"string.Format(""{0}"", Environment.NewLine)")]
+		[DataRow(@"string.Format(""{0}"", new object[] { Environment.NewLine })")]
+		[DataTestMethod]
+		public void ErrorsOnPropertyLikeStrings(string argument)
+		{
+			string template = @$"
+using System;
+class Foo
+{{
+	public void Test()
+	{{
+		string t = {argument};
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+		}
+
+		[DataRow(@"$""{Test()}""")]
+		[DataRow(@"$""{4}""")]
+		[DataRow(@"$""{4:x}""")]
+		[DataRow(@"$""this is a test {Environment.NewLine}""")]
+		[DataRow(@"string.Format(""This is a test {0}"", Environment.NewLine)")]
+		[DataRow(@"string.Format(""This is a test {0}"", new object[] { Environment.NewLine })")]
+		[DataTestMethod]
+		public void IgnoresFormatStringsWithAdditionalText(string argument)
+		{
+			string template = @$"
+using System;
+class Foo
+{{
+	public void Test()
+	{{}}
+
+	public void Test2()
+	{{
+		string t = {argument};
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(template);
+		}
 	}
 }

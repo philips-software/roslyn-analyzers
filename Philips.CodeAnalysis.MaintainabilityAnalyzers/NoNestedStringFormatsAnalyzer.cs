@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		private const string Category = Categories.Maintainability;
 
-		private readonly Regex _formatRegex = new Regex(@"\{\d+\}", RegexOptions.Compiled);
+		private readonly Regex _formatRegex = new Regex(@"^\{\d+\}$", RegexOptions.Compiled);
 
 		#endregion
 
@@ -35,11 +35,51 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 			context.RegisterOperationBlockStartAction(compilationContext =>
 			{
-				compilationContext.RegisterOperationAction(OnOperation, OperationKind.Invocation);
+				compilationContext.RegisterOperationAction(OnInvocation, OperationKind.Invocation);
+				compilationContext.RegisterOperationAction(OnInterpolatedString, OperationKind.InterpolatedString);
 			});
 		}
 
-		private void OnOperation(OperationAnalysisContext operationContext)
+		private void OnInterpolatedString(OperationAnalysisContext operationContext)
+		{
+			var interpolation = (IInterpolatedStringOperation)operationContext.Operation;
+
+			if (interpolation.Parts.Length != 1)
+			{
+				return;
+			}
+
+			var onlyInterpolation = interpolation.Parts[0];
+
+			if (onlyInterpolation is IInterpolatedStringTextOperation textOperation)
+			{
+			}
+			else if (onlyInterpolation is IInterpolationOperation interpolationOperation)
+			{
+				if (interpolationOperation.FormatString is not null)
+				{
+					//has a format, ignore
+					return;
+				}
+
+				var resultType = interpolationOperation.Expression.Type;
+
+				if (resultType is null)
+				{
+					return;
+				}
+
+				if (resultType.SpecialType != SpecialType.System_String)
+				{
+					return;
+				}
+
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, interpolation.Syntax.GetLocation()));
+			}
+
+		}
+
+		private void OnInvocation(OperationAnalysisContext operationContext)
 		{
 			var invocation = (IInvocationOperation)operationContext.Operation;
 
