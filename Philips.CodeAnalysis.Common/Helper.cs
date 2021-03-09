@@ -12,8 +12,9 @@ namespace Philips.CodeAnalysis.Common
 {
 	internal static class Helper
 	{
-		private static bool HasGeneratedCodeAttribute(SyntaxNodeAnalysisContext context, SyntaxNode node)
+		private static bool HasGeneratedCodeAttribute(SyntaxNodeAnalysisContext context)
 		{
+			SyntaxNode node = context.Node.Parent == null ? context.Node.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>().FirstOrDefault() : context.Node;
 			while (node != null)
 			{
 				SyntaxList<AttributeListSyntax> attributes;
@@ -140,7 +141,6 @@ namespace Philips.CodeAnalysis.Common
 
 		public static bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location)
 		{
-			location = null;
 			return HasAttribute(attributeLists, context, name, fullName, out location, out _);
 		}
 
@@ -364,7 +364,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			string myFilePath = context.Node.SyntaxTree.FilePath;
 
-			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context, context.Node);
+			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context);
 		}
 
 		public static bool IsGeneratedCode(string filePath)
