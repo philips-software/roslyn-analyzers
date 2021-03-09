@@ -68,4 +68,6 @@ After your pull request is merged, you can safely delete your branch and pull th
 from the main (upstream) repository.
 
 [contribute]: CONTRIBUTING.md
-[github]: https://github.com/philips-software/roslyn-analyzers/issues 
+[github]: https://github.com/philips-software/roslyn-analyzers/issues
+
+test
