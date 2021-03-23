@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{587845EE-5F8F-4E49-B140-B970758F8A49}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.Test\Philips.CodeAnalysis.Test.csproj", "{604797D1-49B5-4A93-BCBD-C67158EBDD44}"
@@ -20,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Mainta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "Philips.CodeAnalysis.DuplicateCodeAnalyzer\Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj", "{378CCB57-00DA-4782-A238-ADC134827B93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Philips.CodeAnalysis.Benchmark", "Philips.CodeAnalysis.Benchmark\Philips.CodeAnalysis.Benchmark.csproj", "{D9B847FB-E395-4875-86E9-C69B47B8D77C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Benchmark", "Philips.CodeAnalysis.Benchmark\Philips.CodeAnalysis.Benchmark.csproj", "{D9B847FB-E395-4875-86E9-C69B47B8D77C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
