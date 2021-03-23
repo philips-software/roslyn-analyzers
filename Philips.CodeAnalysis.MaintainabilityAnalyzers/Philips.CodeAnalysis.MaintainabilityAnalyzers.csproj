@@ -28,6 +28,10 @@
 1.2.4
 * Introduce PH2078 Avoid X509Certificate2.PrivateKey
 * Introduce PH2079 Use configured namespace prefix
+1.2.5
+* Fixes for PH2067 string interpolation
+* Introduce PH2080: Avoid hardcoded paths
+* Introduce PH2081:  Avoid regions in methods
 </PackageReleaseNotes>
     <Copyright>© 2019 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers Philips</PackageTags>

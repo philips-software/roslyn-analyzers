@@ -6,7 +6,6 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers;
 
 namespace Philips.CodeAnalysis.Test
 {
-	[DiagnosticAnalyzer(Microsoft.CodeAnalysis.LanguageNames.CSharp)]
 	[TestClass]
 	public class NoRegionsInMethodAnalyzerTest : DiagnosticVerifier
 	{
