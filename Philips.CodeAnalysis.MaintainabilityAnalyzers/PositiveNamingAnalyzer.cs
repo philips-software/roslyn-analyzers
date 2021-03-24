@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
@@ -33,11 +33,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private static void AnalyzeVariable(SyntaxNodeAnalysisContext context)
 		{
 			VariableDeclarationSyntax node = (VariableDeclarationSyntax)context.Node;
-
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
 
 			var variables = node.Variables;
 
@@ -58,11 +53,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
-
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
 
 			if (!IsPositiveName(node.Identifier.Text))
 			{
