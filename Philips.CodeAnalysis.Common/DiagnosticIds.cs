@@ -73,6 +73,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidPrivateKeyProperty = 2078,
 		NamespacePrefix = 2079,
 		NoHardcodedPaths = 2080,
-		NoRegionsInMethods = 2081
+		NoRegionsInMethods = 2081,
+		PositiveNaming = 2082
 	}
 }
