@@ -32,4 +32,4 @@
 | PH2077  | Avoid Switch statement with no cases		 | Avoid Switch statements when there are no cases|
 | PH2078  | Avoid PrivateKey Property					 | Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey()|
 | PH2079  | Namespace prefix							 | Specify a namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName] and use that prefix for all projects/namespaces|
-| PH2082  | Positive boolean                             | Name booleans after the positive case. People can handle double negations poorly.|
+| PH2082  | Positive naming                              | Name properties, fields and variables after the positive case. People can handle double negations poorly, and by using positive naming this is prevented.|
