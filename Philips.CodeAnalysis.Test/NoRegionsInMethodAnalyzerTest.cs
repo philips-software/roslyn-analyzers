@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.Test
 		int x = 2;
 		#endregion
 	}
-	}");
+	}", 5);
 		}
 
 		[TestMethod]
@@ -99,7 +99,7 @@ Class C{
 
 	}
 
-	}", 7);
+	}", 8);
 		}
 
 
@@ -123,10 +123,6 @@ Class C{
 		private void VerifyNoDiagnostic(string file)
 		{
 			VerifyCSharpDiagnostic(file, new DiagnosticResult[0]);
-		}
-		private void VerifyDiagnostic(string file)
-		{
-			VerifyDiagnostic(file, 3);
 		}
 
 		private void VerifyDiagnostic(string file, int line)

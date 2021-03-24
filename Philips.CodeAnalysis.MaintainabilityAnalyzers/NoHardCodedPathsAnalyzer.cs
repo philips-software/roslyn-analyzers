@@ -18,9 +18,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 
 		#region Non-Public Data Members
-		private const string Title = @"Absolute paths must not be hardcoded";
-		private const string MessageFormat = @"Absolute paths must not be hardcoded";
-		private const string Description = @"Absolute paths must not be hardcoded";
+		private const string Title = @"Avoid hardcoded absolute paths";
+		private const string MessageFormat = @"Avoid hardcoded absolute paths";
+		private const string Description = @"Avoid hardcoded absolute paths";
 		private const string Category = Categories.Maintainability;
 		private Regex WindowsPattern = new Regex(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$");
 		private Regex LinuxPattern = new Regex(@"^\/$|(^(?=\/)|^\.|^\.\.)(\/(?=[^/\0])[^/\0]+)*\/?$");

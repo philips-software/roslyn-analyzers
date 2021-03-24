@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,7 +14,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 		private static readonly string Title = "No Regions In Methods";
 		private static readonly string MessageFormat = "Regions are not allowed to start or end within a method";
-		private static readonly string Description = "A region can not start or end within a method, instead long methods should be refactored for length and clarity";
+		private static readonly string Description = "A #region cannot start or end within a method. Consider refactoring long methods instead.";
 		private const string Category = "Maintainability";
 
 		public static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoRegionsInMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
@@ -31,18 +32,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		private static void OnMethod(SyntaxNodeAnalysisContext context)
 		{
-
 			BaseMethodDeclarationSyntax node = (BaseMethodDeclarationSyntax)context.Node;
 
-			var methodBody = node.Body.ToString().ToLower();
-
-			if (methodBody.Contains("#region") || methodBody.Contains("#endregion"))
+			// Specifying Span instead of FullSpan correctly excludes trivia before or after the method
+			var descendants = node.DescendantNodes(node.Span, null, descendIntoTrivia: true);
+			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
 			{
-				var diagnostic = Diagnostic.Create(Rule, node.GetLocation());
-				System.Console.WriteLine(node.GetLocation().ToString());
+				var diagnostic = Diagnostic.Create(Rule, regionDirective.GetLocation());
 				context.ReportDiagnostic(diagnostic);
 			}
 
+			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
+			{
+				var diagnostic = Diagnostic.Create(Rule, endRegionDirective.GetLocation());
+				context.ReportDiagnostic(diagnostic);
+			}
 		}
 	}
 }
