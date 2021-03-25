@@ -145,6 +145,8 @@ class Foo
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
 
 		}
+
+
 		[TestMethod]
 		public void DoesNotCatchNormalString()
 		{
@@ -160,12 +162,45 @@ class Foo
 ";
 
 			VerifyCSharpDiagnostic(template);
-
 		}
 
 
 		[TestMethod]
-		public void DoesnotCatchRelativePath()
+		public void DoesNotCatchShortString()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""x"";
+	}
+}
+";
+
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void DoesNotCatchEmptyString()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @"""";
+	}
+}
+";
+
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void DoesNotCatchRelativePath()
 		{
 			const string template = @"
 using system;
