@@ -15,5 +15,6 @@ dotnet_diagnostic.RS1017.severity = none
 dotnet_diagnostic.RS1024.severity = error
 dotnet_diagnostic.RS1025.severity = error
 dotnet_diagnostic.RS1026.severity = error
+dotnet_diagnostic.TI11409.severity = none
 
 
