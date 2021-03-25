@@ -29,7 +29,9 @@
 | PH2073  | Call extension method as instance            | If Foo is an extension method of MyClass, call it as `MyClass.Foo`. |
 | PH2074  | Avoid register in Dispose                    | Dispose methods should unregister rather than register.      |
 | PH2075  | Avoid AssemblyVersion change                 | Do not accidentally change AssemblyVersion, as it breaks runtime compatibility. Specify the intended `dotnet_code_quality.PH2075.assembly_version` in an .editorconfig specific to the project|
-| PH2077  | Avoid Switch statement with no cases		 | Avoid Switch statements when there are no cases|
-| PH2078  | Avoid PrivateKey Property					 | Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey()|
-| PH2079  | Namespace prefix							 | Specify a namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName] and use that prefix for all projects/namespaces|
+| PH2077  | Avoid Switch statement with no cases         | Avoid Switch statements when there are no cases|
+| PH2078  | Avoid PrivateKey Property                    | Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey()|
+| PH2079  | Namespace prefix                             | Specify a namespace prefix in the .editorconfig file Eg. dotnet_code_quality.PH2079.namespace_prefix = [OrganizationName].[ProductName] and use that prefix for all projects/namespaces|
+| PH2080  | Avoid hardcoded absolute paths               | Avoid hardcoded absolute paths |
+| PH2081  | Avoid #regions within methods                | A #region cannot start or end within a method. Consider refactoring long methods instead.|
 | PH2082  | Positive naming                              | Name properties, fields and variables after the positive case. People can handle double negations poorly, and by using positive naming this is prevented.|
