@@ -34,6 +34,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			// Get the text value of the string literal expression.
 			string pathValue = stringLiteralExpressionNode.Token.ValueText;
 
+			if (pathValue.Length < 2) return;
+
 			//if the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
 			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/')) return;
 
