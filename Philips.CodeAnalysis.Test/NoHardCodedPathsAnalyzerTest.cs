@@ -31,23 +31,6 @@ class Foo
 		}
 
 		[TestMethod]
-		public void CatchesHardCodedAbsoluteLinuxPaths()
-		{
-			const string template = @"
-using System;
-class Foo
-{
-	public void Test()
-	{
-		string path = @""/boot/grub/grub.conf"";
-	}
-}
-";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
-
-		}
-
-		[TestMethod]
 		public void CatchesHardCodedAbsoluteWindowsPathWithDoubleSlash()
 		{
 			const string template = @"

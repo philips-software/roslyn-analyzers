@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/')) return;
 
 			// If the pattern matches the text value, report the diagnostic.
-			if (WindowsPattern.IsMatch(pathValue) || LinuxPattern.IsMatch(pathValue))
+			if (WindowsPattern.IsMatch(pathValue))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, stringLiteralExpressionNode.GetLocation());
 				context.ReportDiagnostic(diagnostic);
