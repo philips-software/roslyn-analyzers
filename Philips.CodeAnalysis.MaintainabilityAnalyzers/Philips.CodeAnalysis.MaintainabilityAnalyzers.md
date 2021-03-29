@@ -35,3 +35,4 @@
 | PH2080  | Avoid hardcoded absolute paths               | Avoid hardcoded absolute paths (Windows only) |
 | PH2081  | Avoid #regions within methods                | A #region cannot start or end within a method. Consider refactoring long methods instead.|
 | PH2082  | Positive naming                              | Name properties, fields and variables after the positive case. People can handle double negations poorly, and by using positive naming this is prevented.|
+| PH2083  | Avoid Pass By Reference                      | Parameters that are passed by reference should be written to, otherwise they should not be passed by reference|

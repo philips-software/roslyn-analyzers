@@ -34,7 +34,8 @@
 * Introduce PH2081:  Avoid regions in methods
 1.2.6
 * Introduce PH2082 Positive naming
-</PackageReleaseNotes>
+1.2.7
+* Introduce PH2083, which flags accepting a parameter by reference where it is never written to</PackageReleaseNotes>
     <Copyright>© 2019 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
