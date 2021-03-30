@@ -74,6 +74,7 @@ namespace Philips.CodeAnalysis.Common
 		NamespacePrefix = 2079,
 		NoHardcodedPaths = 2080,
 		NoRegionsInMethods = 2081,
-		PositiveNaming = 2082
+		PositiveNaming = 2082,
+		DontLockNewObject = 2084
 	}
 }
