@@ -1,5 +1,7 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -14,9 +16,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		#region Non-Public Properties/Methods
 
-		protected override Diagnostic Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
+		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			bool isIsTrue = false;
+			bool isIsTrue;
 			string memberName = memberAccessExpression.Name.ToString();
 			switch (memberName)
 			{
@@ -30,7 +32,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return null;
 			}
 
-			return Check(context, invocationExpressionSyntax, invocationExpressionSyntax.ArgumentList, isIsTrue);
+			Diagnostic result = Check(context, invocationExpressionSyntax, invocationExpressionSyntax.ArgumentList, isIsTrue);
+
+			if (result is null)
+			{
+				return Array.Empty<Diagnostic>();
+			}
+
+			return new[] { result };
 		}
 		protected virtual Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ArgumentListSyntax arguments, bool isIsTrue)
 		{
