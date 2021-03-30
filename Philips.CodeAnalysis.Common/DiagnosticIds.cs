@@ -75,6 +75,7 @@ namespace Philips.CodeAnalysis.Common
 		NoHardcodedPaths = 2080,
 		NoRegionsInMethods = 2081,
 		PositiveNaming = 2082,
-		DontLockNewObject = 2084
+		DontLockNewObject = 2084,
+		OrderPropertyAccessors = 2085
 	}
 }
