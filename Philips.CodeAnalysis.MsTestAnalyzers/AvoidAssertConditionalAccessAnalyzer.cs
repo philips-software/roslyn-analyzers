@@ -1,6 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,29 +24,32 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override Diagnostic Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
+		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			string memberName = memberAccessExpression.Name.ToString();
 			if (memberName != @"AreEqual" && memberName != @"AreNotEqual")
 			{
-				return null;
+				yield break;
 			}
 
-			if (invocationExpressionSyntax.ArgumentList?.Arguments.Count < 2)
+			var argumentList = invocationExpressionSyntax.ArgumentList;
+
+			if (argumentList is null || argumentList.Arguments.Count < 2)
 			{
-				return null;
+				yield break;
 			}
 
-			ArgumentSyntax actual = invocationExpressionSyntax.ArgumentList?.Arguments[0];
-			ArgumentSyntax expected = invocationExpressionSyntax.ArgumentList?.Arguments[1];
+			ArgumentSyntax expected = argumentList.Arguments[0];
+			ArgumentSyntax actual = argumentList.Arguments[1];
 
-			if (expected.Expression.Kind() == SyntaxKind.ConditionalAccessExpression || actual.Expression.Kind() == SyntaxKind.ConditionalAccessExpression)
+			foreach (ArgumentSyntax syntax in new[] { expected, actual })
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
-				return diagnostic;
+				if (syntax.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression))
+				{
+					Diagnostic diagnostic = Diagnostic.Create(Rule, syntax.GetLocation());
+					yield return diagnostic;
+				}
 			}
-
-			return null;
 		}
 	}
 }

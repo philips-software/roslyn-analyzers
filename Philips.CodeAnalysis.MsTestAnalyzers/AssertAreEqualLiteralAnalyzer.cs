@@ -1,5 +1,6 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -22,7 +23,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override Diagnostic Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
+		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			switch (memberAccessExpression.Name.ToString())
 			{
@@ -58,7 +59,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 
-			return Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
+			return new[] { Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation()) };
 		}
 
 		private bool IsLiteral(ExpressionSyntax expression)
