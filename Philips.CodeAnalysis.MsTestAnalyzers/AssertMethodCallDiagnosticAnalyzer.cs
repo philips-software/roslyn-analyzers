@@ -1,5 +1,7 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,7 +19,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			Diagnostic diagnostic = null;
 			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
 			MemberAccessExpressionSyntax memberAccessExpression = invocationExpression?.Expression as MemberAccessExpressionSyntax;
 			if (memberAccessExpression == null)
@@ -27,22 +28,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith("Assert"))
 			{
-				diagnostic = Analyze(context, invocationExpression, memberAccessExpression);
-			}
-
-			if (diagnostic != null)
-			{
-				IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol as IMethodSymbol;
-				if ((memberSymbol == null) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression) ?? Array.Empty<Diagnostic>())
 				{
-					return;
-				}
-				context.ReportDiagnostic(diagnostic);
-			}
+					IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol as IMethodSymbol;
+					if ((memberSymbol == null) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+					{
+						return;
+					}
 
+					context.ReportDiagnostic(diagnostic);
+				}
+			}
 		}
 
-		protected abstract Diagnostic Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression);
+		protected abstract IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression);
 
 		#endregion
 

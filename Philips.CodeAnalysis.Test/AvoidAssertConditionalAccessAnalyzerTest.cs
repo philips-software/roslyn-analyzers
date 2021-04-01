@@ -30,16 +30,25 @@ namespace Philips.CodeAnalysis.Test
 		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name?.ToString(), \"xyz\")")]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name?.ToString())")]
-		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1?.ToString(), name2?.ToString())")]
+		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), name2.ToString())")]
+		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), (name2?.ToString()))")]
 		public void AvoidAssertConditionalAccessAnalyzerFailTest(string test)
 		{
 			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
 		}
 
 		[DataTestMethod]
+		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
+		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
+		{
+			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
+		}
+
+		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString())")]
+		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString(), $\"error{name1?.ToString()}\")")]
 		public void AvoidAssertConditionalAccessAnalyzerSuccessTest(string test)
 		{
 			VerifyCSharpDiagnostic(test, Array.Empty<DiagnosticResult>());
