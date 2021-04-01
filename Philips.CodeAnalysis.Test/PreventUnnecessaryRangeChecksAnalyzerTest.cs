@@ -175,6 +175,40 @@ class Foo
 			VerifyCSharpDiagnostic(errorCode);
 		}
 
+		[TestMethod]
+		public void CheckNestedRange2a()
+		{
+			const string template = @"
+public class Container
+{{
+  public List<int> Data {{ get; set; }}
+}}
+
+class Foo
+{{
+  public void test()
+  {{
+    Container container1 = new Container();
+    Container container2 = new Container();
+
+    List<string> other = new List<string>();
+    // comment
+    if(other.Count > 0)
+    {{
+      foreach (int i in container2.data)
+      {{
+      }}
+      //middle comment
+    }}
+    // end comment
+  }}
+}}
+";
+			string errorCode = string.Format(template);
+
+			VerifyCSharpDiagnostic(errorCode);
+		}
+
 		[DataRow("int[] data = new int[0]", "Length")]
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
