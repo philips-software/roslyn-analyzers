@@ -12,9 +12,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PositiveNamingAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Positive Boolean";
-		private const string MessageFormat = @"Booleans should be named after the positive case.";
-		private const string Description = @"Booleans should be named after the positive case.";
+		private const string Title = @"Positive Naming";
+		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
+		private const string Description = @"Properties and variables should be named using positive wording.";
 		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.PositiveNaming), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
