@@ -147,6 +147,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				{
 					return false;
 				}
+
+				return true;
 			}
 
 			if (foreachExpression is MemberAccessExpressionSyntax memberAccess && ifExpression is MemberAccessExpressionSyntax ifMemberAccess)
@@ -188,9 +190,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 						return false;
 					}
 				}
+
+				return true;
 			}
 
-			return true;
+			return false;
 		}
 
 		private bool TryGetIdentifiers(ExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
