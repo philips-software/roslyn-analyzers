@@ -34,13 +34,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 			VariableDeclarationSyntax node = (VariableDeclarationSyntax)context.Node;
 
-			var variables = node.Variables;
-
-			if (!variables.Any())
+			if (Helper.IsInTestClass(context))
 			{
 				return;
 			}
 
+			var variables = node.Variables;
+			if (!variables.Any())
+			{
+				return;
+			}
 			foreach (var variable in variables)
 			{
 				if (!IsPositiveName(variable.Identifier.Text))
@@ -53,6 +56,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
+
+			if (Helper.IsInTestClass(context))
+			{
+				return;
+			}
 
 			if (!IsPositiveName(node.Identifier.Text))
 			{
