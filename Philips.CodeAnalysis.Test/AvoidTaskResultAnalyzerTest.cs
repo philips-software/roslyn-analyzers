@@ -12,23 +12,25 @@ namespace Philips.CodeAnalysis.Test
 	[TestClass]
 	public class AvoidTaskResultAnalyzerTest : AssertCodeFixVerifier
 	{
-		[TestMethod]
-		public void AvoidTaskResultTest()
+		[DataRow("ValueTask")]
+		[DataRow("Task")]
+		[DataTestMethod]
+		public void AvoidTaskResultTest(string taskType)
 		{
-			const string template = @"
+			string template = $@"
 using System;
+using System.Threading.Tasks;
 class FooClass
-{{
-  public bool MyProperty {{ get; }}
-  public FooClass Blah() {{ }}
+{{{{
   public async void Foo()
-  {{
-    {0};
-  }}
-}}
+  {{{{
+    {taskType}<int> task = new {taskType}<int>(() => 4);
+    {{0}};
+  }}}}
+}}}}
 ";
-			string before = string.Format(template, @"Blah().MyProperty");
-			string after = string.Format(template, @"await Blah()");
+			string before = string.Format(template, @"task.Result");
+			string after = string.Format(template, @"await task");
 
 			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
 			VerifyCSharpFix(before, after, null, allowNewCompilerDiagnostics: true);
@@ -42,9 +44,7 @@ class FooClass
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			var analyzer = new AvoidTaskResultAnalyzer();
-			analyzer.ContainingNamespace = string.Empty;
-			analyzer.ContainingTypePrefix = @"FooClass";
-			analyzer.Identifier = @"MyProperty";
+
 			return analyzer;
 		}
 
