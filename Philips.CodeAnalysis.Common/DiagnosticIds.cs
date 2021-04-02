@@ -77,6 +77,7 @@ namespace Philips.CodeAnalysis.Common
 		PositiveNaming = 2082,
 		AvoidPassByReference = 2083,
 		DontLockNewObject = 2084,
-		OrderPropertyAccessors = 2085
+		OrderPropertyAccessors = 2085,
+		AvoidTaskResult = 2086,
 	}
 }
