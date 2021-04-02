@@ -30,7 +30,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterOperationAction(Analyze, OperationKind.PropertyReference);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				if (startContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task") == null)
+				{
+					return;
+				}
+				startContext.RegisterOperationAction(Analyze, OperationKind.PropertyReference);
+			});
 		}
 
 		private void Analyze(OperationAnalysisContext context)
