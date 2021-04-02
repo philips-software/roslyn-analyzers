@@ -22,8 +22,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		public string ContainingNamespace = @"System.Threading.Tasks";
-		public string ContainingTypePrefix = @"Task";
+		private const string ContainingNamespace = @"Tasks";
+		private const string ContainingType = @"Task";
 		public string Identifier = @"Result";
 
 		public override void Initialize(AnalysisContext context)
@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			{
 				IPropertySymbol propertySymbol = propertyReference.Property;
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
-					propertySymbol.ContainingType.Name.StartsWith(ContainingTypePrefix))
+					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
 					Diagnostic diagnostic = Diagnostic.Create(Rule, propertyReference.Syntax.GetLocation());
 					context.ReportDiagnostic(diagnostic);
