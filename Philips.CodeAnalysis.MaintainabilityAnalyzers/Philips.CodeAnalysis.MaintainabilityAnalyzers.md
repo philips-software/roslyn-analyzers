@@ -38,3 +38,4 @@
 | PH2083  | Avoid Pass By Reference                      | Parameters that are passed by reference should be written to, otherwise they should not be passed by reference|
 | PH2084  | Don't lock on "new x()"                      | Locking on a newly created object has no effect|
 | PH2085  | Order property accessors                     | Consistently order property accessors as get, set, init|
+| PH2086  | Avoid calling Task<TResult>.Result           | [Avoid calling Task<TResult>.Result](https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way)|

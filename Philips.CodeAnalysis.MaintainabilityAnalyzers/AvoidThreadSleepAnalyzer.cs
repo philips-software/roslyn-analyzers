@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 		private const string Title = @"Avoid Thread.Sleep";
 		public const string MessageFormat = @"Methods may not have Thread.Sleep.";
-		private const string Description = @"Methods may not have Thread.Sleep to prevent inacurate timeout.";
+		private const string Description = @"Methods may not have Thread.Sleep to prevent inaccurate timeout.";
 		private const string Category = Categories.Maintainability;
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
