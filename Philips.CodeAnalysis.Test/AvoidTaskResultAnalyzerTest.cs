@@ -12,10 +12,10 @@ namespace Philips.CodeAnalysis.Test
 	[TestClass]
 	public class AvoidTaskResultAnalyzerTest : AssertCodeFixVerifier
 	{
-		[DataRow("ValueTask")]
-		[DataRow("Task")]
+		[DataRow("ValueTask", "4")]
+		[DataRow("Task", "() => 4")]
 		[DataTestMethod]
-		public void AvoidTaskResultTest(string taskType)
+		public void AvoidTaskResultTest(string taskType, string argument)
 		{
 			string template = $@"
 using System;
@@ -24,8 +24,8 @@ class FooClass
 {{{{
   public async void Foo()
   {{{{
-    {taskType}<int> task = new {taskType}<int>(() => 4);
-    {{0}};
+    {taskType}<int> task = new {taskType}<int>({argument});
+    var data = {{0}};
   }}}}
 }}}}
 ";
