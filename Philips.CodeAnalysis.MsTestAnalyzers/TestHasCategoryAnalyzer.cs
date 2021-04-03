@@ -23,14 +23,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		private HashSet<string> _exceptions = new HashSet<string>();
-		private HashSet<string> _allowedCategories = new HashSet<string>();
+		private ImmutableHashSet<string> _allowedCategories = ImmutableHashSet<string>.Empty;
 
 		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation)
 		{
 			AdditionalFilesHelper helper = new AdditionalFilesHelper(options, compilation);
 
 			_exceptions = helper.LoadExceptions(FileName);
-			_allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
+			_allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories").ToImmutableHashSet();
 		}
 
 
