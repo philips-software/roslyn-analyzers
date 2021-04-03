@@ -43,62 +43,54 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			context.RegisterCodeFix(
 				CodeAction.Create(
 					title: Title,
-					createChangedDocument: c => AddTestTimeout(context.Document, attributeList, c),
+					createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAttributeAnalyzer.DefaultTimeoutKey), attributeList, c),
 					equivalenceKey: Title),
 				diagnostic);
 		}
 
-		private async Task<Document> AddTestTimeout(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
+		private async Task<Document> AddTestTimeout(Document document, string defaultTimeout, MethodDeclarationSyntax method, CancellationToken cancellationToken)
 		{
+			// any timeout.  1000ms should be a good default.
+			defaultTimeout ??= "1000";
+
+			ExpressionSyntax expression;
+			if (int.TryParse(defaultTimeout, out int integerTimeout))
+			{
+				expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(integerTimeout));
+			}
+			else
+			{
+				expression = SyntaxFactory.ParseExpression(defaultTimeout);
+			}
+
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
+
+			NameSyntax name = SyntaxFactory.ParseName("Timeout");
+			var newAttribute = SyntaxFactory.Attribute(name,
+				SyntaxFactory.AttributeArgumentList(
+					SyntaxFactory.SingletonSeparatedList(
+						SyntaxFactory.AttributeArgument(expression))));
+
 			SyntaxList<AttributeListSyntax> attributeLists = method.AttributeLists;
-			string category = string.Empty;
-			string timeout = string.Empty;
+
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
 				foreach (AttributeSyntax attributesyntax in attributes.Attributes)
 				{
 					if (attributesyntax.Name.ToString().Contains(@"Timeout"))
 					{
-						return document;
-					}
-					else if (attributesyntax.Name.ToString().Contains(@"TestCategory"))
-					{
-						category = attributesyntax.ArgumentList.Arguments.First().ToString();
+						SyntaxNode newRoot = rootNode.ReplaceNode(attributesyntax, newAttribute);
+
+						return document.WithSyntaxRoot(newRoot);
 					}
 				}
 			}
 
-			switch (category)
-			{
-				case "TestDefinitions.UnitTests":
-					timeout = "(TestTimeouts.CiAppropriate)";
-					break;
-				case "TestDefinitions.IntegrationTests":
-					timeout = "(TestTimeouts.Integration)";
-					break;
-				case "TestDefinitions.NightlyTests":
-					timeout = "(TestTimeouts.Nightly)";
-					break;
-				case "TestDefinitions.SmokeTests":
-					timeout = "(TestTimeouts.Smoke)";
-					break;
-				default:
-					timeout = "(TestTimeouts.CiAppropriate)";
-					break;
-			}
-
-			NameSyntax name = SyntaxFactory.ParseName("Timeout");
-			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
-			AttributeArgumentListSyntax arguments = SyntaxFactory.ParseAttributeArgumentList(timeout);
-			AttributeSyntax attribute = SyntaxFactory.Attribute(name, arguments);
-
-			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(
-				SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(attribute));
+			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(newAttribute));
 
 			MethodDeclarationSyntax newMethod = method.WithAttributeLists(method.AttributeLists.Add(attributeList));
 
-			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
-			Document newDocument = document.WithSyntaxRoot(newRoot);
+			Document newDocument = document.WithSyntaxRoot(rootNode.ReplaceNode(method, newMethod));
 			return newDocument;
 		}
 	}
