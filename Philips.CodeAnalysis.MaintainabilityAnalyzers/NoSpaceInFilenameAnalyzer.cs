@@ -20,9 +20,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		/// Diagnostic for file names with spaces.
 		/// </summary>
 		private const string Title = "Do not use spaces in file names.";
-		private const string Message = "File {0} has spaces in its path.";
+		private const string Message = "File '{0}' has spaces in its path.";
 		private const string Description = "Space in filename/ path.";
-		private const string Category = "Shoscar";
+		private const string Category = Categories.RuntimeFailure;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new DiagnosticDescriptor(

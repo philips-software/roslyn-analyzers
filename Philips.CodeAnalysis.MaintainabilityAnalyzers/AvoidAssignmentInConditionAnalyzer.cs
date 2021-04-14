@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private const string Title = "Assignment in condition.";
 		private const string Message = "Assignment within condition on line {0}.";
 		private const string Description = "Assignment in condition.";
-		private const string Category = "Usage";
+		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new DiagnosticDescriptor(
