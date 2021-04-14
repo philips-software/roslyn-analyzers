@@ -53,9 +53,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
 			var filePath = context.Tree.FilePath;
-			if (Helper.IsGeneratedCode(filePath)) {
-				return;
-			}
 			if (filePath.Length > 260)
 			{
 				var location = Location.Create(context.Tree, TextSpan.FromBounds(0, 0));

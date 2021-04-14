@@ -45,7 +45,7 @@ namespace PathTooLongUnitTest {
 			"Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\" +
 			"Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\" +
 			"Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Long";
-		private const string OutOfScopePath =
+		private const string GeneratedFilePath =
 			"C:\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\" +
 			"Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\" +
 			"Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\Very\\" +
@@ -57,8 +57,7 @@ namespace PathTooLongUnitTest {
 		[TestMethod]
 		[DataRow(ShortName, DisplayName = "ShortName"),
 		 DataRow(ShortAbsolutePath, DisplayName = "ShortAbsolutePath"),
-		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath"),
-		 DataRow(OutOfScopePath, DisplayName = "OutOfScopeSourceFile")]
+		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyCSharpDiagnostic(Correct, filePath);
@@ -68,10 +67,11 @@ namespace PathTooLongUnitTest {
 		/// Diagnostics should show up hare.
 		/// </summary>
 		[TestMethod]
-		[DataRow(LongName, 1, 1, DisplayName = "LongName"),
-		 DataRow(LongAbsolutePath, 1, 1, DisplayName = "LongAbsolutePath"),
-		 DataRow(LongRelativePath, 1, 1, DisplayName = "LongRelativePath")]
-		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath, int line, int column) {
+		[DataRow(LongName, DisplayName = "LongName"),
+		 DataRow(LongAbsolutePath, DisplayName = "LongAbsolutePath"),
+		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
+		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
+		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
 			VerifyCSharpDiagnostic(Correct, filePath, expected);
 		}
