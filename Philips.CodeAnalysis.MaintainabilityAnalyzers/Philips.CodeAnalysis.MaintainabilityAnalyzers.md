@@ -39,3 +39,7 @@
 | PH2084  | Don't lock on "new x()"                      | Locking on a newly created object has no effect|
 | PH2085  | Order property accessors                     | Consistently order property accessors as get, set, init|
 | PH2086  | Avoid calling Task<TResult>.Result           | [Avoid calling Task<TResult>.Result](https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way)|
+| PH2087  | Do not use spaces in filenames               | Not all tools handle files correctly that have spaces in their names. Homebrew scripts are prone to this for example.|
+| PH2088  | Paths should not exceed 260 characters       | This prevents your code to run correctly on older Windows version.|
+| PH2089  | Avoid assignments in conditions              | Conditions shouldn't have any side effects. Assign a variable outside of the condition instead.|
+
