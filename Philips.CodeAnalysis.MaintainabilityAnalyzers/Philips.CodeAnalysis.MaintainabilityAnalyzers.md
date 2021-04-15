@@ -6,7 +6,7 @@
 | PH2021  | Avoid inline new                             | Do not inline the constructor call.  Instead, create a local variable or a field for the temporary instance. |
 | PH2026  | Avoid SuppressMessage attribute              | SuppressMessage results in violations of codified coding guidelines.|
 | PH2027  | Avoid static methods                         | Static methods complicate Unit Testing.                      |
-| PH2028  | Copyright present                            | The top of the file should have a copyright.                 |
+| PH2028  | Copyright present                            | The top of the file should have a copyright statement. It should include: '©' or 'Copyright', the year and the company name if such is configured in the .editorconfig|
 | PH2029  | Avoid #pragma                                | #pragmas result in violations of codified coding guidelines. |
 | PH2030  | Variable naming conventions                  | Fields look like `_foo`. Locals look like `foo`.  (This analyzer does not respect IntelliSense settings in the .editorconfig.  It assumes this is your naming convention.)|
 | PH2031  | Avoid TryParse without Culture               | When interpreting a string as a number, always specify culture information.                                                             |
