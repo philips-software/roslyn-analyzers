@@ -89,11 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			var hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
 			
 			// Check the year
-			bool hasYear;
-			lock (yearRegex)
-			{
-				hasYear = yearRegex.IsMatch(comment);
-			}
+			bool hasYear = yearRegex.IsMatch(comment);
 
 			// Check the company name, only if it is configured.
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
