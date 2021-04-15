@@ -370,8 +370,9 @@ namespace Philips.CodeAnalysis.Common
 		public static bool IsGeneratedCode(string filePath)
 		{
 			string fileName = GetFileName(filePath);
-
-			return fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
+			return isDesignerFile || isGeneratedFile;
 		}
 
 		private static string GetFileName(string filePath)
@@ -422,6 +423,14 @@ namespace Philips.CodeAnalysis.Common
 				default:
 					return false;
 			}
+		}
+
+		/// <summary>
+		/// Get the line number, as the user sees then.
+		/// </summary>
+		public static int GetLineNumber(Location location) {
+			// Visual studio starts line numbers with 1 (instead of zero in Roslyn).
+			return location.GetLineSpan().StartLinePosition.Line + 1;
 		}
 	}
 }

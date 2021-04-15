@@ -79,5 +79,8 @@ namespace Philips.CodeAnalysis.Common
 		DontLockNewObject = 2084,
 		OrderPropertyAccessors = 2085,
 		AvoidTaskResult = 2086,
+		NoSpaceInFilename = 2087,
+		LimitPathLength = 2088,
+		AvoidAssignmentInCondition = 2089,
 	}
 }
