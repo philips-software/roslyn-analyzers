@@ -23,6 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private const string Category = Categories.Documentation;
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static Regex yearRegex = new Regex(@"\d\d\d\d");
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -88,9 +89,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			var hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
 			
 			// Check the year
-			var yearRegex = new Regex(@"\d\d\d\d");
-			var hasYear = yearRegex.IsMatch(comment);
-			
+			bool hasYear;
+			lock (yearRegex)
+			{
+				hasYear = yearRegex.IsMatch(comment);
+			}
+
 			// Check the company name, only if it is configured.
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
 			var companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
