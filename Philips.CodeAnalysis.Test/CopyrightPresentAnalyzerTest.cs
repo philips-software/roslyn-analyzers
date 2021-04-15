@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,9 +23,20 @@ namespace Philips.CodeAnalysis.Test
 
 		#region Non-Public Properties/Methods
 
+		private const string configuredCompanyName = @"Koninklijke Philips N.V.";
+
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new CopyrightPresentAnalyzer();
+		}
+
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			Dictionary<string, string> options = new Dictionary<string, string>
+			{
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent) }.company_name", configuredCompanyName  }
+			};
+			return options;
 		}
 
 		#endregion
@@ -37,11 +49,24 @@ namespace Philips.CodeAnalysis.Test
 #endregion", false, 3)]
 		[DataRow(@"#region Header
 // ©
-#endregion", true, -1)]
-		[DataRow(@"// ©", true, -1)]
-		[DataRow(@"/* ©", true, -1)]
-		[DataRow(@"// Copyright", true, -1)]
-		[DataRow(@"/* Copyright", true, -1)]
+#endregion", false, 2)]
+		[DataRow(@"#region Header
+// © Koninklijke Philips N.V.
+#endregion", false, 2)]
+		[DataRow(@"#region Header
+// © 2021
+#endregion", false, 2)]
+		[DataRow(@"#region Header
+// © Koninklijke Philips N.V. 2021
+#endregion", true, 2)]
+		[DataRow(@"// ©", false, -1)]
+		[DataRow(@"// © Koninklijke Philips N.V.", false, -1)]
+		[DataRow(@"// © 2021", false, -1)]
+		[DataRow(@"// Copyright 2021", false, -1)]
+		[DataRow(@"// Copyright Koninklijke Philips N.V. 2021", true, -1)]
+		[DataRow(@"/* Copyright Koninklijke Philips N.V. 2021", true, -1)]
+		[DataRow(@"// © Koninklijke Philips N.V. 2021", true, -1)]
+		[DataRow(@"/* © Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"", false, 2)]
 		[DataTestMethod]
 		public void HeaderIsDetected(string content, bool isGood, int errorLine)
@@ -158,6 +183,7 @@ using System.Reflection;
 
 		[DataRow(@"Foo.Designer.cs")]
 		[DataRow(@"Foo.designer.cs")]
+		[DataRow(@"Foo.g.cs")]
 		[DataTestMethod]
 		public void IsGeneratedCaseAgnostic(string text)
 		{

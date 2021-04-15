@@ -3,6 +3,13 @@ root = true
 [*.cs]
 indent_style = tab
 dotnet_sort_system_directives_first = true
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+csharp_new_line_before_members_in_anonymous_types = true
+csharp_new_line_between_query_expression_clauses = true
 
 dotnet_style_qualification_for_field = false:error
 dotnet_style_qualification_for_property = false:error
@@ -16,5 +23,7 @@ dotnet_diagnostic.RS1024.severity = error
 dotnet_diagnostic.RS1025.severity = error
 dotnet_diagnostic.RS1026.severity = error
 dotnet_diagnostic.TI11409.severity = none
+
+dotnet_code_quality.PH2028.company_name = Koninklijke Philips N.V.
 
 
