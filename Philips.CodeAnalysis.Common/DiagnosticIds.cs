@@ -82,5 +82,8 @@ namespace Philips.CodeAnalysis.Common
 		NoSpaceInFilename = 2087,
 		LimitPathLength = 2088,
 		AvoidAssignmentInCondition = 2089,
+		LogException = 2090,
+		ThrowInnerException = 2091,
+		LimitConditionComplexity = 2092,
 	}
 }

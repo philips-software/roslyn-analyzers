@@ -432,5 +432,13 @@ namespace Philips.CodeAnalysis.Common
 			// Visual studio starts line numbers with 1 (instead of zero in Roslyn).
 			return location.GetLineSpan().StartLinePosition.Line + 1;
 		}
+
+		public static bool IsMultiLine(Location location)
+		{
+			var lineSpan = location.GetLineSpan();
+			var startLine = lineSpan.StartLinePosition.Line;
+			var endLine = lineSpan.EndLinePosition.Line;
+			return (startLine != endLine);
+		}
 	}
 }
