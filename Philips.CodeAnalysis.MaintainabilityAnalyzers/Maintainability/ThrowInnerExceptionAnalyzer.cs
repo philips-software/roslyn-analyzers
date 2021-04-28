@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	/// <summary>
 	/// Include the original exception when rethrowing.
@@ -18,10 +18,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class ThrowInnerExceptionAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = "User inner exceptions for unhandled exceptions";
+		private const string Title = "Use inner exceptions for unhandled exceptions";
 		private const string Message = "Rethrown exception should include caught exception.";
-		private const string Description = "User inner exceptions for unhandled exceptions";
-		private const string Category = Categories.RuntimeFailure;
+		private const string Description = "Use inner exceptions for unhandled exceptions";
+		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new DiagnosticDescriptor(
@@ -56,32 +56,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			var catchNode = (CatchClauseSyntax)context.Node;
 			// Look for throw statements and check them.
-			var hasBadThrowNodes = catchNode.DescendantNodes().OfType<ThrowStatementSyntax>()
-				.Where(node => !IsCorrectThrow(context, node)).Any();
+			var hasBadThrowNodes = catchNode.DescendantNodes()
+				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(context, node));
 			if (hasBadThrowNodes)
 			{
-				var location = catchNode.GetLocation();
-				var lineNum = Helper.GetLineNumber(location);
-				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lineNum));
+				var location = catchNode.CatchKeyword.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 
 		// Throw should rethrow same exception, or include original exception
 		// when creating new Exception.
+		// Alternatively, also allow the HttpResponseException method using in ASP .NET Core.
 		private bool IsCorrectThrow(SyntaxNodeAnalysisContext context, ThrowStatementSyntax node)
 		{
 			bool isOk = true;
 			var newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
 			if (newNodes.Any())
 			{
-				// Constructor needs to have at least two arguments.
-				var objectCreation = newNodes.First();
-				isOk = objectCreation.ArgumentList.Arguments.Count > 1;
-				if (!isOk)
+				foreach (var creation in newNodes)
 				{
-					// The HttpResponseException has only a single argument.
-					foreach (var creation in newNodes)
+					// Constructor needs to have at least two arguments.
+					isOk = creation.ArgumentList != null && creation.ArgumentList.Arguments.Count > 1;
+					if (!isOk)
 					{
+						// The HttpResponseException has only a single argument.
 						var typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
 						if (typeSymbol.Name == "HttpResponseException")
 						{
