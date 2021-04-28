@@ -5,9 +5,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
+namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	/// <summary>
 	/// Test class for <see cref="LogExceptionAnalyzer"/>.

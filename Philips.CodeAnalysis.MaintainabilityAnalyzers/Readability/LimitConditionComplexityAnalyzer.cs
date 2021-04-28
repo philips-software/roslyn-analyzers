@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 using Philips.CodeAnalysis.Common;
 
@@ -19,10 +20,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LimitConditionComplexityAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = "Limit the number of checks in a condition";
+		private const string Title = "Limit the number of clauses in a condition";
 		private const string Message =
-			"Divide the condition statement around line {0} such, that the number of check is not larger than {1}.";
-		private const string Description = "Divide long conditions in consistent way";
+			"Limit the number of clauses in the condition statement, to not more than {0}.";
+		private const string Description = "Limit the number of clauses in a condition";
 		private const string Category = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor Rule =
@@ -32,8 +33,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				Message,
 				Category,
 				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
+				isEnabledByDefault: false,
 				description: Description);
+
+		private int maxOperators;
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer.SupportedDiagnostics"/>
@@ -47,8 +50,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
-			context.RegisterSyntaxNodeAction(AnalyzeTernary, SyntaxKind.ConditionalExpression);
+			context.RegisterCompilationStartAction(
+				startContext =>
+				{
+					var additionalFiles = new AdditionalFilesHelper(
+						startContext.Options,
+						startContext.Compilation);
+					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
+					if (int.TryParse(maxStr, out int parsedMax))
+					{
+						maxOperators = parsedMax;
+						context.RegisterSyntaxNodeAction(
+							AnalyzeIfStatement,
+							SyntaxKind.IfStatement);
+						context.RegisterSyntaxNodeAction(
+							AnalyzeTernary,
+							SyntaxKind.ConditionalExpression);
+					}
+					else
+					{
+						startContext.RegisterCompilationEndAction(ReportParsingError);
+					}
+				});
 		}
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
@@ -77,17 +100,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private void AnalyzeCondition(SyntaxNodeAnalysisContext context, ExpressionSyntax conditionNode)
 		{
 			var numOperators = conditionNode.DescendantTokens().Where(IsLogicalOperator).Count();
-			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			var configValue = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_operators");
-			if (int.TryParse(configValue, out int maxOperators))
+			if (numOperators >= maxOperators)
 			{
-				if (numOperators >= maxOperators)
-				{
-					var newLineLocation = conditionNode.GetLocation();
-					var lineNum = Helper.GetLineNumber(newLineLocation);
-					context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, lineNum));
-				}
+				var newLineLocation = conditionNode.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators));
 			}
+		}
+
+		private void ReportParsingError(CompilationAnalysisContext context)
+		{
+			var loc = Location.Create(context.Compilation.SyntaxTrees.First(), TextSpan.FromBounds(0, 0));
+			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 		}
 
 		private bool IsLogicalOperator(SyntaxToken token)

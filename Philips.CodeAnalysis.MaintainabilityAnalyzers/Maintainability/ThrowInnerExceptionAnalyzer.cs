@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				Message,
 				Category,
 				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
+				isEnabledByDefault: false,
 				description: Description
 			);
 

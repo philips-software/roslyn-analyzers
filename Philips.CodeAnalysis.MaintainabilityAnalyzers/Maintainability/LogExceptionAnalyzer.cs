@@ -7,10 +7,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	/// <summary>
 	/// Report when a catch exception block does not call one of the logging methods.
@@ -19,9 +20,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	public class LogExceptionAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = "Log caught exceptions.";
-		private const string Message = "Exception caught in line {0} is not logged.";
+		private const string Message = "Exception that is caught, is not logged.";
 		private const string Description = "Log caught exceptions.";
-		private const string Category = Categories.RuntimeFailure;
+		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new DiagnosticDescriptor(
@@ -30,9 +31,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				Message,
 				Category,
 				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
+				isEnabledByDefault: false,
 				description: Description
 			);
+
+		private string logMethodNames;
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -46,23 +49,44 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeCatchException, SyntaxKind.CatchClause);
+			context.RegisterCompilationStartAction(
+				startContext =>
+				{
+					var additionalFiles = new AdditionalFilesHelper(
+						startContext.Options,
+						startContext.Compilation);
+					var methodNames = additionalFiles.GetValueFromEditorConfig(Rule.Id, "log_method_names");
+					if (string.IsNullOrEmpty(methodNames))
+					{
+						startContext.RegisterCompilationEndAction(ReportParsingError);
+					}
+					else
+					{
+						logMethodNames = methodNames;
+						context.RegisterSyntaxNodeAction(AnalyzeCatchException, SyntaxKind.CatchClause);
+					}
+				});
 		}
 
 		private void AnalyzeCatchException(SyntaxNodeAnalysisContext context)
 		{
 			var catchNode = context.Node;
 			// Look for logging method calls underneath this node.
-			var hasCallingLogNodes = catchNode.DescendantNodes().OfType<InvocationExpressionSyntax>()
-				.Where(x => IsCallingLogMethod(context, x)).Any();
+			var hasCallingLogNodes = catchNode.DescendantNodes()
+				.OfType<InvocationExpressionSyntax>().Any(x => IsCallingLogMethod(context, x));
 			// If another exception is thrown, logging is not required.
 			var hasThrowNodes = catchNode.DescendantNodes().OfType<ThrowStatementSyntax>().Any();
 			if (!hasCallingLogNodes && !hasThrowNodes)
 			{
 				var location = catchNode.GetLocation();
-				var lineNum = Helper.GetLineNumber(location);
-				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lineNum));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
+		}
+
+		private void ReportParsingError(CompilationAnalysisContext context)
+		{
+			var loc = Location.Create(context.Compilation.SyntaxTrees.First(), TextSpan.FromBounds(0, 0));
+			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 		}
 
 		private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, SyntaxNode node)
