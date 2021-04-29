@@ -424,13 +424,5 @@ namespace Philips.CodeAnalysis.Common
 					return false;
 			}
 		}
-
-		/// <summary>
-		/// Get the line number, as the user sees then.
-		/// </summary>
-		public static int GetLineNumber(Location location) {
-			// Visual studio starts line numbers with 1 (instead of zero in Roslyn).
-			return location.GetLineSpan().StartLinePosition.Line + 1;
-		}
 	}
 }

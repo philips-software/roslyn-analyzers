@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidAssignmentInConditionAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = "Assignment in condition.";
-		private const string Message = "Assignment within condition on line {0}.";
+		private const string Message = "Assignment within condition.";
 		private const string Description = "Assignment in condition.";
 		private const string Category = Categories.Maintainability;
 
@@ -87,8 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (found)
 			{
 				var location = node.GetLocation();
-				var lineNum = Helper.GetLineNumber(location);
-				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lineNum));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 	}
