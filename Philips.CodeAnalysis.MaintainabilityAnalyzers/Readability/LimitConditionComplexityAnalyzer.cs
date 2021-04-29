@@ -60,10 +60,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					if (int.TryParse(maxStr, out int parsedMax))
 					{
 						maxOperators = parsedMax;
-						context.RegisterSyntaxNodeAction(
+						startContext.RegisterSyntaxNodeAction(
 							AnalyzeIfStatement,
 							SyntaxKind.IfStatement);
-						context.RegisterSyntaxNodeAction(
+						startContext.RegisterSyntaxNodeAction(
 							AnalyzeTernary,
 							SyntaxKind.ConditionalExpression);
 					}

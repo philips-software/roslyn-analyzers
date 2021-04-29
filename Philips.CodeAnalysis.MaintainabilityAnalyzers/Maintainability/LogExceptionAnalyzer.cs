@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				description: Description
 			);
 
-		private string logMethodNames;
+		private string _logMethodNames;
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -62,15 +62,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					}
 					else
 					{
-						logMethodNames = methodNames;
-						context.RegisterSyntaxNodeAction(AnalyzeCatchException, SyntaxKind.CatchClause);
+						_logMethodNames = methodNames;
+						startContext.RegisterSyntaxNodeAction(AnalyzeCatchException, SyntaxKind.CatchClause);
 					}
 				});
 		}
 
 		private void AnalyzeCatchException(SyntaxNodeAnalysisContext context)
 		{
-			var catchNode = context.Node;
+			var catchNode = (CatchClauseSyntax)context.Node;
 			// Look for logging method calls underneath this node.
 			var hasCallingLogNodes = catchNode.DescendantNodes()
 				.OfType<InvocationExpressionSyntax>().Any(x => IsCallingLogMethod(context, x));
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var hasThrowNodes = catchNode.DescendantNodes().OfType<ThrowStatementSyntax>().Any();
 			if (!hasCallingLogNodes && !hasThrowNodes)
 			{
-				var location = catchNode.GetLocation();
+				var location = catchNode.CatchKeyword.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
@@ -91,14 +91,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
-			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			var logMethodNames = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"log_method_names");
 			var isLoggingMethod = false;
 			var invocation = (InvocationExpressionSyntax)node;
 			if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
 			{
 				var methodName = memberAccess.Name.Identifier.Text;
-				isLoggingMethod = logMethodNames.Contains(methodName);
+				isLoggingMethod = _logMethodNames.Contains(methodName);
 			}
 			return isLoggingMethod;
 		}
