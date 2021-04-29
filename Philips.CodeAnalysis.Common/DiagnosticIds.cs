@@ -85,5 +85,11 @@ namespace Philips.CodeAnalysis.Common
 		LogException = 2090,
 		ThrowInnerException = 2091,
 		LimitConditionComplexity = 2092,
+		AvoidGcCollect = 2093,
+		AvoidGcWaitForPendingFinalizers = 2094,
+		StringBuilderCapacity = 2095,
+		AvoidThreadStart = 2096,
+		AvoidWeakReferenceIsAlive = 2097,
+		AvoidMethodImplSynchronized = 2098,
 	}
 }

@@ -45,4 +45,9 @@
 | PH2090  |	Log Exception                                | Log any of the caught exceptions. The Log method names are configurable in the .editorconfig using key: 'dotnet_code_quality.PH2090.log_method_names'.|
 | PH2091  |	Throw Inner Exception                        | When throwing an exception inside a catch block, include the original exception as arguments. This will show the inner exception also in a Callstack, aiding debugability. |
 | PH2092  | Limit Condition Complexity                   | Limit the number of logical expressions in a single condition. Humans are not very good of keeping track of large logical expressions. The maximum allowed number is configurable in the .editorconfig using key: 'dotnet_code_quality.PH2092.max_operators'.|
-
+| PH2093  | Avoid GC.Collect                             | GC.Collect does not guarantee the Garbage Collecter will run. |
+| PH2094  | Avoid GC.WaitForPendingFinalizers            | Code should not rely on behavior in finalizers. Also, in multithreaded application, there is no guarantee this method will terminate. |
+| PH2095  | StringBuilder capacity                       | Create a StringBuilder instance, with a large enough capacity. If not, garbage is created anyhow. |
+| PH2096  | Avoid new Thread()                           | Avoid creating your own thread, this is an expensive operation. Use the ThreadPool instead. |
+| PH2097  | Avoid WeakReference.IsAlive                  | After checking WeakReference.IsAlive, there is no guarantee that the reference is still alive the next statement, the Garbage Collector could have finalized it in the (short) meantime. |
+| PH2098  | Avoid MethodImpl.Synchronized                | The attribute [MethodImpl(MothodImplOptions.Synchronized)] will inject code around the method, which locks on the class instance. |

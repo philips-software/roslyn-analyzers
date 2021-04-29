@@ -424,5 +424,33 @@ namespace Philips.CodeAnalysis.Common
 					return false;
 			}
 		}
+
+		public static SyntaxToken GetInvokedMemberIdentifier(ExpressionSyntax node)
+		{
+			var expression = node;
+			if (expression.IsKind(SyntaxKind.ObjectCreationExpression))
+			{
+				var creation = (ObjectCreationExpressionSyntax)expression;
+				if (creation.Parent != null && creation.Parent.Parent is VariableDeclaratorSyntax varDecl)
+				{
+					return varDecl.Identifier;
+				}
+			}
+			else if (expression.IsKind(SyntaxKind.InvocationExpression))
+			{
+				expression = ((InvocationExpressionSyntax)expression).Expression;
+			}
+			if (expression.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+			{
+				var memberAccess = (MemberAccessExpressionSyntax)expression;
+				expression = memberAccess.Expression;
+			}
+			if (expression.IsKind(SyntaxKind.IdentifierName))
+			{
+				var identifierName = (IdentifierNameSyntax)expression;
+				return identifierName.Identifier;
+			}
+			return SyntaxFactory.Identifier("unnamed");
+		}
 	}
 }

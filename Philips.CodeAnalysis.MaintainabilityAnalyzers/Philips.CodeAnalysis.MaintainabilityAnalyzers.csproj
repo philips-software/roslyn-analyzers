@@ -50,7 +50,13 @@
 1.2.12
 * Introduce PH2090: Log Exceptions
 * Introduce PH2091:	Throw Inner Exception
-* Introduce PH2092: Limit Condition Complexity 
+* Introduce PH2092: Limit Condition Complexity
+* Introduce PH2093: Avoid GC.Collect()
+* Introduce PH2094: Avoid GC.WaitForPendingFinalizers()
+* Introduce PH2095: StringBuilder capacity
+* Introduce PH2096: Avoid Thread start
+* Introduce PH2097: Avoid WeakReference.IsAlive
+* Introduce PH2098: Avoid MethodImpl.Synchronized
     </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
