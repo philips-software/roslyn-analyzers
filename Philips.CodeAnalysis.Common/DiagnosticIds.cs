@@ -85,5 +85,7 @@ namespace Philips.CodeAnalysis.Common
 		LogException = 2090,
 		ThrowInnerException = 2091,
 		LimitConditionComplexity = 2092,
+		PreferTuplesWithNamedFields = 2093,
+		PreferUsingNamedTupleField = 2094,
 	}
 }
