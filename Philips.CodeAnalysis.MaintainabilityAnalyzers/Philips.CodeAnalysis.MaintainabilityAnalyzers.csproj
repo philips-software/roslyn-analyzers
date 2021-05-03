@@ -56,9 +56,9 @@
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.2.12</Version>
+    <Version>1.2.13</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.2.12</FileVersion>
+    <FileVersion>1.2.13</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
