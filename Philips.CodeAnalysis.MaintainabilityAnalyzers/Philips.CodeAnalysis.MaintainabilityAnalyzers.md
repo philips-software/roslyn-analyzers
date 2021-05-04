@@ -45,4 +45,5 @@
 | PH2090  |	Log Exception                                | Log any of the caught exceptions. The Log method names are configurable in the .editorconfig using key: 'dotnet_code_quality.PH2090.log_method_names'.|
 | PH2091  |	Throw Inner Exception                        | When throwing an exception inside a catch block, include the original exception as arguments. This will show the inner exception also in a Callstack, aiding debugability. |
 | PH2092  | Limit Condition Complexity                   | Limit the number of logical expressions in a single condition. Humans are not very good of keeping track of large logical expressions. The maximum allowed number is configurable in the .editorconfig using key: 'dotnet_code_quality.PH2092.max_operators'.|
-
+| PH2093  |	Prefer creating tuples with named fields     | When creating or accepting a tuple, provide names for the elements (IE, prefer (DateTime createdAt, int id) rather than (DateTime, int) |
+| PH2094  | Prefer using the named tuple field, not ItemX| Wherever possible, use the provided name of a tuple field, not the generic name.  (IE, (DateTime createdAt, int id) value;  value.Item1.ToString(), prefer value.createdAt.ToString() |
