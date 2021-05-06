@@ -147,6 +147,45 @@ public class TestClass : Data
 			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
 
+		[DataRow(": Foo", false)]
+		[DataRow("", true)]
+		[DataTestMethod]
+		public void EmptyStatementMethodBody(string baseClass, bool isError)
+		{
+			string content = $@"
+public interface Foo {{ void Bar(ref int i); }}
+public class TestClass {baseClass}
+{{
+	public void Bar(ref int i)
+	{{
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+		}
+
+		[DataRow(": Foo", "i = 0", false)]
+		[DataRow("", "i = 0", false)]
+		[DataRow(": Foo", "_ = i.ToString()", false)]
+		[DataRow("", "_ = i.ToString()", true)]
+		[DataTestMethod]
+		public void SingleStatementMethodBody(string baseClass, string statement, bool isError)
+		{
+			string content = $@"
+public interface Foo {{ void Bar(ref int i); }}
+public class TestClass {baseClass}
+{{
+	public void Bar(ref int i)
+	{{
+		{statement};
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+		}
+
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PassByRefAnalyzer();
 

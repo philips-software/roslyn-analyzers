@@ -111,6 +111,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			DataFlowAnalysis flow;
 			if (methodDeclarationSyntax.Body != null)
 			{
+				if (!methodDeclarationSyntax.Body.Statements.Any())
+				{
+					return false;
+				}
+
 				flow = semanticModel.AnalyzeDataFlow(methodDeclarationSyntax.Body.Statements.First(), methodDeclarationSyntax.Body.Statements.Last());
 			}
 			else if (methodDeclarationSyntax.ExpressionBody != null)
