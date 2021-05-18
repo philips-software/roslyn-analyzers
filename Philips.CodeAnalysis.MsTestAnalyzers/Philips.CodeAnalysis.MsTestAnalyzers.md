@@ -29,4 +29,5 @@
 | PH2058  | Avoid Assert conditional check                       | Do not use an inline null check while asserting. Use a different Assert.IsNotNull check. Assert.AreEqual(&lt;actual>?.attribute, &lt;expected>) => Assert.IsNotNull(&lt;actual>); Assert.AreEqual(&lt;actual>.attribute, &lt;expected>) |
 | PH2059  | Public Method should be TestMethod                   | Public methods inside a TestClass should either be a test method or non-public. |
 | PH2076  | Assert.Fail alternatives                             | Assert.Fail should not be used if an alternative is more appropriate |
+| PH2095  | TestMethods must return void/Task for async methods  | TestMethods must return Task if they are async methods, or void if not |
 
