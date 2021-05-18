@@ -26,7 +26,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ISymbol symbolInfo = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			if (symbolInfo is not IMethodSymbol methodSymbol)
+			IMethodSymbol methodSymbol = symbolInfo as IMethodSymbol;
+			if (methodSymbol is null)
 			{
 				return;
 			}
