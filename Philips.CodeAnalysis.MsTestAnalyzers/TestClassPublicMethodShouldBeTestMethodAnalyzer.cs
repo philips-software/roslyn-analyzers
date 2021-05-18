@@ -58,16 +58,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			ClassDeclarationSyntax classDeclaration = methodDeclaration.Parent as ClassDeclarationSyntax;
-
-			if (classDeclaration == null)
+			if (methodDeclaration.Parent is not ClassDeclarationSyntax classDeclaration)
 			{
 				return;
 			}
+
 			if (!Helper.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}
+
+			SymbolInfo info = context.SemanticModel.GetSymbolInfo(methodDeclaration);
+			ISymbol symbol = info.Symbol;
+			if (symbol is null)
+			{
+				return;
+			}
+
 
 			if (Helper.HasAnyAttribute(methodDeclaration.AttributeLists, context, attributeDefinitions))
 			{

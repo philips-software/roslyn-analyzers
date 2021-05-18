@@ -12,6 +12,20 @@ namespace Philips.CodeAnalysis.Test
 	[TestClass]
 	public class TestClassPublicMethodShouldBeTestMethodTest : DiagnosticVerifier
 	{
+		protected override (string name, string content)[] GetAdditionalSourceCode()
+		{
+			string code = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class DerivedTestMethod : TestMethod
+{
+}
+
+";
+
+			return new[] { ("DerivedTestMethod.cs", code) };
+		}
+
 		[DataTestMethod]
 		[DataRow(@"public", true)]
 		[DataRow(@"private", false)]
@@ -57,6 +71,7 @@ class Foo
 		}
 
 		[DataTestMethod]
+		[DataRow(@"[DerivedTestMethod]", false)]
 		[DataRow(@"[TestMethod]", false)]
 		[DataRow(@"[DataTestMethod]", false)]
 		[DataRow(@"[AssemblyInitialize()]", false)]
