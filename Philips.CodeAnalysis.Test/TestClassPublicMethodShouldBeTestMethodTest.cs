@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test
 			string code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-public class DerivedTestMethod : TestMethod
+public class DerivedTestMethod : TestMethodAttribute
 {
 }
 
@@ -59,7 +59,7 @@ class Foo
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 {0}
-class Foo 
+class Foo
 {{
 
   public void Foo()

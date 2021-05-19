@@ -17,17 +17,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Test class cannot have a public method unless its a test method. Either change the access modifier or make it a test method";
 		private const string Category = Categories.Maintainability;
 
-		private static AttributeDefinition[] attributeDefinitions =
+		private class AttributeDefinitions
 		{
-			MsTestFrameworkDefinitions.TestMethodAttribute,
-			MsTestFrameworkDefinitions.DataTestMethodAttribute,
-			MsTestFrameworkDefinitions.AssemblyInitializeAttribute,
-			MsTestFrameworkDefinitions.AssemblyCleanupAttribute,
-			MsTestFrameworkDefinitions.TestInitializeAttribute,
-			MsTestFrameworkDefinitions.TestCleanupAttribute,
-			MsTestFrameworkDefinitions.ClassCleanupAttribute,
-			MsTestFrameworkDefinitions.ClassInitializeAttribute
-		};
+			public INamedTypeSymbol TestMethodSymbol { get; set; }
+
+			public ImmutableArray<INamedTypeSymbol> OtherAttributes { get; set; }
+		}
 
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -35,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterCompilationStartAction(startContext =>
@@ -45,11 +40,39 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+				var builder = ImmutableArray.CreateBuilder<INamedTypeSymbol>();
+
+				foreach (var definition in new[]
+				{
+					MsTestFrameworkDefinitions.AssemblyInitializeAttribute,
+					MsTestFrameworkDefinitions.AssemblyCleanupAttribute,
+					MsTestFrameworkDefinitions.TestInitializeAttribute,
+					MsTestFrameworkDefinitions.TestCleanupAttribute,
+					MsTestFrameworkDefinitions.ClassCleanupAttribute,
+					MsTestFrameworkDefinitions.ClassInitializeAttribute,
+				})
+				{
+					var type = startContext.Compilation.GetTypeByMetadataName(definition.FullName);
+
+					if (type is null)
+					{
+						continue;
+					}
+
+					builder.Add(type);
+				}
+
+				AttributeDefinitions definitions = new AttributeDefinitions()
+				{
+					TestMethodSymbol = startContext.Compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestMethodAttribute.FullName),
+					OtherAttributes = builder.ToImmutable(),
+				};
+
+				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		public static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(AttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -58,7 +81,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (methodDeclaration.Parent is not ClassDeclarationSyntax classDeclaration)
+			if (!(methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration))
 			{
 				return;
 			}
@@ -68,21 +91,49 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			SymbolInfo info = context.SemanticModel.GetSymbolInfo(methodDeclaration);
-			ISymbol symbol = info.Symbol;
+			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+
 			if (symbol is null)
 			{
 				return;
 			}
 
-
-			if (Helper.HasAnyAttribute(methodDeclaration.AttributeLists, context, attributeDefinitions))
+			bool isAllowedToBePublic = false;
+			foreach (AttributeData attribute in symbol.GetAttributes())
 			{
-				return;
+				if (definitions.OtherAttributes.Contains(attribute.AttributeClass))
+				{
+					isAllowedToBePublic = true;
+					break;
+				}
+
+				if (IsDerivedFrom(attribute.AttributeClass, definitions.TestMethodSymbol))
+				{
+					isAllowedToBePublic = true;
+					break;
+				}
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
-			context.ReportDiagnostic(diagnostic);
+			if (!isAllowedToBePublic)
+			{
+				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
+				context.ReportDiagnostic(diagnostic);
+			}
+		}
+
+		private bool IsDerivedFrom(INamedTypeSymbol cls, INamedTypeSymbol baseClass)
+		{
+			while (cls != null)
+			{
+				if (SymbolEqualityComparer.Default.Equals(cls, baseClass))
+				{
+					return true;
+				}
+
+				cls = cls.BaseType;
+			}
+
+			return false;
 		}
 	}
 }
