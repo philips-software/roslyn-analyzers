@@ -424,5 +424,20 @@ namespace Philips.CodeAnalysis.Common
 					return false;
 			}
 		}
+
+		public static bool IsDerivedFrom(this INamedTypeSymbol symbol, INamedTypeSymbol other)
+		{
+			while (symbol != null)
+			{
+				if (SymbolEqualityComparer.Default.Equals(symbol, other))
+				{
+					return true;
+				}
+
+				symbol = symbol.BaseType;
+			}
+
+			return false;
+		}
 	}
 }

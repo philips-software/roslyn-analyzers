@@ -1,7 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,45 +10,61 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	[Flags]
-	public enum TestAttributes
+	public class MsTestAttributeDefinitions
 	{
-		None = 0x00000000,
-		TestClass = 0x00000001,
-		TestMethod = 0x00000002,
-		DataTestMethod = 0x00000004,
-		ClassInitialize = 0x00000008,
-		ClassCleanup = 0x00000010,
-		AssemblyInitialize = 0x00000010,
-		AssemblyCleanup = 0x00000020,
-		TestCleanup = 0x00000040,
-		DataRow = 0x00000080,
-		TestInitialize = 0x00000100,
-		All = 0x7FFFFFFF,
+		public static MsTestAttributeDefinitions FromCompilation(Compilation compilation)
+		{
+			MsTestAttributeDefinitions definitions = new MsTestAttributeDefinitions()
+			{
+				TestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestMethodAttribute.FullName),
+				DataTestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DataTestMethodAttribute.FullName),
+				TestClassSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestClassAttribute.FullName),
+				ClassInitializeSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.ClassInitializeAttribute.FullName),
+				ClassCleanupSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.ClassCleanupAttribute.FullName),
+				AssemblyInitializeSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.AssemblyInitializeAttribute.FullName),
+				AssemblyCleanupSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.AssemblyCleanupAttribute.FullName),
+				TestInitializeSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestInitializeAttribute.FullName),
+				TestCleanupSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestCleanupAttribute.FullName),
+				DataRowSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DataRowAttribute.FullName),
+				DynamicDataSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DynamicDataAttribute.FullName),
+			};
+
+			definitions.NonTestMethods = ImmutableHashSet.Create<INamedTypeSymbol>(SymbolEqualityComparer.Default,
+				definitions.TestClassSymbol,
+				definitions.ClassInitializeSymbol,
+				definitions.ClassCleanupSymbol,
+				definitions.AssemblyCleanupSymbol,
+				definitions.AssemblyInitializeSymbol,
+				definitions.TestInitializeSymbol,
+				definitions.TestCleanupSymbol,
+				definitions.DataRowSymbol,
+				definitions.DynamicDataSymbol
+			);
+
+			return definitions;
+		}
+
+		private MsTestAttributeDefinitions() { }
+
+		public INamedTypeSymbol TestMethodSymbol { get; private set; }
+		public INamedTypeSymbol DataTestMethodSymbol { get; private set; }
+		public INamedTypeSymbol TestClassSymbol { get; private set; }
+		public INamedTypeSymbol ClassInitializeSymbol { get; private set; }
+		public INamedTypeSymbol ClassCleanupSymbol { get; private set; }
+		public INamedTypeSymbol AssemblyInitializeSymbol { get; private set; }
+		public INamedTypeSymbol AssemblyCleanupSymbol { get; private set; }
+		public INamedTypeSymbol TestInitializeSymbol { get; private set; }
+		public INamedTypeSymbol TestCleanupSymbol { get; private set; }
+		public INamedTypeSymbol DataRowSymbol { get; private set; }
+		public INamedTypeSymbol DynamicDataSymbol { get; private set; }
+
+		public ImmutableHashSet<INamedTypeSymbol> NonTestMethods { get; private set; }
 	}
 
 	public abstract class TestAttributeDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		private IReadOnlyDictionary<AttributeDefinition, TestAttributes> _attributes = new Dictionary<AttributeDefinition, TestAttributes>()
-		{
-			{ MsTestFrameworkDefinitions.TestClassAttribute, TestAttributes.TestClass },
-			{ MsTestFrameworkDefinitions.TestMethodAttribute, TestAttributes.TestMethod },
-			{ MsTestFrameworkDefinitions.DataTestMethodAttribute, TestAttributes.DataTestMethod },
-			{ MsTestFrameworkDefinitions.ClassInitializeAttribute, TestAttributes.ClassInitialize },
-			{ MsTestFrameworkDefinitions.ClassCleanupAttribute, TestAttributes.ClassCleanup },
-			{ MsTestFrameworkDefinitions.AssemblyInitializeAttribute, TestAttributes.AssemblyInitialize },
-			{ MsTestFrameworkDefinitions.AssemblyCleanupAttribute, TestAttributes.AssemblyCleanup },
-			{ MsTestFrameworkDefinitions.TestCleanupAttribute, TestAttributes.TestCleanup },
-			{ MsTestFrameworkDefinitions.DataRowAttribute, TestAttributes.DataRow },
-			{ MsTestFrameworkDefinitions.TestInitializeAttribute, TestAttributes.TestInitialize }
-		};
-
-		private readonly TestAttributes _interestedAttributes;
-
-		protected TestAttributeDiagnosticAnalyzer(TestAttributes interestedAttributes)
-		{
-			_interestedAttributes = interestedAttributes;
-		}
+		protected TestAttributeDiagnosticAnalyzer()
+		{ }
 
 		protected virtual void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation) { }
 
@@ -66,50 +82,68 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				OnInitializeAnalyzer(startContext.Options, startContext.Compilation);
 
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+
+				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		protected abstract void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, TestAttributes attributes);
+		protected abstract void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes);
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
-			TestAttributes attributes = TestAttributes.None;
-			foreach (var kvp in _attributes)
+			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+
+			if (symbol is null)
 			{
-				if ((kvp.Value & _interestedAttributes) == 0)
-				{
-					continue;
-				}
-
-				if (!Helper.HasAttribute(methodDeclaration.AttributeLists, context, kvp.Key))
-				{
-					continue;
-				}
-
-				attributes |= kvp.Value;
+				return;
 			}
 
-			if (attributes != TestAttributes.None)
+			HashSet<INamedTypeSymbol> presentAttributes = new HashSet<INamedTypeSymbol>();
+			foreach (AttributeData attribute in symbol.GetAttributes())
 			{
-				OnTestAttributeMethod(context, methodDeclaration, attributes);
+				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
+				{
+					presentAttributes.Add(attribute.AttributeClass);
+				}
+
+				if (attribute.AttributeClass.IsDerivedFrom(definitions.TestMethodSymbol))
+				{
+					presentAttributes.Add(attribute.AttributeClass);
+				}
+			}
+
+			if (presentAttributes.Count > 0)
+			{
+				OnTestAttributeMethod(context, methodDeclaration, definitions, presentAttributes);
 			}
 		}
 	}
 
 	public abstract class TestMethodDiagnosticAnalyzer : TestAttributeDiagnosticAnalyzer
 	{
-		public TestMethodDiagnosticAnalyzer() : base(TestAttributes.DataTestMethod | TestAttributes.TestMethod)
+		public TestMethodDiagnosticAnalyzer()
 		{ }
 
 		protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod);
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, TestAttributes attributes)
+		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes)
 		{
-			bool isTestMethod = attributes.HasFlag(TestAttributes.TestMethod);
-			bool isDataTestMethod = attributes.HasFlag(TestAttributes.DataTestMethod);
+			bool isTestMethod = false;
+			bool isDataTestMethod = false;
+
+			foreach (INamedTypeSymbol attribute in presentAttributes)
+			{
+				isTestMethod = attribute.IsDerivedFrom(attributes.TestMethodSymbol);
+				isDataTestMethod = attribute.IsDerivedFrom(attributes.DataTestMethodSymbol);
+
+				if (isTestMethod || isDataTestMethod)
+				{
+					break;
+				}
+			}
 
 			if (!isTestMethod && !isDataTestMethod)
 			{
