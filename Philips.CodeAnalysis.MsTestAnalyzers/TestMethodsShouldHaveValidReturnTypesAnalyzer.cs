@@ -22,39 +22,40 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
+
+		private class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
 		{
-			ISymbol symbolInfo = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+			private readonly INamedTypeSymbol _taskSymbol;
 
-			IMethodSymbol methodSymbol = symbolInfo as IMethodSymbol;
-			if (methodSymbol is null)
+			public TestMethodsShouldHaveValidReturnTypes(Compilation compilation, MsTestAttributeDefinitions definitions) : base(definitions)
 			{
-				return;
+				_taskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
 			}
 
-			if (!methodSymbol.IsAsync && methodSymbol.ReturnsVoid)
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				// not async, returns void.
-				return;
+				if (!methodSymbol.IsAsync && methodSymbol.ReturnsVoid)
+				{
+					// not async, returns void.
+					return;
+				}
+
+				if (!methodSymbol.IsAsync)
+				{
+					// error.  Not async, doesn't return void.
+					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), context.Compilation.GetSpecialType(SpecialType.System_Void).ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+					return;
+				}
+
+				// async method.  Must return Task or Task<T>
+				if (_taskSymbol is null || SymbolEqualityComparer.Default.Equals(_taskSymbol, methodSymbol.ReturnType))
+				{
+					return;
+				}
+
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), _taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 			}
-
-			if (!methodSymbol.IsAsync)
-			{
-				// error.  Not async, doesn't return void.
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), context.Compilation.GetSpecialType(SpecialType.System_Void).ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
-				return;
-			}
-
-			// async method.  Must return Task or Task<T>
-			INamedTypeSymbol expectedReturnType = context.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
-
-			if (SymbolEqualityComparer.Default.Equals(expectedReturnType, methodSymbol.ReturnType))
-			{
-				return;
-			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), expectedReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 		}
-
 	}
 }
