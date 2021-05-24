@@ -24,24 +24,28 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public TestMethodsMustBeInTestClassAnalyzer()
 		{ }
 
+		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBeInTestClass();
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
+		private class TestMethodsMustBeInTestClass : Implementation
 		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
-			if (Helper.IsInTestClass(context))
+			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				return;
+				if (Helper.IsInTestClass(context))
+				{
+					return;
+				}
+
+				var symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+
+				if (symbol != null && symbol.ContainingType.IsAbstract)
+				{
+					return;
+				}
+
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 			}
-
-			var symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
-
-			if (symbol != null && symbol.ContainingType.IsAbstract)
-			{
-				return;
-			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 		}
 	}
 }

@@ -20,20 +20,27 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
-		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
-			if (!Helper.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
-			{
-				return;
-			}
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestHasDescription(definitions);
 
-			string descriptionName = argument.ToString();
-			string value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
-			if (descriptionName.Contains("\"") || value.Length > 25)
+		public class TestHasDescription : TestMethodImplementation
+		{
+			public TestHasDescription(MsTestAttributeDefinitions definitions) : base(definitions)
+			{ }
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-				context.ReportDiagnostic(diagnostic);
+				if (!Helper.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
+				{
+					return;
+				}
+
+				string descriptionName = argument.ToString();
+				string value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
+				if (descriptionName.Contains("\"") || value.Length > 25)
+				{
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
 		}
 	}

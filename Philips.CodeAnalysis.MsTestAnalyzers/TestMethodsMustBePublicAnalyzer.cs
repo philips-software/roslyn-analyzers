@@ -24,15 +24,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
-		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
-			if (!methodDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword) && methodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
-			{
-				return;
-			}
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBePublic(definitions);
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+		private class TestMethodsMustBePublic : TestMethodImplementation
+		{
+			public TestMethodsMustBePublic(MsTestAttributeDefinitions definitions) : base(definitions)
+			{ }
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				if (!methodDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword) && methodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
+				{
+					return;
+				}
+
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+			}
 		}
 	}
 }

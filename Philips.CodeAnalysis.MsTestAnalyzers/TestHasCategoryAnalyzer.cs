@@ -22,52 +22,62 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		private HashSet<string> _exceptions = new HashSet<string>();
-		private ImmutableHashSet<string> _allowedCategories = ImmutableHashSet<string>.Empty;
-
-		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
 			AdditionalFilesHelper helper = new AdditionalFilesHelper(options, compilation);
 
-			_exceptions = helper.LoadExceptions(FileName);
-			_allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories").ToImmutableHashSet();
+			var exceptions = helper.LoadExceptions(FileName);
+			var allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories").ToImmutableHashSet();
+
+			return new TestHasCategoryAttribute(exceptions, allowedCategories, definitions);
 		}
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
+		public class TestHasCategoryAttribute : TestMethodImplementation
 		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
-			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
+			private readonly HashSet<string> _exceptions;
+			private readonly ImmutableHashSet<string> _allowedCategories;
 
-			if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)
+			public TestHasCategoryAttribute(HashSet<string> exceptions, ImmutableHashSet<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions)
 			{
-				if (_exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
+				_exceptions = exceptions;
+				_allowedCategories = allowedCategories;
+			}
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
+
+				if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)
+				{
+					if (_exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
+						return;
+				}
+
+				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
+				{
+					Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation());
+					context.ReportDiagnostic(diagnostic);
 					return;
-			}
+				}
 
-			if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
-			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation());
-				context.ReportDiagnostic(diagnostic);
-				return;
-			}
+				string value;
+				switch (argumentSyntax.Expression)
+				{
+					case MemberAccessExpressionSyntax mae:
+						value = mae.ToString();
+						break;
+					case LiteralExpressionSyntax literal:
+						value = literal.ToString();
+						break;
+					default:
+						return;
+				}
 
-			string value;
-			switch (argumentSyntax.Expression)
-			{
-				case MemberAccessExpressionSyntax mae:
-					value = mae.ToString();
-					break;
-				case LiteralExpressionSyntax literal:
-					value = literal.ToString();
-					break;
-				default:
-					return;
-			}
-
-			if (!_allowedCategories.Contains(value))
-			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
-				context.ReportDiagnostic(diagnostic);
+				if (!_allowedCategories.Contains(value))
+				{
+					Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
 		}
 	}

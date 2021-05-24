@@ -17,27 +17,30 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Remove empty test method '{0}'";
 		private const string Category = Categories.Maintainability;
 
-		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new NoEmptyTestMethodsImplementation();
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
+		public class NoEmptyTestMethodsImplementation : Implementation
 		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
-			if (methodDeclaration.Body == null)
+			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				//during the intellisense phase the body of a method can be non-existent.
-				return;
-			}
+				if (methodDeclaration.Body == null)
+				{
+					//during the intellisense phase the body of a method can be non-existent.
+					return;
+				}
 
-			if (methodDeclaration.Body.Statements.Any())
-			{
-				//not empty
-				return;
-			}
+				if (methodDeclaration.Body.Statements.Any())
+				{
+					//not empty
+					return;
+				}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+			}
 		}
 	}
 }

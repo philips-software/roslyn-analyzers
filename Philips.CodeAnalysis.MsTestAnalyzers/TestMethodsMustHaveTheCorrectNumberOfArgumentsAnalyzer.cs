@@ -24,99 +24,99 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		private MsTestAttributeDefinitions _definitions = null;
 
-		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
+
+		private class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
 		{
-			_definitions = definitions;
-		}
+			public TestMethodsMustHaveTheCorrectNumberOfArguments(MsTestAttributeDefinitions definitions) : base(definitions)
+			{ }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
-		{
-			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				int? expectedNumberOfParameters;
+				if (!isDataTestMethod)
+				{
+					expectedNumberOfParameters = 0;
+				}
+				else
+				{
+					if (!TryGetExpectedParameters(methodDeclaration, context, out expectedNumberOfParameters))
+					{
+						context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+						return;
+					}
+				}
 
-			int? expectedNumberOfParameters;
-			if (!isDataTestMethod)
-			{
-				expectedNumberOfParameters = 0;
-			}
-			else
-			{
-				if (!TryGetExpectedParameters(methodDeclaration, context, out expectedNumberOfParameters))
+				if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
-					return;
 				}
 			}
 
-			if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
+			private bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
-			}
-		}
-
-		private bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
-		{
-			bool anyCustomDataSources = false;
-			bool anyDynamicData = false;
-			HashSet<int> dataRowParameters = new HashSet<int>();
-			foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
-			{
-				if (Helper.IsDataRowAttribute(attribute, context))
+				bool anyCustomDataSources = false;
+				bool anyDynamicData = false;
+				HashSet<int> dataRowParameters = new HashSet<int>();
+				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					int argumentCount = 0;
-					foreach (var argument in attribute.ArgumentList.Arguments)
+					if (Helper.IsDataRowAttribute(attribute, context))
 					{
-						if (argument.NameEquals != null && argument.NameEquals.Name.Identifier.ValueText == @"DisplayName")
+						int argumentCount = 0;
+						foreach (var argument in attribute.ArgumentList.Arguments)
 						{
-							continue;
+							if (argument.NameEquals != null && argument.NameEquals.Name.Identifier.ValueText == @"DisplayName")
+							{
+								continue;
+							}
+
+							argumentCount++;
+						}
+						dataRowParameters.Add(argumentCount);
+						continue;
+					}
+
+					if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					{
+						anyDynamicData = true;
+						continue;
+					}
+
+					var symbol = context.SemanticModel.GetSymbolInfo(attribute);
+					if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+					{
+						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
+						{
+							anyCustomDataSources = true;
 						}
 
-						argumentCount++;
+						continue;
 					}
-					dataRowParameters.Add(argumentCount);
-					continue;
 				}
 
-				if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+				if (anyDynamicData || anyCustomDataSources)
 				{
-					anyDynamicData = true;
-					continue;
+					expectedNumberOfParameters = null;
+
+					return dataRowParameters.Count == 0;
 				}
 
-				var symbol = context.SemanticModel.GetSymbolInfo(attribute);
-				if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+				if (dataRowParameters.Count == 0)
 				{
-					if (method.ContainingType.AllInterfaces.Contains(_definitions.ITestSourceSymbol))
-					{
-						anyCustomDataSources = true;
-					}
-
-					continue;
+					expectedNumberOfParameters = 0;
+					return true;
 				}
-			}
 
-			if (anyDynamicData || anyCustomDataSources)
-			{
-				expectedNumberOfParameters = null;
+				if (dataRowParameters.Count != 1)
+				{
+					expectedNumberOfParameters = 0;
+					return false;
+				}
 
-				return dataRowParameters.Count == 0;
-			}
-
-			if (dataRowParameters.Count == 0)
-			{
-				expectedNumberOfParameters = 0;
+				expectedNumberOfParameters = dataRowParameters.First();
 				return true;
 			}
-
-			if (dataRowParameters.Count != 1)
-			{
-				expectedNumberOfParameters = 0;
-				return false;
-			}
-
-			expectedNumberOfParameters = dataRowParameters.First();
-			return true;
 		}
 	}
 }

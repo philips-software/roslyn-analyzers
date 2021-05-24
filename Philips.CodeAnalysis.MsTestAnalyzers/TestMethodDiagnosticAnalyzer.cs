@@ -68,10 +68,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 	public abstract class TestAttributeDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		public abstract class Implementation
+		{
+			public virtual void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes) { }
+		}
+
 		protected TestAttributeDiagnosticAnalyzer()
 		{ }
 
-		protected virtual void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) { }
+		protected abstract Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions);
 
 		public sealed override void Initialize(AnalysisContext context)
 		{
@@ -87,15 +92,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
 
-				OnInitializeAnalyzer(startContext.Options, startContext.Compilation, definitions);
+				Implementation implementation = OnInitializeAnalyzer(startContext.Options, startContext.Compilation, definitions);
 
-				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
+				if (implementation is null)
+				{
+					return;
+				}
+
+				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x, implementation), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		protected virtual void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes) { }
-
-		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
+		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context, Implementation implementation)
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -122,7 +130,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (presentAttributes.Count > 0)
 			{
-				OnTestAttributeMethod(context, definitions, (methodDeclaration, methodSymbol), presentAttributes);
+				implementation.OnTestAttributeMethod(context, methodDeclaration, methodSymbol, presentAttributes);
 			}
 		}
 	}
@@ -132,30 +140,48 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public TestMethodDiagnosticAnalyzer()
 		{ }
 
-		protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod);
-
-		protected sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
+		protected sealed override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			bool isTestMethod = false;
-			bool isDataTestMethod = false;
+			return OnInitializeTestMethodAnalyzer(options, compilation, definitions);
+		}
 
-			foreach (INamedTypeSymbol attribute in presentAttributes)
+
+		protected abstract TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions);
+
+		public abstract class TestMethodImplementation : Implementation
+		{
+			protected MsTestAttributeDefinitions Definitions { get; }
+
+			public TestMethodImplementation(MsTestAttributeDefinitions definitions)
 			{
-				isTestMethod = attribute.IsDerivedFrom(attributes.TestMethodSymbol);
-				isDataTestMethod = attribute.IsDerivedFrom(attributes.DataTestMethodSymbol);
+				Definitions = definitions;
+			}
 
-				if (isTestMethod || isDataTestMethod)
+			protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod);
+
+			public sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
+			{
+				bool isTestMethod = false;
+				bool isDataTestMethod = false;
+
+				foreach (INamedTypeSymbol attribute in presentAttributes)
 				{
-					break;
+					isTestMethod = attribute.IsDerivedFrom(Definitions.TestMethodSymbol);
+					isDataTestMethod = attribute.IsDerivedFrom(Definitions.DataTestMethodSymbol);
+
+					if (isTestMethod || isDataTestMethod)
+					{
+						break;
+					}
 				}
-			}
 
-			if (!isTestMethod && !isDataTestMethod)
-			{
-				return;
-			}
+				if (!isTestMethod && !isDataTestMethod)
+				{
+					return;
+				}
 
-			OnTestMethod(context, methodInfo, isDataTestMethod);
+				OnTestMethod(context, methodDeclaration, methodSymbol, isDataTestMethod);
+			}
 		}
 	}
 }
