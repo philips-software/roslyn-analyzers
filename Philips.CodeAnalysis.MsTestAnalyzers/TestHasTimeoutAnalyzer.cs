@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation)
+		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
 			_additionalFilesHelper = new AdditionalFilesHelper(options, compilation);
 		}
@@ -58,8 +58,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 		}
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
+		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
 		{
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
 			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
 			bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location _, out AttributeArgumentSyntax categoryArgumentSyntax);

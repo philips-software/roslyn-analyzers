@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private HashSet<string> _exceptions = new HashSet<string>();
 		private ImmutableHashSet<string> _allowedCategories = ImmutableHashSet<string>.Empty;
 
-		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation)
+		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
 			AdditionalFilesHelper helper = new AdditionalFilesHelper(options, compilation);
 
@@ -33,9 +33,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			_allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories").ToImmutableHashSet();
 		}
 
-
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
+		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
 		{
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
 			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
 			if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)

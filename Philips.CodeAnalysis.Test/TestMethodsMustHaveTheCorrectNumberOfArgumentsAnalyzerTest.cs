@@ -23,6 +23,23 @@ namespace Philips.CodeAnalysis.Test
 			return new TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer();
 		}
 
+		protected override (string name, string content)[] GetAdditionalSourceCode()
+		{
+			string code = @"
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class DerivedDataSourceAttribute : Attribute, ITestDataSource
+{
+		public IEnumerable<object[]> GetData(MethodInfo methodInfo) => Array.Empty<object[]>();
+		string GetDisplayName(MethodInfo methodInfo, object[] data) => string.Empty;
+}
+";
+			return new[] { ("DerivedDataSourceAttribute.cs", code) };
+		}
+
 		#endregion
 
 		#region Public Interface
@@ -62,6 +79,31 @@ public class Tests
 					Severity = DiagnosticSeverity.Error,
 				});
 			}
+		}
+
+		[DataRow(0)]
+		[DataRow(1)]
+		[DataTestMethod]
+		public void DerivedDataSourcesShouldBeIgnored(int parameters)
+		{
+			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class Tests
+{{
+	[DerivedDataSource]
+	[DataTestMethod]
+	public void Foo({0}) {{ }}
+}}";
+
+			string parameterListString = string.Empty;
+			for (int i = 0; i < parameters; i++)
+			{
+				parameterListString = string.Format("{0}, int p{1}", parameterListString, i);
+			}
+
+
+			VerifyCSharpDiagnostic(string.Format(code, parameterListString));
 		}
 
 		private static IEnumerable<object[]> DataRowVariants()

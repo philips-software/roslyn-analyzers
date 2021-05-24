@@ -21,8 +21,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes)
+
+		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
 		{
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
 			if (methodDeclaration.Body == null)
 			{
 				//during the intellisense phase the body of a method can be non-existent.

@@ -26,8 +26,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes)
+		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
 		{
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
 			if (Helper.IsInTestClass(context))
 			{
 				return;

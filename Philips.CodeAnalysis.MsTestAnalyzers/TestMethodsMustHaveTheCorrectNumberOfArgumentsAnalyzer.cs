@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -12,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer : DiagnosticAnalyzer
+	public class TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must have the correct number of arguments";
 		public static string MessageFormat = @"'{0}' has the wrong number of parameters";
@@ -25,21 +24,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		public override void Initialize(AnalysisContext context)
+		private MsTestAttributeDefinitions _definitions = null;
+
+		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+			_definitions = definitions;
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
 		{
-			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
-
-			if (!Helper.IsTestMethod(methodDeclaration.AttributeLists, context, out bool isDataTestMethod))
-			{
-				return;
-			}
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
 
 			int? expectedNumberOfParameters;
 			if (!isDataTestMethod)
@@ -61,30 +55,48 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 		}
 
-		private static bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
+		private bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
 		{
+			bool anyCustomDataSources = false;
+			bool anyDynamicData = false;
 			HashSet<int> dataRowParameters = new HashSet<int>();
 			foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 			{
-				if (!Helper.IsDataRowAttribute(attribute, context))
+				if (Helper.IsDataRowAttribute(attribute, context))
 				{
+					int argumentCount = 0;
+					foreach (var argument in attribute.ArgumentList.Arguments)
+					{
+						if (argument.NameEquals != null && argument.NameEquals.Name.Identifier.ValueText == @"DisplayName")
+						{
+							continue;
+						}
+
+						argumentCount++;
+					}
+					dataRowParameters.Add(argumentCount);
 					continue;
 				}
 
-				int argumentCount = 0;
-				foreach (var argument in attribute.ArgumentList.Arguments)
+				if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 				{
-					if (argument.NameEquals != null && argument.NameEquals.Name.Identifier.ValueText == @"DisplayName")
+					anyDynamicData = true;
+					continue;
+				}
+
+				var symbol = context.SemanticModel.GetSymbolInfo(attribute);
+				if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+				{
+					if (method.ContainingType.AllInterfaces.Contains(_definitions.ITestSourceSymbol))
 					{
-						continue;
+						anyCustomDataSources = true;
 					}
 
-					argumentCount++;
+					continue;
 				}
-				dataRowParameters.Add(argumentCount);
 			}
 
-			if (Helper.TryGetAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out var dynamicDataAttribute))
+			if (anyDynamicData || anyCustomDataSources)
 			{
 				expectedNumberOfParameters = null;
 

@@ -27,6 +27,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				TestCleanupSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestCleanupAttribute.FullName),
 				DataRowSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DataRowAttribute.FullName),
 				DynamicDataSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DynamicDataAttribute.FullName),
+				TestCategorySymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestCategoryAttribute.FullName),
+				ITestSourceSymbol = compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ITestDataSource"),
 			};
 
 			definitions.NonTestMethods = ImmutableHashSet.Create<INamedTypeSymbol>(SymbolEqualityComparer.Default,
@@ -38,7 +40,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				definitions.TestInitializeSymbol,
 				definitions.TestCleanupSymbol,
 				definitions.DataRowSymbol,
-				definitions.DynamicDataSymbol
+				definitions.DynamicDataSymbol,
+				definitions.TestCategorySymbol
 			);
 
 			return definitions;
@@ -57,6 +60,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public INamedTypeSymbol TestCleanupSymbol { get; private set; }
 		public INamedTypeSymbol DataRowSymbol { get; private set; }
 		public INamedTypeSymbol DynamicDataSymbol { get; private set; }
+		public INamedTypeSymbol ITestSourceSymbol { get; private set; }
+		public INamedTypeSymbol TestCategorySymbol { get; private set; }
 
 		public ImmutableHashSet<INamedTypeSymbol> NonTestMethods { get; private set; }
 	}
@@ -66,9 +71,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected TestAttributeDiagnosticAnalyzer()
 		{ }
 
-		protected virtual void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation) { }
+		protected virtual void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) { }
 
-		public override void Initialize(AnalysisContext context)
+		public sealed override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
@@ -80,15 +85,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				OnInitializeAnalyzer(startContext.Options, startContext.Compilation);
-
 				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+
+				OnInitializeAnalyzer(startContext.Options, startContext.Compilation, definitions);
 
 				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		protected abstract void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes);
+		protected virtual void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes) { }
 
 		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
 		{
@@ -96,13 +101,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			if (symbol is null)
+			if (symbol is null || !(symbol is IMethodSymbol methodSymbol))
 			{
 				return;
 			}
 
 			HashSet<INamedTypeSymbol> presentAttributes = new HashSet<INamedTypeSymbol>();
-			foreach (AttributeData attribute in symbol.GetAttributes())
+			foreach (AttributeData attribute in methodSymbol.GetAttributes())
 			{
 				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
 				{
@@ -117,7 +122,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (presentAttributes.Count > 0)
 			{
-				OnTestAttributeMethod(context, methodDeclaration, definitions, presentAttributes);
+				OnTestAttributeMethod(context, definitions, (methodDeclaration, methodSymbol), presentAttributes);
 			}
 		}
 	}
@@ -127,9 +132,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public TestMethodDiagnosticAnalyzer()
 		{ }
 
-		protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod);
+		protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod);
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, MsTestAttributeDefinitions attributes, HashSet<INamedTypeSymbol> presentAttributes)
+		protected sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MsTestAttributeDefinitions attributes, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, HashSet<INamedTypeSymbol> presentAttributes)
 		{
 			bool isTestMethod = false;
 			bool isDataTestMethod = false;
@@ -150,7 +155,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			OnTestMethod(context, methodDeclaration, isDataTestMethod);
+			OnTestMethod(context, methodInfo, isDataTestMethod);
 		}
 	}
 }

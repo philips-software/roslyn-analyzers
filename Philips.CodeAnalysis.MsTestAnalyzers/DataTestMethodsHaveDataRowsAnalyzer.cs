@@ -29,23 +29,43 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static DiagnosticDescriptor RuleShouldBeDataTestMethod = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
+		private INamedTypeSymbol _testSourceSymbol;
+
+		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			_testSourceSymbol = definitions.ITestSourceSymbol;
+		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod); } }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
+		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, (MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) methodInfo, bool isDataTestMethod)
 		{
+			MethodDeclarationSyntax methodDeclaration = methodInfo.methodDeclaration;
+
 			int dynamicDataCount = 0;
 			int dataRowCount = 0;
+			bool hasTestSource = false;
 			foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 			{
 				if (Helper.IsDataRowAttribute(attribute, context))
 				{
 					dataRowCount++;
+					continue;
 				}
 
 				if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 				{
 					dynamicDataCount++;
+					continue;
+				}
+
+				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
+				if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+				{
+					if (method.ContainingType.AllInterfaces.Contains(_testSourceSymbol))
+					{
+						hasTestSource = true;
+					}
 				}
 			}
 
@@ -66,7 +86,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
 				}
-				else
+				else if (!hasTestSource)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
 				}
