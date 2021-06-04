@@ -87,5 +87,6 @@ namespace Philips.CodeAnalysis.Common
 		LimitConditionComplexity = 2092,
 		PreferTuplesWithNamedFields = 2093,
 		PreferUsingNamedTupleField = 2094,
+		AvoidTaskVoid = 2095
 	}
 }
