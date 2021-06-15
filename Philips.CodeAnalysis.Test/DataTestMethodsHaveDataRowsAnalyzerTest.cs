@@ -24,6 +24,23 @@ namespace Philips.CodeAnalysis.Test
 			return new DataTestMethodsHaveDataRowsAnalyzer();
 		}
 
+		protected override (string name, string content)[] GetAdditionalSourceCode()
+		{
+			string code = @"
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class DerivedDataSourceAttribute : Attribute, ITestDataSource
+{
+		public IEnumerable<object[]> GetData(MethodInfo methodInfo) => Array.Empty<object[]>();
+		string GetDisplayName(MethodInfo methodInfo, object[] data) => string.Empty;
+}
+";
+			return new[] { ("DerivedDataSourceAttribute.cs", code) };
+		}
+
 		#endregion
 
 		#region Public Interface
@@ -49,6 +66,7 @@ public class Tests
 			});
 		}
 
+		[DataRow("[DerivedDataSource]", false)]
 		[DataRow("[DataRow(\"arg\")]", false)]
 		[DataRow("[DynamicData(\"test\")]", false)]
 		[DataRow("[DynamicData(\"test\"), DynamicData(\"test2\")]", true)]
@@ -76,6 +94,7 @@ public class Tests
 			VerifyCSharpDiagnostic(string.Format(code, arg), expected);
 		}
 
+		[DataRow("[DerivedDataSource]", false)]
 		[DataRow("[DataRow(\"arg\")]", true)]
 		[DataRow("[DynamicData(\"test\")]", true)]
 		[DataRow("", false)]
