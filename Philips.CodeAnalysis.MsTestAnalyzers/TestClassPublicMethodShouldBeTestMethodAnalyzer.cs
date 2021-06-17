@@ -17,25 +17,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Test class cannot have a public method unless its a test method. Either change the access modifier or make it a test method";
 		private const string Category = Categories.Maintainability;
 
-		private static AttributeDefinition[] attributeDefinitions =
-		{
-			MsTestFrameworkDefinitions.TestMethodAttribute,
-			MsTestFrameworkDefinitions.DataTestMethodAttribute,
-			MsTestFrameworkDefinitions.AssemblyInitializeAttribute,
-			MsTestFrameworkDefinitions.AssemblyCleanupAttribute,
-			MsTestFrameworkDefinitions.TestInitializeAttribute,
-			MsTestFrameworkDefinitions.TestCleanupAttribute,
-			MsTestFrameworkDefinitions.ClassCleanupAttribute,
-			MsTestFrameworkDefinitions.ClassInitializeAttribute
-		};
-
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterCompilationStartAction(startContext =>
@@ -45,11 +33,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+
+				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		public static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -58,24 +48,44 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			ClassDeclarationSyntax classDeclaration = methodDeclaration.Parent as ClassDeclarationSyntax;
-
-			if (classDeclaration == null)
+			if (!(methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration))
 			{
 				return;
 			}
+
 			if (!Helper.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}
 
-			if (Helper.HasAnyAttribute(methodDeclaration.AttributeLists, context, attributeDefinitions))
+			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+
+			if (symbol is null)
 			{
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
-			context.ReportDiagnostic(diagnostic);
+			bool isAllowedToBePublic = false;
+			foreach (AttributeData attribute in symbol.GetAttributes())
+			{
+				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
+				{
+					isAllowedToBePublic = true;
+					break;
+				}
+
+				if (attribute.AttributeClass.IsDerivedFrom(definitions.TestMethodSymbol))
+				{
+					isAllowedToBePublic = true;
+					break;
+				}
+			}
+
+			if (!isAllowedToBePublic)
+			{
+				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
+				context.ReportDiagnostic(diagnostic);
+			}
 		}
 	}
 }

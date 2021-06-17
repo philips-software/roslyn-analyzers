@@ -203,11 +203,6 @@ namespace Philips.CodeAnalysis.Test
 			var project = CreateProject(sources, filenamePrefix, language);
 			var documents = project.Documents.ToArray();
 
-			if (sources.Length != documents.Length)
-			{
-				throw new InvalidOperationException("Amount of sources did not match amount of Documents created");
-			}
-
 			return documents;
 		}
 
@@ -228,6 +223,11 @@ namespace Philips.CodeAnalysis.Test
 		}
 
 		protected virtual (string name, string content)[] GetAdditionalTexts()
+		{
+			return Array.Empty<(string name, string content)>();
+		}
+
+		protected virtual (string name, string content)[] GetAdditionalSourceCode()
 		{
 			return Array.Empty<(string name, string content)>();
 		}
@@ -288,12 +288,20 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			int count = 0;
-			foreach (var source in sources)
+			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
 				var newFileName = string.Format("{0}{1}.{2}", fileNamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
-				var documentId = DocumentId.CreateNewId(projectId, debugName: newFileName);
-				solution = solution.AddDocument(documentId, newFileName, SourceText.From(source));
+
 				count++;
+
+				return (newFileName, x);
+
+			}).Concat(GetAdditionalSourceCode());
+
+			foreach ((string name, string content) in data)
+			{
+				var documentId = DocumentId.CreateNewId(projectId, debugName: name);
+				solution = solution.AddDocument(documentId, name, SourceText.From(content));
 			}
 			return solution.GetProject(projectId);
 		}

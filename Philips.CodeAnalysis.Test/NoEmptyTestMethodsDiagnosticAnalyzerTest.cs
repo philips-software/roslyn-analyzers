@@ -26,11 +26,25 @@ namespace Philips.CodeAnalysis.Test
 		{
 			return new[] { MetadataReference.CreateFromFile(typeof(TimeoutAttribute).Assembly.Location) };
 		}
+		protected override (string name, string content)[] GetAdditionalSourceCode()
+		{
+			string code = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class DerivedTestMethod : TestMethodAttribute
+{
+}
+
+";
+
+			return new[] { ("DerivedTestMethod.cs", code) };
+		}
 
 		#endregion
 
 		#region Public Interface
 
+		[DataRow("DerivedTestMethod")]
 		[DataRow("TestMethod")]
 		[DataRow("DataTestMethod")]
 		[DataRow("DataRow(null)")]
