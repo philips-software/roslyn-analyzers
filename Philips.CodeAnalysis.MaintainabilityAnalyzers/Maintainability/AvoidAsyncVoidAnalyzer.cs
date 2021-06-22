@@ -71,15 +71,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var ParameterSymbols = methodSymbol.Parameters;
+			// check for the Event handlers as they use async void
 			INamedTypeSymbol namedSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
-			foreach(IParameterSymbol parameterSymbol in ParameterSymbols)
+			if (methodSymbol.Parameters.Any(x => (x.Type as INamedTypeSymbol).IsDerivedFrom(namedSymbol)))
 			{
-				INamedTypeSymbol a =  parameterSymbol.Type as INamedTypeSymbol;
-				if(a.IsDerivedFrom(namedSymbol))
-				{
-					return;
-				}
+				return;
 			}
 
 			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
