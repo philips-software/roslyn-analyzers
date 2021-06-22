@@ -14,42 +14,93 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 
 		[TestMethod]
-		public void AvoidTaskResultObjectCreationTest()
+		[DataRow(false, "void", false)]
+		[DataRow(false, "int", true)]
+		[DataRow(false, "Task", true)]
+		[DataRow(false, "Task<int>", true)]
+		[DataRow(true, "void", true)]
+		[DataRow(true, "int", true)]
+		[DataRow(true, "Task", false)]
+		[DataRow(true, "Task<int>", true)]
+		public void AvoidTaskResultObjectCreationTest(bool isAsync, string returnType, bool isError)
 		{
-			string template = $@"
+			string code = $@"using System;
 using System.Threading.Tasks;
-class FooClass
-{{{{
-  public async void Foo(object a, EventArgs b)
-  {{{{
-    var data = {{0}};
-  }}}}
-}}}}
-";
-			string before = string.Format(template, @"new Task<int>(() => 4).Result");
-			string after = string.Format(template, @"await new Task<int>(() => 4)");
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskVoid));
+[TestClass]
+public class Tests
+{{
+	[TestMethod]
+	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
+}}";
+
+			VerifyCSharpDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidTaskVoid) : Array.Empty<DiagnosticResult>());
 		}
 
 
 		[TestMethod]
 		public void AvoidTaskResultObjectCreationCorrectTest()
 		{
-			string template = $@"
+			string correctTemplate = $@"
 using System.Threading.Tasks;
+using System;
 class FooClass
 {{{{
-  public async Task Foo(object a, EventArgs b)
+  public async void Foo(object a, MyEventArgs b)
   {{{{
-    var data = {{0}};
+    var data = 1;
+  }}}}
+}}}}
+
+public class MyEventArgs : EventArgs
+{{{{
+    private string m_Data;
+    public MyEventArgs(string _myData)
+    {{{{
+        m_Data = _myData;
+    }}}}
+    public string Data {{{{get{{{{return m_Data}}}} }}}}
+}}}}
+";
+
+			VerifyCSharpDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void AvoidTaskResultObjectCreationInCorrectTestForCustomEventArgs()
+		{
+			string correctTemplate = $@"
+using System.Threading.Tasks;
+using System;
+class FooClass
+{{{{
+  public async void Foo(object a, MyEventArgs b)
+  {{{{
+    var data = 1;
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"new Task<int>(() => 4).Result");
-			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskVoid));
+			VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskVoid));
+		}
+
+		[TestMethod]
+		public void AvoidTaskResultObjectCreationInCorrectTestForEventArgs()
+		{
+			string correctTemplate = $@"
+using System.Threading.Tasks;
+using System;
+class FooClass
+{{{{
+  public async void Foo(object a, EventArgs b)
+  {{{{
+    var data = 1;
+  }}}}
+}}}}
+";
+
+			VerifyCSharpDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
 		}
 
 

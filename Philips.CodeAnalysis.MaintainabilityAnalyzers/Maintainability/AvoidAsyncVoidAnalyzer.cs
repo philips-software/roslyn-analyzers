@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"To avoid unhandled exception, methods should use async void unless a event handler.";
 		private const string Category = Categories.Maintainability;
 		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void";
-
+		
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidTaskVoid), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -42,24 +42,49 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			});
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext obj)
+		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTree tree = obj.Node.SyntaxTree;
-			CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
-			IEnumerable<MethodDeclarationSyntax> allMethodDeclaration = from methodDeclaration in root.DescendantNodes()
-										.OfType<MethodDeclarationSyntax>()
-																		select methodDeclaration;
+			INamedTypeSymbol taskSymbol = context.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
+			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
+			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			var allMethodDeclarationList = allMethodDeclaration.ToList();
-
-			allMethodDeclarationList.ForEach(x =>
+			if (symbol is null || !(symbol is IMethodSymbol methodSymbol))
 			{
-				if (x.Modifiers.Any(z => z.Kind() == SyntaxKind.AsyncKeyword) && x.ReturnType.ToString() == Identifier)
+				return;
+			}
+
+			if (!methodSymbol.IsAsync && methodSymbol.ReturnsVoid)
+			{
+				// not async, returns void.
+				return;
+			}
+
+			if (!methodSymbol.IsAsync)
+			{
+				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), context.Compilation.GetSpecialType(SpecialType.System_Void).ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat));
+				context.ReportDiagnostic(diagnostic);
+				return;
+			}
+			
+			if (taskSymbol is null || SymbolEqualityComparer.Default.Equals(taskSymbol, methodSymbol.ReturnType))
+			{
+				return;
+			}
+
+			var ParameterSymbols = methodSymbol.Parameters;
+			INamedTypeSymbol namedSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
+			foreach(IParameterSymbol parameterSymbol in ParameterSymbols)
+			{
+				INamedTypeSymbol a =  parameterSymbol.Type as INamedTypeSymbol;
+				if(a.IsDerivedFrom(namedSymbol))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, x.GetLocation());
-					obj.ReportDiagnostic(diagnostic);
+					return;
 				}
-			});
+			}
+
+			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 		}
+
+		
 	}
 }
