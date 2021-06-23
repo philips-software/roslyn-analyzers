@@ -15,9 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[DataRow(false, "void", false)]
-		[DataRow(false, "int", true)]
-		[DataRow(false, "Task", true)]
-		[DataRow(false, "Task<int>", true)]
+		[DataRow(false, "int", false)]
 		[DataRow(true, "void", true)]
 		[DataRow(true, "int", true)]
 		[DataRow(true, "Task", false)]
@@ -28,14 +26,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-[TestClass]
 public class Tests
 {{
-	[TestMethod]
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyCSharpDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidTaskVoid) : Array.Empty<DiagnosticResult>());
+			VerifyCSharpDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidAsyncVoid) : Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -82,7 +78,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskVoid));
+			VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
 		}
 
 		[TestMethod]
