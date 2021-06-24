@@ -15,11 +15,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[DataRow(false, "void", false)]
-		[DataRow(false, "int", false)]
 		[DataRow(true, "void", true)]
-		[DataRow(true, "int", true)]
 		[DataRow(true, "Task", false)]
-		[DataRow(true, "Task<int>", true)]
+		[DataRow(true, "Task<int>", false)]
 		public void AvoidTaskResultObjectCreationTest(bool isAsync, string returnType, bool isError)
 		{
 			string code = $@"using System;

@@ -45,7 +45,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
 
-			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
+			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword) ||
+				methodDeclaration.ReturnType.ToString() != "void")
 			{
 				return;
 			}
@@ -57,12 +58,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			INamedTypeSymbol taskSymbol = context.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
-			if (taskSymbol is null || SymbolEqualityComparer.Default.Equals(taskSymbol, methodSymbol.ReturnType))
-			{
-				return;
-			}
-
 			// check for the Event handlers as they use async void
 			INamedTypeSymbol namedSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
 			if (methodSymbol.Parameters.Any(x => (x.Type as INamedTypeSymbol).IsDerivedFrom(namedSymbol)))
@@ -70,7 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 		}
 
 		
