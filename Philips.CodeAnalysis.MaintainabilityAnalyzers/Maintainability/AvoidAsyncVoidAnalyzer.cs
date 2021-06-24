@@ -21,7 +21,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"To avoid unhandled exception, methods should not use async void unless a event handler.";
 		private const string Category = Categories.Maintainability;
 		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void";
-		private const string VoidIdentifier = "void";
 		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAsyncVoid), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -45,8 +44,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
 
-			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword) ||
-				methodDeclaration.ReturnType.ToString() != VoidIdentifier)
+			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
+			{
+				return;
+			}
+
+			if ((methodDeclaration.ReturnType is not PredefinedTypeSyntax predefinedTypeSyntax) || predefinedTypeSyntax.Keyword.Kind() != SyntaxKind.VoidKeyword)
 			{
 				return;
 			}
