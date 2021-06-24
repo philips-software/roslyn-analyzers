@@ -43,13 +43,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
-
 			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
 			{
 				return;
 			}
 
-			if ((methodDeclaration.ReturnType is not PredefinedTypeSyntax predefinedTypeSyntax) || predefinedTypeSyntax.Keyword.Kind() != SyntaxKind.VoidKeyword)
+			PredefinedTypeSyntax predefinedTypeSyntax = methodDeclaration.ReturnType as PredefinedTypeSyntax;
+			if (predefinedTypeSyntax == null || predefinedTypeSyntax.Keyword.Kind() != SyntaxKind.VoidKeyword)
 			{
 				return;
 			}
