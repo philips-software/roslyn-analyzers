@@ -56,6 +56,8 @@
 * Introduced PH2094: Prefer using the named tuple field, not ItemX
 1.2.14
 * Bug fix to Pass By Reference Analyzer
+1.2.15
+* Improve confusing message when PH2090 is not configured
 </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

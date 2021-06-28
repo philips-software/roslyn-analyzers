@@ -106,7 +106,10 @@ namespace Philips.CodeAnalysis.Common
 
 			foreach (string v in value.Split(','))
 			{
-				values.Add(v);
+				if (!string.IsNullOrWhiteSpace(v))
+				{
+					values.Add(v);
+				}
 			}
 			return values;
 		}

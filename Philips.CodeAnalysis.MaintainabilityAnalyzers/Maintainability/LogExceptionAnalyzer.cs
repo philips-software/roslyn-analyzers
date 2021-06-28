@@ -1,5 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -8,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -19,8 +19,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LogExceptionAnalyzer : DiagnosticAnalyzer
 	{
+		private const string LogMethodNames = "log_method_names";
+
 		private const string Title = "Log caught exceptions.";
-		private const string Message = "Exception that is caught, is not logged.";
+		private const string Message = "Exception that is caught is not logged.";
 		private const string Description = "Log caught exceptions.";
 		private const string Category = Categories.Maintainability;
 
@@ -35,12 +37,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				description: Description
 			);
 
-		private string _logMethodNames;
+		private IEnumerable<string> _logMethodNames;
+
+		private const string InvalidSetupTitle = @"Log caught exceptions setup";
+		private const string InvalidSetupMessage = @"This analyzer requires an .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list of allowed method calls inside catch blocks.";
+		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig.";
+		private static DiagnosticDescriptor InvalidSetupRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
+
 
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, InvalidSetupRule);
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -55,8 +63,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					var additionalFiles = new AdditionalFilesHelper(
 						startContext.Options,
 						startContext.Compilation);
-					var methodNames = additionalFiles.GetValueFromEditorConfig(Rule.Id, "log_method_names");
-					if (string.IsNullOrEmpty(methodNames))
+					var methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					if (methodNames.Count == 0)
 					{
 						startContext.RegisterCompilationEndAction(ReportParsingError);
 					}
@@ -86,7 +94,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void ReportParsingError(CompilationAnalysisContext context)
 		{
 			var loc = Location.Create(context.Compilation.SyntaxTrees.First(), TextSpan.FromBounds(0, 0));
-			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
+			context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames));
 		}
 
 		private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, SyntaxNode node)
