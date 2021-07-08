@@ -35,11 +35,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					return;
 				}
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+
+				INamedTypeSymbol namedSymbol = startContext.Compilation.GetTypeByMetadataName("System.EventArgs");
+				if(namedSymbol == null)
+				{
+					return;
+				}
+
+				startContext.RegisterSyntaxNodeAction((x) => Analyze(namedSymbol, x), SyntaxKind.MethodDeclaration);
 			});
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(INamedTypeSymbol namedSymbol, SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
@@ -62,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// check for the Event handlers as they use async void
-			INamedTypeSymbol namedSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
+			
 			if (methodSymbol.Parameters.Any(x => x.Type is INamedTypeSymbol namedTypeSymbol && namedTypeSymbol.IsDerivedFrom(namedSymbol)))
 			{
 				return;
