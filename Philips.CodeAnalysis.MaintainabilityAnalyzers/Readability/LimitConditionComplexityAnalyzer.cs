@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 		private const string Title = "Limit the number of clauses in a condition";
 		private const string Message =
-			"Limit the number of clauses in the condition statement, to not more than {0}.";
+			"Found {0} clauses in the condition statement. Limit the number of clauses in the condition statement, to not more than {1}.";
 		private const string Description = "Limit the number of clauses in a condition";
 		private const string Category = Categories.Readability;
 
@@ -69,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					}
 					else
 					{
-						startContext.RegisterCompilationEndAction(ReportParsingError);
+						maxOperators = 4;
 					}
 				});
 		}
@@ -103,15 +103,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (numOperators >= maxOperators)
 			{
 				var newLineLocation = conditionNode.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators, maxOperators));
 			}
 		}
 
-		private void ReportParsingError(CompilationAnalysisContext context)
-		{
-			var loc = Location.Create(context.Compilation.SyntaxTrees.First(), TextSpan.FromBounds(0, 0));
-			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
-		}
 
 		private bool IsLogicalOperator(SyntaxToken token)
 		{
