@@ -60,23 +60,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					if (int.TryParse(maxStr, out int parsedMax))
 					{
 						maxOperators = parsedMax;
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeIfStatement,
-							SyntaxKind.IfStatement);
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeTernary,
-							SyntaxKind.ConditionalExpression);
 					}
 					else
 					{
 						maxOperators = 4;
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeIfStatement,
-							SyntaxKind.IfStatement);
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeTernary,
-							SyntaxKind.ConditionalExpression);
+
 					}
+					startContext.RegisterSyntaxNodeAction(
+						AnalyzeIfStatement,
+						SyntaxKind.IfStatement);
+					startContext.RegisterSyntaxNodeAction(
+						AnalyzeTernary,
+						SyntaxKind.ConditionalExpression);
 				});
 		}
 
