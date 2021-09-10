@@ -70,6 +70,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					else
 					{
 						maxOperators = 4;
+						startContext.RegisterSyntaxNodeAction(
+							AnalyzeIfStatement,
+							SyntaxKind.IfStatement);
+						startContext.RegisterSyntaxNodeAction(
+							AnalyzeTernary,
+							SyntaxKind.ConditionalExpression);
 					}
 				});
 		}
