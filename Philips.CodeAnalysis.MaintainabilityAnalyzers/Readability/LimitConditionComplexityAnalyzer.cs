@@ -1,6 +1,5 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -8,7 +7,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 
 using Philips.CodeAnalysis.Common;
 
@@ -36,12 +34,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				isEnabledByDefault: false,
 				description: Description);
 
-		private int maxOperators;
+		private int _maxOperators;
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer.SupportedDiagnostics"/>
 		/// </summary>
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		public int DefaultMaxOperators { get; private set; } = 4;
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -59,58 +58,52 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
 					if (int.TryParse(maxStr, out int parsedMax))
 					{
-						maxOperators = parsedMax;
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeIfStatement,
-							SyntaxKind.IfStatement);
-						startContext.RegisterSyntaxNodeAction(
-							AnalyzeTernary,
-							SyntaxKind.ConditionalExpression);
+						_maxOperators = parsedMax;
 					}
 					else
 					{
-						maxOperators = 4;
+						_maxOperators = DefaultMaxOperators;
 					}
+					startContext.RegisterSyntaxNodeAction(
+						AnalyzeIfStatement,
+						SyntaxKind.IfStatement);
+					startContext.RegisterSyntaxNodeAction(
+						AnalyzeTernary,
+						SyntaxKind.ConditionalExpression);
 				});
 		}
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
 		{
-			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath))
-			{
-				return;
-			}
-
 			var ifStatement = ((IfStatementSyntax)context.Node).Condition;
 			AnalyzeCondition(context, ifStatement);
 		}
 
 		private void AnalyzeTernary(SyntaxNodeAnalysisContext context)
 		{
-			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath))
-			{
-				return;
-			}
 			var condition = ((ConditionalExpressionSyntax)context.Node).Condition;
 			AnalyzeCondition(context, condition);
 		}
 
 		private void AnalyzeCondition(SyntaxNodeAnalysisContext context, ExpressionSyntax conditionNode)
 		{
+			if (Helper.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			var numOperators = conditionNode.DescendantTokens().Where(IsLogicalOperator).Count();
-			if (numOperators >= maxOperators)
+			if (numOperators >= _maxOperators)
 			{
 				var newLineLocation = conditionNode.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators, maxOperators));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators, _maxOperators));
 			}
 		}
 
 
 		private bool IsLogicalOperator(SyntaxToken token)
 		{
-			return 
+			return
 				token.IsKind(SyntaxKind.AmpersandAmpersandToken) ||
 				token.IsKind(SyntaxKind.BarBarToken);
 		}
