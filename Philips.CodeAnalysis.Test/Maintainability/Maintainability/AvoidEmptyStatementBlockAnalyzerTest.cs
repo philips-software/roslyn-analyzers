@@ -17,13 +17,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
-		public void CatchesEmptyStatementBlock()
+		public void CatchesEmptyPrivateMethod()
 		{
 			const string template = @"
 using System;
 class Foo
 {
-	public void Test()
+	private void Test()
 	{
 	
 	}
@@ -34,7 +34,7 @@ class Foo
 		}
 
 		[TestMethod]
-		public void CatchesEmptyStatementBlock2()
+		public void CatchesEmptyStatementBlock()
 		{
 			const string template = @"
 using System;
@@ -60,7 +60,7 @@ class Foo
 using System;
 class Foo
 {
-	public void Test()
+	private void Test()
 	{
 		//dsjkhfajk
 	}
@@ -90,5 +90,128 @@ class Foo
 
 
 		}
+
+
+		[TestMethod]
+		public void DoesNotFailOnEmptyConstructor()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public Foo()
+	{ }
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void ConstructorWithEmptyStatementBlockFails()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public Foo()
+	{
+		{}
 	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+		}
+
+		[TestMethod]
+		public void EmptyCatchBlockFails()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Meow()
+	{
+		try
+		{
+			Console.WriteLine(0);
+		}
+		catch (Exception)
+		{
+		}
 	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
+		}
+
+
+		[TestMethod]
+		public void EmptyPublicMethodAllowed()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	public void Meow()
+	{
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+
+		[TestMethod]
+		public void EmptyProtectedMethodAllowed()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	protected void Meow()
+	{
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+
+		[TestMethod]
+		public void ParenthesizedLambdasAllowed()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	public void Meow()
+	{
+		Action a = () => { };
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void PublicMethodWithEmptyStatementBlockFails()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	public void Meow()
+	{
+		{}
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+		}
+
+	}
+}
