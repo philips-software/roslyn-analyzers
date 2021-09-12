@@ -12,7 +12,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class NoEmptyConstructorAnalyzerTest : CodeFixVerifier
+	public class AvoidEmptyTypeInitializerAnalyzerTest : CodeFixVerifier
 	{
 		#region Non-Public Data Members
 
@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		#region Public Interface
 
 		[TestMethod]
-		public void NoEmptyConstructorPartialDoesntCrash()
+		public void AvoidEmptyTypeInitializerPartialDoesntCrash()
 		{
 			const string template = @"public class Foo 
 {{
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("", "int x = 4;", false)]
 		[DataRow("static", "int x = 4;", false)]
 		[DataTestMethod]
-		public void NoEmptyConstructorStatic(string modifier, string content, bool isError)
+		public void AvoidEmptyTypeInitializerStatic(string modifier, string content, bool isError)
 		{
 			const string template = @"public class Foo 
 {{
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.RemoveEmptyConstructors),
+						Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyTypeInitializer),
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"  /** <summary>
   </summary> */")]
 		[DataTestMethod]
-		public void NoEmptyConstructorStaticWithFix(string summaryComment)
+		public void AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
 		{
 			const string template = @"public class Foo 
 {{
@@ -103,12 +103,12 @@ static Foo() {{ }}", summaryComment));
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
-			return new NoEmptyConstructorCodeFixProvider();
+			return new AvoidEmptyTypeInitializerCodeFixProvider();
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new NoEmptyConstructorAnalyzer();
+			return new AvoidEmptyTypeInitializer();
 		}
 
 		#endregion
