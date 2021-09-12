@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
 				}
 
-				const int MaxTokenCount = 100;
+				const int MaxTokenCount = 200;
 				if (duplicateTokenThreshold > MaxTokenCount)
 				{
 					error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
@@ -153,7 +153,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				string file = Path.GetFileName(fileSpan.Path);
 				// This API uses 0-based line positioning, so add 1
-				return $@"{file} line {fileSpan.StartLinePosition.Line + 1}";
+				return $@"{file} line {fileSpan.StartLinePosition.Line + 1} character {fileSpan.StartLinePosition.Character + 1}";
 			}
 
 			public void AnalyzeMethod(SyntaxNodeAnalysisContext obj)
