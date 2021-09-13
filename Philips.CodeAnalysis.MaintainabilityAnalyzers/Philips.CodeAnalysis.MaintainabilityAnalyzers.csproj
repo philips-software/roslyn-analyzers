@@ -66,7 +66,9 @@
 * Fixes for PH2097 (less strict)
 * Introduce PH2098: Avoid empty catch block
 1.2.20
-* Improve confusing message when PH2090 is not configured
+* PH2096: Prevent converting async delegates to actions if they lose the task return type      
+* PH2090: Improve confusing message when not configured
+* PH2032: Rename "Avoid empty constructors" to note only applicable to type initializers
 </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
