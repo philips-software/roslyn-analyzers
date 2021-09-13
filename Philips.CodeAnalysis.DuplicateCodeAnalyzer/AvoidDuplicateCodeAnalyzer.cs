@@ -1,10 +1,11 @@
-// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+// Â© 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,7 +19,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Duplicate Code";
-		private const string MessageFormat = @"Duplicate code found at {0}";
+		private const string MessageFormat = @"Duplicate shape found at {0}. Refactor logic or exempt duplication. Duplicate shape details: ""{1}""";
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
@@ -188,8 +189,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 							// We found a duplicate, but if it's partially duplicated with itself, ignore it.
 							if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
 							{
+								string shapeDetails = GetShapeDetails(token);
 								string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
-								_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference));
+
+								_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
 								if (_generateExceptionsFile)
 								{
@@ -213,6 +216,172 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				{
 					context.ReportDiagnostic(diagnostic);
 				}
+			}
+
+			private string GetShapeDetails(SyntaxToken token)
+			{
+				List<SyntaxToken> tokens = new List<SyntaxToken>();
+				SyntaxToken currentToken = token;
+				for (int i = 0; i < _duplicateTokenThreshold; i++)
+				{
+					tokens.Add(currentToken);
+					currentToken = currentToken.GetPreviousToken();
+				}
+				tokens.Reverse();
+				StringBuilder details = new StringBuilder();
+				foreach (SyntaxToken t in tokens)
+				{
+					string result;
+					switch (t.Kind())
+					{
+						case SyntaxKind.VirtualKeyword:
+						case SyntaxKind.OverrideKeyword:
+						case SyntaxKind.NewKeyword:
+						case SyntaxKind.SealedKeyword:
+						case SyntaxKind.ReadOnlyKeyword:
+						case SyntaxKind.InternalKeyword:
+						case SyntaxKind.StaticKeyword:
+						case SyntaxKind.PartialKeyword:
+						case SyntaxKind.PublicKeyword:
+						case SyntaxKind.PrivateKeyword:
+						case SyntaxKind.ProtectedKeyword:
+						case SyntaxKind.IfKeyword:
+						case SyntaxKind.ElseKeyword:
+						case SyntaxKind.WhileKeyword:
+						case SyntaxKind.ForKeyword:
+						case SyntaxKind.AbstractKeyword:
+						case SyntaxKind.AddKeyword:
+						case SyntaxKind.AliasKeyword:
+						case SyntaxKind.AmpersandAmpersandToken:
+						case SyntaxKind.AmpersandEqualsToken:
+						case SyntaxKind.AmpersandToken:
+						case SyntaxKind.AnnotationsKeyword:
+						case SyntaxKind.ArgListKeyword:
+						case SyntaxKind.AscendingKeyword:
+						case SyntaxKind.AsKeyword:
+						case SyntaxKind.AssemblyKeyword:
+						case SyntaxKind.AsteriskEqualsToken:
+						case SyntaxKind.AsteriskToken:
+						case SyntaxKind.AsyncKeyword:
+						case SyntaxKind.AwaitKeyword:
+						case SyntaxKind.BackslashToken:
+						case SyntaxKind.BarBarToken:
+						case SyntaxKind.BarEqualsToken:
+						case SyntaxKind.BarToken:
+						case SyntaxKind.BaseKeyword:
+						case SyntaxKind.BoolKeyword:
+						case SyntaxKind.BreakKeyword:
+						case SyntaxKind.ByKeyword:
+						case SyntaxKind.ByteKeyword:
+						case SyntaxKind.CaretEqualsToken:
+						case SyntaxKind.CaseKeyword:
+						case SyntaxKind.ClassKeyword:
+						case SyntaxKind.CloseBraceToken:
+						case SyntaxKind.CloseBracketToken:
+						case SyntaxKind.CloseParenToken:
+						case SyntaxKind.ColonToken:
+						case SyntaxKind.ColonColonToken:
+						case SyntaxKind.TrueKeyword:
+						case SyntaxKind.FalseKeyword:
+						case SyntaxKind.DotToken:
+						case SyntaxKind.IntKeyword:
+						case SyntaxKind.PlusEqualsToken:
+						case SyntaxKind.PlusToken:
+						case SyntaxKind.OpenBraceToken:
+						case SyntaxKind.OpenParenToken:
+						case SyntaxKind.SemicolonToken:
+						case SyntaxKind.OpenBracketToken:
+						case SyntaxKind.CommaToken:
+						case SyntaxKind.LessThanToken:
+						case SyntaxKind.LessThanSlashToken:
+						case SyntaxKind.GreaterThanEqualsToken:
+						case SyntaxKind.GreaterThanToken:
+						case SyntaxKind.EqualsEqualsToken:
+						case SyntaxKind.EqualsToken:
+						case SyntaxKind.StringKeyword:
+						case SyntaxKind.PlusPlusToken:
+						case SyntaxKind.ReturnKeyword:
+						case SyntaxKind.UsingKeyword:
+						case SyntaxKind.UShortKeyword:
+						case SyntaxKind.UIntKeyword:
+						case SyntaxKind.ShortKeyword:
+						case SyntaxKind.SwitchKeyword:
+						case SyntaxKind.ForEachKeyword:
+						case SyntaxKind.LockKeyword:
+						case SyntaxKind.RefKeyword:
+						case SyntaxKind.OutKeyword:
+						case SyntaxKind.CharKeyword:
+						case SyntaxKind.QuestionToken:
+						case SyntaxKind.QuestionQuestionToken:
+						case SyntaxKind.QuestionQuestionEqualsToken:
+						case SyntaxKind.ExclamationToken:
+						case SyntaxKind.ExclamationEqualsToken:
+						case SyntaxKind.ObjectKeyword:
+						case SyntaxKind.NullKeyword:
+						case SyntaxKind.NullableKeyword:
+						case SyntaxKind.RegionKeyword:
+						case SyntaxKind.EndRegionKeyword:
+						case SyntaxKind.TryKeyword:
+						case SyntaxKind.CatchKeyword:
+						case SyntaxKind.FinallyKeyword:
+						case SyntaxKind.InKeyword:
+						case SyntaxKind.TypeOfKeyword:
+						case SyntaxKind.MinusToken:
+						case SyntaxKind.MinusEqualsToken:
+						case SyntaxKind.MinusMinusToken:
+						case SyntaxKind.MinusGreaterThanToken:
+						case SyntaxKind.CheckedKeyword:
+						case SyntaxKind.UncheckedKeyword:
+						case SyntaxKind.ContinueKeyword:
+						case SyntaxKind.CaretToken:
+						case SyntaxKind.ConstKeyword:
+						case SyntaxKind.DelegateKeyword:
+						case SyntaxKind.DoKeyword:
+						case SyntaxKind.EnumKeyword:
+						case SyntaxKind.DoubleKeyword:
+						case SyntaxKind.EventKeyword:
+						case SyntaxKind.FloatKeyword:
+						case SyntaxKind.FixedKeyword:
+						case SyntaxKind.FromKeyword:
+						case SyntaxKind.GetKeyword:
+						case SyntaxKind.SetKeyword:
+						case SyntaxKind.GotoKeyword:
+						case SyntaxKind.GreaterThanGreaterThanEqualsToken:
+						case SyntaxKind.GreaterThanGreaterThanToken:
+						case SyntaxKind.GreaterThanOrEqualExpression:
+						case SyntaxKind.LessThanEqualsToken:
+						case SyntaxKind.LessThanLessThanEqualsToken:
+						case SyntaxKind.LessThanLessThanToken:
+						case SyntaxKind.LongKeyword:
+						case SyntaxKind.NameOfKeyword:
+						case SyntaxKind.PercentEqualsToken:
+						case SyntaxKind.PercentToken:
+						case SyntaxKind.SingleQuoteToken:
+						case SyntaxKind.DoubleQuoteToken:
+						case SyntaxKind.SizeOfKeyword:
+						case SyntaxKind.SlashToken:
+						case SyntaxKind.SlashEqualsToken:
+						case SyntaxKind.StructKeyword:
+						case SyntaxKind.ThisKeyword:
+						case SyntaxKind.ThrowKeyword:
+						case SyntaxKind.TildeToken:
+						case SyntaxKind.YieldKeyword:
+						case SyntaxKind.WhenKeyword:
+						case SyntaxKind.VoidKeyword:
+						case SyntaxKind.UnderscoreToken:
+						case SyntaxKind.UnsafeKeyword:
+						case SyntaxKind.ULongKeyword:
+							result = t.ValueText;
+							break;
+						default:
+							result = t.Kind().ToString();
+							result = result.Replace(@"Token", "");
+							break;
+					}
+					details.Append(result);
+					details.Append(' ');
+				}
+				return details.ToString().Trim();
 			}
 		}
 	}

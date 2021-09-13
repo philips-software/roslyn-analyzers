@@ -350,7 +350,7 @@ class Foo
 				new DiagnosticResult()
 				{
 					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
-					Message = new Regex("Duplicate code found.+"),
+					Message = new Regex("Duplicate shape found.+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
