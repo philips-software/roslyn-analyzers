@@ -11,14 +11,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoEmptyConstructorAnalyzer : DiagnosticAnalyzer
+	public class AvoidEmptyTypeInitializer : DiagnosticAnalyzer
 	{
-		private const string Title = @"No Empty Constructors";
-		public const string MessageFormat = @"Remove empty constructor";
-		private const string Description = @"Remove empty constructor";
+		private const string Title = @"Avoid Empty Type Initializer";
+		public const string MessageFormat = @"Remove empty type initializer";
+		private const string Description = @"Remove empty type initializer";
 		private const string Category = Categories.Maintainability;
 
-		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.RemoveEmptyConstructors), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyTypeInitializer), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
