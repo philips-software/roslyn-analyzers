@@ -1,4 +1,4 @@
-// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+// Â© 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Duplicate Code";
-		private const string MessageFormat = @"Duplicate code found at {0}. Refactor or exempt, but do not change shape. (Excellence is a choice.)  Duplicate shape details: ""{1}""";
+		private const string MessageFormat = @"Duplicate shape found at {0}. Refactor logic or exempt duplication. Duplicate shape details: ""{1}""";
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
