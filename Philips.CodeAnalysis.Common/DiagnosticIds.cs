@@ -89,6 +89,7 @@ namespace Philips.CodeAnalysis.Common
 		PreferUsingNamedTupleField = 2094,
 		TestMethodsMustHaveValidReturnType = 2095,
 		AvoidAsyncVoid = 2096,
-		AvoidEmptyStatementBlock = 2097
+		AvoidEmptyStatementBlock = 2097,
+		AvoidEmptyCatchBlock = 2098
 	}
 }
