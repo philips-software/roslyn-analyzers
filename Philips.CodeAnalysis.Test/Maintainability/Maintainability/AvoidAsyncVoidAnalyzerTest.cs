@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -95,6 +93,40 @@ class FooClass
 ";
 
 			VerifyCSharpDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+		}
+
+		[DataRow(false, "Action<int> action = x => {{ Task.Yield(); return 4; }}")]
+		[DataRow(false, "Action action = () => {{ Task.Yield(); }}")]
+		[DataRow(true, "Action<int> action = async x => {{ await Task.Yield(); return 4; }}")]
+		[DataRow(true, "Action action = async () => {{ await Task.Yield(); }}")]
+		[DataRow(false, "Func<Task> action = async () => {{ await Task.Yield(); }}")]
+		[DataRow(false, @"Task<Task<int>> t = Task.Factory.StartNew(async () =>
+{
+    await Task.Delay(1000);
+    return 42;
+});")]
+		[DataTestMethod]
+		public void AvoidAsyncVoidDelegate(bool isError, string code)
+		{
+			string correctTemplate = $@"
+using System.Threading.Tasks;
+using System;
+class FooClass
+{{
+  public void Foo()
+  {{
+    {code};
+  }}
+}}
+";
+			if (isError)
+			{
+				VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+			}
+			else
+			{
+				VerifyCSharpDiagnostic(correctTemplate);
+			}
 		}
 
 

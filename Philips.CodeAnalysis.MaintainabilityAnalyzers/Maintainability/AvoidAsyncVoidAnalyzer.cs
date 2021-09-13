@@ -1,14 +1,11 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Operations;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -37,13 +34,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 
 				INamedTypeSymbol namedSymbol = startContext.Compilation.GetTypeByMetadataName("System.EventArgs");
-				if(namedSymbol == null)
+				if (namedSymbol == null)
 				{
 					return;
 				}
 
 				startContext.RegisterSyntaxNodeAction((x) => Analyze(namedSymbol, x), SyntaxKind.MethodDeclaration);
+				startContext.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.SimpleLambdaExpression);
+				startContext.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.ParenthesizedLambdaExpression);
 			});
+		}
+
+		private void AnalyzeLambda(SyntaxNodeAnalysisContext context)
+		{
+			LambdaExpressionSyntax lambdaExpressionSyntax = (LambdaExpressionSyntax)context.Node;
+
+			if (lambdaExpressionSyntax.AsyncKeyword.Kind() != SyntaxKind.AsyncKeyword)
+			{
+				return;
+			}
+
+			var retValType = context.SemanticModel.GetSymbolInfo(lambdaExpressionSyntax);
+
+			if (retValType.Symbol is null)
+			{
+				return;
+			}
+
+			if (retValType.Symbol is IMethodSymbol method && method.ReturnType.SpecialType == SpecialType.System_Void)
+			{
+				context.ReportDiagnostic(Diagnostic.Create(Rule, lambdaExpressionSyntax.GetLocation()));
+			}
 		}
 
 		private void Analyze(INamedTypeSymbol namedSymbol, SyntaxNodeAnalysisContext context)
@@ -69,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// check for the Event handlers as they use async void
-			
+
 			if (methodSymbol.Parameters.Any(x => x.Type is INamedTypeSymbol namedTypeSymbol && namedTypeSymbol.IsDerivedFrom(namedSymbol)))
 			{
 				return;
@@ -78,6 +99,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
 		}
 
-		
+
 	}
 }
