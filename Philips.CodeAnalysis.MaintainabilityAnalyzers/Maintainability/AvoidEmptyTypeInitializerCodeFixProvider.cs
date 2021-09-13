@@ -15,12 +15,12 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(NoEmptyConstructorCodeFixProvider)), Shared]
-	public class NoEmptyConstructorCodeFixProvider : CodeFixProvider
+	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidEmptyTypeInitializerCodeFixProvider)), Shared]
+	public class AvoidEmptyTypeInitializerCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Don't have empty constructors";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.RemoveEmptyConstructors));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyTypeInitializer));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
