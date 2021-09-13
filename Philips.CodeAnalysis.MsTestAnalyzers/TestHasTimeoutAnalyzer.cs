@@ -20,141 +20,152 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
-		private AdditionalFilesHelper _additionalFilesHelper = null;
-		private readonly object _lock1 = new object();
-		private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new Dictionary<string, ImmutableList<string>>();
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation)
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			_additionalFilesHelper = new AdditionalFilesHelper(options, compilation);
+			var additionalFilesHelper = new AdditionalFilesHelper(options, compilation);
+
+			return new TestHasTimeout(definitions, additionalFilesHelper);
 		}
 
-		private bool TryGetAllowedTimeouts(string category, out ImmutableList<string> values)
+		private class TestHasTimeout : TestMethodImplementation
 		{
-			lock (_lock1)
+			private readonly AdditionalFilesHelper _additionalFilesHelper;
+			private readonly object _lock1 = new object();
+			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new Dictionary<string, ImmutableList<string>>();
+
+			public TestHasTimeout(MsTestAttributeDefinitions definitions, AdditionalFilesHelper additionalFilesHelper) : base(definitions)
 			{
-				if (_configuredTimeouts.TryGetValue(category, out values))
-				{
-					return values != null;
-				}
+				_additionalFilesHelper = additionalFilesHelper;
 			}
 
-			List<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
-
-			lock (_lock1)
+			private bool TryGetAllowedTimeouts(string category, out ImmutableList<string> values)
 			{
-				if (allowedTimeouts.Count > 0)
+				lock (_lock1)
 				{
-					_configuredTimeouts[category] = values = allowedTimeouts.ToImmutableList();
-					return true;
-				}
-				else
-				{
-					_configuredTimeouts[category] = null;
-					return false;
-				}
-			}
-		}
-
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
-		{
-			SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
-
-			bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location _, out AttributeArgumentSyntax categoryArgumentSyntax);
-
-			if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
-			{
-				ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
-
-				//it doesn't have a timeout.  To help the fixer, see if it has a category...
-				if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic))
-				{
-					if (TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
+					if (_configuredTimeouts.TryGetValue(category, out values))
 					{
-						additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+						return values != null;
 					}
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), additionalData, string.Empty);
-				context.ReportDiagnostic(diagnostic);
-				return;
-			}
+				List<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
 
-			if (!hasCategory)
-			{
-				return;
-			}
-
-			if (!TryExtractAttributeArgument(context, categoryArgumentSyntax, out string categoryArgumentString, out string category))
-			{
-				return;
-			}
-
-			if (!TryExtractAttributeArgument(context, argumentSyntax, out string timeoutString, out int _))
-			{
-				return;
-			}
-
-			if (IsIncorrectTimeout(timeoutString, category, out string errorText))
-			{
-				ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
-
-				if (TryGetAllowedTimeouts(category, out var allowed) && allowed.Any())
+				lock (_lock1)
 				{
-					additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+					if (allowedTimeouts.Count > 0)
+					{
+						_configuredTimeouts[category] = values = allowedTimeouts.ToImmutableList();
+						return true;
+					}
+					else
+					{
+						_configuredTimeouts[category] = null;
+						return false;
+					}
+				}
+			}
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
+
+				bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location _, out AttributeArgumentSyntax categoryArgumentSyntax);
+
+				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
+				{
+					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
+
+					//it doesn't have a timeout.  To help the fixer, see if it has a category...
+					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic))
+					{
+						if (TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
+						{
+							additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+						}
+					}
+
+					Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), additionalData, string.Empty);
+					context.ReportDiagnostic(diagnostic);
+					return;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
-				context.ReportDiagnostic(diagnostic);
+				if (!hasCategory)
+				{
+					return;
+				}
+
+				if (!TryExtractAttributeArgument(context, categoryArgumentSyntax, out string categoryArgumentString, out string category))
+				{
+					return;
+				}
+
+				if (!TryExtractAttributeArgument(context, argumentSyntax, out string timeoutString, out int _))
+				{
+					return;
+				}
+
+				if (IsIncorrectTimeout(timeoutString, category, out string errorText))
+				{
+					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
+
+					if (TryGetAllowedTimeouts(category, out var allowed) && allowed.Any())
+					{
+						additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+					}
+
+					Diagnostic diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
-		}
 
-		private bool TryExtractAttributeArgument<T>(SyntaxNodeAnalysisContext context, AttributeArgumentSyntax argumentSyntax, out string argumentString, out T value)
-		{
-			argumentString = argumentSyntax.Expression.ToString();
-
-			var data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
-
-			if (data.Symbol == null)
+			private bool TryExtractAttributeArgument<T>(SyntaxNodeAnalysisContext context, AttributeArgumentSyntax argumentSyntax, out string argumentString, out T value)
 			{
+				argumentString = argumentSyntax.Expression.ToString();
+
+				var data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
+
+				if (data.Symbol == null)
+				{
+					value = default;
+					return false;
+				}
+
+				if (data.Symbol is IFieldSymbol field && field.HasConstantValue && field.Type.Name == typeof(T).Name)
+				{
+					value = (T)field.ConstantValue;
+					return true;
+				}
+
 				value = default;
 				return false;
 			}
 
-			if (data.Symbol is IFieldSymbol field && field.HasConstantValue && field.Type.Name == typeof(T).Name)
+			public bool IsIncorrectTimeout(string argumentString, string category, out string messageFormat)
 			{
-				value = (T)field.ConstantValue;
-				return true;
-			}
+				if (!TryGetAllowedTimeouts(category, out ImmutableList<string> timeouts))
+				{
+					messageFormat = default;
+					return false;
+				}
 
-			value = default;
-			return false;
-		}
+				if (!timeouts.Contains(argumentString))
+				{
+					List<string> timeoutStrings = new List<string>();
+					foreach (string timeoutString in timeouts)
+					{
+						timeoutStrings.Add($"\"{timeoutString}\"");
+					}
 
-		public bool IsIncorrectTimeout(string argumentString, string category, out string messageFormat)
-		{
-			if (!TryGetAllowedTimeouts(category, out ImmutableList<string> timeouts))
-			{
+					messageFormat = $"  Supported timeouts for category '{category}' are: {string.Join(", ", timeoutStrings)}";
+					return true;
+				}
+
 				messageFormat = default;
 				return false;
 			}
-
-			if (!timeouts.Contains(argumentString))
-			{
-				List<string> timeoutStrings = new List<string>();
-				foreach (string timeoutString in timeouts)
-				{
-					timeoutStrings.Add($"\"{timeoutString}\"");
-				}
-
-				messageFormat = $"  Supported timeouts for category '{category}' are: {string.Join(", ", timeoutStrings)}";
-				return true;
-			}
-
-			messageFormat = default;
-			return false;
 		}
 	}
 }

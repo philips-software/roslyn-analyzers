@@ -1,8 +1,6 @@
 // © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -23,10 +21,25 @@ namespace Philips.CodeAnalysis.Test
 			return new TestMethodsMustBeInTestClassAnalyzer();
 		}
 
+		protected override (string name, string content)[] GetAdditionalSourceCode()
+		{
+			string code = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class DerivedTestMethod : TestMethod
+{
+}
+
+";
+
+			return new[] { ("DerivedTestMethod.cs", code) };
+		}
+
 		#endregion
 
 		#region Public Interface
 
+		[DataRow(false, "object", "", "[DerivedTestMethod]")]
 		[DataRow(true, "object", "", "[TestMethod]")]
 		[DataRow(true, "object", "", "[DataTestMethod]")]
 		[DataRow(true, "object", "", "[AssemblyInitialize]")]

@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,26 +21,31 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
-		public TestMethodsMustBeInTestClassAnalyzer() : base(TestAttributes.All ^ TestAttributes.TestClass)
+		public TestMethodsMustBeInTestClassAnalyzer()
 		{ }
+
+		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBeInTestClass();
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, TestAttributes attributes)
+		private class TestMethodsMustBeInTestClass : Implementation
 		{
-			if (Helper.IsInTestClass(context))
+			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				return;
+				if (Helper.IsInTestClass(context))
+				{
+					return;
+				}
+
+				var symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+
+				if (symbol != null && symbol.ContainingType.IsAbstract)
+				{
+					return;
+				}
+
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 			}
-
-			var symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
-
-			if (symbol != null && symbol.ContainingType.IsAbstract)
-			{
-				return;
-			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 		}
 	}
 }

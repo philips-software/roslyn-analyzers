@@ -29,56 +29,77 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static DiagnosticDescriptor RuleShouldBeDataTestMethod = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			return new DataTestMethodsHaveDataRowsImplementation(definitions);
+		}
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod); } }
 
-		protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, bool isDataTestMethod)
+		public class DataTestMethodsHaveDataRowsImplementation : TestMethodImplementation
 		{
-			int dynamicDataCount = 0;
-			int dataRowCount = 0;
-			foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
+			public DataTestMethodsHaveDataRowsImplementation(MsTestAttributeDefinitions definitions) : base(definitions)
+			{ }
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				if (Helper.IsDataRowAttribute(attribute, context))
+				int dynamicDataCount = 0;
+				int dataRowCount = 0;
+				bool hasTestSource = false;
+				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					dataRowCount++;
+					if (Helper.IsDataRowAttribute(attribute, context))
+					{
+						dataRowCount++;
+						continue;
+					}
+
+					if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					{
+						dynamicDataCount++;
+						continue;
+					}
+
+					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
+					if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+					{
+						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
+						{
+							hasTestSource = true;
+						}
+					}
 				}
 
-				if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+				if (isDataTestMethod)
 				{
-					dynamicDataCount++;
-				}
-			}
+					if (dataRowCount != 0 && dynamicDataCount == 0)
+					{
+						return;
+					}
 
-			if (isDataTestMethod)
-			{
-				if (dataRowCount != 0 && dynamicDataCount == 0)
-				{
-					return;
-				}
+					if (dataRowCount == 0 && dynamicDataCount == 1)
+					{
+						return;
+					}
 
-				if (dataRowCount == 0 && dynamicDataCount == 1)
-				{
-					return;
-				}
+					if (dataRowCount != 0 && dynamicDataCount != 0)
+					{
 
-				if (dataRowCount != 0 && dynamicDataCount != 0)
-				{
-
-					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
+						context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
+					}
+					else if (!hasTestSource)
+					{
+						context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
+					}
 				}
 				else
 				{
-					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
-				}
-			}
-			else
-			{
-				if (dataRowCount == 0 && dynamicDataCount == 0)
-				{
-					return;
-				}
+					if (dataRowCount == 0 && dynamicDataCount == 0)
+					{
+						return;
+					}
 
-				context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, methodDeclaration.Identifier.GetLocation()));
+					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, methodDeclaration.Identifier.GetLocation()));
+				}
 			}
 		}
 	}
