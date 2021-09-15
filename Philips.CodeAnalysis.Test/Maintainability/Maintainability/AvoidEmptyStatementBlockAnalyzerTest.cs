@@ -197,6 +197,44 @@ class Foo
 		}
 
 		[TestMethod]
+		public void SimpleLambdasAllowed()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	public void Meow()
+	{
+		ServiceCollection serviceCollection = new ServiceCollection();
+		_ = serviceCollection.AddDatabaseConnection(options => { });
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+
+		[TestMethod]
+		public void EmptyLockBlocksAllowed()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{
+	public void Meow()
+	{
+			object lock = new object();
+			lock (lock) { }
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+
+		[TestMethod]
 		public void PublicMethodWithEmptyStatementBlockFails()
 		{
 			const string template = @"
