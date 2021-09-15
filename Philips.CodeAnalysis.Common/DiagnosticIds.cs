@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.Common
 		TestMethodsMustHaveValidReturnType = 2095,
 		AvoidAsyncVoid = 2096,
 		AvoidEmptyStatementBlock = 2097,
-		AvoidEmptyCatchBlock = 2098
+		AvoidEmptyCatchBlock = 2098,
 		EnforceFileVersionIsSameAsPackageVersion = 2099
 	}
 }
