@@ -44,14 +44,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// Empty catch blocks are a different type of code smell.
-			if (blockSyntax.Parent is CatchClauseSyntax)
-			{
-				Diagnostic emptyCatchDiagnostic = Diagnostic.Create(CatchRule, blockSyntax.GetLocation());
-				context.ReportDiagnostic(emptyCatchDiagnostic);
-				return;
-			}
-
 			// Empty constructors are acceptable
 			if (blockSyntax.Parent is ConstructorDeclarationSyntax)
 			{
@@ -67,8 +59,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
+			// Empty catch blocks are a different type of code smell.
+			if (blockSyntax.Parent is CatchClauseSyntax)
+			{
+				Diagnostic emptyCatchDiagnostic = Diagnostic.Create(CatchRule, blockSyntax.GetLocation());
+				context.ReportDiagnostic(emptyCatchDiagnostic);
+				return;
+			}
+
 			// ParanthesizedLambdaExpressions are acceptable () => { }, until a pre-canned static "EmptyAction" is defined.
-			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax)
+			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax || blockSyntax.Parent is SimpleLambdaExpressionSyntax)
+			{
+				return;
+			}
+
+			// Empty lock blocks are acceptable.  lock (x) {}
+			if (blockSyntax.Parent is LockStatementSyntax)
 			{
 				return;
 			}

@@ -18,13 +18,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path, Assembly, Project, and Namespace must all match";
 		private const string Category = Categories.Naming;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespaceMatchAssembly), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NamespaceMatchAssembly), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
 		}
