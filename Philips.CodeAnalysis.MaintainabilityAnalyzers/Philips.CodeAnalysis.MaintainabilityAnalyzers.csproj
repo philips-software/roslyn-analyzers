@@ -71,14 +71,16 @@
 * PH2032: Rename "Avoid empty constructors" to note only applicable to type initializers
 1.2.21
 * PH2097: Allow empty lock blocks and simple lambdas
+1.2.22
+* PH2006: Exclude generated code
 </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.2.21</Version>
+    <Version>1.2.22</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.2.21</FileVersion>
+    <FileVersion>1.2.22</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
