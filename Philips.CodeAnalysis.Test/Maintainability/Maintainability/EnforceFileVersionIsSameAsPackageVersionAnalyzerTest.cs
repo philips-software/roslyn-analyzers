@@ -1,0 +1,95 @@
+﻿using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+
+namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
+{
+	[TestClass]
+	public class EnforceFileVersionIsSameAsPackageVersionAnalyzerTest : DiagnosticVerifier
+	{
+
+		[DataTestMethod]
+		[DataRow("1.0.1", "1.0.2", true)]
+		[DataRow("1.1.0", "1.2.0", true)]
+		[DataRow("1.0.0", "2.0.0", true)]
+		[DataRow("1.0.0.1", "2.0.0.0", true)]
+		[DataRow("1.0.0.0", "1.0.0", true)]
+		[DataRow("1.0.0", "1.0.0.0", true)]
+		[DataRow("1.0.0", "1.0.0", false)]
+		public void FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
+		{
+			string code = $@"
+using System;
+using System.Reflection;
+
+[assembly: AssemblyVersion(""1.0.0.0"")]
+[assembly: AssemblyFileVersion(""{fileVersion}"")]
+[assembly: AssemblyInformationalVersion(""{packageVersion}"")]
+
+class FooClass
+{{{{
+  public void Foo(object a)
+  {{{{
+    var data = 1;
+  }}}}
+}}}}
+";
+
+			if (hasDiagnostic)
+			{
+				VerifyCSharpDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.EnforceFileVersionIsSameAsPackageVersion));
+			}
+			else
+			{
+				VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+			}
+		}
+
+		[TestMethod]
+		public void NoDiagnosticWhenNoPackageVersion()
+		{
+			string code = $@"
+using System;
+using System.Reflection;
+
+[assembly: AssemblyVersion(""1.0.0.0"")]
+[assembly: AssemblyFileVersion(""1.2.3.4"")]
+
+class FooClass
+{{{{
+  public void Foo(object a)
+  {{{{
+    var data = 1;
+  }}}}
+}}}}
+";
+
+			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+		}
+
+		[TestMethod]
+		public void NoDiagnosticWhenNoFileVersionOrPackageVersion()
+		{
+			string code = $@"
+using System;
+using System.Reflection;
+
+class FooClass
+{{{{
+  public void Foo(object a)
+  {{{{
+    var data = 1;
+  }}}}
+}}}}
+";
+
+			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+		}
+
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new EnforceFileVersionIsSameAsPackageVersionAnalyzer();
+		}
+	}
+}
