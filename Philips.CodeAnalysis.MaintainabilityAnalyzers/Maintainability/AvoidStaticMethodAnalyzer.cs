@@ -25,18 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
 			if (methodDeclarationSyntax == null)
 			{

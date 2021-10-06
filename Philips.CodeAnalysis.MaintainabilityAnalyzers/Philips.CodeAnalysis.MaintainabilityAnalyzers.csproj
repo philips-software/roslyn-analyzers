@@ -73,6 +73,8 @@
 * PH2097: Allow empty lock blocks and simple lambdas
 1.2.22
 * PH2006: Exclude generated code
+1.2.23
+* PH2027: Allow static methods used by DynamicData
 </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
