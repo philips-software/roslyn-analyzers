@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -24,18 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
 			if (methodDeclarationSyntax == null)
 			{
@@ -104,6 +100,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					return;
 				}
+			}
+
+			// Check if this method is being used for DynamicData, if so, let it go
+			string returnType = methodDeclarationSyntax.ReturnType.ToString();
+			if (string.Equals(returnType, "IEnumerable<object[]>", StringComparison.CurrentCultureIgnoreCase))
+			{
+				return;
 			}
 
 			Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation());

@@ -285,6 +285,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						case SyntaxKind.FalseKeyword:
 						case SyntaxKind.DotToken:
 						case SyntaxKind.IntKeyword:
+						case SyntaxKind.InterpolatedStringStartToken:
+						case SyntaxKind.InterpolatedStringEndToken:
+						case SyntaxKind.InterpolatedVerbatimStringStartToken:
 						case SyntaxKind.PlusEqualsToken:
 						case SyntaxKind.PlusToken:
 						case SyntaxKind.OpenBraceToken:
@@ -298,6 +301,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						case SyntaxKind.GreaterThanToken:
 						case SyntaxKind.EqualsEqualsToken:
 						case SyntaxKind.EqualsToken:
+						case SyntaxKind.EqualsGreaterThanToken:
 						case SyntaxKind.StringKeyword:
 						case SyntaxKind.PlusPlusToken:
 						case SyntaxKind.ReturnKeyword:
