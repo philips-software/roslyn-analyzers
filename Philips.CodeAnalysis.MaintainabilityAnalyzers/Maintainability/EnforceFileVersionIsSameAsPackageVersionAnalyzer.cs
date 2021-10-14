@@ -40,6 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					if (!attr.ConstructorArguments.IsEmpty)
 					{
 						fileVersion = new Version((string)attr.ConstructorArguments[0].Value);
+						fileVersion = SetRevisionToZeroIfMissing(fileVersion);
 					}
 				}
 
@@ -47,7 +48,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					if (!attr.ConstructorArguments.IsEmpty)
 					{
-						informationalVersion = new Version((string)attr.ConstructorArguments[0].Value);
+						string strippedVersion = StripPreReleaseSuffix((string)attr.ConstructorArguments[0].Value);
+						informationalVersion = new Version(strippedVersion);
+						informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
 					}
 				}
 			}
@@ -62,6 +65,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				Diagnostic diagnostic = Diagnostic.Create(Rule, null, fileVersion, informationalVersion);
 				context.ReportDiagnostic(diagnostic);
 			}
+		}
+
+		private Version SetRevisionToZeroIfMissing(Version version)
+		{
+			if (version.Revision < 0)
+			{
+				version = new Version(version.Major, version.Minor, version.Build, 0);
+			}
+			return version;
+		}
+
+		private string StripPreReleaseSuffix(string semanticVersion)
+		{
+			string version = semanticVersion;
+			int index = semanticVersion.IndexOf("-");
+			if (index >= 0)
+			{
+				version = semanticVersion.Substring(0, index);
+			}
+			return version;
 		}
 	}
 }

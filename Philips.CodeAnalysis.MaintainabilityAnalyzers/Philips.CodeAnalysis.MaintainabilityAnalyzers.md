@@ -50,3 +50,4 @@
 | PH2096  | Prefer async Task methods over async void methods | Wherever possible return Task rather then void for async methods. Exception are Event handlers |
 | PH2097  | Avoid Empty Statement Blocks| Avoid empty statement blocks |
 | PH2098  | Avoid Empty Catch Block| Avoid try-catch-swallow pattern |
+| PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |

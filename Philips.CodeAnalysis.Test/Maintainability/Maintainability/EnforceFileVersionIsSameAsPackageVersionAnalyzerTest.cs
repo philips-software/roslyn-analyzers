@@ -13,10 +13,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("1.0.1", "1.0.2", true)]
 		[DataRow("1.1.0", "1.2.0", true)]
 		[DataRow("1.0.0", "2.0.0", true)]
-		[DataRow("1.0.0.1", "2.0.0.0", true)]
-		[DataRow("1.0.0.0", "1.0.0", true)]
-		[DataRow("1.0.0", "1.0.0.0", true)]
+		[DataRow("1.0.0.1", "1.0.0.0", true)]
+		[DataRow("1.0.0", "1.0.1-ci.1", true)]
+		[DataRow("1.0.0.0", "1.0.0", false)]
+		[DataRow("1.0.0", "1.0.0.0", false)]
 		[DataRow("1.0.0", "1.0.0", false)]
+		[DataRow("1.0.0", "1.0.0-prerelease", false)]
+		[DataRow("1.0.0", "1.0.0-ci.1", false)]
 		public void FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
 			string code = $@"
