@@ -48,8 +48,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					if (!attr.ConstructorArguments.IsEmpty)
 					{
-						string strippedVersion = StripPreReleaseSuffix((string)attr.ConstructorArguments[0].Value);
-						informationalVersion = new Version(strippedVersion);
+						string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
+						string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
+						informationalVersion = new Version(strippedsourceRevisionId);
 						informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
 					}
 				}
@@ -76,13 +77,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return version;
 		}
 
-		private string StripPreReleaseSuffix(string semanticVersion)
+		private string RemoveVersionSuffix(string version)
 		{
-			string version = semanticVersion;
-			int index = semanticVersion.IndexOf("-");
+			return RemoveSuffix(version, '-');
+		}
+
+		private string RemoveSourceRevisionId(string version)
+		{
+			return RemoveSuffix(version, '+');
+		}
+
+		private string RemoveSuffix(string version, char suffixSymbol)
+		{
+			int index = version.IndexOf(suffixSymbol);
 			if (index >= 0)
 			{
-				version = semanticVersion.Substring(0, index);
+				version = version.Substring(0, index);
 			}
 			return version;
 		}
