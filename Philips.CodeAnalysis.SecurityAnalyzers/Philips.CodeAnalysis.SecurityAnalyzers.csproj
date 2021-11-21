@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Philips.CodeAnalysis.SecurityAnalyzers</PackageId>
+    <Authors>Brian Collamore</Authors>
+    <Company>Philips</Company>
+    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
+    <PackageIcon>packageicon.png</PackageIcon>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/39734771</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Description>Roslyn Diagnostic Analyzers for potential security findings</Description>
+    <PackageReleaseNotes>1.0: Initial version</PackageReleaseNotes>
+    <Copyright>© 2021 Koninklijke Philips N.V.</Copyright>
+    <PackageTags>CSharp Security Roslyn CodeAnalysis analyzers Philips</PackageTags>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <Compile Include="..\Philips.CodeAnalysis.Common\AdditionalFilesHelper.cs" Link="Common\AdditionalFilesHelper.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\AttributeDefinition.cs" Link="Common\AttributeDefinition.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\AttributeModel.cs" Link="Common\AttributeModel.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\Categories.cs" Link="Common\Categories.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\ConstructorSyntaxHelper.cs" Link="Common\ConstructorSyntaxHelper.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\DiagnosticIds.cs" Link="Common\DiagnosticIds.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\Helper.cs" Link="Common\Helper.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\MsTestFrameworkDefinitions.cs" Link="Common\MsTestFrameworkDefinitions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
+    <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
+    <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+</Project>
