@@ -1,5 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -36,21 +37,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax propertyDeclarationSyntax = context.Node as PropertyDeclarationSyntax;
-			Diagnostic diagnostic = CheckComment(propertyDeclarationSyntax.Identifier.ValueText, propertyDeclarationSyntax.GetLocation());
-			if (diagnostic != null)
-			{
-				context.ReportDiagnostic(diagnostic);
-			}
+			Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
+				propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
-			Diagnostic diagnostic = CheckComment(methodDeclarationSyntax.Identifier.ValueText, methodDeclarationSyntax.GetLocation());
-			if (diagnostic != null)
-			{
-				context.ReportDiagnostic(diagnostic);
-			}
+			Diagnose(methodDeclarationSyntax.Identifier.ValueText, 
+				methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeFields(SyntaxNodeAnalysisContext context)
@@ -58,11 +53,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			FieldDeclarationSyntax fieldDeclarationSyntax = context.Node as FieldDeclarationSyntax;
 			foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
 			{
-				Diagnostic diagnostic = CheckComment(variable.Identifier.ValueText, fieldDeclarationSyntax.GetLocation());
-				if (diagnostic != null)
-				{
-					context.ReportDiagnostic(diagnostic);
-				}
+				Diagnose(variable.Identifier.ValueText,
+					fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 			}
 		}
 
@@ -73,11 +65,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			var comments = root.DescendantTrivia().Where((t) => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia));
 			foreach (SyntaxTrivia comment in comments)
 			{
-				Diagnostic diagnostic = CheckComment(comment.ToString(), comment.GetLocation());
-				if (diagnostic != null)
-				{
-					context.ReportDiagnostic(diagnostic);
-				}
+				Diagnose(comment.ToString(), comment.GetLocation(), context.ReportDiagnostic);
 			}
 		}
 
@@ -88,6 +76,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return Diagnostic.Create(Rule, location);
 			}
 			return null;
+		}
+		
+		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)
+		{
+			Diagnostic diagnostic = CheckComment(valueText, location);
+			if (diagnostic != null)
+			{
+				reportDiagnostic(diagnostic);
+			}
 		}
 	}
 }
