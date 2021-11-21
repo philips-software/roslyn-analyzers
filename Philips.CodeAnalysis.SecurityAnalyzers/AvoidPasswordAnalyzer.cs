@@ -19,7 +19,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
 		private const string Category = Categories.Security;
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
+			Title, MessageFormat, Category, 
+			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
