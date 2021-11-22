@@ -37,6 +37,7 @@
     <ProjectReference Include="..\Philips.CodeAnalysis.MaintainabilityAnalyzers\Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.MoqAnalyzers\Philips.CodeAnalysis.MoqAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.MsTestAnalyzers\Philips.CodeAnalysis.MsTestAnalyzers.csproj" />
+    <ProjectReference Include="..\Philips.CodeAnalysis.SecurityAnalyzers\Philips.CodeAnalysis.SecurityAnalyzers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

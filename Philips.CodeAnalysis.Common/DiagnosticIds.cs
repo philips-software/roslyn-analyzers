@@ -91,6 +91,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidAsyncVoid = 2096,
 		AvoidEmptyStatementBlock = 2097,
 		AvoidEmptyCatchBlock = 2098,
-		EnforceFileVersionIsSameAsPackageVersion = 2099
+		EnforceFileVersionIsSameAsPackageVersion = 2099,
+		AvoidPasswordField = 2100
 	}
 }

@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.Test\Philips.CodeAnalysis.Test.csproj", "{604797D1-49B5-4A93-BCBD-C67158EBDD44}"
@@ -22,6 +23,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "Philips.CodeAnalysis.DuplicateCodeAnalyzer\Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj", "{378CCB57-00DA-4782-A238-ADC134827B93}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Benchmark", "Philips.CodeAnalysis.Benchmark\Philips.CodeAnalysis.Benchmark.csproj", "{D9B847FB-E395-4875-86E9-C69B47B8D77C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.SecurityAnalyzers", "Philips.CodeAnalysis.SecurityAnalyzers\Philips.CodeAnalysis.SecurityAnalyzers.csproj", "{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +60,10 @@ Global
 		{D9B847FB-E395-4875-86E9-C69B47B8D77C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9B847FB-E395-4875-86E9-C69B47B8D77C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9B847FB-E395-4875-86E9-C69B47B8D77C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

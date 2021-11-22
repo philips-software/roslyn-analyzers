@@ -13,6 +13,7 @@ Consult the following for details on the available rules:
 
 * [Philips.CodeAnalysis.MsTestAnalyzers](./Philips.CodeAnalysis.MsTestAnalyzers/Philips.CodeAnalysis.MsTestAnalyzers.md)
 
+* [Philips.CodeAnalysis.SecurityAnalyzers](./Philips.CodeAnalysis.SecurityAnalyzers/Philips.CodeAnalysis.SecurityAnalyzers.md)
   
 
 # Getting Started
