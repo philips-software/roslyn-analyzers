@@ -51,3 +51,4 @@
 | PH2097  | Avoid Empty Statement Blocks| Avoid empty statement blocks |
 | PH2098  | Avoid Empty Catch Block| Avoid try-catch-swallow pattern |
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |
+| PH2101  | Detect Null Dereference after "as" | After "as" include null checks; or, use static cast to set expectations |

@@ -23,7 +23,6 @@
       1.1:
       * Depend on .NET Standard version 2.0 instead of 1.3
       * Add "Avoid AssemblyVersion Change" Analyzer
-      * Fix "Copyright Present Analyzer"
       1.2.1
       * Introduce PH2077 Avoid switch statements with no cases
       1.2.4
@@ -55,14 +54,10 @@
       1.2.13
       * Introduced PH2093: Prefer creating tuples with named fields
       * Introduced PH2094: Prefer using the named tuple field, not ItemX
-      1.2.14
-      * Bug fix to Pass By Reference Analyzer
       1.2.15
       * Avoid returning async void
       1.2.16
       * Introduced PH2097: Avoid empty statement blocks
-      1.2.18
-      * Use default value for LimitConditionComplexity Analyzer
       1.2.19
       * Fixes for PH2097 (less strict)
       * Introduce PH2098: Avoid empty catch block
@@ -70,22 +65,16 @@
       * PH2096: Prevent converting async delegates to actions if they lose the task return type
       * PH2090: Improve confusing message when not configured
       * PH2032: Rename "Avoid empty constructors" to note only applicable to type initializers
-      1.2.21
-      * PH2097: Allow empty lock blocks and simple lambdas
-      1.2.22
-      * PH2006: Exclude generated code
-      1.2.23
-      * PH2027: Allow static methods used by DynamicData
-      1.2.24
-      * PH2099: Treat missing revision value as 0
+      1.2.26
+      * Introduce PH2101: Detect null dereference after "as" keyword
     </PackageReleaseNotes>
     <Copyright>© 2019-2021 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.2.25</Version>
+    <Version>1.2.26</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.2.25</FileVersion>
+    <FileVersion>1.2.26</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
