@@ -89,5 +89,116 @@ class Foo
 ";
 			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
+
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (y.ToString() == @"""")
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			VerifyCSharpDiagnostic(testCode, expected);
+		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (y != null && y.ToString() == @"")
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckDereference2Test()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if ((bool)(y?.ToString().Contains(""null"")))
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionWhileCheckDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    while (y.ToString().Contains(""x""))
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			VerifyCSharpDiagnostic(testCode, expected);
+		}
+
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionWhileCheckDereference2Test()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    while (y != null && y.ToString().Contains(""x""))
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
 	}
 }

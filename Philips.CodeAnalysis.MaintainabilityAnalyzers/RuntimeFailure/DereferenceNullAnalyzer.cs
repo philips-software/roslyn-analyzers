@@ -161,6 +161,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
 			{
 				// There's nothing to analyze; they immediately used the symbol after the 'as'
+
+				// Before reporting an error, note common possibility that the situation could be:
+				// string y = obj as string;
+				// if (y != null && y.ToString() == @"")
+				// Ie there's nothing to analyze between the statements, but within the statement exists a check
+				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
+				{
+					if (ifStatementSyntax.Condition.ToString().Contains(@"null"))
+					{
+						// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
+						return;
+					}
+				}
+				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
+				{
+					if (whileStatementSyntax.Condition.ToString().Contains(@"null"))
+					{
+						// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
+						return;
+					}
+				}
+
+
 				Report(context, identifierNameSyntax);
 				return;
 			}
