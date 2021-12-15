@@ -47,7 +47,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-				MethodDeclarationSyntax methodDeclarationSyntax = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+				if (root == null) continue;
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode == null) continue;
+				MethodDeclarationSyntax methodDeclarationSyntax = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+				if (methodDeclarationSyntax == null) continue;
 				string methodName = methodDeclarationSyntax.Identifier.ValueText;
 
 				string title = $@"Add {methodName} to duplicate code exceptions list";
@@ -159,11 +163,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					foreach (Diagnostic diagnostic in grouping)
 					{
 						TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-						MethodDeclarationSyntax methodDeclarationSyntax = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
+						if (root != null)
 						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
-							newMethodNames.Add(methodName);
+							SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+							if (node != null)
+							{
+								MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+								if (methodDeclarationSyntax != null)
+								{
+									string methodName = methodDeclarationSyntax.Identifier.ValueText;
+									newMethodNames.Add(methodName);
+								}
+							}
 						}
 					}
 				}
