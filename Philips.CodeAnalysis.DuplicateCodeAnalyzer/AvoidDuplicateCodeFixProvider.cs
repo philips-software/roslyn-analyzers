@@ -47,20 +47,27 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-				if (root == null) continue;
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode == null) continue;
-				MethodDeclarationSyntax methodDeclarationSyntax = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-				if (methodDeclarationSyntax == null) continue;
-				string methodName = methodDeclarationSyntax.Identifier.ValueText;
+				if (root != null)
+				{
+					SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+					if (syntaxNode != null)
+					{
+						MethodDeclarationSyntax methodDeclarationSyntax =
+							syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+						if (methodDeclarationSyntax != null)
+						{
+							string methodName = methodDeclarationSyntax.Identifier.ValueText;
 
-				string title = $@"Add {methodName} to duplicate code exceptions list";
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: title,
-						createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
-						equivalenceKey: title),
-					diagnostic);
+							string title = $@"Add {methodName} to duplicate code exceptions list";
+							context.RegisterCodeFix(
+								CodeAction.Create(
+									title: title,
+									createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
+									equivalenceKey: title),
+								diagnostic);
+						}
+					}
+				}
 			}
 		}
 
