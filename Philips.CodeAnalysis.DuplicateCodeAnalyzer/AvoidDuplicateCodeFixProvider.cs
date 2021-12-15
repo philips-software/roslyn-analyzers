@@ -47,16 +47,27 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-				MethodDeclarationSyntax methodDeclarationSyntax = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-				string methodName = methodDeclarationSyntax.Identifier.ValueText;
+				if (root != null)
+				{
+					SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+					if (syntaxNode != null)
+					{
+						MethodDeclarationSyntax methodDeclarationSyntax =
+							syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+						if (methodDeclarationSyntax != null)
+						{
+							string methodName = methodDeclarationSyntax.Identifier.ValueText;
 
-				string title = $@"Add {methodName} to duplicate code exceptions list";
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: title,
-						createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
-						equivalenceKey: title),
-					diagnostic);
+							string title = $@"Add {methodName} to duplicate code exceptions list";
+							context.RegisterCodeFix(
+								CodeAction.Create(
+									title: title,
+									createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
+									equivalenceKey: title),
+								diagnostic);
+						}
+					}
+				}
 			}
 		}
 
@@ -159,11 +170,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					foreach (Diagnostic diagnostic in grouping)
 					{
 						TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-						MethodDeclarationSyntax methodDeclarationSyntax = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
+						if (root != null)
 						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
-							newMethodNames.Add(methodName);
+							SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+							if (node != null)
+							{
+								MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+								if (methodDeclarationSyntax != null)
+								{
+									string methodName = methodDeclarationSyntax.Identifier.ValueText;
+									newMethodNames.Add(methodName);
+								}
+							}
 						}
 					}
 				}

@@ -23,26 +23,21 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
-		public AvoidDuplicateCodeAnalyzer()
-		{
-
-		}
-
 		public int DefaultDuplicateTokenThreshold = 100;
 
 		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static DiagnosticDescriptor InvalidTokenCountRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static DiagnosticDescriptor TokenCountTooBigRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static DiagnosticDescriptor TokenCountTooSmallRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
@@ -150,7 +145,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 			}
 
-			public string ToPrettyReference(FileLinePositionSpan fileSpan)
+			private string ToPrettyReference(FileLinePositionSpan fileSpan)
 			{
 				string file = Path.GetFileName(fileSpan.Path);
 				// This API uses 0-based line positioning, so add 1
@@ -454,7 +449,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class LocationEnvelope
 	{
-		private Location _location = null;
+		private readonly Location _location = null;
 		public LocationEnvelope(Location location = null)
 		{
 			_location = location;
