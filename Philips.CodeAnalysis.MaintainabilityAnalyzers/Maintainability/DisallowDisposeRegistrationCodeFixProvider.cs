@@ -39,15 +39,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			AssignmentExpressionSyntax assignmentExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					AssignmentExpressionSyntax assignmentExpression = syntaxNode.AncestorsAndSelf().OfType<AssignmentExpressionSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => DisallowDisposeRegistrationFix(context.Document, assignmentExpression, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => DisallowDisposeRegistrationFix(context.Document, assignmentExpression, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> DisallowDisposeRegistrationFix(Document document, AssignmentExpressionSyntax assignmentExpression, CancellationToken cancellationToken)

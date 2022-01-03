@@ -34,14 +34,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			Diagnostic diagnostic = context.Diagnostics.First();
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			var node = root.FindNode(diagnosticSpan);
+			if (root != null)
+			{
+				var node = root.FindNode(diagnosticSpan);
 
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => RemoveXmlComment(context.Document, node, c),
-					equivalenceKey: Title),
-				diagnostic);
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: Title,
+						createChangedDocument: c => RemoveXmlComment(context.Document, node, c),
+						equivalenceKey: Title),
+					diagnostic);
+			}
 		}
 
 		private async Task<Document> RemoveXmlComment(Document document, SyntaxNode node, CancellationToken cancellationToken)

@@ -46,24 +46,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			var node = root.FindNode(diagnosticSpan) as IfStatementSyntax;
-
-			if (node is null)
+			if (root != null)
 			{
-				return;
-			}
+				var node = root.FindNode(diagnosticSpan) as IfStatementSyntax;
 
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => RemoveIfStatement2(context.Document, node, c),
-					equivalenceKey: Title),
-				diagnostic);
+				if (node is null)
+				{
+					return;
+				}
+
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: Title,
+						createChangedDocument: c => RemoveIfStatement2(context.Document, node, c),
+						equivalenceKey: Title),
+					diagnostic);
+			}
 		}
 
 		private async Task<Document> RemoveIfStatement(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync();
+			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			SyntaxNode replaceNode = node.Statement;
 			SyntaxNode ifBlock = node.Statement;
@@ -80,7 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private async Task<Document> RemoveIfStatement2(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync();
+			var root = await document.GetSyntaxRootAsync(cancellationToken);
 
 			var leadingTrivia = node.GetLeadingTrivia();
 			var trailingTrivia = node.GetTrailingTrivia();
@@ -92,10 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				StatementSyntax statement = block.Statements[0];
 
-				if (block.CloseBraceToken != null)
-				{
-					trailingTrivia = trailingTrivia.AddRange(block.CloseBraceToken.LeadingTrivia);
-				}
+				trailingTrivia = trailingTrivia.AddRange(block.CloseBraceToken.LeadingTrivia);
 
 				replaceNode = statement.WithLeadingTrivia(leadingTrivia);
 			}

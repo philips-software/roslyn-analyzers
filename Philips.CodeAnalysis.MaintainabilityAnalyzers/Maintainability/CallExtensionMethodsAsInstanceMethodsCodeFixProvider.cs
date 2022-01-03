@@ -29,15 +29,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Diagnostic diagnostic = context.Diagnostics.First();
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			SyntaxToken token = root.FindToken(diagnosticSpan.Start);
+			if (root != null)
+			{
+				SyntaxToken token = root.FindToken(diagnosticSpan.Start);
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => AdjustCallingMechanism(context.Document, token, c),
-					equivalenceKey: Title),
-				diagnostic);
+				// Register a code action that will invoke the fix.
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: Title,
+						createChangedDocument: c => AdjustCallingMechanism(context.Document, token, c),
+						equivalenceKey: Title),
+					diagnostic);
+			}
 		}
 
 		private async Task<Document> AdjustCallingMechanism(Document document, SyntaxToken token, CancellationToken c)

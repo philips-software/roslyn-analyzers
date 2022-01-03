@@ -44,14 +44,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Diagnostic diagnostic = context.Diagnostics.First();
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			ClassDeclarationSyntax classDeclaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+				if (node != null)
+				{
+					ClassDeclarationSyntax classDeclaration = node.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
 
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedSolution: c => AdditionalDocumentAppendLine(context.Document, text, classDeclaration, c),
-					equivalenceKey: Title),
-				diagnostic);
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedSolution: c => AdditionalDocumentAppendLine(context.Document, text, classDeclaration, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 

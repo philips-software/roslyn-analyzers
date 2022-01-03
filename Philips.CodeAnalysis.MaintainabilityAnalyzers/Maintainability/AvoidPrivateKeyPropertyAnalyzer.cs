@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type;
 
-			if (typeSymbol.Name.Equals(ObjectType))
+			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, memberAccessExpressionSyntax.GetLocation());
 				context.ReportDiagnostic(diagnostic);
