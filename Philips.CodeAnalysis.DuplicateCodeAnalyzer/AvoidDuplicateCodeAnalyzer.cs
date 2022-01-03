@@ -221,6 +221,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				{
 					tokens.Add(currentToken);
 					currentToken = currentToken.GetPreviousToken();
+					if (currentToken == null)
+					{
+						break;
+					}
 				}
 				tokens.Reverse();
 				StringBuilder details = new StringBuilder();
