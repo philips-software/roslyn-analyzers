@@ -40,25 +40,28 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax propertyDeclarationSyntax = context.Node as PropertyDeclarationSyntax;
-			Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
-				propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+			if (propertyDeclarationSyntax != null)
+				Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
+					propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
-			Diagnose(methodDeclarationSyntax.Identifier.ValueText, 
-				methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+			if (methodDeclarationSyntax != null)
+				Diagnose(methodDeclarationSyntax.Identifier.ValueText,
+					methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeFields(SyntaxNodeAnalysisContext context)
 		{
 			FieldDeclarationSyntax fieldDeclarationSyntax = context.Node as FieldDeclarationSyntax;
-			foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
-			{
-				Diagnose(variable.Identifier.ValueText,
-					fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
-			}
+			if (fieldDeclarationSyntax != null)
+				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
+				{
+					Diagnose(variable.Identifier.ValueText,
+						fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+				}
 		}
 
 
