@@ -43,19 +43,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-			MemberAccessExpressionSyntax resultExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MemberAccessExpressionSyntax>().First();
-
-			if (resultExpression is null)
+			if (root != null)
 			{
-				return;
-			}
+				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+				if (node != null)
+				{
+					MemberAccessExpressionSyntax resultExpression = node.AncestorsAndSelf().OfType<MemberAccessExpressionSyntax>().First();
 
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => ReplaceWithAwait(context.Document, resultExpression, c),
-					equivalenceKey: Title),
-				diagnostic);
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => ReplaceWithAwait(context.Document, resultExpression, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> ReplaceWithAwait(Document document, MemberAccessExpressionSyntax resultExpression, CancellationToken cancellationToken)

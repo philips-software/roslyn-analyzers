@@ -37,15 +37,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			MethodDeclarationSyntax attributeList = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					MethodDeclarationSyntax attributeList = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAttributeAnalyzer.DefaultTimeoutKey), attributeList, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAttributeAnalyzer.DefaultTimeoutKey), attributeList, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> AddTestTimeout(Document document, string defaultTimeout, MethodDeclarationSyntax method, CancellationToken cancellationToken)

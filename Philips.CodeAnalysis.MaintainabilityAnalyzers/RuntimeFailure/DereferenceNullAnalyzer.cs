@@ -74,12 +74,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
-			if (binaryExpressionSyntax.OperatorToken.Kind() != SyntaxKind.AsKeyword)
+			if (binaryExpressionSyntax != null && binaryExpressionSyntax.OperatorToken.Kind() != SyntaxKind.AsKeyword)
 			{
 				return false;
 			}
 
-			if (binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax)
+			if (binaryExpressionSyntax != null && binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax)
 			{
 				if (equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax)
 				{
@@ -138,79 +138,90 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			}
 
 			// Collect some items we'll use repeatedly
-			VariableDeclaratorSyntax variableDeclaratorSyntax = context.Node.Parent.Parent as VariableDeclaratorSyntax;
-			BlockSyntax blockOfInterest = variableDeclaratorSyntax.Ancestors().OfType<BlockSyntax>().First();
-			var model = context.SemanticModel;
-			ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclaratorSyntax);
-
-			//  Identify where y is first used (ie., MemberAccessExpression)
-			IdentifierNameSyntax identifierNameSyntax = GetFirstMemberAccess(ourSymbol, model, blockOfInterest);
-			if (identifierNameSyntax == null)
+			if (context.Node.Parent != null)
 			{
-				return;
-			}
-			if (!SameBlock(blockOfInterest, identifierNameSyntax))
-			{
-				return;
-			}
-
-			//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
-			(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclaratorSyntax, offset: 1);
-			(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
-
-			if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
-			{
-				// There's nothing to analyze; they immediately used the symbol after the 'as'
-
-				// Before reporting an error, note common possibility that the situation could be:
-				// string y = obj as string;
-				// if (y != null && y.ToString() == @"")
-				// Ie there's nothing to analyze between the statements, but within the statement exists a check
-				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
+				VariableDeclaratorSyntax variableDeclaratorSyntax = context.Node.Parent.Parent as VariableDeclaratorSyntax;
+				if (variableDeclaratorSyntax != null)
 				{
-					if (ifStatementSyntax.Condition.ToString().Contains(@"null"))
+					BlockSyntax blockOfInterest = variableDeclaratorSyntax.Ancestors().OfType<BlockSyntax>().First();
+					var model = context.SemanticModel;
+					ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclaratorSyntax);
+
+					//  Identify where y is first used (ie., MemberAccessExpression)
+					IdentifierNameSyntax identifierNameSyntax = GetFirstMemberAccess(ourSymbol, model, blockOfInterest);
+					if (identifierNameSyntax == null)
 					{
-						// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
+						return;
+					}
+					if (!SameBlock(blockOfInterest, identifierNameSyntax))
+					{
+						return;
+					}
+
+					//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
+					(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclaratorSyntax, offset: 1);
+					(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
+
+					if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
+					{
+						// There's nothing to analyze; they immediately used the symbol after the 'as'
+
+						// Before reporting an error, note common possibility that the situation could be:
+						// string y = obj as string;
+						// if (y != null && y.ToString() == @"")
+						// Ie there's nothing to analyze between the statements, but within the statement exists a check
+						if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
+						{
+							if (ifStatementSyntax.Condition.ToString().Contains(@"null"))
+							{
+								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
+								return;
+							}
+						}
+						if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
+						{
+							if (whileStatementSyntax.Condition.ToString().Contains(@"null"))
+							{
+								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
+								return;
+							}
+						}
+
+
+						Report(context, identifierNameSyntax);
+						return;
+					}
+
+					bool ourSymbolIsReadOrWritten = false;
+					DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
+					if (result != null)
+					{
+						foreach (ISymbol assignedValue in result.ReadInside)
+						{
+							if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
+							{
+								// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
+								ourSymbolIsReadOrWritten = true;
+								break;
+							}
+						}
+
+						foreach (ISymbol assignedValue in result.WrittenInside)
+						{
+							if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
+							{
+								ourSymbolIsReadOrWritten = true;
+								break;
+							}
+						}
+					}
+
+					if (!ourSymbolIsReadOrWritten)
+					{
+						Report(context, identifierNameSyntax);
 						return;
 					}
 				}
-				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
-				{
-					if (whileStatementSyntax.Condition.ToString().Contains(@"null"))
-					{
-						// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
-						return;
-					}
-				}
-
-
-				Report(context, identifierNameSyntax);
-				return;
-			}
-
-			bool ourSymbolIsReadOrWritten = false;
-			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
-			foreach (ISymbol assignedValue in result.ReadInside)
-			{
-				if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-				{
-					// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-					ourSymbolIsReadOrWritten = true;
-					break;
-				}
-			}
-			foreach (ISymbol assignedValue in result.WrittenInside)
-			{
-				if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-				{
-					ourSymbolIsReadOrWritten = true;
-					break;
-				}
-			}
-			if (!ourSymbolIsReadOrWritten)
-			{
-				Report(context, identifierNameSyntax);
-				return;
 			}
 		}
 	}

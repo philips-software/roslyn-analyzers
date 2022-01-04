@@ -38,16 +38,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			MethodDeclarationSyntax methodDeclarationList
-					= root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					MethodDeclarationSyntax methodDeclarationList
+						= syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => RemoveModifier(context.Document, methodDeclarationList, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => RemoveModifier(context.Document, methodDeclarationList, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 		private async Task<Document> RemoveModifier(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
 		{

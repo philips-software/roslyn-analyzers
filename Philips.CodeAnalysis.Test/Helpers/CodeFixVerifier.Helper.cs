@@ -76,7 +76,11 @@ namespace Philips.CodeAnalysis.Test
 		/// <returns>A string containing the syntax of the Document after formatting</returns>
 		private static string GetStringFromDocument(Document document)
 		{
-			var vv = document.GetSyntaxRootAsync().Result.GetText().ToString();
+			SyntaxNode syntaxNode = document.GetSyntaxRootAsync().Result;
+			if (syntaxNode != null)
+			{
+				var vv = syntaxNode.GetText().ToString();
+			}
 
 			var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
 

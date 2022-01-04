@@ -39,22 +39,29 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			InvocationExpressionSyntax invocationExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
-			ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
-
-			if (!Helper.IsLiteralTrueFalse(arg.Expression))
+			if (root != null)
 			{
-				return;
-			}
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					InvocationExpressionSyntax invocationExpression = syntaxNode.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => AssertAreEqualFix(context.Document, invocationExpression, c),
-					equivalenceKey: Title),
-				diagnostic);
+					ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
+
+					if (!Helper.IsLiteralTrueFalse(arg.Expression))
+					{
+						return;
+					}
+
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => AssertAreEqualFix(context.Document, invocationExpression, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> AssertAreEqualFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)

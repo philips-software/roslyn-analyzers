@@ -38,15 +38,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			InvocationExpressionSyntax invocationExpression = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+				if (node != null)
+				{
+					InvocationExpressionSyntax invocationExpression = node.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => ThreadSleepFix(context.Document, invocationExpression.Parent, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => ThreadSleepFix(context.Document, invocationExpression.Parent, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> ThreadSleepFix(Document document, SyntaxNode syntaxNodeExpression, CancellationToken cancellationToken)
