@@ -45,15 +45,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			IEnumerable<MethodDeclarationSyntax> attributeList = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>();
+			if (root != null)
+			{
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					IEnumerable<MethodDeclarationSyntax> attributeList = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => RemoveMethod(context.Document, attributeList, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => RemoveMethod(context.Document, attributeList, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> RemoveMethod(Document document, IEnumerable<MethodDeclarationSyntax> method, CancellationToken cancellationToken)

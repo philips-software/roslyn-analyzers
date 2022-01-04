@@ -39,15 +39,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			var declaration = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					var declaration = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedSolution: c => DoNotBeginWithTest(context.Document, declaration, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedSolution: c => DoNotBeginWithTest(context.Document, declaration, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Solution> DoNotBeginWithTest(Document document, MethodDeclarationSyntax methodDeclaration, CancellationToken cancellationToken)

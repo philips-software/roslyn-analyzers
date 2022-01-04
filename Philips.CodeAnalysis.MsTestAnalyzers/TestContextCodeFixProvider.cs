@@ -40,15 +40,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			// find the node which is the "TestContext" type identifier
 			// the parent of the parent is the declaration we want to remove
-			SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+			if (root != null)
+			{
+				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => TestContextFix(context.Document, node, c),
-					equivalenceKey: Title),
-				diagnostic);
+				// Register a code action that will invoke the fix.
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: Title,
+						createChangedDocument: c => TestContextFix(context.Document, node, c),
+						equivalenceKey: Title),
+					diagnostic);
+			}
 		}
 
 		private async Task<Document> TestContextFix(Document document, SyntaxNode declaration, CancellationToken cancellationToken)
@@ -69,22 +72,27 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// remove the property
-			rootNode = rootNode.RemoveNode(declaration, SyntaxRemoveOptions.KeepNoTrivia);
-
-			if (!string.IsNullOrEmpty(varName))
+			if (rootNode != null)
 			{
-				foreach (VariableDeclarationSyntax varDeclaration in rootNode.DescendantNodes().OfType<VariableDeclarationSyntax>())
+				rootNode = rootNode.RemoveNode(declaration, SyntaxRemoveOptions.KeepNoTrivia);
+
+				if (!string.IsNullOrEmpty(varName))
 				{
-					if (varDeclaration.Variables[0].Identifier.ToString() == varName)
+					foreach (VariableDeclarationSyntax varDeclaration in rootNode.DescendantNodes()
+						.OfType<VariableDeclarationSyntax>())
 					{
-						// remove the underlying variable
-						rootNode = rootNode.RemoveNode(varDeclaration.Parent, SyntaxRemoveOptions.KeepNoTrivia);
-						break;
+						if (varDeclaration.Variables[0].Identifier.ToString() == varName)
+						{
+							// remove the underlying variable
+							if (varDeclaration.Parent != null)
+								rootNode = rootNode.RemoveNode(varDeclaration.Parent, SyntaxRemoveOptions.KeepNoTrivia);
+							break;
+						}
 					}
 				}
-			}
 
-			document = document.WithSyntaxRoot(rootNode);
+				document = document.WithSyntaxRoot(rootNode);
+			}
 
 			return document;
 		}

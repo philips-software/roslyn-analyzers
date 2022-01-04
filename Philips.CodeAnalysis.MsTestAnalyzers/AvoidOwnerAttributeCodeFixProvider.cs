@@ -38,15 +38,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			MethodDeclarationSyntax attributeList = root.FindToken(diagnosticSpan.Start).Parent.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
+			if (root != null)
+			{
+				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+				if (node != null)
+				{
+					MethodDeclarationSyntax attributeList = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
 
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => RemoveOwnerAttribute(context.Document, attributeList, c),
-					equivalenceKey: Title),
-				diagnostic);
+					// Register a code action that will invoke the fix.
+					context.RegisterCodeFix(
+						CodeAction.Create(
+							title: Title,
+							createChangedDocument: c => RemoveOwnerAttribute(context.Document, attributeList, c),
+							equivalenceKey: Title),
+						diagnostic);
+				}
+			}
 		}
 
 		private async Task<Document> RemoveOwnerAttribute(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)

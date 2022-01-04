@@ -60,11 +60,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				var text = file.GetText();
 
 				var builder = ImmutableHashSet.CreateBuilder<string>();
-				foreach (var textLine in text.Lines)
-				{
-					string line = textLine.ToString();
-					builder.Add(line);
-				}
+				if (text != null)
+					foreach (var textLine in text.Lines)
+					{
+						string line = textLine.ToString();
+						builder.Add(line);
+					}
 
 				return builder.ToImmutable();
 			}

@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Common
 			foreach (var ctor in constructors)
 			{
 				IMethodSymbol method = context.SemanticModel.GetDeclaredSymbol(ctor);
-				symbolToCtor[method] = ctor;
+				if (method != null) symbolToCtor[method] = ctor;
 
 				if (ctor.Initializer != null && ctor.Initializer.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword))
 				{
