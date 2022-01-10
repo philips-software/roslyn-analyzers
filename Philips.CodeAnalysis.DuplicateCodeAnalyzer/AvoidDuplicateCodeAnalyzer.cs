@@ -392,9 +392,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			TokenCount = defaultTokenCount;
 		}
 
-		public int TokenCount { get; set; } = 0;
-		public bool IgnoreExceptionsFile { get; set; } = false;
-		public bool GenerateExceptionsFile { get; set; } = false;
+		public int TokenCount { get; set; }
+		public bool IgnoreExceptionsFile { get; set; }
+		public bool GenerateExceptionsFile { get; set; }
 	}
 
 	public class DuplicateDetectorDictionary
@@ -423,8 +423,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 
 				// New key
-				existingValues = new List<Evidence>();
-				existingValues.Add(value);
+				existingValues = new List<Evidence>
+				{
+					value
+				};
 				_library.Add(key, existingValues);
 				return null;
 			}
@@ -449,7 +451,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class LocationEnvelope
 	{
-		private readonly Location _location = null;
+		private readonly Location _location;
 		public LocationEnvelope(Location location = null)
 		{
 			_location = location;
@@ -463,7 +465,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class TokenInfo
 	{
 		private readonly SyntaxToken _syntaxToken;
-		private readonly int _hash = 0;
+		private readonly int _hash;
 
 		public TokenInfo(int hash)
 		{
