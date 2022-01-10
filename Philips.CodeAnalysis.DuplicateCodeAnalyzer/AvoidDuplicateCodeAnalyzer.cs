@@ -39,6 +39,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
 		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
 
+		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
@@ -148,60 +150,84 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private string ToPrettyReference(FileLinePositionSpan fileSpan)
 			{
 				string file = Path.GetFileName(fileSpan.Path);
+
 				// This API uses 0-based line positioning, so add 1
 				return $@"{file} line {fileSpan.StartLinePosition.Line + 1} character {fileSpan.StartLinePosition.Character + 1}";
 			}
 
 			public void AnalyzeMethod(SyntaxNodeAnalysisContext obj)
 			{
-				MethodDeclarationSyntax methodDeclarationSyntax = (MethodDeclarationSyntax)obj.Node;
-				SyntaxNode body = methodDeclarationSyntax.Body;
-				if (body == null)
+				try
 				{
-					return;
-				}
-
-				if (_exceptions.Contains(methodDeclarationSyntax.Identifier.ValueText))
-				{
-					return;
-				}
-
-				RollingTokenSet rollingTokenSet = new RollingTokenSet(_duplicateTokenThreshold);
-
-				foreach (SyntaxToken token in body.DescendantTokens())
-				{
-					// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
-					(int hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
-
-					if (rollingTokenSet.IsFull())
+					MethodDeclarationSyntax methodDeclarationSyntax = (MethodDeclarationSyntax)obj.Node;
+					SyntaxNode body = methodDeclarationSyntax.Body;
+					if (body == null)
 					{
-						Evidence existingEvidence = _library.TryAdd(hash, evidence);
-						if (existingEvidence != null)
+						return;
+					}
+
+					if (_exceptions.Contains(methodDeclarationSyntax.Identifier.ValueText))
+					{
+						return;
+					}
+
+					RollingTokenSet rollingTokenSet = new RollingTokenSet(_duplicateTokenThreshold);
+
+					foreach (SyntaxToken token in body.DescendantTokens())
+					{
+						GetShapeDetails(token);
+
+						// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
+						(int hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
+
+						if (rollingTokenSet.IsFull())
 						{
-							Location location = evidence.LocationEnvelope.Contents();
-							Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
-
-							// We found a duplicate, but if it's partially duplicated with itself, ignore it.
-							if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
+							Evidence existingEvidence = _library.TryAdd(hash, evidence);
+							if (existingEvidence != null)
 							{
-								string shapeDetails = GetShapeDetails(token);
-								string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
+								Location location = evidence.LocationEnvelope.Contents();
+								Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
 
-								_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
-
-								if (_generateExceptionsFile)
+								// We found a duplicate, but if it's partially duplicated with itself, ignore it.
+								if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
 								{
-									File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
+									string shapeDetails = GetShapeDetails(token);
+									string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
+
+									_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
+
+									if (_generateExceptionsFile)
+									{
+										File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
+									}
+
+									// Don't pile on.  Move on to the next method.
+									return;
 								}
 
 								// Don't pile on.  Move on to the next method.
 								return;
 							}
-
-							// Don't pile on.  Move on to the next method.
-							return;
 						}
 					}
+				}
+				catch (Exception ex)
+				{
+					string result = string.Empty;
+					string[] lines = ex.StackTrace.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (string line in lines)
+					{
+						if (line.StartsWith("line") && line.Length >= 8)
+						{
+							result += line.Substring(0, 8);
+							result += " ";
+						}
+					}
+					if (string.IsNullOrWhiteSpace(result))
+					{
+						result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
+					}
+					_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, obj.Node.GetLocation(), result, ex.Message));
 				}
 			}
 
