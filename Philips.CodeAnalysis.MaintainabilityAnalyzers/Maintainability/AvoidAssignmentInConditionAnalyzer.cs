@@ -1,14 +1,11 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
+using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -52,9 +49,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeTernary, SyntaxKind.ConditionalExpression);
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context) {
+		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
+		{
 			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath)) {
+			if (Helper.IsGeneratedCode(filePath))
+			{
 				return;
 			}
 

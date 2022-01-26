@@ -51,10 +51,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			context.RegisterSyntaxTreeAction(AnalyzeTree);
 		}
 
-		private void AnalyzeTree(SyntaxTreeAnalysisContext context) {
+		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
+		{
 			var filePath = context.Tree.FilePath;
-			
-			if (Helper.IsGeneratedCode(filePath)) {
+
+			if (Helper.IsGeneratedCode(filePath))
+			{
 				return;
 			}
 

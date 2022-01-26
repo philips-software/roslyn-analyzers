@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Check if this is an extension class
 			var model = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
-			if (model is {MightContainExtensionMethods: true})
+			if (model is { MightContainExtensionMethods: true })
 			{
 				if (!model.GetMembers().Any(m =>
 											m.Kind == SymbolKind.Method &&

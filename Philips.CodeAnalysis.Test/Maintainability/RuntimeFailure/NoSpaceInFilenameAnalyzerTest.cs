@@ -50,12 +50,14 @@ namespace PathTooLongUnitTest {
 		[DataRow(SpaceName, 1, 1, DisplayName = "SpaceName"),
 		 DataRow(SpaceAbsolutePath, 1, 1, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
-		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
+		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column)
+		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.NoSpaceInFilename);
 			VerifyCSharpDiagnostic(Correct, filePath, expected);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
 			return new NoSpaceInFilenameAnalyzer();
 		}
 	}

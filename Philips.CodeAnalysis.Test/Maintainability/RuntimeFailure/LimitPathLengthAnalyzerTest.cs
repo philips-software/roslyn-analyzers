@@ -71,12 +71,14 @@ namespace PathTooLongUnitTest {
 		 DataRow(LongAbsolutePath, DisplayName = "LongAbsolutePath"),
 		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
-		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
+		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath)
+		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
 			VerifyCSharpDiagnostic(Correct, filePath, expected);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
 			return new LimitPathLengthAnalyzer();
 		}
 	}

@@ -20,8 +20,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Category = Categories.Security;
 
 		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
-			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
-			Title, MessageFormat, Category, 
+			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField),
+			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 			return null;
 		}
-		
+
 		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)
 		{
 			Diagnostic diagnostic = CheckComment(valueText, location);

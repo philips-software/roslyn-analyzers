@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	public class CopyrightPresentAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Copyright Present";
-		private const string MessageFormat = 
+		private const string MessageFormat =
 			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'.";
 		private const string Description =
 			@"File should start with a comment containing the company name, the year and either © or 'Copyright'.";
@@ -83,11 +83,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.ReportDiagnostic(diagnostic);
 		}
 
-		private static bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
+		private static bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia)
+		{
 			var comment = trivia.ToFullString();
 			// Check the copyright mar itself
 			var hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
-			
+
 			// Check the year
 			bool hasYear = yearRegex.IsMatch(comment);
 
