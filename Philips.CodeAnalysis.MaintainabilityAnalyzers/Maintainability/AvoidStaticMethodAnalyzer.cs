@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// The Main entrypoint to the program must be static
-			if (methodDeclarationSyntax.Identifier != null && methodDeclarationSyntax.Identifier.ValueText == @"Main")
+			if (methodDeclarationSyntax.Identifier.ValueText == @"Main")
 			{
 				return;
 			}

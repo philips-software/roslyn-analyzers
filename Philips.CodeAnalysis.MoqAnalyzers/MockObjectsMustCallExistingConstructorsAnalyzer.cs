@@ -134,7 +134,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			ImmutableArray<ArgumentSyntax> arguments = ImmutableArray<ArgumentSyntax>.Empty;
 
-			if (argumentList != null && argumentList.Arguments != null)
+			if (argumentList != null)
 			{
 				arguments = argumentList.Arguments.ToImmutableArray();
 			}

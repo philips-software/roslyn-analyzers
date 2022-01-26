@@ -128,10 +128,6 @@ namespace Philips.CodeAnalysis.Common
 		{
 			location = null;
 			argumentValue = default(AttributeArgumentSyntax);
-			if (attributeLists == null)
-			{
-				return false;
-			}
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
 				if (HasAttribute(attributes, context, name, fullName, out location, out argumentValue))

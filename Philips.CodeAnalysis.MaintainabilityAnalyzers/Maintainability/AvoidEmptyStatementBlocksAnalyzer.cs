@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			BlockSyntax blockSyntax = (BlockSyntax)context.Node;
 
-			if (blockSyntax.Statements == null || blockSyntax.Statements.Any())
+			if (blockSyntax.Statements.Any())
 			{
 				return;
 			}
