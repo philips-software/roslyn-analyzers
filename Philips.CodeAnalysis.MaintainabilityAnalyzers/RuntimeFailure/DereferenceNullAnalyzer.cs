@@ -92,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		/// <summary>
 		/// Return the Statement containing node, offset by the specified amount
 		/// </summary>
-		private (StatementSyntax, int) TryGetStatement(BlockSyntax blockOfInterest, SyntaxNode node, int offset)
+		private (StatementSyntax, int) GetStatement(BlockSyntax blockOfInterest, SyntaxNode node, int offset)
 		{
 			StatementSyntax ourStatement = node.Ancestors().OfType<StatementSyntax>().First();
 			int statementOfInterestIndex;
@@ -156,7 +156,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				VariableDeclaratorSyntax variableDeclaratorSyntax = context.Node.Parent.Parent as VariableDeclaratorSyntax;
 				if (variableDeclaratorSyntax != null)
 				{
-					//variableDeclaratorSyntax.DescendantNodes().OfType<ExpressionStatementSyntax>().Select(m => m.);
 					BlockSyntax blockOfInterest = variableDeclaratorSyntax.Ancestors().OfType<BlockSyntax>().First();
 					var model = context.SemanticModel;
 					ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclaratorSyntax);
@@ -173,8 +172,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 					}
 
 					//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
-					(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = TryGetStatement(blockOfInterest, variableDeclaratorSyntax, offset: 1);
-					(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = TryGetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
+					(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclaratorSyntax, offset: 1);
+					(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
 					if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
 					{
@@ -265,15 +264,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			MemberAccesses.Add(node);
 		}
 
-		public override void VisitDeclarationExpression(DeclarationExpressionSyntax node)
-		{
-			base.VisitDeclarationExpression(node);
-			DeclarationExpressionSyntaxes.Add(node);
-		}
-
 		public List<MemberAccessExpressionSyntax> MemberAccesses { get; } = new List<MemberAccessExpressionSyntax>();
-
-		public List<DeclarationExpressionSyntax> DeclarationExpressionSyntaxes { get; } = new List<DeclarationExpressionSyntax>();
 
 		#endregion
 	}
