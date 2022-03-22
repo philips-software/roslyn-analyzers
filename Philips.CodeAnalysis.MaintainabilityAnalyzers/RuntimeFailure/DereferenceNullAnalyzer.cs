@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -95,8 +95,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		private (StatementSyntax, int) GetStatement(BlockSyntax blockOfInterest, SyntaxNode node, int offset)
 		{
 			StatementSyntax ourStatement = node.Ancestors().OfType<StatementSyntax>().First();
-			int statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
-			return (blockOfInterest.Statements.ElementAt(statementOfInterestIndex), statementOfInterestIndex);
+			int statementOfInterestIndex;
+
+			//verify we found the statement we are looking for
+			if (blockOfInterest.Statements.Contains(ourStatement))
+			{
+				statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
+				return (blockOfInterest.Statements.ElementAt(statementOfInterestIndex), statementOfInterestIndex);
+			}
+
+			// the statement of interest is nested within another statement
+			List<StatementSyntax> childNodes = blockOfInterest.DescendantNodes().OfType<StatementSyntax>().ToList();
+
+			statementOfInterestIndex = childNodes.IndexOf(ourStatement) + offset;
+
+			return (childNodes[statementOfInterestIndex], statementOfInterestIndex);
 		}
 
 

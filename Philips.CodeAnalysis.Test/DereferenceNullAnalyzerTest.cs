@@ -30,8 +30,42 @@ class Foo
 }}
 ";
 		}
+		
+		[TestMethod]
+		public void DereferenceNullAsExpressionWithNestedExpression()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Scan(MethodDefinition method, MethodData data)
+		{
+
+Instruction i = method.Body.Instructions[0];
+			
+				switch (i.OpCode.Code)
+				{
+					case Code.Call:
+					case Code.Calli:
+					case Code.Callvirt:
+						MethodReference mr = i.Operand as MethodReference;
+
+						MethodDefinition md = mr.Resolve();
+
+						Scan(md, _locks[md]);
 
 
+						break;
+					default:
+						break;
+				}
+			
+		}
+}}
+";
+			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			VerifyCSharpDiagnostic(testCode, expected);
+		}
+		
 		/// <summary>
 		/// In this test, y is dereferenced after "y = obj as string" without first checking or re-assigning y.
 		/// </summary>
