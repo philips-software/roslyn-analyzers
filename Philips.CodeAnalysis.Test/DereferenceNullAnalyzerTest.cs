@@ -32,7 +32,7 @@ class Foo
 		}
 		
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfDereferenceTest()
+		public void DereferenceNullAsExpressionWithNestedExpression()
 		{
 			string testCode = @"
 class Foo 
