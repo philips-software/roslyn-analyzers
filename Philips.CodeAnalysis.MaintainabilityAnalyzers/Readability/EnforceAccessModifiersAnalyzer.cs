@@ -74,7 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var fieldDeclaration = (FieldDeclarationSyntax)context.Node;
 			if (!fieldDeclaration.Modifiers.Where(ModifiersFilter).Any())
 			{
-				ReportDiagnostics(context, fieldDeclaration, fieldDeclaration.TryGetInferredMemberName());
+				var fieldName = fieldDeclaration.Declaration.Variables.First().Identifier.Text;
+				ReportDiagnostics(context, fieldDeclaration, fieldName);
 			}
 		}
 
