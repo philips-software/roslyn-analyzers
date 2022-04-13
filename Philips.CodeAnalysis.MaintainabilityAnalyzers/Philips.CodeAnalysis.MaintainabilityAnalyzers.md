@@ -52,4 +52,4 @@
 | PH2098  | Avoid Empty Catch Block| Avoid try-catch-swallow pattern |
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |
 | PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
-| PH2102  | Enforce Access Modifiers                     | Explicitly provide the access modifiers for classes, fields, methods and properties. Do not rely on the defaults, as not all developers might know the defaults by hard.|
+| PH2102  | Enforce Access Modifiers                     | Explicitly provide the access modifiers for classes, fields, methods and properties. Do not rely on the defaults, as not all developers might know the defaults by heart.|
