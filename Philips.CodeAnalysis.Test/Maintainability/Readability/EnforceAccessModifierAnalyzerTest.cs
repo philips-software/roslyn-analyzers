@@ -28,6 +28,12 @@ namespace AccessModifierUnitTests {
 		protected void ProtectedMethod() {
 		}
 
+		internal void InternalMethod() {
+		}
+
+		protected internal void ProtectedInternalMethod() {
+		}
+
 		private void PrivateMethod() {
 		}
 

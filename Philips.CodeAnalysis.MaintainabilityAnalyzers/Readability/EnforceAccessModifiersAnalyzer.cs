@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 		private const string Title = "Access modifier must be explicitly stated";
 		private const string Message =
-			"Missing access modifiers in {0}. Access modifier must be explicitly stated, instead of relying on the default value.";
+			"Missing access modifiers in '{0}'. Access modifier must be explicitly stated, instead of relying on the default value.";
 		private const string Description = "Access modifier must be explicitly stated";
 		private const string Category = Categories.Readability;
 
@@ -106,6 +106,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			return token.IsKind(SyntaxKind.PublicKeyword) ||
 			       token.IsKind(SyntaxKind.PrivateKeyword) ||
+				   token.IsKind(SyntaxKind.InternalKeyword) ||
 			       token.IsKind(SyntaxKind.ProtectedKeyword);
 		}
 	}
