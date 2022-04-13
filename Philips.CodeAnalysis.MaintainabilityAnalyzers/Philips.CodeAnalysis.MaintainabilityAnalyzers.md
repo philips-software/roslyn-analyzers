@@ -48,7 +48,8 @@
 | PH2093  |	Prefer creating tuples with named fields     | When creating or accepting a tuple, provide names for the elements (IE, prefer (DateTime createdAt, int id) rather than (DateTime, int) |
 | PH2094  | Prefer using the named tuple field, not ItemX| Wherever possible, use the provided name of a tuple field, not the generic name.  (IE, (DateTime createdAt, int id) value;  value.Item1.ToString(), prefer value.createdAt.ToString() |
 | PH2096  | Prefer async Task methods over async void methods | Wherever possible return Task rather then void for async methods. Exception are Event handlers |
-| PH2097  | Avoid Empty Statement Blocks| Avoid empty statement blocks |
+| PH2097  | Avoid Empty Statement Blocks                 | Avoid empty statement blocks |
 | PH2098  | Avoid Empty Catch Block| Avoid try-catch-swallow pattern |
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |
-| PH2101  | Detect Null Dereference after "as" | After "as" include null checks; or, use static cast to set expectations |
+| PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
+| PH2102  | Enforce Access Modifiers                     | Explicitly provide the access modifiers for classes, fields, methods and properties. Do not rely on the defaults, as not all developers might know the defaults by hard.|
