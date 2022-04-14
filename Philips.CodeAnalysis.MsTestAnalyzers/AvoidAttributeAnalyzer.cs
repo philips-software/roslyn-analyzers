@@ -176,19 +176,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				canBeSuppressed: true,
 				isEnabledByDefault: true);
 
-			var suppressMessageAttribute = new AttributeModel(@"SuppressMessage",
-				@"System.Diagnostics.CodeAnalysis.SuppressMessageAttribute",
-				@"SuppressMessage not allowed",
-				@"SuppressMessage is not allowed.",
-				@"SuppressMessage results in violations of codified coding guidelines.",
-				DiagnosticIds.AvoidSuppressMessage,
-				canBeSuppressed: false,
-				isEnabledByDefault: true);
-
 			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
 			builder["Microsoft.VisualStudio.TestTools.UnitTesting.Assert"] = ImmutableArray.Create(ownerAttribute, ignoreAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
-			builder[suppressMessageAttribute.FullName] = ImmutableArray.Create(suppressMessageAttribute);
 
 			return builder.ToImmutable();
 		}
