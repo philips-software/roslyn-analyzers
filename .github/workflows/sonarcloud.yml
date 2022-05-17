@@ -36,5 +36,6 @@ jobs:
         run: |
           dotnet-sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Release
+          dotnet test --collect "Code Coverage"
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
           
