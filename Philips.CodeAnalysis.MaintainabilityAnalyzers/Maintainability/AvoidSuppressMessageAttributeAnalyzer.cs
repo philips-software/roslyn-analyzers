@@ -1,6 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,16 +11,19 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
+	/// <summary>
+	/// Avoid the usage of <see cref="SuppressMessageAttribute"/>.
+	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidSuppressMessageAttributeAnalyzer : DiagnosticAnalyzer
 	{
 		public const string AvoidSuppressMessageAttributeWhitelist = @"AvoidSuppressMessageAttributeWhitelist.txt";
 
-		private static AttributeModel attribute = GetAttributeModel();
+		private static readonly AttributeModel attribute = GetAttributeModel();
 
-		public static ImmutableArray<DiagnosticDescriptor> Rules = ImmutableArray.Create(attribute.Rule);
+		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = ImmutableArray.Create(attribute.Rule);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -39,13 +43,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					}
 
 					startContext.RegisterSyntaxNodeAction(
-						(c) => Analyze(attribute, c, whitelist),
+						(c) => Analyze(c, whitelist),
 						SyntaxKind.AttributeList);
 				}
 			});
 		}
 
-		private ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
+		private static ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
 		{
 			foreach (var file in options.AdditionalFiles)
 			{
@@ -60,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (text != null)
 					foreach (var textLine in text.Lines)
 					{
-						string line = textLine.ToString();
+						var line = textLine.ToString();
 						builder.Add(line);
 					}
 
@@ -70,15 +74,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return ImmutableHashSet<string>.Empty;
 		}
 
-		private static void Analyze(AttributeModel attribute, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
+		private static void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			if (Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) && !Helper.IsGeneratedCode(context))
 			{
 
-				string id = null;
-				if (!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out id))
+				if (!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 				{
 					Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 					context.ReportDiagnostic(diagnostic);
@@ -98,12 +101,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			id = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
-			if (whitelist.Contains(id))
-			{
-				return true;
-			}
-
-			return false;
+			return whitelist.Contains(id);
 		}
 
 		private static AttributeModel GetAttributeModel()
