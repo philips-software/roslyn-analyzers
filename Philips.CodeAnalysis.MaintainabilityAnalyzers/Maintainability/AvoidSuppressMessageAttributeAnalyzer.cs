@@ -78,14 +78,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
-			if (Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) && !Helper.IsGeneratedCode(context))
+			if (
+				Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
+				!Helper.IsGeneratedCode(context) &&
+				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id)) 
 			{
-
-				if (!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
-				{
-					Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
+				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 					context.ReportDiagnostic(diagnostic);
-				}
 			}
 		}
 
