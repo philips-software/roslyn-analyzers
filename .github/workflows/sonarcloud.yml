@@ -24,10 +24,10 @@ jobs:
         with:
           dotnet-version: 3.1.404
         
-      - name: Install SonarCloud scanner
+      - name: Install Tools
         run: |
-          # mkdir .\.sonar\scanner
           dotnet tool update dotnet-sonarscanner --global
+          dotnet tool update dotnet-coverage --global
 
       - name: Build and analyze
         env:
@@ -36,5 +36,6 @@ jobs:
         run: |
           dotnet-sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Release
+          dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
           
