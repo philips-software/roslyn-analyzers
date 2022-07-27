@@ -35,7 +35,7 @@ AllowedMethodName
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedMethodContent) };
+			return new [] { ("NotFile.txt", "data"), (AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedMethodContent) };
 		}
 
 		/// <summary>
@@ -80,7 +80,7 @@ AllowedMethodName
 			}
 
 			public static DiagnosticDescriptor Rule => 
-				new ("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
+				new DiagnosticDescriptor("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
 
 			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create<DiagnosticDescriptor>(Rule);
 		}
@@ -90,7 +90,7 @@ AllowedMethodName
 		[DataRow("ANamespace", "AllowedType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod")]
 		[DataRow("ANamespace", "SomeType", "AllowedMethodName")]
-		public void AllowedSymboldShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
+		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
 			VerifyDiagnostic(file);
@@ -99,7 +99,7 @@ AllowedMethodName
 		[DataTestMethod]
 		[DataRow("SomeNamespace", "SomeType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod2")]
-		public void NotAllowedSymboldShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
+		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
 			VerifyCSharpDiagnostic(file, Array.Empty<DiagnosticResult>());
