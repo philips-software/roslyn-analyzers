@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <Compile Include="..\Philips.CodeAnalysis.Common\AdditionalFilesHelper.cs" Link="Common\AdditionalFilesHelper.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\AllowedSymbols.cs" Link="Common\AllowedSymbols.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\AttributeDefinition.cs" Link="Common\AttributeDefinition.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\AttributeModel.cs" Link="Common\AttributeModel.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\Categories.cs" Link="Common\Categories.cs" />

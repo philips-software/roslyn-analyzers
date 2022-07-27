@@ -17,3 +17,6 @@ The default token count is 100.  This setting can be controlled by the .editorco
 
 Enabling this rule on a legacy code base can yield many hits - too many to be able to enable the analyzer as an error.  To effectuate a 'stop the bleeding' policy, leave the rule's severity at error, and either use suppressions, or specify a whitelist as follows: add a file to the project named `DuplicateCode.Allowed.txt`.  The file must be specified with the `AdditionalFiles` node in the .csproj file.  Include a single method name per line.  Use the provided Code Fixer to automatically add violations to the whitelist.
 
+# White listing
+
+For certain parts of the code, duplication can be allowed. For example for runtime performance reasons, one might repeat code explicitly. For use-cases like these, there is the Ability to provide an "AdditionalFile" to your project. This additional file needs to be named exactly "DuplicateCode.Allowed.txt". The syntax of this file is very similar to that of Microsofts (BannedApiAnalyzer)[https://github.com/dotnet/roslyn-analyzers/blob/main/src/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md].

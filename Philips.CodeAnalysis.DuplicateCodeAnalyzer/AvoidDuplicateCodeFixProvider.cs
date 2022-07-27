@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			Project project = context.Document.Project;
 
-			TextDocument exceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.ExceptionsFileName, StringComparison.Ordinal));
+			TextDocument exceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.AllowedFileName, StringComparison.Ordinal));
 
 			if (exceptionsDocument == null)
 			{
@@ -143,7 +143,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				Project project = pair.Key;
 				ImmutableArray<Diagnostic> diagnostics = pair.Value;
-				TextDocument duplicateExceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.ExceptionsFileName, StringComparison.Ordinal));
+				TextDocument duplicateExceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.AllowedFileName, StringComparison.Ordinal));
 				if (duplicateExceptionsDocument == null)
 				{
 					continue;
