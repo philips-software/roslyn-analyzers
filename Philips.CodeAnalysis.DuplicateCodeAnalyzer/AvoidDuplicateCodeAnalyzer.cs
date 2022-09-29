@@ -52,31 +52,31 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				HashSet<string> exceptions = new HashSet<string>();
+				HashSet<ISymbol> allowed = new HashSet<ISymbol>();
 				if (!options.IgnoreExceptionsFile)
 				{
-					exceptions = InitializeExceptions(compilationContext.Options.AdditionalFiles);
+					allowed = InitializeAllowed(compilationContext.Options.AdditionalFiles, compilationContext.Compilation);
 				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, exceptions, options.GenerateExceptionsFile, configurationError);
+				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowed, options.GenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 			});
 		}
 
-		public const string ExceptionsFileName = @"DuplicateCode.Allowed.txt";
+		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";
 
-		public virtual HashSet<string> InitializeExceptions(ImmutableArray<AdditionalText> additionalFiles)
+		public virtual HashSet<ISymbol> InitializeAllowed(ImmutableArray<AdditionalText> additionalFiles, Compilation compilation)
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
 				string fileName = Path.GetFileName(additionalFile.Path);
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, ExceptionsFileName))
+				if (comparer.Equals(fileName, AllowedFileName))
 				{
-					return LoadAllowedMethods(additionalFile.GetText());
+					return LoadAllowedMethods(additionalFile.GetText(), compilation);
 				}
 			}
-			return new HashSet<string>();
+			return new HashSet<ISymbol>();
 		}
 
 		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic error)
@@ -118,12 +118,37 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return options;
 		}
 
-		public virtual HashSet<string> LoadAllowedMethods(SourceText text)
+		/// <summary>
+		/// Load the methods for which duplicate code is allowed.
+		/// </summary>
+		public virtual HashSet<ISymbol> LoadAllowedMethods(SourceText text, Compilation compilation)
 		{
-			HashSet<string> result = new HashSet<string>();
-			foreach (TextLine line in text.Lines)
+			HashSet<ISymbol> result = new HashSet<ISymbol>();
+			foreach (TextLine textLine in text.Lines)
 			{
-				result.Add(line.ToString());
+				var line = textLine.ToString();
+				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(line, compilation);
+				if (!symbols.IsDefaultOrEmpty)
+				{
+					foreach (var symbol in symbols)
+					{
+						if (symbol is IMethodSymbol)
+						{
+							result.Add(symbol);
+						}
+						else if (symbol is ITypeSymbol typeSymbol)
+						{
+							var members = typeSymbol.GetMembers();
+							foreach (var member in members)
+							{
+								if (member is IMethodSymbol)
+								{
+									result.Add(member);
+								}
+							}
+						}
+					}
+				}
 			}
 			return result;
 		}
@@ -133,13 +158,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
 			private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
 			private readonly int _duplicateTokenThreshold;
-			private readonly HashSet<string> _exceptions;
+			private readonly HashSet<ISymbol> _exceptions;
 			private readonly bool _generateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, HashSet<string> exceptions, bool generateExceptionsFile, Diagnostic configurationError)
+			public CompilationAnalyzer(int duplicateTokenThreshold, HashSet<ISymbol> allowed, bool generateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
-				_exceptions = exceptions;
+				_exceptions = allowed;
 				_generateExceptionsFile = generateExceptionsFile;
 				if (configurationError != null)
 				{
@@ -166,7 +191,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						return;
 					}
 
-					if (_exceptions.Contains(methodDeclarationSyntax.Identifier.ValueText))
+					var methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
+					if (_exceptions.Contains(methodSymbol))
 					{
 						return;
 					}

@@ -14,6 +14,11 @@ namespace Philips.CodeAnalysis.Test
 	[TestClass]
 	public class AvoidDuplicateCodeAnalyzerTest : DiagnosticVerifier
 	{
+		private const string allowedMethodName = @"Foo.AllowedInitializer()
+Foo.AllowedInitializer(Bar)
+Foo.WhitelistedFunction
+";
+
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
@@ -26,6 +31,11 @@ namespace Philips.CodeAnalysis.Test
 				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
 			};
 			return options;
+		}
+
+		protected override (string name, string content)[] GetAdditionalTexts()
+		{
+			return new[] { ("NotFile.txt", "data"), (AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName) };
 		}
 
 
