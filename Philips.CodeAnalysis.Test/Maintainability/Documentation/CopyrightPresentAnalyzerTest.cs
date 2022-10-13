@@ -44,9 +44,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		#region Public Interface
 
 		[DataRow(@"#region H
-			#endregion", false, 3)]
+			#endregion", false, 2)]
 		[DataRow(@"#region Header
-#endregion", false, 3)]
+#endregion", false, 2)]
 		[DataRow(@"#region Header
 // ©
 #endregion", false, 2)]
@@ -59,6 +59,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"#region Header
 // © Koninklijke Philips N.V. 2021
 #endregion", true, 2)]
+		[DataRow(@"#region © Koninklijke Philips N.V. 2021
+#endregion", true, 1)]
+		[DataRow(@"#region Copyright Koninklijke Philips N.V. 2021
+#endregion", true, 1)]
+		[DataRow(@"#region Koninklijke Philips N.V. 2021
+#endregion", false, 2)]
+		[DataRow(@"#region Copyright 2021
+#endregion", false, 2)]
+		[DataRow(@"#region Copyright Koninklijke Philips N.V.
+#endregion", false, 2)]
 		[DataRow(@"// ©", false, -1)]
 		[DataRow(@"// © Koninklijke Philips N.V.", false, -1)]
 		[DataRow(@"// © 2021", false, -1)]
