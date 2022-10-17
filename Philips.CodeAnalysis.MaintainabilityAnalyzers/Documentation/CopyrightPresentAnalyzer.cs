@@ -58,10 +58,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			SyntaxTrivia copyrightSyntax = first[0];
 
-			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia) && 
-			    (first.Count >= 2 && first[1].IsKind(SyntaxKind.SingleLineCommentTrivia)))
+			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia))
 			{
-				copyrightSyntax = first[1];
+				bool regionHeaderHasCopyright = CheckCopyrightStatement(context, first[0]);
+				if (!regionHeaderHasCopyright && first.Count >= 2 && first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
+				{
+					copyrightSyntax = first[1];
+				}
 			}
 
 			bool isCorrectStatement = CheckCopyrightStatement(context, copyrightSyntax);
