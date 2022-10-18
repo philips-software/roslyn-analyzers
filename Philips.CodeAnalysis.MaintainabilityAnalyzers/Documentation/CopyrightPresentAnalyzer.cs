@@ -60,12 +60,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia))
 			{
-				if (first.Count < 2 || !first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
+				bool regionHeaderHasCopyright = CheckCopyrightStatement(context, first[0]);
+				if (!regionHeaderHasCopyright && first.Count >= 2 && first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
 				{
-					CreateDiagnostic(context, context.Node.GetLocation());
-					return;
+					copyrightSyntax = first[1];
 				}
-				copyrightSyntax = first[1];
 			}
 
 			bool isCorrectStatement = CheckCopyrightStatement(context, copyrightSyntax);
