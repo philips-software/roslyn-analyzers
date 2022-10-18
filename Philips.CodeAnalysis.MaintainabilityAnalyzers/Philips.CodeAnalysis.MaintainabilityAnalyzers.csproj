@@ -67,6 +67,8 @@
       * PH2032: Rename "Avoid empty constructors" to note only applicable to type initializers
       1.2.26
       * Introduce PH2101: Detect null dereference after "as" keyword
+      1.2.27
+      * Fixes for 2028: Allow copyright statement as header of first region
     </PackageReleaseNotes>
     <Copyright>© 2019-2022 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
