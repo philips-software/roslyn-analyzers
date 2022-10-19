@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -36,6 +37,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			PragmaWarningDirectiveTriviaSyntax pragma = context.Node as PragmaWarningDirectiveTriviaSyntax;
 			if (pragma == null)
+			{
+				return;
+			}
+
+			string myOwnId = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma);
+			if (pragma.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName)).Any(i => i.ToString().Contains(myOwnId)))
 			{
 				return;
 			}
