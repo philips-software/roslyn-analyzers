@@ -41,6 +41,22 @@ class Foo
 			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
+		[TestMethod]
+		public void PragmaAllowedDisableSelf()
+		{
+			string text = @"
+class Foo 
+{{
+  #pragma warning disable PH2029
+  public void Foo()
+  {{
+    return;
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(text);
+		}
+
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
 		public void PragmaAllowedGeneratedCode(string test, int expectedColumn)
