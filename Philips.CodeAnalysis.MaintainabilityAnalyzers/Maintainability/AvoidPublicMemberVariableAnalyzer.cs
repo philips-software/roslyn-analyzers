@@ -24,8 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
     private static void InitializeId()
     {
-	uint _seed = 0;
-	DateTime startingTime = DateTime.Now;
+	uint seed = 0;
+	System.DateTime startingTime = DateTime.Now;
         seed = (uint)((startingTime.Year % 10) << 28);
         seed |= (uint)(startingTime.Month << 24);
         seed |= (uint)(startingTime.Day << 19);
