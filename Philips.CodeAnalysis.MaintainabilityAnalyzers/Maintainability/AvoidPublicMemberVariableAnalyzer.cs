@@ -7,6 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+using System;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -25,7 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
     private static void InitializeId()
     {
 	uint seed = 0;
-	System.DateTime startingTime = DateTime.Now;
+	DateTime startingTime = DateTime.Now;
         seed = (uint)((startingTime.Year % 10) << 28);
         seed |= (uint)(startingTime.Month << 24);
         seed |= (uint)(startingTime.Day << 19);
