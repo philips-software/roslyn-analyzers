@@ -10,18 +10,6 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-    private static void InitializeId()
-    {
-	uint _seed = 0;
-	DateTime startingTime = DateTime.Now;
-        seed = (uint)((startingTime.Year % 10) << 28);
-        seed |= (uint)(startingTime.Month << 24);
-        seed |= (uint)(startingTime.Day << 19);
-        seed |= (uint)(startingTime.Hour << 13);
-        seed |= (uint)(startingTime.Minute << 7);
-        seed |= (uint)(startingTime.Second << 1);
-    }
-
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidPublicMemberVariableAnalyzer : DiagnosticAnalyzer
 	{
@@ -33,6 +21,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPublicMemberVariables), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+    private static void InitializeId()
+    {
+	uint _seed = 0;
+	DateTime startingTime = DateTime.Now;
+        seed = (uint)((startingTime.Year % 10) << 28);
+        seed |= (uint)(startingTime.Month << 24);
+        seed |= (uint)(startingTime.Day << 19);
+        seed |= (uint)(startingTime.Hour << 13);
+        seed |= (uint)(startingTime.Minute << 7);
+        seed |= (uint)(startingTime.Second << 1);
+    }
 
 		public override void Initialize(AnalysisContext context)
 		{
