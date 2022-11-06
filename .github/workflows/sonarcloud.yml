@@ -35,7 +35,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.sourceEncoding=UTF-8 /d:sonar.verbose=true /d:sonar.host.url="https://sonarcloud.io"
-          dotnet build --configuration Release
+          dotnet build --configuration Debug
           dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          cat coverage.xml
           
