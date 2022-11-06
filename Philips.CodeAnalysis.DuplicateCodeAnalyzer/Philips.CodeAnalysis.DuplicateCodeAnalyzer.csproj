@@ -5,6 +5,7 @@
     <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <CodePage>65001</CodePage>
   </PropertyGroup>
 
   <PropertyGroup>
