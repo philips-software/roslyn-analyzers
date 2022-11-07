@@ -483,7 +483,7 @@ class Foo
 	public void Test(out string errorMessage)
 	{{
 		errorMessage = this.ToString();
-		Logs.ServiceAudit.Err({0}{1});
+		Err({0}{1});
 	}}
 }}
 ";
@@ -505,7 +505,7 @@ class Foo
 	public void Test()
 	{{
 		string errorMessage = ""Some text"";
-		Logs.ServiceAudit.Err(""{errorMessage}"");
+		Err(""{errorMessage}"");
 	}}
 }}
 ";
