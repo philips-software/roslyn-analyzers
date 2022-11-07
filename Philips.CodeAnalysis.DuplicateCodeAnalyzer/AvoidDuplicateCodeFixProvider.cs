@@ -1,4 +1,4 @@
-// � 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
+
 namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidDuplicateCodeAnalyzer)), Shared]
@@ -30,6 +31,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return new AvoidDuplicateCodeFixAllProvider();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			Project project = context.Document.Project;
