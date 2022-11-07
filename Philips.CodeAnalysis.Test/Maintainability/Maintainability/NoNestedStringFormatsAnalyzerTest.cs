@@ -466,6 +466,52 @@ class Foo
 			VerifyCSharpDiagnostic(string.Format(template, format, args), expected);
 		}
 
+		[DataRow("\"{0}\"", ", errorMessage")]
+		[DataRow("\"this is a test\"", "")]
+		[DataTestMethod]
+		public void DontStringFormatUselesslyIssue134_1(string format, string args)
+		{
+			const string template = @"
+using System;
+
+class Foo
+{{
+	public void Err(FormattableString fs)
+	{{
+	}}
+
+	public void Test(out string errorMessage)
+	{{
+		errorMessage = this.ToString();
+		Logs.ServiceAudit.Err({0}{1});
+	}}
+}}
+";
+			VerifyCSharpDiagnostic(string.Format(template, format, args));
+		}
+
+		[TestMethod]
+		public void DontStringFormatUselesslyIssue134_2()
+		{
+			const string template = @"
+using System;
+
+class Foo
+{{
+	public void Err(FormattableString fs)
+	{{
+	}}
+
+	public void Test()
+	{{
+		string errorMessage = ""Some text"";
+		Logs.ServiceAudit.Err(""{errorMessage}"");
+	}}
+}}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
 		[TestMethod]
 		public void DontStringFormatUselessly6b()
 		{
