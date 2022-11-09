@@ -466,32 +466,11 @@ class Foo
 			VerifyCSharpDiagnostic(string.Format(template, format, args), expected);
 		}
 
-		[DataRow("\"{0}\"", ", errorMessage")]
-		[DataRow("\"this is a test\"", "")]
+		[DataRow("$\"{0}\"")]
+		[DataRow("$\"this is a test\"")]
+		[DataRow("$\"{errorMessage}\"")]
 		[DataTestMethod]
-		public void DontStringFormatUselesslyIssue134_1(string format, string args)
-		{
-			const string template = @"
-using System;
-
-class Foo
-{{
-	public void Err(FormattableString fs)
-	{{
-	}}
-
-	public void Test(out string errorMessage)
-	{{
-		errorMessage = this.ToString();
-		Err({0}{1});
-	}}
-}}
-";
-			VerifyCSharpDiagnostic(string.Format(template, format, args));
-		}
-
-		[TestMethod]
-		public void DontStringFormatUselesslyIssue134_2()
+		public void DontStringFormatUselesslyIssue134(string format)
 		{
 			const string template = @"
 using System;
@@ -505,11 +484,11 @@ class Foo
 	public void Test()
 	{{
 		string errorMessage = ""Some text"";
-		Err(""{errorMessage}"");
+		Err({0});
 	}}
 }}
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyCSharpDiagnostic(string.Format(template, format));
 		}
 
 		[TestMethod]
