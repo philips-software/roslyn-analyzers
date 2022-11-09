@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -51,10 +53,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var onlyInterpolation = interpolation.Parts[0];
 
-			if (onlyInterpolation is IInterpolatedStringTextOperation textOperation)
-			{
-			}
-			else if (onlyInterpolation is IInterpolationOperation interpolationOperation)
+			if (
+				onlyInterpolation is not IInterpolatedStringTextOperation && 
+				onlyInterpolation is IInterpolationOperation interpolationOperation)
 			{
 				if (!(interpolationOperation.FormatString is null))
 				{
@@ -74,9 +75,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, interpolation.Syntax.GetLocation()));
-			}
+				if (IsFormattableStringMethodArgument(interpolationOperation))
+				{
+					return;
+				}
 
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
+					interpolation.Syntax.GetLocation()));
+			}
 		}
 
 		private void OnInvocation(OperationAnalysisContext operationContext)
@@ -264,6 +270,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			return true;
+		}
+
+		private static bool IsFormattableStringMethodArgument(IInterpolationOperation interpolationOperation)
+		{
+			var parent = interpolationOperation.Parent;
+			while (parent != null)
+			{
+				if (parent is IInvocationOperation invocation)
+				{
+					var method = invocation.TargetMethod;
+					return method.Parameters.Any(p => p.Type.Name == "FormattableString");
+				}
+
+				parent = parent.Parent;
+			}
+
+			return false;
 		}
 
 		#endregion
