@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var onlyInterpolation = interpolation.Parts[0];
 
 			if (
-				onlyInterpolation is not IInterpolatedStringTextOperation && 
+				!(onlyInterpolation is IInterpolatedStringTextOperation) && 
 				onlyInterpolation is IInterpolationOperation interpolationOperation)
 			{
 				if (!(interpolationOperation.FormatString is null))
