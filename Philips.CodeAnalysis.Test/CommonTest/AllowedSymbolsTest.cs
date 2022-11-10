@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.CommonTest
 {
 	/// <summary>
 	/// Test class for <see cref="AllowedSymbols"/>

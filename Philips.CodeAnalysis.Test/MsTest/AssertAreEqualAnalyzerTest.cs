@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
 	public class AssertAreEquaAnalyzerTest : AssertCodeFixVerifier
