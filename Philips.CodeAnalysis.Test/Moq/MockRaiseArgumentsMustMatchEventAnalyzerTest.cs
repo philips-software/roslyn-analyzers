@@ -10,7 +10,7 @@ using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MoqAnalyzers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Moq
 {
 	[TestClass]
 	public class MockRaiseArgumentsMustMatchEventAnalyzerTest : DiagnosticVerifier
