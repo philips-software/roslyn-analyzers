@@ -99,9 +99,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
 			foreach(var xmlElement in xmlElements)
 			{
-				if (xmlElement.Parent?.Kind() != SyntaxKind.SingleLineDocumentationCommentTrivia)
-					continue;
-
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 					continue;
 

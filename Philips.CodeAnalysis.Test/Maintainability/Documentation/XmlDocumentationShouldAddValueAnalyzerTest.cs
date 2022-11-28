@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -242,6 +243,40 @@ public class TestClass
 			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
 
 			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[TestMethod]
+		public void InheritDocTests()
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <inheritdoc />
+	public override string ToString() 
+	{{
+		return ""Some string"";
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void RemarksOnlyTests()
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <remarks>Random remarks</remarks>
+	public override string ToString() 
+	{{
+		return ""Some string"";
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
 		#endregion
 	}
