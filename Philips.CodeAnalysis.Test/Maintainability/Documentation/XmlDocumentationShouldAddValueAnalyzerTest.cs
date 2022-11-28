@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -8,7 +9,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 {
 	[TestClass]
-	public class XmlDocumentationShouldAddValueAnalyzerTest : DiagnosticVerifier
+	public class XmlDocumentationShouldAddValueAnalyzerTest : CodeFixVerifier
 	{
 		#region Non-Public Data Members
 
@@ -20,6 +21,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new XmlDocumentationShouldAddValueAnalyzer();
 
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new XmlDocumentationCodeFixProvider();
+		}
+
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			Dictionary<string, string> options = new Dictionary<string, string>
@@ -28,7 +34,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			};
 			return options;
 		}
-
 
 		#endregion
 
@@ -210,6 +215,33 @@ public class TestClass
 ";
 
 			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+		}
+
+		[DataRow("event EventHandler Foo;")]
+		[DataRow("void Foo() { }")]
+		[DataRow("int field;")]
+		[DataRow("int Property { get; }")]
+		[DataTestMethod]
+		public void CodeFixTests(string text)
+		{
+			string errorContent = $@"
+public class TestClass
+{{
+	/// <summary>raise the.</summary
+	public {text}
+}}
+";
+
+			string fixedContent = $@"
+public class TestClass
+{{
+  public {text}
+}}
+";
+
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
+
+			VerifyCSharpFix(errorContent, fixedContent);
 		}
 		#endregion
 	}
