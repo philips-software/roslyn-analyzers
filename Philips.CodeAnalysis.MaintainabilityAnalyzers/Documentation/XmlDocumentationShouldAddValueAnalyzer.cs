@@ -1,0 +1,136 @@
+﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Philips.CodeAnalysis.Common;
+
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
+{
+	/// <summary>
+	/// Analyzer that checks if the text of the XML code documentation contains more information compared to the obvious (name of Symbol and some low value words).
+	/// If not, adding such comment doesn't add value and just takes longer to read.
+	/// </summary>
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzer
+	{
+		private const string EmptyTitle = @"Summary XML comments";
+		private const string EmptyMessageFormat = @"Summary XML comments must be useful or non-existent.";
+		private const string EmptyDescription = @"Summary XML comments for classes, methods, etc. must be useful or non-existent.";
+		private const string ValueTitle = @"Documentation text should add value";
+		private const string ValueMessageFormat = @"Summary XML comments must add more information then just repeating the method name.";
+		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating the method name.";
+		private const string Category = Categories.Documentation;
+
+		private static readonly DiagnosticDescriptor ValueRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
+		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
+
+		private static readonly HashSet<string> UselessWords = new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event" });
+		private HashSet<string> additionalUselessWords;
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
+
+		public override void Initialize(AnalysisContext context)
+		{
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.EnableConcurrentExecution();
+			context.RegisterCompilationStartAction(ctx =>
+			{
+				var additionalFilesHelper = new AdditionalFilesHelper(ctx.Options, ctx.Compilation);
+				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
+				additionalUselessWords = new HashSet<string>(line.Split(','));
+				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
+			});
+		}
+
+		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
+		{
+			ClassDeclarationSyntax cls = context.Node as ClassDeclarationSyntax;
+			string name = cls?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
+		{
+			MethodDeclarationSyntax method = context.Node as MethodDeclarationSyntax;
+			string name = method?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
+		{
+			PropertyDeclarationSyntax prop = context.Node as PropertyDeclarationSyntax;
+			string name = prop?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeField(SyntaxNodeAnalysisContext context)
+		{
+			FieldDeclarationSyntax field = context.Node as FieldDeclarationSyntax;
+			string name = field?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeEvent(SyntaxNodeAnalysisContext context)
+		{
+			EventFieldDeclarationSyntax evt = context.Node as EventFieldDeclarationSyntax;
+			string name = evt?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				return;
+
+			name = name.ToLowerInvariant();
+			var xmlElements = context.Node.GetLeadingTrivia()
+				.Select(i => i.GetStructure())
+				.OfType<DocumentationCommentTriviaSyntax>()
+				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
+			foreach(var xmlElement in xmlElements)
+			{
+				if (xmlElement.Parent?.Kind() != SyntaxKind.SingleLineDocumentationCommentTrivia)
+					continue;
+
+				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
+					continue;
+
+				string content = xmlElement.Content.ToString();
+				if (string.IsNullOrWhiteSpace(content))
+				{
+					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, xmlElement.GetLocation());
+					context.ReportDiagnostic(diagnostic);
+					continue;
+				}
+
+				IEnumerable<string> words =
+					SplitInWords(content)
+						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
+						.Where(s => !name.Contains(s));
+
+				// We assume here that every remaining word adds value to the documentation text.
+				if (!words.Any())
+				{
+					Diagnostic diagnostic = Diagnostic.Create(ValueRule, xmlElement.GetLocation());
+					context.ReportDiagnostic(diagnostic);
+				}
+			}
+		}
+
+		private static string[] SplitInWords(string input)
+		{
+			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
+			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
+		}
+	}
+}

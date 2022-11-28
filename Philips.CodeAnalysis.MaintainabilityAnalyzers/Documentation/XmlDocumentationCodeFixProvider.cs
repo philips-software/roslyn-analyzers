@@ -14,7 +14,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	//	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyXmlCommentsCodeFixProvider)), Shared]
-	public class EmptyXmlCommentsCodeFixProvider : CodeFixProvider
+	public class XmlDocumentationCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Remove empty Summary comments";
 
