@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DereferenceNullAnalyzer : DiagnosticAnalyzer
