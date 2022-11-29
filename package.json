@@ -2,7 +2,7 @@
     "private": true,
     "name": "semantic-release-action",
     "release": {
-        "branches": ["main","develop"],
+        "branches": ["main","dev-bose-branch"],
         "plugins": [
             "@semantic-release/commit-analyzer",
             "@semantic-release/release-notes-generator"
