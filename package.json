@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "name": "semantic-release-action",
+    "release": {
+        "branches": ["main","develop"],
+        "plugins": [
+            "@semantic-release/commit-analyzer",
+            "@semantic-release/release-notes-generator"
+            
+          ]
+      }
+}

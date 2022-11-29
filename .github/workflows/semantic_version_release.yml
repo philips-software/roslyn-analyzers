@@ -1,0 +1,22 @@
+name: Semantic Version Release
+
+on: [push]  
+
+jobs:
+  Semantic-Version-Release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.NK_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        with:
+          semantic_version: 19
