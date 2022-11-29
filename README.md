@@ -28,4 +28,4 @@ These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with 
 
 # Still on Visual Studio 2017?
 
-If you are still working with Visual Studio 2017, use the 1.0.x versions of the analyzers.
+If you are still working with Visual Studio 2017, use the 1.0.x versions of the analyzers...
