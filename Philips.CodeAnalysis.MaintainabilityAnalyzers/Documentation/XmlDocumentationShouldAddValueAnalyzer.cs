@@ -46,6 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
 				additionalUselessWords = new HashSet<string>(line.Split(','));
 				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
@@ -57,6 +58,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			ClassDeclarationSyntax cls = context.Node as ClassDeclarationSyntax;
 			string name = cls?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeConstructor(SyntaxNodeAnalysisContext context)
+		{
+			ConstructorDeclarationSyntax constructor = context.Node as ConstructorDeclarationSyntax;
+			string name = constructor?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
@@ -133,7 +141,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static string[] SplitInWords(string input)
 		{
 			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
-			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
+			return pruned.Split(new [] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }

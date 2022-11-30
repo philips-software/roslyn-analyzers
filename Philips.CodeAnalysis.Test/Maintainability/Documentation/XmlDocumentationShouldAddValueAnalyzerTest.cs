@@ -296,6 +296,24 @@ public class TestClass
 
 			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
+
+		[TestMethod]
+		public void ConstructorTest()
+		{
+			string content = $@"
+public class Foo
+{{
+	/// <summary>
+	/// Constructor
+	/// </summary>
+	public Foo()
+	{{
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
+		}
 		#endregion
 	}
 }
