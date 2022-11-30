@@ -111,7 +111,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 					continue;
 
-				string content = xmlElement.Content.ToString().Replace("\r\n", "").Replace("///", "");
+				string content = 
+					xmlElement.Content.ToString()
+						.Replace("\r", "")
+						.Replace("\n", " ")
+						.Replace("\t", " ")
+						.Replace("///", "");
 				if (string.IsNullOrWhiteSpace(content))
 				{
 					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, xmlElement.GetLocation());
@@ -141,7 +146,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static string[] SplitInWords(string input)
 		{
 			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
-			return pruned.Split(new [] {' ', '\t'}, StringSplitOptions.RemoveEmptyEntries);
+			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
 }
