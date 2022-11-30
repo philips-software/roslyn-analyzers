@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 					continue;
 
-				string content = xmlElement.Content.ToString();
+				string content = xmlElement.Content.ToString().Replace("\r\n", "").Replace("///", "");
 				if (string.IsNullOrWhiteSpace(content))
 				{
 					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, xmlElement.GetLocation());

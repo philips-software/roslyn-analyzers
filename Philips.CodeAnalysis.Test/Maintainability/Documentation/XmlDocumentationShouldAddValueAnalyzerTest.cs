@@ -41,6 +41,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		#region Public Interface
 		[TestMethod]
+		public void DefaultWhiteSpaceTest()
+		{
+			string content = $@"
+/// <summary>
+/// 
+/// </summary>
+public class Foo
+{{
+}}
+";
+
+			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+		}
+
+		[TestMethod]
 		public void EmptyClassTest()
 		{
 			string content = $@"
