@@ -30,7 +30,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor ValueRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
 		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
-		private static readonly HashSet<string> UselessWords = new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event" });
+		private static readonly HashSet<string> UselessWords = 
+			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);

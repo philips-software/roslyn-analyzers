@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
+
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 
@@ -43,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		public void EmptyClassTest()
 		{
 			string content = $@"
-/// <summary></summary
+/// <summary></summary>
 public class Foo
 {{
 }}
@@ -58,7 +59,7 @@ public class Foo
 			string content = $@"
 public class TestClass
 {{
-	/// <summary></summary
+	/// <summary></summary>
 	public void Foo()
 	{{
 	}}
@@ -74,7 +75,7 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary></summary
+	/// <summary></summary>
 	public int Foo {{ get; }}
 }}
 ";
@@ -88,7 +89,7 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary></summary
+	/// <summary></summary>
 	public int Foo;
 }}
 ";
@@ -102,8 +103,8 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary></summary
-	public event EventHandler Foo;
+	/// <summary></summary>
+	public event System.EventHandler Foo;
 }}
 ";
 
@@ -120,7 +121,7 @@ public class TestClass
 		public void ValueAddClassTests(string text, bool isError)
 		{
 			string content = $@"
-/// <summary>{text}</summary
+/// <summary>{text}</summary>
 public class Foo
 {{
 }}
@@ -143,7 +144,7 @@ public class Foo
 			string content = $@"
 public class TestClass
 {{
-	/// <summary>{text}</summary
+	/// <summary>{text}</summary>
 	public void Foo()
 	{{
 	}}
@@ -165,7 +166,7 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary>{text}</summary
+	/// <summary>{text}</summary>
 	public int Foo
 	{{
 		get;
@@ -189,7 +190,7 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary>{text}</summary
+	/// <summary>{text}</summary>
 	public int Foo;
 }}
 ";
@@ -210,15 +211,15 @@ public class TestClass
 			string content = $@"
 public class TestClass
 {{
-	/// <summary>{text}</summary
-	public event EventHandler Foo;
+	/// <summary>{text}</summary>
+	public event System.EventHandler Foo;
 }}
 ";
 
 			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
 		}
 
-		[DataRow("event EventHandler Foo;")]
+		[DataRow("event System.EventHandler Foo;")]
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
@@ -228,7 +229,7 @@ public class TestClass
 			string errorContent = $@"
 public class TestClass
 {{
-	/// <summary>raise the.</summary
+	/// <summary>raise the.</summary>
 	public {text}
 }}
 ";
@@ -266,6 +267,8 @@ public class TestClass
 		public void RemarksOnlyTests()
 		{
 			string content = $@"
+using System;
+
 public class TestClass
 {{
 	/// <remarks>Random remarks</remarks>
