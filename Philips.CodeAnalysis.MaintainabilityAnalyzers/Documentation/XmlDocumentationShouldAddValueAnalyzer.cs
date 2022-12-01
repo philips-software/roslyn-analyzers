@@ -149,7 +149,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				// We assume here that every remaining word adds value to the documentation text.
 				if (!words.Any())
 				{
-					Diagnostic diagnostic = Diagnostic.Create(ValueRule, xmlElement.GetLocation());
+					Location loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
+					Diagnostic diagnostic = Diagnostic.Create(ValueRule, loc);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
