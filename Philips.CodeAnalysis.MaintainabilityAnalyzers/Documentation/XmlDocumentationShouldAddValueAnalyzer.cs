@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
-			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor", "ctor" });
+			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "it", "is", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
@@ -51,6 +51,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration); 
+				ctx.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
 			});
 		}
 
@@ -96,6 +98,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			AnalyzeNamedNode(context, name);
 		}
 
+		private void AnalyzeEnum(SyntaxNodeAnalysisContext context)
+		{
+			EnumDeclarationSyntax cls = context.Node as EnumDeclarationSyntax;
+			string name = cls?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+
+		private void AnalyzeEnumMember(SyntaxNodeAnalysisContext context)
+		{
+			EnumMemberDeclarationSyntax member = context.Node as EnumMemberDeclarationSyntax;
+			string name = member?.Identifier.Text;
+			AnalyzeNamedNode(context, name);
+		}
+		
 		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, string name)
 		{
 			if (string.IsNullOrEmpty(name))

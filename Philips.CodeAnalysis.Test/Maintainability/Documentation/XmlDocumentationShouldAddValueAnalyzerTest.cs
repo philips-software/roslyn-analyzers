@@ -126,6 +126,20 @@ public class TestClass
 			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
 		}
 
+		[TestMethod]
+		public void EmptyEnumTest()
+		{
+			string content = $@"
+public enum TestEnumeration
+{{
+	/// <summary></summary>
+	Foo = 1,
+}}
+";
+
+			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+		}
+
 		[DataRow("foo", true)]
 		[DataRow("Gets Foo", true)]
 		[DataRow("Gets the Foo", true)]
@@ -228,6 +242,40 @@ public class TestClass
 {{
 	/// <summary>{text}</summary>
 	public event System.EventHandler Foo;
+}}
+";
+
+			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+		}
+
+		[DataRow("On Foo", true)]
+		[DataRow("It is Foo", true)]
+		[DataRow("When it is Foo", false)]
+		[DataTestMethod]
+		public void ValueAddEnumTests(string text, bool isError)
+		{
+			string content = $@"
+/// <summary>{text}</summary>
+public enum Foo
+{{
+	Member = 1,
+}}
+";
+
+			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+		}
+
+		[DataRow("On Foo", true)]
+		[DataRow("It is Foo", true)]
+		[DataRow("When it is Foo", false)]
+		[DataTestMethod]
+		public void ValueAddEnumMemberTests(string text, bool isError)
+		{
+			string content = $@"
+public enum TestEnumeration
+{{
+	/// <summary>{text}</summary>
+	Foo = 1,
 }}
 ";
 
