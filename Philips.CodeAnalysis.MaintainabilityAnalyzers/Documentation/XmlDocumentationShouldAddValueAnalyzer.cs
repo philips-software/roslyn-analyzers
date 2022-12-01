@@ -23,15 +23,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string EmptyMessageFormat = @"Summary XML comments must be useful or non-existent.";
 		private const string EmptyDescription = @"Summary XML comments for classes, methods, etc. must be useful or non-existent.";
 		private const string ValueTitle = @"Documentation text should add value";
-		private const string ValueMessageFormat = @"Summary XML comments must add more information then just repeating the method name.";
-		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating the method name.";
+		private const string ValueMessageFormat = @"Summary XML comments must add more information then just repeating its name.";
+		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating its name.";
 		private const string Category = Categories.Documentation;
 
 		private static readonly DiagnosticDescriptor ValueRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
 		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
-			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor" });
+			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "of", "to", "for", "on", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
