@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
-			new HashSet<string>( new[]{ "gets", "get", "sets", "set", "the", "a", "an", "it", "is", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "fires", "event", "constructor", "ctor" });
+			new HashSet<string>( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				var additionalFilesHelper = new AdditionalFilesHelper(ctx.Options, ctx.Compilation);
 				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
-				additionalUselessWords = new HashSet<string>(line.Split(','));
+				additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
 				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
@@ -165,10 +165,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Replace("///", "");
 		}
 
-		private static string[] SplitInWords(string input)
+		private static IEnumerable<string> SplitFromConfig(string line)
+		{
+			return line.Split(',').Select(w => w.TrimEnd('s').ToLowerInvariant());
+		}
+
+		private static IEnumerable<string> SplitInWords(string input)
 		{
 			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
-			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries);
+			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
 		}
 	}
 }

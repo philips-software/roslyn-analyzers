@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	{
 		#region Non-Public Data Members
 
-		private const string configuredAdditionalUselessWords = "dummy,tummy";
+		private const string configuredAdditionalUselessWords = "dummy,roms";
 
 		#endregion
 
@@ -164,8 +164,9 @@ public class Foo
 		[DataRow("Gets the Foo", true)]
 		[DataRow("Get an instance of Foo", true)]
 		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Gets an tummy Foo", true)]
 		[DataRow("Gets an dummy Foo", true)]
+		[DataRow("Gets a rom", true)]
+		[DataRow("Gets a roms", true)]
 		[DataRow("Get an instance of Foo to please Bar", false)]
 		[DataTestMethod]
 		public void ValueAddMethodTests(string text, bool isError)
