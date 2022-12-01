@@ -127,12 +127,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 					continue;
 
-				string content = 
-					xmlElement.Content.ToString()
-						.Replace("\r", "")
-						.Replace("\n", " ")
-						.Replace("\t", " ")
-						.Replace("///", "");
+				string content = GetContent(xmlElement);
+
 				if (string.IsNullOrWhiteSpace(content))
 				{
 					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, xmlElement.GetLocation());
@@ -157,6 +153,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
+		}
+
+		private static string GetContent(XmlElementSyntax xmlElement)
+		{
+			return xmlElement.Content.ToString()
+				.Replace("\r", "")
+				.Replace("\n", " ")
+				.Replace("\t", " ")
+				.Replace("///", "");
 		}
 
 		private static string[] SplitInWords(string input)
