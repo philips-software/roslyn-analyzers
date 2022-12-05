@@ -93,6 +93,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidEmptyCatchBlock = 2098,
 		EnforceFileVersionIsSameAsPackageVersion = 2099,
 		AvoidPasswordField = 2100,
-		DereferenceNull = 2101
+		DereferenceNull = 2101,
+		XmlDocumentationShouldAddValue = 2102,
 	}
 }

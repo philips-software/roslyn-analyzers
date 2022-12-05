@@ -14,7 +14,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	//	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyXmlCommentsCodeFixProvider)), Shared]
-	public class EmptyXmlCommentsCodeFixProvider : CodeFixProvider
+	public class XmlDocumentationCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Remove empty Summary comments";
 
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private async Task<Document> RemoveXmlComment(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync();
+			var root = await document.GetSyntaxRootAsync(cancellationToken);
 			var newRoot = root;
 			foreach (SyntaxTrivia trivia in node.GetLeadingTrivia())
 			{
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				{
 					newRoot = root.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
 
-					// The formatting is slightly off after this.  Rather than figure it out the hard way, just Format the whole document.
+					// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
 					newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
 				}
 			}
