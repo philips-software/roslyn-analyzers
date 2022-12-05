@@ -291,7 +291,36 @@ public enum TestEnumeration
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
-		public void CodeFixTests(string text)
+		public void CodeFixEmptyTests(string text)
+		{
+			string errorContent = $@"
+public class TestClass
+{{
+	/// <summary>
+	/// 
+	/// </summary>
+	public {text}
+}}
+";
+
+			string fixedContent = $@"
+public class TestClass
+{{
+  public {text}
+}}
+";
+
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+
+			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[DataRow("event System.EventHandler Foo;")]
+		[DataRow("void Foo() { }")]
+		[DataRow("int field;")]
+		[DataRow("int Property { get; }")]
+		[DataTestMethod]
+		public void CodeFixValueTests(string text)
 		{
 			string errorContent = $@"
 public class TestClass

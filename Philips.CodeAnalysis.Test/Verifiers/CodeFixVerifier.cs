@@ -76,6 +76,16 @@ namespace Philips.CodeAnalysis.Test
 			var document = CreateDocument(oldSource, language);
 			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 			var compilerDiagnostics = GetCompilerDiagnostics(document);
+
+			// Check if the found analyzer diagnostics are to be fixed by the given CodeFixProvider.
+			if (analyzerDiagnostics.Any())
+			{
+				var analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
+				var notFixableDiagnostics = codeFixProvider.FixableDiagnosticIds.Intersect(analyzerDiagnosticIds);
+				Assert.IsTrue(notFixableDiagnostics.Any(),
+					$"CodeFixProvider {codeFixProvider.GetType().Name} is not registered to fix the reported diagnostics: {string.Join(',', analyzerDiagnosticIds)}.");
+			}
+			
 			var attempts = analyzerDiagnostics.Length;
 
 			for (int i = 0; i < attempts; ++i)
