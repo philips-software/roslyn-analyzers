@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -212,7 +211,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 							}
 						}
 
-						if (firstStatementOfAnalysis.DescendantNodesAndSelf().Any(s => s is ConditionalExpressionSyntax c && HasNullCheck(c.Condition)))
+						if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().Any(c => HasNullCheck(c.Condition)))
 						{
 							return;
 						}
@@ -270,9 +269,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		#endregion
 
 		#region Public Interface
-
-		public SimpleMemberAccessVisitor() : base(SyntaxWalkerDepth.Node)
-		{ }
 
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
