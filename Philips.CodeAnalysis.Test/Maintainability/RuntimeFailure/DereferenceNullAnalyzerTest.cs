@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -14,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 			return new DereferenceNullAnalyzer();
 		}
 
-		private string GetTemplate()
+		private static string GetTemplate()
 		{
 			return @"
 class Foo 
@@ -67,7 +69,7 @@ Instruction i = method.Body.Instructions[0];
 		}
 		
 		/// <summary>
-		/// In this test, y is dereferenced after "y = obj as string" without first checking or re-assigning y.
+		/// In this test, y is de-referenced after "y = obj as string" without first checking or re-assigning y.
 		/// </summary>
 		/// <param name="content1"></param>
 		/// <param name="content2"></param>
