@@ -191,6 +191,66 @@ class Foo
 
 
 		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckDereference3Test()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    string t0 = y != null ? y.ToString() : ""null"";
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckDereference4Test()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (x == ""SomeThing"" && y != null)
+    {{
+      string t2 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+		
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckHasValueTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string? y = obj as string;
+    if (y.HasValue)
+	{{
+		string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
 		public void DereferenceNullAsExpressionWhileCheckDereferenceTest()
 		{
 			string testCode = @"
