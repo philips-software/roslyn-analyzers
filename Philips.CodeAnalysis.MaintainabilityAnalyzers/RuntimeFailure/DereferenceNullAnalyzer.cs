@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,8 +14,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	public class DereferenceNullAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Dereference Null after As";
-		public const string MessageFormat = @"Using the 'as' expression means '{0}' could be null.  Either check before dereferencing, or cast if you definitively know it will be this type in this context.";
-		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
+		public const string MessageFormat = @"Using the 'as' expression means '{0}' could be null. Either check before dereferencing, or cast if you definitively know it will be this type in this context.";
+		private const string Description = @"Using the 'as' expression means a check should be made before dereferencing, or cast if you definitively know it will be this type in this context.";
 		private const string Category = Categories.RuntimeFailure;
 
 		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -143,6 +144,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return null;
 		}
 
+		private bool HasNullCheck(ExpressionSyntax condition)
+		{
+			string conditionAsString = condition.ToString();
+			if(conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
+			{
+				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
+				return true;
+			}
+
+			return false;
+		}
+
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			if (!IsCaseWeUnderstand(context.Node))
@@ -185,21 +198,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 						// Ie there's nothing to analyze between the statements, but within the statement exists a check
 						if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
 						{
-							if (ifStatementSyntax.Condition.ToString().Contains(@"null"))
+							if (HasNullCheck(ifStatementSyntax.Condition))
 							{
-								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
 								return;
 							}
 						}
-						if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
+						
+						if(firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
 						{
-							if (whileStatementSyntax.Condition.ToString().Contains(@"null"))
+							if (HasNullCheck(whileStatementSyntax.Condition))
 							{
-								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
 								return;
 							}
 						}
 
+						if (firstStatementOfAnalysis.DescendantNodesAndSelf().Any(s => s is ConditionalExpressionSyntax c && HasNullCheck(c.Condition)))
+						{
+							return;
+						}
 
 						Report(context, identifierNameSyntax);
 						return;
