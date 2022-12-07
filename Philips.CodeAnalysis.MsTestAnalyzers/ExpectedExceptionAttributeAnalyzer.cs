@@ -12,8 +12,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class ExpectedExceptionAttributeAnalyzer : DiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"Tests may not use the ExpectedException attribute. Use the AssertEx.Throws method instead.";
 		private const string Title = @"ExpectedException attribute not allowed";
-		private const string MessageFormat = @"Tests may not use the [ExpectedException()] attribute.  Use AssertEx.Throws() instead.";
 		private const string Description = @"The [ExpectedException()] attribute does not have line number granularity and trips the debugger anyway.  Use AssertEx.Throws() instead.";
 		private const string Category = Categories.Maintainability;
 

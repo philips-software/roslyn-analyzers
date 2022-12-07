@@ -12,8 +12,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class TestMethodNameAnalyzer : DiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"Test Method must not start with '{0}'";
 		private const string Title = @"Test Method names unhelpful prefix'";
-		private const string MessageFormat = @"Test Method must not start with '{0}'";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
 		private const string Category = Categories.Naming;
 

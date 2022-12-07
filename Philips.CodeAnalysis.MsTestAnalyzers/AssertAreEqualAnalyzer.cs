@@ -13,8 +13,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AssertAreEqualAnalyzer : AssertMethodCallDiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"Assert.AreEqual/AreNotEqual should be of the form AreEqual(<Expected Non-Null Literal>, <Actual Expression>).";
 		private const string Title = @"Assert.AreEqual/AreNotEqual Usage";
-		private const string MessageFormat = @"Assert.AreEqual/AreNotEqual should be of the form AreEqual(<Expected Non-Null Literal>, <Actual Expression>).";
 		private const string Description = @"Assert.AreEqual(<actual>, <expected>) => Assert.AreEqual(<expected>, <actual>) and Assert.AreEqual(null, <actual>) => Assert.IsNull(<actual>).";
 		private const string Category = Categories.Maintainability;
 

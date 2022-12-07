@@ -12,8 +12,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AssertAreEqualTypesMatchAnalyzer : DiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"The expected argument is of type {0}, which does not match the type of actual, which is {1}.";
 		private const string Title = @"Assert.AreEqual parameter types must match";
-		private const string MessageFormat = @"The type of <expected> ({0}) does not match the type of <actual> ({1})";
 		private const string Description = @"The types of the parameters of Are[Not]Equal must match.";
 		private const string Category = Categories.Maintainability;
 
