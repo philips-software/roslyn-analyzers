@@ -1,3 +1,5 @@
+// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -9,12 +11,15 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 {
+	/// <summary>
+	/// Analyzer class that verifies that after the 'as' keyword, the variable is checked for null before being used. This prevents an <see cref="System.NullReferenceException"/> being thrown at runtime.
+	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class DereferenceNullAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Dereference Null after As";
-		public const string MessageFormat = @"Using the 'as' expression means '{0}' could be null.  Either check before dereferencing, or cast if you definitively know it will be this type in this context.";
-		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
+		public const string MessageFormat = @"Using the 'as' expression means '{0}' could be null. Either check before dereferencing, or cast if you definitively know it will be this type in this context.";
+		private const string Description = @"Using the 'as' expression means a check should be made before dereferencing, or cast if you definitively know it will be this type in this context.";
 		private const string Category = Categories.RuntimeFailure;
 
 		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
@@ -22,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 
 		public override void Initialize(AnalysisContext context)
@@ -32,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AsExpression);
 		}
 
-		private void Report(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifier)
+		private static void Report(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifier)
 		{
 			var diagnostic = Diagnostic.Create(Rule, identifier.GetLocation(), identifier.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
@@ -51,15 +56,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// But if the firstStatement is the if clause, it includes the entire if block, of which endStatement is inside of.
 		/// This causes DataFlowAnalysis to throw an exception.
 
-		/// Stated differently (and more problematically), DataFlowAnalysis only works on statements in the same statementlist, ie the same block.
+		/// Stated differently (and more problematically), DataFlowAnalysis only works on statements in the same statement list, ie the same block.
 		/// https://github.com/kislyuk/roslyn/blob/89169a3380e48fc834c72e38355867881d030e94/Src/Compilers/CSharp/Source/Compilation/SyntaxTreeSemanticModel.cs#L1902
 		///
 		/// Fortunately, from a practical perspective, it is likely a common scenario that in this case, the reason it is in a nested block is precisely because
 		/// it checked for null.
 		/// </summary>
-		/// <param name="blockOfInterest"></param>
-		/// <param name="node"></param>
-		/// <returns></returns>
 		private bool SameBlock(BlockSyntax blockOfInterest, SyntaxNode node)
 		{
 			BlockSyntax ourSymbolsBlock = node.Ancestors().OfType<BlockSyntax>().First();
@@ -69,8 +71,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// <summary>
 		/// Just handle the simple case of "y = x as yType;"
 		/// </summary>
-		/// <param name="syntaxNode"></param>
-		/// <returns></returns>
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
@@ -79,12 +79,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				return false;
 			}
 
-			if (binaryExpressionSyntax != null && binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax)
+			if (
+				binaryExpressionSyntax != null && 
+				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
+				equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax)
 			{
-				if (equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax)
-				{
-					return true;
-				}
+				return true;
 			}
 			return false;
 		}
@@ -114,12 +114,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 
 		/// <summary>
-		/// Find the first time ourSymbol is used, i.e., dereferenced.
+		/// Find the first time ourSymbol is used, i.e., de-referenced.
 		/// </summary>
-		/// <param name="ourSymbol"></param>
-		/// <param name="model"></param>
-		/// <param name="blockOfInterest"></param>
-		/// <returns></returns>
 		private IdentifierNameSyntax GetFirstMemberAccess(ISymbol ourSymbol, SemanticModel model, BlockSyntax blockOfInterest)
 		{
 			SimpleMemberAccessVisitor visitor = new SimpleMemberAccessVisitor();
@@ -139,8 +135,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				}
 			}
 
-			// It was never dereferenced.
+			// It was never de-referenced.
 			return null;
+		}
+
+		private bool HasNullCheck(ExpressionSyntax condition)
+		{
+			string conditionAsString = condition.ToString();
+			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
+			{
+				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
+				return true;
+			}
+
+			return false;
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -151,89 +159,87 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			// Collect some items we'll use repeatedly
-			if (context.Node.Parent != null)
+			if (context.Node.Parent?.Parent is VariableDeclaratorSyntax variableDeclarationSyntax)
 			{
-				VariableDeclaratorSyntax variableDeclaratorSyntax = context.Node.Parent.Parent as VariableDeclaratorSyntax;
-				if (variableDeclaratorSyntax != null)
+				BlockSyntax blockOfInterest = variableDeclarationSyntax.Ancestors().OfType<BlockSyntax>().First();
+				var model = context.SemanticModel;
+				ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclarationSyntax);
+
+				//  Identify where y is first used (ie., MemberAccessExpression)
+				IdentifierNameSyntax identifierNameSyntax = GetFirstMemberAccess(ourSymbol, model, blockOfInterest);
+				if (identifierNameSyntax == null)
 				{
-					BlockSyntax blockOfInterest = variableDeclaratorSyntax.Ancestors().OfType<BlockSyntax>().First();
-					var model = context.SemanticModel;
-					ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclaratorSyntax);
+					return;
+				}
+				if (!SameBlock(blockOfInterest, identifierNameSyntax))
+				{
+					return;
+				}
 
-					//  Identify where y is first used (ie., MemberAccessExpression)
-					IdentifierNameSyntax identifierNameSyntax = GetFirstMemberAccess(ourSymbol, model, blockOfInterest);
-					if (identifierNameSyntax == null)
+				//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
+				(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
+				(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
+
+				if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
+				{
+					// There's nothing to analyze; they immediately used the symbol after the 'as'
+
+					// Before reporting an error, note common possibility that the situation could be:
+					// string y = obj as string;
+					// if (y != null && y.ToString() == @"")
+					// Ie there's nothing to analyze between the statements, but within the statement exists a check
+					if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
 					{
-						return;
-					}
-					if (!SameBlock(blockOfInterest, identifierNameSyntax))
-					{
-						return;
-					}
-
-					//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
-					(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclaratorSyntax, offset: 1);
-					(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
-
-					if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
-					{
-						// There's nothing to analyze; they immediately used the symbol after the 'as'
-
-						// Before reporting an error, note common possibility that the situation could be:
-						// string y = obj as string;
-						// if (y != null && y.ToString() == @"")
-						// Ie there's nothing to analyze between the statements, but within the statement exists a check
-						if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
+						if (HasNullCheck(ifStatementSyntax.Condition))
 						{
-							if (ifStatementSyntax.Condition.ToString().Contains(@"null"))
-							{
-								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
-								return;
-							}
+							return;
 						}
-						if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
-						{
-							if (whileStatementSyntax.Condition.ToString().Contains(@"null"))
-							{
-								// There's an "if" statement with a likely null check of some kind in some order.  Don't be too picky, just let it go to minimize risk of a false positive
-								return;
-							}
-						}
-
-
-						Report(context, identifierNameSyntax);
-						return;
 					}
-
-					bool ourSymbolIsReadOrWritten = false;
-					DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
-					if (result != null)
+					
+					if(firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
 					{
-						foreach (ISymbol assignedValue in result.ReadInside)
+						if (HasNullCheck(whileStatementSyntax.Condition))
 						{
-							if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-							{
-								// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-								ourSymbolIsReadOrWritten = true;
-								break;
-							}
-						}
-
-						foreach (ISymbol assignedValue in result.WrittenInside)
-						{
-							if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-							{
-								ourSymbolIsReadOrWritten = true;
-								break;
-							}
+							return;
 						}
 					}
 
-					if (!ourSymbolIsReadOrWritten)
+					if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().Any(c => HasNullCheck(c.Condition)))
 					{
-						Report(context, identifierNameSyntax);
 						return;
 					}
+
+					Report(context, identifierNameSyntax);
+					return;
+				}
+
+				bool ourSymbolIsReadOrWritten = false;
+				DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
+				if (result != null)
+				{
+					foreach (ISymbol assignedValue in result.ReadInside)
+					{
+						if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
+						{
+							// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
+							ourSymbolIsReadOrWritten = true;
+							break;
+						}
+					}
+
+					foreach (ISymbol assignedValue in result.WrittenInside)
+					{
+						if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
+						{
+							ourSymbolIsReadOrWritten = true;
+							break;
+						}
+					}
+				}
+
+				if (!ourSymbolIsReadOrWritten)
+				{
+					Report(context, identifierNameSyntax);
 				}
 			}
 		}
@@ -245,19 +251,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	/// </summary>
 	public class SimpleMemberAccessVisitor : CSharpSyntaxWalker
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
-		public SimpleMemberAccessVisitor() : base(SyntaxWalkerDepth.Node)
-		{ }
-
 		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
 		{
 			base.VisitMemberAccessExpression(node);
@@ -265,8 +258,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		}
 
 		public List<MemberAccessExpressionSyntax> MemberAccesses { get; } = new List<MemberAccessExpressionSyntax>();
-
-		#endregion
 	}
 }
 
