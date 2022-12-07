@@ -3,6 +3,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -11,16 +12,16 @@ using Philips.CodeAnalysis.MsTestAnalyzers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestMethodNameAnalyzerTest : DiagnosticVerifier
+	public class TestMethodNameAnalyzerTest : CodeFixVerifier
 	{
 		[DataTestMethod]
-		[DataRow("Test1", true)]
+		[DataRow("TestSomething", true)]
 		[DataRow("SomeTest", false)]
-		[DataRow("Check1", false)]
+		[DataRow("CheckSomething", false)]
 		[DataRow("SomeCheck", false)]
-		[DataRow("Ensure1", true)]
+		[DataRow("EnsureSomething", true)]
 		[DataRow("SomethingToEnsure", false)]
-		[DataRow("Verify1", true)]
+		[DataRow("VerifySomething", true)]
 		[DataRow("SomethingToVerify", false)]
 		public void AreEqualTypesMatchTest(string name, bool isError)
 		{
@@ -39,6 +40,7 @@ namespace TestMethodNameAnalyzerTest
 
 			string givenText = string.Format(baseline, name);
 			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, GetPrefix(name));
+			string fixedText = string.Format(baseline, FixName(name));
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{
@@ -52,11 +54,17 @@ namespace TestMethodNameAnalyzerTest
 			}};
 
 			VerifyCSharpDiagnostic(givenText, "Test0", (isError) ? expected : Array.Empty<DiagnosticResult>());
+			VerifyCSharpFix(givenText, fixedText);
 		}
 		
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new TestMethodNameAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new TestMethodNameCodeFixProvider();
 		}
 
 		private string GetPrefix(string name)
@@ -75,6 +83,12 @@ namespace TestMethodNameAnalyzerTest
 			}
 
 			return prefix;
+		}
+
+		private string FixName(string name)
+		{
+			string prefix = GetPrefix(name);
+			return string.IsNullOrEmpty(prefix) ? name : name.Replace(prefix, "") + "Test";
 		}
 	}
 }

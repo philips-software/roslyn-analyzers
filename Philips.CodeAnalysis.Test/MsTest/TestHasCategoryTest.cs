@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -10,7 +11,7 @@ using Philips.CodeAnalysis.MsTestAnalyzers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestHasCategoryTest : DiagnosticVerifier
+	public class TestHasCategoryTest : CodeFixVerifier
 	{
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
@@ -99,13 +100,46 @@ class Foo
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
-  [TestMethod, TestCategory(""blah""]
+  [TestMethod, TestCategory(""blah"")]
   public void {0}()
   {{
   }}
 }}
 ";
 			VerifyError(baseline, testName, isError);
+		}
+
+		[TestMethod]
+		public void FixAddsCategoryAttributeTest()
+		{
+			string baseline = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+class TestDefinitions {
+    public const string UnitTests = ""UnitTests"";
+}
+class Foo 
+{
+    [TestMethod]
+    public void TestMethod1()
+    {
+    }
+}
+";
+			string fixedText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+class TestDefinitions {
+    public const string UnitTests = ""UnitTests"";
+}
+class Foo 
+{
+    [TestMethod]
+    [TestCategory(TestDefinitions.UnitTests)]
+    public void TestMethod1()
+    {
+    }
+}
+";
+			VerifyCSharpFix(baseline, fixedText);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError)
@@ -137,6 +171,11 @@ class Foo
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new TestHasCategoryAttributeAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new TestHasCategoryCodeFixProvider();
 		}
 
 		protected override (string name, string content)[] GetAdditionalTexts()

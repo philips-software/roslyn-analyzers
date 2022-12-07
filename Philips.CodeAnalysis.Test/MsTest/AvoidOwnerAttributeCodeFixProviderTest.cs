@@ -6,69 +6,65 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.MsTestAnalyzers;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
+namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class AvoidThreadSleepTest : CodeFixVerifier
+	public class AvoidOwnerAttributeCodeFixProviderTest : CodeFixVerifier
 	{
-
 		[DataTestMethod]
-		[DataRow(@"Thread.Sleep(200);", 5)]
-		public void ThreadSleepNotAvoidedTest(string test, int expectedColumn)
+		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
+		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
+		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
 [TestClass]
 class Foo 
 {{
-  public void Foo()
+  {0}public void Foo()
   {{
-    {0}
   }}
 }}
 ";
 
 			string fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
 [TestClass]
 class Foo 
 {
-  public void Foo()
+  [TestMethod]public void Foo()
   {
   }
 }
 ";
+			
 			string givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep),
-				Message = new Regex(AvoidThreadSleepAnalyzer.MessageFormat),
+				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidOwnerAttribute),
+				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
-					new DiagnosticResultLocation("Test0.cs", 9, expectedColumn)
+					new DiagnosticResultLocation("Test0.cs", 6, expectedColumn)
 				}
 			};
 
 			VerifyCSharpDiagnostic(givenText, expected);
-
-			VerifyCSharpFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
+			VerifyCSharpFix(givenText, fixedText);
 		}
-
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidThreadSleepAnalyzer();
+			return new AvoidAttributeAnalyzer();
 		}
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
-			return new AvoidThreadSleepCodeFixProvider();
+			return new AvoidOwnerAttributeCodeFixProvider();
 		}
 	}
 }
