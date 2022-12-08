@@ -31,7 +31,7 @@ class TestDefinitions
 }";
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions() => new Dictionary<string, string>()
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions() => new()
 		{
 			{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
 			{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },

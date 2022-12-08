@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var chain = ConstructorSyntaxHelper.GetCtorChain(mapping, ctor);
 
-				if (!IsInitializeComponentInConstructorChainOnce(context, chain, out int count))
+				if (!IsInitializeComponentInConstructorChainOnce(chain, out int count))
 				{
 					Location location;
 					if (ctor.Initializer == null)
@@ -67,37 +67,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		/// <summary>
-		/// IsInitializeComponentInConstructorChainOnce
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="chain"></param>
-		/// <param name="count"></param>
-		/// <returns></returns>
-		private bool IsInitializeComponentInConstructorChainOnce(SyntaxNodeAnalysisContext context, List<ConstructorDeclarationSyntax> chain, out int count)
+		private bool IsInitializeComponentInConstructorChainOnce(List<ConstructorDeclarationSyntax> chain, out int count)
 		{
 			count = 0;
 			foreach (var ctor in chain)
 			{
-				count += IsInitializeComponentInConstructor(context, ctor);
+				count += IsInitializeComponentInConstructor(ctor);
 			}
 
 			return count == 1;
 		}
 
-		/// <summary>
-		/// IsInitializeComponentInConstructor
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="constructor"></param>
-		/// <returns></returns>
-		private int IsInitializeComponentInConstructor(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax constructor)
+		private int IsInitializeComponentInConstructor(ConstructorDeclarationSyntax constructor)
 		{
 			int count = 0;
 			foreach (InvocationExpressionSyntax invocation in constructor.DescendantNodes().OfType<InvocationExpressionSyntax>())
 			{
-				IdentifierNameSyntax name = invocation.Expression as IdentifierNameSyntax;
-				if (name == null)
+				if (invocation.Expression is not IdentifierNameSyntax name)
 				{
 					continue;
 				}

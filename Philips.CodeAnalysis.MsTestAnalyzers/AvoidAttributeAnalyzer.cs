@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public const string AvoidAttributesWhitelist = @"AvoidAttributesWhitelist.txt";
 
-		private static ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
+		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
 
 		public static ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
 
@@ -38,10 +38,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						continue;
 					}
 
-					if (whitelist == null)
-					{
-						whitelist = PopulateWhitelist(startContext.Options);
-					}
+					whitelist ??= PopulateWhitelist(startContext.Options);
 
 					startContext.RegisterSyntaxNodeAction((c) => Analyze(kvp.Value, c, whitelist), SyntaxKind.AttributeList);
 				}

@@ -39,7 +39,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidIgnoreAttribute),
 				Message = new Regex(".*"),
@@ -72,7 +72,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidOwnerAttribute),
 				Message = new Regex(".*"),
@@ -102,7 +102,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTestInitializeMethod),
 				Message = new Regex(".*"),
@@ -133,7 +133,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTestCleanupMethod),
 				Message = new Regex(".*"),
@@ -164,7 +164,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidClassInitializeMethod),
 				Message = new Regex(".*"),
@@ -195,7 +195,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidClassCleanupMethod),
 				Message = new Regex(".*"),

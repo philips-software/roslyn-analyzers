@@ -167,36 +167,6 @@ class ContainerControl
 ";
 		}
 
-		/// <summary>
-		/// CreateCodeWithDesignerClass
-		/// </summary>
-		/// <returns></returns>
-		private string CreateCodeWithDesignerClass()
-		{
-			return @"
-namespace System.Windows.Forms
-{{
-class ContainerControl {{ }}
-}}
-
-using System.Windows.Forms;
-
-partial class Foo : ContainerControl
-{{
-  static Foo()
-  {{
-	InitializeComponent();
-  }}
-}}
-class ContainerControl 
-{{
-  public ContainerControl()
-  {{
-	InitializeComponent();
-  }}
-}}
-";
-		}
 
 
 		private DiagnosticResult GetDiagnosticResult(int row, int col)

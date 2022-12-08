@@ -101,7 +101,7 @@ namespace ComplexConditionUnitTests {
 		{
 			var key =
 				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ key, ConfiguredMaxOperators.ToString() }
 			};

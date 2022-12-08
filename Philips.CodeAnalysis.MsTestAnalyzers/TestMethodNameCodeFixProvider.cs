@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				name = name.Replace(@"Verify", @"");
 			}
 
-			name = name + @"Test";
+			name += @"Test";
 
 			// Get the symbol representing the type to be renamed.
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken);

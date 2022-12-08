@@ -18,8 +18,8 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public static Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
-			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new Dictionary<ConstructorDeclarationSyntax, ISymbol>();
-			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new Dictionary<ISymbol, ConstructorDeclarationSyntax>();
+			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();
+			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new();
 
 			foreach (var ctor in constructors)
 			{
@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.Common
 				}
 			}
 
-			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> result = new Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax>();
+			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> result = new();
 			foreach (var ctor in constructors)
 			{
 				if (deferredCtor.TryGetValue(ctor, out var otherCtor))
@@ -56,9 +56,9 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public static List<ConstructorDeclarationSyntax> GetCtorChain(Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
 		{
-			List<ConstructorDeclarationSyntax> chain = new List<ConstructorDeclarationSyntax>() { ctor };
+			List<ConstructorDeclarationSyntax> chain = new() { ctor };
 
-			HashSet<ConstructorDeclarationSyntax> seenConstructors = new HashSet<ConstructorDeclarationSyntax>();
+			HashSet<ConstructorDeclarationSyntax> seenConstructors = new();
 			while (true)
 			{
 				if (!mapping.TryGetValue(ctor, out ctor))

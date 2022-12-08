@@ -14,11 +14,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	{
 		#region Non-Public Data Members
 
-		private const string ExpectedFixedHeader = @"#region Header
-// ©
-#endregion
-";
-
 		#endregion
 
 		#region Non-Public Properties/Methods
@@ -32,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent) }.company_name", configuredCompanyName  }
 			};

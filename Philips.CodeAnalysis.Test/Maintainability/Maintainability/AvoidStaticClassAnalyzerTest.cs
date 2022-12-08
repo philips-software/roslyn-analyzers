@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidStaticClassAnalyzerTest2 : AvoidStaticClassAnalyzerTest
 	{
-		private Mock<AvoidStaticClassesAnalyzer> _mock = new Mock<AvoidStaticClassesAnalyzer>() { CallBase = true };
+		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
@@ -23,8 +23,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		public void AvoidStaticClassesShouldWhitelistTest()
 		{
-			HashSet<string> exceptions = new HashSet<string>();
-			exceptions.Add(KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName);
+			HashSet<string> exceptions = new()
+			{
+				KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName
+			};
 			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
 			VerifyNoDiagnostic(CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName));
 		}

@@ -131,7 +131,7 @@ public class Program {
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.LogException) }.log_method_names", configuredLogMethods }
 			};

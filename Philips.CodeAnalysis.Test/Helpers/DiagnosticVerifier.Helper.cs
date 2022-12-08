@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test
 
 		private class TestAdditionalText : AdditionalText
 		{
-			private SourceText _sourceText;
+			private readonly SourceText _sourceText;
 
 			public override string Path { get; }
 
@@ -136,14 +136,14 @@ namespace Philips.CodeAnalysis.Test
 
 				var modified = compilation.WithOptions(compilation.Options.WithSpecificDiagnosticOptions(specificOptions));
 
-				List<AdditionalText> additionalTextsBuilder = new List<AdditionalText>();
+				List<AdditionalText> additionalTextsBuilder = new();
 				foreach (var (name, content) in GetAdditionalTexts())
 				{
 					additionalTextsBuilder.Add(new TestAdditionalText(name, SourceText.From(content)));
 				}
 
 				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(GetAdditionalAnalyzerConfigOptions());
-				AnalyzerOptions analyzerOptions = new AnalyzerOptions(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
+				AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
 
 				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
@@ -246,7 +246,7 @@ namespace Philips.CodeAnalysis.Test
 		private Project CreateProject(string[] sources, string fileNamePrefix = null, string language = LanguageNames.CSharp)
 		{
 			bool isCustomPrefix = fileNamePrefix != null;
-			fileNamePrefix = fileNamePrefix ?? DefaultFilePathPrefix;
+			fileNamePrefix ??= DefaultFilePathPrefix;
 			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);

@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Do not unnecessarily mark methods as static.";
 		private const string Category = Categories.Maintainability;
 
-		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -32,8 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
-			if (methodDeclarationSyntax == null)
+			if (context.Node is not MethodDeclarationSyntax methodDeclarationSyntax)
 			{
 				return;
 			}

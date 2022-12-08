@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private const string TryParseMethodName = @"TryParse";
-		private static readonly HashSet<string> _cultureParameterTypes = new HashSet<string>()
+		private static readonly HashSet<string> _cultureParameterTypes = new()
 		{
 			@"IFormatProvider",
 			@"CultureInfo"
@@ -41,22 +41,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Ignore any methods not named TryParse.
-			MemberAccessExpressionSyntax memberAccessExpressionSyntax = invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax;
-			if (memberAccessExpressionSyntax == null || memberAccessExpressionSyntax.Name.ToString() != TryParseMethodName)
+			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax || memberAccessExpressionSyntax.Name.ToString() != TryParseMethodName)
 			{
 				return;
 			}
 
 			// If the invoked method contains an IFormatProvider parameter, stop analyzing.
-			IMethodSymbol invokedMethod = context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol as IMethodSymbol;
-			if (invokedMethod == null || HasCultureParameter(invokedMethod))
+			if (context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol is not IMethodSymbol invokedMethod || HasCultureParameter(invokedMethod))
 			{
 				return;
 			}
 
 			// Only display an error if the class implements an overload of TryParse that accepts IFormatProvider.
-			IMethodSymbol methodSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol as IMethodSymbol;
-			if (methodSymbol == null)
+			if (context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol is not IMethodSymbol methodSymbol)
 			{
 				return;
 			}
@@ -66,8 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			foreach (ISymbol member in tryParseOverloads)
 			{
-				IMethodSymbol method = member as IMethodSymbol;
-				if (method != null && HasCultureParameter(method))
+				if (member is IMethodSymbol method && HasCultureParameter(method))
 				{
 					// There is an overload that can accept culture as a parameter. Display an error.
 					Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
@@ -94,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		#region Public Interface
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

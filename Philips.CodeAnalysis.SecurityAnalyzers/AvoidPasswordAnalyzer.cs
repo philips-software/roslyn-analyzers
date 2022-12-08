@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
 		private const string Category = Categories.Security;
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(
+		public static DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
 			Title, MessageFormat, Category, 
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
@@ -39,24 +39,21 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			PropertyDeclarationSyntax propertyDeclarationSyntax = context.Node as PropertyDeclarationSyntax;
-			if (propertyDeclarationSyntax != null)
+			if (context.Node is PropertyDeclarationSyntax propertyDeclarationSyntax)
 				Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
 					propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
-			MethodDeclarationSyntax methodDeclarationSyntax = context.Node as MethodDeclarationSyntax;
-			if (methodDeclarationSyntax != null)
+			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 				Diagnose(methodDeclarationSyntax.Identifier.ValueText,
 					methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 		}
 
 		private void AnalyzeFields(SyntaxNodeAnalysisContext context)
 		{
-			FieldDeclarationSyntax fieldDeclarationSyntax = context.Node as FieldDeclarationSyntax;
-			if (fieldDeclarationSyntax != null)
+			if (context.Node is FieldDeclarationSyntax fieldDeclarationSyntax)
 				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
 				{
 					Diagnose(variable.Identifier.ValueText,

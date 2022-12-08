@@ -24,8 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string CatchBlockDescription = @"Avoid empty catch blocks";
 
 
-		public DiagnosticDescriptor StatementRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		public DiagnosticDescriptor CatchRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
+		public DiagnosticDescriptor StatementRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor CatchRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(StatementRule, CatchRule); } }
 		public override void Initialize(AnalysisContext context)

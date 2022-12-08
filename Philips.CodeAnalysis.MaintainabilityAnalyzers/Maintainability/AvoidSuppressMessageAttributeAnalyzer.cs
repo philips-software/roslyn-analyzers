@@ -37,10 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (startContext.Compilation.GetTypeByMetadataName(attribute.FullName) != null)
 				{
 
-					if (whitelist == null)
-					{
-						whitelist = PopulateWhitelist(startContext.Options);
-					}
+					whitelist ??= PopulateWhitelist(startContext.Options);
 
 					startContext.RegisterSyntaxNodeAction(
 						(c) => Analyze(c, whitelist),

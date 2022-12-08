@@ -64,8 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			bool isFirstArgumentNull = false;
 			bool isFirstArgumentConstant = false;
 			ArgumentListSyntax argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
-			LiteralExpressionSyntax arg0Literal = argumentList.Arguments[0].Expression as LiteralExpressionSyntax;
-			if (arg0Literal != null)
+			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
 				Optional<object> literalValue = semanticModel.GetConstantValue(arg0Literal);
 				isFirstArgumentNull = literalValue.Value == null;
@@ -78,8 +77,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			bool isSecondArgumentNull = false;
 			bool isSecondArgumentConstant = false;
-			LiteralExpressionSyntax arg1Literal = argumentList.Arguments[1].Expression as LiteralExpressionSyntax;
-			if (arg1Literal != null)
+			if (argumentList.Arguments[1].Expression is LiteralExpressionSyntax arg1Literal)
 			{
 				Optional<object> literalValue = semanticModel.GetConstantValue(arg1Literal);
 				isSecondArgumentNull = literalValue.Value == null;

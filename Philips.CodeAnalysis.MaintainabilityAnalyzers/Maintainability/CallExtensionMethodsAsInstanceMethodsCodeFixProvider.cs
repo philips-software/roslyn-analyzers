@@ -37,13 +37,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => AdjustCallingMechanism(context.Document, token, c),
+						createChangedDocument: c => AdjustCallingMechanism(context.Document, token),
 						equivalenceKey: Title),
 					diagnostic);
 			}
 		}
 
-		private async Task<Document> AdjustCallingMechanism(Document document, SyntaxToken token, CancellationToken c)
+		private async Task<Document> AdjustCallingMechanism(Document document, SyntaxToken token)
 		{
 			InvocationExpressionSyntax invocation = token.Parent.Ancestors().OfType<InvocationExpressionSyntax>().First();
 

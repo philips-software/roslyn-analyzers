@@ -27,8 +27,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}}
 			";
 
-		private const string configuredPrefix = @"Philips.iX";
-
 		#endregion
 
 		#region Non-Public Properties/Methods
@@ -52,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 
 			string code = string.Format(ClassString, "");
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix),
 				Message = new Regex(".+ "),

@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public static MsTestAttributeDefinitions FromCompilation(Compilation compilation)
 		{
-			MsTestAttributeDefinitions definitions = new MsTestAttributeDefinitions()
+			MsTestAttributeDefinitions definitions = new()
 			{
 				TestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestMethodAttribute.FullName),
 				DataTestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DataTestMethodAttribute.FullName),
@@ -109,12 +109,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			if (symbol is null || !(symbol is IMethodSymbol methodSymbol))
+			if (symbol is null || symbol is not IMethodSymbol methodSymbol)
 			{
 				return;
 			}
 
-			HashSet<INamedTypeSymbol> presentAttributes = new HashSet<INamedTypeSymbol>();
+			HashSet<INamedTypeSymbol> presentAttributes = new();
 			foreach (AttributeData attribute in methodSymbol.GetAttributes())
 			{
 				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))

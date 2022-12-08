@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.Test
 			SyntaxNode syntaxNode = document.GetSyntaxRootAsync().Result;
 			if (syntaxNode != null)
 			{
-				var vv = syntaxNode.GetText().ToString();
+				_ = syntaxNode.GetText().ToString();
 			}
 
 			var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;

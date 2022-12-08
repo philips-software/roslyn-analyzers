@@ -24,14 +24,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string Category = Categories.Maintainability;
 
-		private readonly Regex _formatRegex = new Regex(@"^\{\d+\}$", RegexOptions.Compiled);
+		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
 
 		#endregion
 
 		#region Non-Public Properties/Methods
 
-		private static DiagnosticDescriptor NestedRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
-		private static DiagnosticDescriptor UnnecessaryRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
+		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
+		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
 
 		private void Analyze(CompilationStartAnalysisContext context)
 		{
@@ -54,10 +54,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var onlyInterpolation = interpolation.Parts[0];
 
 			if (
-				!(onlyInterpolation is IInterpolatedStringTextOperation) && 
+				onlyInterpolation is not IInterpolatedStringTextOperation && 
 				onlyInterpolation is IInterpolationOperation interpolationOperation)
 			{
-				if (!(interpolationOperation.FormatString is null))
+				if (interpolationOperation.FormatString is not null)
 				{
 					//has a format, ignore
 					return;

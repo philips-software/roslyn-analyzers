@@ -46,7 +46,7 @@ AllowedMethodName
 		{
 			public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 
-			private readonly AllowedSymbols _allowedSymbols = new AllowedSymbols();
+			private readonly AllowedSymbols _allowedSymbols = new();
 
 			public override void Initialize(AnalysisContext context)
 			{
@@ -80,7 +80,7 @@ AllowedMethodName
 			}
 
 			public static DiagnosticDescriptor Rule => 
-				new DiagnosticDescriptor("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
+				new("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
 
 			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create<DiagnosticDescriptor>(Rule);
 		}

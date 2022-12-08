@@ -19,11 +19,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange) + 
 			".assembly_version in EditorConfig.";
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidExpectedVersionTitle = @"The assembly_version specified in the EditorConfig is invalid.";
 		private const string InvalidExpectedVersionMessage = @"The assembly_version {0} specified in the EditorConfig is invalid.";
-		private static DiagnosticDescriptor InvalidExpectedVersionRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), InvalidExpectedVersionTitle,
+		private static readonly DiagnosticDescriptor InvalidExpectedVersionRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange), InvalidExpectedVersionTitle,
 			InvalidExpectedVersionMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidExpectedVersionRule); } }
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static void Analyze(CompilationAnalysisContext context)
 		{
-			Version expectedVersion = new Version(@"1.0.0.0");
+			Version expectedVersion = new(@"1.0.0.0");
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
 			string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))

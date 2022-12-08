@@ -49,7 +49,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(Common.DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyCSharpDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(Common.DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyCSharpDiagnostic(testCode);
 		}
 
 
@@ -76,7 +76,7 @@ namespace ComplexConditionUnitTests {
 		{
 			var key =
 				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ key, "not a number" }
 			};

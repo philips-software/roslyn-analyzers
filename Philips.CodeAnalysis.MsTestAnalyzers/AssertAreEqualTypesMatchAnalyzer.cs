@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"The types of the parameters of Are[Not]Equal must match.";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualTypesMatch), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualTypesMatch), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -38,14 +38,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var mds = context.Node as InvocationExpressionSyntax;
-			if (mds == null)
+			if (context.Node is not InvocationExpressionSyntax mds)
 			{
 				return;
 			}
 
-			MemberAccessExpressionSyntax maes = mds.Expression as MemberAccessExpressionSyntax;
-			if (maes == null)
+			if (mds.Expression is not MemberAccessExpressionSyntax maes)
 			{
 				return;
 			}
@@ -56,8 +54,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(maes).Symbol as IMethodSymbol;
-			if ((memberSymbol == null) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
 			{
 				return;
 			}
