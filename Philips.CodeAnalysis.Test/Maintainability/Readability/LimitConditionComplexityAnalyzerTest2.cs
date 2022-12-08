@@ -49,7 +49,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(Common.DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyCSharpDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(Common.DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyCSharpDiagnostic(testCode, expected);
 		}
 
 
