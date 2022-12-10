@@ -65,11 +65,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			if (context.Node is not ClassDeclarationSyntax classDeclarationSyntax)
 			{
 				return;
@@ -108,6 +103,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					return;
 				}
+			}
+
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
+			{
+				return;
 			}
 
 			if (_generateExceptionsFile)

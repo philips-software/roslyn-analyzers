@@ -52,9 +52,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeTernary, SyntaxKind.ConditionalExpression);
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context) {
-			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath)) {
+		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
+		{
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
+			{
 				return;
 			}
 
@@ -64,11 +66,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeTernary(SyntaxNodeAnalysisContext context)
 		{
-			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
+
 			var condition = ((ConditionalExpressionSyntax)context.Node).Condition;
 			CheckDescendantHasNoAssignment(context, condition);
 		}

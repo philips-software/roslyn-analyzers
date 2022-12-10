@@ -1,19 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet />
-  </PropertyGroup>
-
+  
   <ItemGroup>
     <Compile Include="..\Philips.CodeAnalysis.Common\AdditionalFilesHelper.cs" Link="Common\AdditionalFilesHelper.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\AllowedSymbols.cs" Link="Common\AllowedSymbols.cs" />
@@ -40,9 +33,4 @@
     <ProjectReference Include="..\Philips.CodeAnalysis.MsTestAnalyzers\Philips.CodeAnalysis.MsTestAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.SecurityAnalyzers\Philips.CodeAnalysis.SecurityAnalyzers.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
-
 </Project>

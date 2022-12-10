@@ -31,11 +31,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)context.Node;
 
 			// ignore struct
@@ -55,11 +50,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					return;
 				}
+
+				GeneratedCodeDetector generatedCodeDetector = new();
+				if (generatedCodeDetector.IsGeneratedCode(context))
+				{
+					return;
+				}
+
 				Diagnostic diagnostic = Diagnostic.Create(Rule, fieldDeclaration.GetLocation());
 				context.ReportDiagnostic(diagnostic);
-
 			}
 		}
-
 	}
 }

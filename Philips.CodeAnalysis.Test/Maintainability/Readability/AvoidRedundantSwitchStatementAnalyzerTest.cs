@@ -1,29 +1,31 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.CodeAnalysis;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using System.CodeDom.Compiler;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer();
 		}
 
-		#endregion
-
-		#region Public Interface
+		
+		protected override MetadataReference[] GetMetadataReferences()
+		{
+			string referenceLocation = typeof(GeneratedCodeAttribute).Assembly.Location;
+			MetadataReference reference = MetadataReference.CreateFromFile(referenceLocation);
+			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+		}
 
 		[DataRow("byte")]
 		[DataRow("int")]
@@ -48,6 +50,30 @@ public static class Foo
 
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
+
+		[TestMethod]
+		public void SwitchWithGeneratedCodeIsIgnored()
+		{
+			//System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)
+			string input = @"
+public static class Foo
+{
+  [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
+  public static void Method(int data)
+  {
+    switch(data)
+    {
+      default:
+        System.Console.WriteLine(data);
+        break;
+    }
+  }
+}
+";
+
+			VerifyCSharpDiagnostic(input);
+		}
+
 
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
@@ -146,6 +172,5 @@ public static class Foo
 			VerifyCSharpDiagnostic(input);
 		}
 
-		#endregion
 	}
 }

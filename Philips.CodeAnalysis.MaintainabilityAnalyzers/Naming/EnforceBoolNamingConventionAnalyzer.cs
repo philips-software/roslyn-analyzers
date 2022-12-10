@@ -55,11 +55,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			ForEachStatementSyntax foreachStatement = (ForEachStatementSyntax)context.Node;
 			if (!IsTypeBool(foreachStatement.Type, context.SemanticModel))
 			{
@@ -73,13 +68,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			Diagnostic diagnostic = Diagnostic.Create(Rules[0], foreachStatement.Identifier.GetLocation(), foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
 		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -149,7 +151,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeParameter(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -179,7 +182,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}

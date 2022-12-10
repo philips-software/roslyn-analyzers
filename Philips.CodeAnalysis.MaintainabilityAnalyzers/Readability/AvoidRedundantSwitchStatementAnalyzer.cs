@@ -12,6 +12,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidRedundantSwitchStatementAnalyzer : DiagnosticAnalyzer
 	{
+		private readonly GeneratedCodeDetector _generatedCodeDetector;
+
+		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeDetector generatedCodeDetector)
+		{
+			_generatedCodeDetector = generatedCodeDetector;
+		}
+		public AvoidRedundantSwitchStatementAnalyzer()
+			: this(new GeneratedCodeDetector())
+		{ }
+
 		private const string Title = @"Do not use redundant switch statements";
 		private const string MessageFormat = @"Switch statement only has a default case.  Remove the switch statement and just use the default case code.";
 		private const string Description = @"Elide the switch statement";
@@ -23,16 +33,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterOperationAction(Analyze, OperationKind.Switch);
 			context.RegisterOperationAction(AnalyzeExpression, OperationKind.SwitchExpression);
 		}
 
-		private void Analyze(OperationAnalysisContext obj)
+		private void Analyze(OperationAnalysisContext operationContext)
 		{
-			ISwitchOperation operation = (ISwitchOperation)obj.Operation;
-
+			ISwitchOperation operation = (ISwitchOperation)operationContext.Operation;
 			if (operation.Cases.Length != 1)
 			{
 				return;
@@ -40,15 +49,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			ISwitchCaseOperation caseOperation = operation.Cases[0];
 
-			if (caseOperation.Clauses.Any(x => x.Label?.Name == "default"))
+			if (!caseOperation.Clauses.Any(x => x.Label?.Name == "default"))
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, operation.Cases[0].Syntax.GetLocation()));
 				return;
 			}
+
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			{
+				return;
+			}
+
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Cases[0].Syntax.GetLocation()));
 		}
-		private void AnalyzeExpression(OperationAnalysisContext obj)
+		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
-			ISwitchExpressionOperation operation = (ISwitchExpressionOperation)obj.Operation;
+			ISwitchExpressionOperation operation = (ISwitchExpressionOperation)operationContext.Operation;
 
 			if (operation.Arms.Length != 1)
 			{
@@ -57,11 +73,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			ISwitchExpressionArmOperation caseOperation = operation.Arms[0];
 
-			if (caseOperation.Pattern.Kind == OperationKind.DiscardPattern)
+			if (caseOperation.Pattern.Kind != OperationKind.DiscardPattern)
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, operation.Arms[0].Syntax.GetLocation()));
 				return;
 			}
+
+			if (_generatedCodeDetector.IsGeneratedCode(operationContext))
+			{
+				return;
+			}
+
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Arms[0].Syntax.GetLocation()));
 		}
 	}
 }

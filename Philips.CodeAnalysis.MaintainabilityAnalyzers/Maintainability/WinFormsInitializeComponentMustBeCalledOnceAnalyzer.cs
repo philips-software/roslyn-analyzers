@@ -111,11 +111,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			// If we're in a TestClass, let it go.
 			if (Helper.IsInTestClass(context))
 			{
@@ -125,6 +120,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// If we're not within a Control/Form, let it go.
 			INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
 			if (!Helper.IsUserControl(type))
+			{
+				return;
+			}
+
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}

@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -30,6 +31,7 @@ namespace Philips.CodeAnalysis.Test
 		private static readonly MetadataReference CodeAnalysisReference = MetadataReference.CreateFromFile(typeof(Compilation).Assembly.Location);
 		private static readonly MetadataReference UnitTestingReference = MetadataReference.CreateFromFile(typeof(DescriptionAttribute).Assembly.Location);
 		private static readonly MetadataReference ThreadingReference = MetadataReference.CreateFromFile(typeof(Thread).Assembly.Location);
+		private static readonly MetadataReference GeneratedCodeReference = MetadataReference.CreateFromFile(typeof(GeneratedCodeAttribute).Assembly.Location);
 
 		internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
@@ -259,6 +261,7 @@ namespace Philips.CodeAnalysis.Test
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
 				.AddMetadataReference(projectId, CodeAnalysisReference)
 				.AddMetadataReference(projectId, UnitTestingReference)
+				.AddMetadataReference(projectId, GeneratedCodeReference)
 				.AddMetadataReference(projectId, ThreadingReference);
 
 			foreach (MetadataReference testReferences in GetMetadataReferences())

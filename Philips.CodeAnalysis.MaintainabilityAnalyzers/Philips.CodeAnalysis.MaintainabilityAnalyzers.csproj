@@ -93,6 +93,7 @@
     <Compile Include="..\Philips.CodeAnalysis.Common\Categories.cs" Link="Common\Categories.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\ConstructorSyntaxHelper.cs" Link="Common\ConstructorSyntaxHelper.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\DiagnosticIds.cs" Link="Common\DiagnosticIds.cs" />
+    <Compile Include="..\Philips.CodeAnalysis.Common\GeneratedCodeDetector.cs" Link="Common\GeneratedCodeDetector.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\Helper.cs" Link="Common\Helper.cs" />
     <Compile Include="..\Philips.CodeAnalysis.Common\MsTestFrameworkDefinitions.cs" Link="Common\MsTestFrameworkDefinitions.cs" />
   </ItemGroup>
@@ -111,10 +112,6 @@
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
   </ItemGroup>
 
 </Project>
