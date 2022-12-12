@@ -51,30 +51,6 @@ public static class Foo
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
-		[TestMethod]
-		public void SwitchWithGeneratedCodeIsIgnored()
-		{
-			//System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)
-			string input = @"
-public static class Foo
-{
-  [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
-  public static void Method(int data)
-  {
-    switch(data)
-    {
-      default:
-        System.Console.WriteLine(data);
-        break;
-    }
-  }
-}
-";
-
-			VerifyCSharpDiagnostic(input);
-		}
-
-
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]

@@ -72,16 +72,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			foreach (AttributeModel attribute in attributes)
 			{
-				if (!Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
+				if (!Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) || Helper.IsGeneratedCode(context))
 				{
 					continue;
 				}

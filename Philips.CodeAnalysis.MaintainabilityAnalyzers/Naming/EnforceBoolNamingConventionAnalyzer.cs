@@ -55,6 +55,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
 		{
+			if (Helper.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			ForEachStatementSyntax foreachStatement = (ForEachStatementSyntax)context.Node;
 			if (!IsTypeBool(foreachStatement.Type, context.SemanticModel))
 			{
@@ -64,11 +69,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			Regex validator = _localRegex;
 
 			if (IsNameValid(validator, foreachStatement.Identifier))
-			{
-				return;
-			}
-
-			if (Helper.IsGeneratedCode(context))
 			{
 				return;
 			}

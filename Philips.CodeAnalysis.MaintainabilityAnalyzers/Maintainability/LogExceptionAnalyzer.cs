@@ -90,9 +90,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var catchNode = (CatchClauseSyntax)context.Node;
 				// Look for logging method calls underneath this node.
 				var hasCallingLogNodes = catchNode.DescendantNodes()
-					.OfType<InvocationExpressionSyntax>().Any(x => IsCallingLogMethod(x));
+					.OfType<InvocationExpressionSyntax>()
+					.Any(x => IsCallingLogMethod(x));
 				// If another exception is thrown, logging is not required.
-				var hasThrowNodes = catchNode.DescendantNodes().OfType<ThrowStatementSyntax>().Any();
+				var hasThrowNodes = catchNode.DescendantNodes()
+					.OfType<ThrowStatementSyntax>()
+					.Any();
 				if (!hasCallingLogNodes && !hasThrowNodes)
 				{
 					var location = catchNode.CatchKeyword.GetLocation();

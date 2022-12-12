@@ -674,7 +674,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			(var components, var hash) = _hashCalculator.ToComponentHashes();
 
-			Evidence e = new(MakeFullLocationEnvelope(firstToken, token), components, hash);
+			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
+			Evidence e = new(locationEnvelope, components, hash);
 
 			return (_hashCalculator.HashCode, e);
 		}

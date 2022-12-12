@@ -54,7 +54,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			var filePath = context.Node.SyntaxTree.FilePath;
+			if (Helper.IsGeneratedCode(filePath))
 			{
 				return;
 			}
@@ -65,7 +66,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeTernary(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			var filePath = context.Node.SyntaxTree.FilePath;
+			if (Helper.IsGeneratedCode(filePath))
 			{
 				return;
 			}

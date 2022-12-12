@@ -73,15 +73,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			if (Helper.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			if (
 				Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
+				!Helper.IsGeneratedCode(context) && 
 				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id)) 
 			{
 				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);

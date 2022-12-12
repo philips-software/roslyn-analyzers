@@ -31,6 +31,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
+			if (Helper.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)context.Node;
 
 			// ignore struct
@@ -47,11 +52,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 				// ignore the static
 				if (fieldDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
-				{
-					return;
-				}
-
-				if (Helper.IsGeneratedCode(context))
 				{
 					return;
 				}
