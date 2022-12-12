@@ -72,8 +72,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (Helper.IsGeneratedCode(context))
 			{
 				return;
 			}

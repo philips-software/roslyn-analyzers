@@ -12,16 +12,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidRedundantSwitchStatementAnalyzer : DiagnosticAnalyzer
 	{
-		private readonly GeneratedCodeDetector _generatedCodeDetector;
-
-		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeDetector generatedCodeDetector)
-		{
-			_generatedCodeDetector = generatedCodeDetector;
-		}
-		public AvoidRedundantSwitchStatementAnalyzer()
-			: this(new GeneratedCodeDetector())
-		{ }
-
 		private const string Title = @"Do not use redundant switch statements";
 		private const string MessageFormat = @"Switch statement only has a default case.  Remove the switch statement and just use the default case code.";
 		private const string Description = @"Elide the switch statement";
@@ -54,12 +44,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(operationContext))
-			{
-				return;
-			}
-
 			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Cases[0].Syntax.GetLocation()));
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
@@ -74,11 +58,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			ISwitchExpressionArmOperation caseOperation = operation.Arms[0];
 
 			if (caseOperation.Pattern.Kind != OperationKind.DiscardPattern)
-			{
-				return;
-			}
-
-			if (_generatedCodeDetector.IsGeneratedCode(operationContext))
 			{
 				return;
 			}
