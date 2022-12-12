@@ -3,7 +3,7 @@
 namespace Philips.CodeAnalysis.Common
 {
 
-	internal enum DiagnosticIds
+	public enum DiagnosticIds
 	{
 		TestMethodName = 2000,
 		EmptyXmlComments = 2001,

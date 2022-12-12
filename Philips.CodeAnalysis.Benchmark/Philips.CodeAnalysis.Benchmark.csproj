@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Philips.CodeAnalysis.Common\Philips.CodeAnalysis.Common.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.DuplicateCodeAnalyzer\Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj" />
   </ItemGroup>
 

@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <summary>
 	/// Keep track of allowed symbols and provide ability to check requested symbols.
 	/// </summary>
-	internal class AllowedSymbols
+	public class AllowedSymbols
 	{
 		private readonly HashSet<IMethodSymbol> _allowedMethods;
 		private readonly HashSet<ITypeSymbol> _allowedTypes;

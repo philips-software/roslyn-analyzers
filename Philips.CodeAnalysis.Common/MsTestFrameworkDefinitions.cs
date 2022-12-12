@@ -2,7 +2,7 @@
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal static class MsTestFrameworkDefinitions
+	public static class MsTestFrameworkDefinitions
 	{
 		public static AttributeDefinition TestClassAttribute => new MsTestAttributeDefinition("TestClass");
 		public static AttributeDefinition TestInitializeAttribute => new MsTestAttributeDefinition("TestInitialize");
