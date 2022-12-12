@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal static class Helper
+	public static class Helper
 	{
 		public static string ToDiagnosticId(DiagnosticIds id)
 		{

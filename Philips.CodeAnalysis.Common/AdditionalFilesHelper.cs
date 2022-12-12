@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal class AdditionalFilesHelper
+	public class AdditionalFilesHelper
 	{
 		private readonly ImmutableArray<AdditionalText> _additionalFiles;
 		private readonly AnalyzerOptions _options;
@@ -116,7 +116,7 @@ namespace Philips.CodeAnalysis.Common
 	}
 
 
-	internal class ExceptionsOptions
+	public class ExceptionsOptions
 	{
 		public bool IgnoreExceptionsFile { get; set; } = false;
 		public bool GenerateExceptionsFile { get; set; } = false;

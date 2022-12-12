@@ -2,7 +2,7 @@
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal class AttributeDefinition
+	public class AttributeDefinition
 	{
 		public AttributeDefinition(string name, string fullName)
 		{
@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Common
 		public string FullName { get; }
 	}
 
-	internal class MsTestAttributeDefinition : AttributeDefinition
+	public class MsTestAttributeDefinition : AttributeDefinition
 	{
 		public MsTestAttributeDefinition(string name) : base(name, $"Microsoft.VisualStudio.TestTools.UnitTesting.{name}Attribute")
 		{ }
