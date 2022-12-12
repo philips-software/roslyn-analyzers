@@ -2,7 +2,7 @@
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal static class Categories
+	public static class Categories
 	{
 		public const string Documentation = @"Documentation";
 		public const string Maintainability = @"Maintainability";

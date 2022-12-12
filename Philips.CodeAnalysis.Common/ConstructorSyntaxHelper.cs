@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal static class ConstructorSyntaxHelper
+	public static class ConstructorSyntaxHelper
 	{
 		/// <summary>
 		/// CreateMapping

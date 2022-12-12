@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal class AttributeModel
+	public class AttributeModel
 	{
 		public AttributeModel(string name, string fullName, string title, string messageFormat, string description, DiagnosticIds diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
 		{
