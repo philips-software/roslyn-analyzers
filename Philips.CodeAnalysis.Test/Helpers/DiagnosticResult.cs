@@ -28,9 +28,9 @@ namespace Philips.CodeAnalysis.Test
 				throw new ArgumentOutOfRangeException(nameof(column), "column must be >= -1");
 			}
 
-			this.Path = path;
-			this.Line = line;
-			this.Column = column;
+			Path = path;
+			Line = line;
+			Column = column;
 		}
 
 		public string Path { get; }
@@ -49,16 +49,13 @@ namespace Philips.CodeAnalysis.Test
 		{
 			get
 			{
-				if (this.locations == null)
-				{
-					this.locations = new DiagnosticResultLocation[] { };
-				}
-				return this.locations;
+				locations ??= new DiagnosticResultLocation[] { };
+				return locations;
 			}
 
 			set
 			{
-				this.locations = value;
+				locations = value;
 			}
 		}
 
@@ -81,7 +78,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			get
 			{
-				return this.Locations.Length > 0 ? this.Locations[0].Path : "";
+				return Locations.Length > 0 ? Locations[0].Path : "";
 			}
 		}
 
@@ -89,7 +86,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			get
 			{
-				return this.Locations.Length > 0 ? this.Locations[0].Line : -1;
+				return Locations.Length > 0 ? Locations[0].Line : -1;
 			}
 		}
 
@@ -97,7 +94,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			get
 			{
-				return this.Locations.Length > 0 ? this.Locations[0].Column : -1;
+				return Locations.Length > 0 ? Locations[0].Column : -1;
 			}
 		}
 	}

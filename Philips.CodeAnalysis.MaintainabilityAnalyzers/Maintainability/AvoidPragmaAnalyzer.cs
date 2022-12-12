@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Do not use #pragma warning";
 		private const string Category = Categories.Maintainability;
 
-		public List<DiagnosticDescriptor> Rules = new List<DiagnosticDescriptor>()
+		public List<DiagnosticDescriptor> Rules = new()
 		{
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description),
 		};
@@ -35,8 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			PragmaWarningDirectiveTriviaSyntax pragma = context.Node as PragmaWarningDirectiveTriviaSyntax;
-			if (pragma == null)
+			if (context.Node is not PragmaWarningDirectiveTriviaSyntax pragma)
 			{
 				return;
 			}

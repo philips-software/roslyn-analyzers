@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Category = Categories.RuntimeFailure;
 
 		private static readonly DiagnosticDescriptor Rule =
-			new DiagnosticDescriptor(
+			new(
 				Helper.ToDiagnosticId(DiagnosticIds.NoSpaceInFilename),
 				Title,
 				Message,
@@ -51,10 +51,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			context.RegisterSyntaxTreeAction(AnalyzeTree);
 		}
 
-		private void AnalyzeTree(SyntaxTreeAnalysisContext context) {
+		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
+		{
 			var filePath = context.Tree.FilePath;
-			
-			if (Helper.IsGeneratedCode(filePath)) {
+
+			if (Helper.IsGeneratedCode(filePath))
+			{
 				return;
 			}
 

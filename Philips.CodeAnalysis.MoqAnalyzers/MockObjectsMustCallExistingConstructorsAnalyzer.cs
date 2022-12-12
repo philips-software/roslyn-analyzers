@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string Description = @"Could not find a constructor that matched the given arguments";
 		private const string Category = Categories.RuntimeFailure;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -43,12 +43,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			InvocationExpressionSyntax invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
 
-			if (!(invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax))
+			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
 				return;
 			}
 
-			if (!(memberAccessExpressionSyntax.Name is GenericNameSyntax genericNameSyntax))
+			if (memberAccessExpressionSyntax.Name is not GenericNameSyntax genericNameSyntax)
 			{
 				return;
 			}
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			//by now we know they are calling foo.Create<T>/foo.Of.  Drop to the semantic model, is this MockRepository.Create<T> or Mock.Of<T>?
 			SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax);
 
-			if (symbol.Symbol == null || !(symbol.Symbol is IMethodSymbol method))
+			if (symbol.Symbol == null || symbol.Symbol is not IMethodSymbol method)
 			{
 				return;
 			}
@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			ITypeSymbol returnType = method.ReturnType;
 			if (returnsMock)
 			{
-				if (!(returnType is INamedTypeSymbol typeSymbol) || !typeSymbol.IsGenericType)
+				if (returnType is not INamedTypeSymbol typeSymbol || !typeSymbol.IsGenericType)
 				{
 					return;
 				}
@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			ObjectCreationExpressionSyntax objectCreationExpressionSyntax = (ObjectCreationExpressionSyntax)context.Node;
 
-			if (!(objectCreationExpressionSyntax.Type is GenericNameSyntax genericNameSyntax))
+			if (objectCreationExpressionSyntax.Type is not GenericNameSyntax genericNameSyntax)
 			{
 				return;
 			}
@@ -108,14 +108,13 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax);
 
-			if (symbolInfo.Symbol == null || !(symbolInfo.Symbol is IMethodSymbol mockConstructorMethod))
+			if (symbolInfo.Symbol == null || symbolInfo.Symbol is not IMethodSymbol mockConstructorMethod)
 			{
 				return;
 			}
 
-			INamedTypeSymbol typeSymbol = mockConstructorMethod.ReceiverType as INamedTypeSymbol;
 
-			if (typeSymbol == null || !typeSymbol.IsGenericType)
+			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol typeSymbol || !typeSymbol.IsGenericType)
 			{
 				return;
 			}

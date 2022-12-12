@@ -7,7 +7,7 @@ namespace Philips.CodeAnalysis.Test
 {
 	public abstract class AssertCodeFixVerifier : CodeFixVerifier
 	{
-		private AssertCodeHelper _helper = new AssertCodeHelper();
+		private readonly AssertCodeHelper _helper = new();
 
 		protected string OtherClassSyntax { get; set; } = string.Empty;
 		protected string DefaultMethodAttributes { get; set; } = string.Empty;

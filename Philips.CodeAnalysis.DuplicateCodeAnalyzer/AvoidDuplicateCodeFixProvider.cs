@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					}
 				}
 
-				StringBuilder appending = new StringBuilder();
+				StringBuilder appending = new();
 				foreach (string methodName in newMethodNames)
 				{
 					appending.Append(Environment.NewLine);

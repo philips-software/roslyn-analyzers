@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"DataTestMethods should have the same number of parameters of the DataRows, TestMethods should have no arguments";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				bool anyCustomDataSources = false;
 				bool anyDynamicData = false;
-				HashSet<int> dataRowParameters = new HashSet<int>();
+				HashSet<int> dataRowParameters = new();
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
 					if (Helper.IsDataRowAttribute(attribute, context))

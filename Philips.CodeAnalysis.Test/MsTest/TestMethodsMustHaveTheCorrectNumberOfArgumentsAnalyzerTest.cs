@@ -153,7 +153,7 @@ public class Tests
 
 			if (dataRowParameters >= 0)
 			{
-				List<string> dataRowParametersStrings = new List<string>();
+				List<string> dataRowParametersStrings = new();
 				for (int i = 0; i < dataRowParameters; i++)
 				{
 					dataRowParametersStrings.Add(i.ToString());

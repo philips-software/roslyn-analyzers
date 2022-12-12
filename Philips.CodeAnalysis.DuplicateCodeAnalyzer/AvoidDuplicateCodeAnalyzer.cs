@@ -25,22 +25,22 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public int DefaultDuplicateTokenThreshold = 100;
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
-		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				HashSet<ISymbol> allowed = new HashSet<ISymbol>();
+				HashSet<ISymbol> allowed = new();
 				if (!options.IgnoreExceptionsFile)
 				{
 					allowed = InitializeAllowed(compilationContext.Options.AdditionalFiles, compilationContext.Compilation);
@@ -82,7 +82,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic error)
 		{
 			error = null;
-			EditorConfigOptions options = new EditorConfigOptions(DefaultDuplicateTokenThreshold);
+			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
 			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
@@ -123,7 +123,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		/// </summary>
 		public virtual HashSet<ISymbol> LoadAllowedMethods(SourceText text, Compilation compilation)
 		{
-			HashSet<ISymbol> result = new HashSet<ISymbol>();
+			HashSet<ISymbol> result = new();
 			foreach (TextLine textLine in text.Lines)
 			{
 				var line = textLine.ToString();
@@ -155,8 +155,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		private class CompilationAnalyzer
 		{
-			private readonly DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
-			private readonly List<Diagnostic> _diagnostics = new List<Diagnostic>();
+			private readonly DuplicateDetectorDictionary _library = new();
+			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
 			private readonly HashSet<ISymbol> _exceptions;
 			private readonly bool _generateExceptionsFile;
@@ -197,7 +197,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						return;
 					}
 
-					RollingTokenSet rollingTokenSet = new RollingTokenSet(_duplicateTokenThreshold);
+					RollingTokenSet rollingTokenSet = new(_duplicateTokenThreshold);
 
 					foreach (SyntaxToken token in body.DescendantTokens())
 					{
@@ -267,7 +267,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			private string GetShapeDetails(SyntaxToken token)
 			{
-				List<SyntaxToken> tokens = new List<SyntaxToken>();
+				List<SyntaxToken> tokens = new();
 				SyntaxToken currentToken = token;
 				for (int i = 0; i < _duplicateTokenThreshold; i++)
 				{
@@ -275,7 +275,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					currentToken = currentToken.GetPreviousToken();
 				}
 				tokens.Reverse();
-				StringBuilder details = new StringBuilder();
+				StringBuilder details = new();
 				foreach (SyntaxToken t in tokens)
 				{
 					string result;
@@ -451,8 +451,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class DuplicateDetectorDictionary
 	{
-		private readonly Dictionary<int, List<Evidence>> _library = new Dictionary<int, List<Evidence>>();
-		private readonly object _lock = new object();
+		private readonly Dictionary<int, List<Evidence>> _library = new();
+		private readonly object _lock = new();
 
 		public Evidence TryAdd(int key, Evidence value)
 		{
@@ -550,7 +550,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class RollingHashCalculator<T>
 	{
-		protected Queue<T> _components = new Queue<T>();
+		protected Queue<T> _components = new();
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
@@ -674,7 +674,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			(var components, var hash) = _hashCalculator.ToComponentHashes();
 
-			Evidence e = new Evidence(MakeFullLocationEnvelope(firstToken, token), components, hash);
+			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
+			Evidence e = new(locationEnvelope, components, hash);
 
 			return (_hashCalculator.HashCode, e);
 		}

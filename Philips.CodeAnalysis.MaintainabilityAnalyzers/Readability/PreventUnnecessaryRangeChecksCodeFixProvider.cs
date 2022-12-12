@@ -48,9 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (root != null)
 			{
-				var node = root.FindNode(diagnosticSpan) as IfStatementSyntax;
-
-				if (node is null)
+				if (root.FindNode(diagnosticSpan) is not IfStatementSyntax node)
 				{
 					return;
 				}

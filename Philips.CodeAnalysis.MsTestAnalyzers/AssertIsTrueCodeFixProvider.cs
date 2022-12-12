@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						break;
 					}
 
-					return await ReplaceBinaryAnd(document, invocationExpression, isIsTrue, kind, cancellationToken);
+					return await ReplaceBinaryAnd(document, invocationExpression, isIsTrue, cancellationToken);
 				case SyntaxKind.EqualsExpression:
 				case SyntaxKind.NotEqualsExpression:
 					//some type of ==, !=
@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return document;
 		}
 
-		private async Task<Document> ReplaceBinaryAnd(Document document, InvocationExpressionSyntax invocationExpression, bool isIsTrue, SyntaxKind kind, CancellationToken cancellationToken)
+		private async Task<Document> ReplaceBinaryAnd(Document document, InvocationExpressionSyntax invocationExpression, bool isIsTrue, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
@@ -140,7 +140,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private StatementSyntax CreateAssert(ExpressionSyntax test, bool isIsTrue, ArgumentSyntax[] additionalArguments)
 		{
-			SeparatedSyntaxList<ArgumentSyntax> newArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+			SeparatedSyntaxList<ArgumentSyntax> newArguments = new();
 
 			newArguments = newArguments.Add(SyntaxFactory.Argument(test));
 
@@ -181,7 +181,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var leading = invocationExpression.GetLeadingTrivia();
 
 			SyntaxNode newRoot = root.ReplaceNode(invocationExpression, newExpression.WithLeadingTrivia(leading));
-			var what = newRoot.ToString();
 			return document.WithSyntaxRoot(newRoot);
 		}
 
@@ -233,7 +232,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ExtractEqualsFunction(first, out ArgumentSyntax areEqualsExpected, out ArgumentSyntax areEqualsActual, out isNotEquals);
 
-			SeparatedSyntaxList<ArgumentSyntax> newArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+			SeparatedSyntaxList<ArgumentSyntax> newArguments = new();
 
 			newArguments = newArguments.Add(areEqualsExpected);
 			newArguments = newArguments.Add(areEqualsActual);
@@ -248,21 +247,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			List<ArgumentSyntax> rest = argumentList.Arguments.Skip(1).ToList();
 
-			switch (kind)
+			isNotEquals = kind switch
 			{
-				case SyntaxKind.EqualsExpression:
-					isNotEquals = false;
-					break;
-				case SyntaxKind.NotEqualsExpression:
-					isNotEquals = true;
-					break;
-				default:
-					throw new ArgumentException("kind is not supported", nameof(kind));
-			}
-
+				SyntaxKind.EqualsExpression => false,
+				SyntaxKind.NotEqualsExpression => true,
+				_ => throw new ArgumentException("kind is not supported", nameof(kind)),
+			};
 			ExtractEqualsEquals(first, out ArgumentSyntax areEqualsExpected, out ArgumentSyntax areEqualsActual);
 
-			SeparatedSyntaxList<ArgumentSyntax> newArguments = new SeparatedSyntaxList<ArgumentSyntax>();
+			SeparatedSyntaxList<ArgumentSyntax> newArguments = new();
 
 			if (areEqualsActual.Expression.Kind() == SyntaxKind.NullLiteralExpression)
 			{

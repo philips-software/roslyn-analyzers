@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
@@ -25,12 +25,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override void OnTestClass(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax classDeclaration)
 		{
-			HashSet<MethodDeclarationSyntax> testMethods = new HashSet<MethodDeclarationSyntax>();
+			HashSet<MethodDeclarationSyntax> testMethods = new();
 			foreach (MemberDeclarationSyntax member in classDeclaration.Members)
 			{
-				MethodDeclarationSyntax method = member as MethodDeclarationSyntax;
-
-				if (method == null || !Helper.IsTestMethod(method, context))
+				if (member is not MethodDeclarationSyntax method || !Helper.IsTestMethod(method, context))
 				{
 					continue;
 				}
@@ -38,7 +36,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				testMethods.Add(method);
 			}
 
-			HashSet<string> seenNames = new HashSet<string>();
+			HashSet<string> seenNames = new();
 			foreach (MethodDeclarationSyntax method in testMethods)
 			{
 				if (seenNames.Add(method.Identifier.ToString()))

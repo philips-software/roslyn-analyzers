@@ -27,11 +27,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating its name.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor ValueRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
-		private static readonly DiagnosticDescriptor EmptyRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
+		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
+		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
-			new HashSet<string>( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
+			new( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);

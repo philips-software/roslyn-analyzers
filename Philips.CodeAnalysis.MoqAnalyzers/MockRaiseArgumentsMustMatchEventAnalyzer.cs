@@ -19,8 +19,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string Description = @"Parameter mismatch";
 		private const string Category = Categories.RuntimeFailure;
 
-		private static DiagnosticDescriptor TypeMismatchRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static DiagnosticDescriptor ArgumentCountRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(TypeMismatchRule, ArgumentCountRule); } }
 
@@ -44,12 +44,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			InvocationExpressionSyntax invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
 
-			if (!(invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax))
+			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
 				return;
 			}
 
-			if (!(memberAccessExpressionSyntax.Name is IdentifierNameSyntax identifierNameSyntax))
+			if (memberAccessExpressionSyntax.Name is not IdentifierNameSyntax identifierNameSyntax)
 			{
 				return;
 			}
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			if (!(invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is SimpleLambdaExpressionSyntax lambdaExpressionSyntax))
+			if (invocationExpressionSyntax.ArgumentList.Arguments[0].Expression is not SimpleLambdaExpressionSyntax lambdaExpressionSyntax)
 			{
 				return;
 			}
@@ -84,12 +84,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			if (!(lambdaExpressionSyntax.Body is AssignmentExpressionSyntax assignmentExpressionSyntax))
+			if (lambdaExpressionSyntax.Body is not AssignmentExpressionSyntax assignmentExpressionSyntax)
 			{
 				return;
 			}
 
-			if (!(assignmentExpressionSyntax.Left is MemberAccessExpressionSyntax accessExpressionSyntax))
+			if (assignmentExpressionSyntax.Left is not MemberAccessExpressionSyntax accessExpressionSyntax)
 			{
 				return;
 			}
@@ -101,19 +101,19 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			if (!(symbolInfo.Symbol is IEventSymbol eventSymbol))
+			if (symbolInfo.Symbol is not IEventSymbol eventSymbol)
 			{
 				return;
 			}
 
-			if (!(eventSymbol.Type is INamedTypeSymbol namedTypeSymbol))
+			if (eventSymbol.Type is not INamedTypeSymbol namedTypeSymbol)
 			{
 				return;
 			}
 
 			SymbolInfo raiseSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax.Expression);
 
-			if (raiseSymbol.Symbol == null || !(raiseSymbol.Symbol is IMethodSymbol raiseMethodSymbol))
+			if (raiseSymbol.Symbol == null || raiseSymbol.Symbol is not IMethodSymbol raiseMethodSymbol)
 			{
 				return;
 			}

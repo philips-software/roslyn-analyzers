@@ -27,7 +27,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma),
 				Message = new Regex(AvoidPragmaAnalyzer.MessageFormat),

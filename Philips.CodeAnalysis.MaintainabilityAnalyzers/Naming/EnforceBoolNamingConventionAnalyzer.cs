@@ -15,9 +15,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EnforceBoolNamingConventionAnalyzer : DiagnosticAnalyzer
 	{
-		private static Regex _privateFieldRegex = new Regex(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline);
-		private static Regex _publicFieldRegex = new Regex(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline);
-		private static Regex _localRegex = new Regex(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline);
+		private static readonly Regex _privateFieldRegex = new(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline);
+		private static readonly Regex _publicFieldRegex = new(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline);
+		private static readonly Regex _localRegex = new(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline);
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_checkFieldVariables = checkFieldVariables;
 		}
 
-		public List<DiagnosticDescriptor> Rules = new List<DiagnosticDescriptor>()
+		public List<DiagnosticDescriptor> Rules = new()
 		{
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
 		};

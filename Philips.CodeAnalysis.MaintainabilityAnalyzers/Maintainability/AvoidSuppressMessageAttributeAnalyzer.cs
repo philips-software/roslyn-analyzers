@@ -37,10 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (startContext.Compilation.GetTypeByMetadataName(attribute.FullName) != null)
 				{
 
-					if (whitelist == null)
-					{
-						whitelist = PopulateWhitelist(startContext.Options);
-					}
+					whitelist ??= PopulateWhitelist(startContext.Options);
 
 					startContext.RegisterSyntaxNodeAction(
 						(c) => Analyze(c, whitelist),
@@ -80,7 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (
 				Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
-				!Helper.IsGeneratedCode(context) &&
+				!Helper.IsGeneratedCode(context) && 
 				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id)) 
 			{
 				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);

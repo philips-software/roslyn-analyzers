@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor IsEqualRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
+		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(IsEqualRule); } }
 
@@ -57,9 +57,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static bool CheckForEqualityFunction(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax test)
 		{
-			MemberAccessExpressionSyntax member = test.Expression as MemberAccessExpressionSyntax;
-
-			if (member == null || member.Name.ToString() != "Equals")
+			if (test.Expression is not MemberAccessExpressionSyntax member || member.Name.ToString() != "Equals")
 			{
 				//they called something that wasn't a member function.  Maybe a static method.
 				return false;

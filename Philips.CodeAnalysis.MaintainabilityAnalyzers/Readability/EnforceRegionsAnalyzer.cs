@@ -35,19 +35,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
 
-		private static Dictionary<string, Func<List<MemberDeclarationSyntax>, LocationRangeModel, SyntaxNodeAnalysisContext, bool>> RegionChecks = new Dictionary<string, Func<List<MemberDeclarationSyntax>, LocationRangeModel, SyntaxNodeAnalysisContext, bool>>
+		private static readonly Dictionary<string, Func<List<MemberDeclarationSyntax>, LocationRangeModel, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
 			{ NonPublicDataMembersRegion, CheckMembersOfNonPublicDataMembersRegion },
 			{ NonPublicPropertiesAndMethodsRegion, CheckMembersOfNonPublicPropertiesAndMethodsRegion },
 			{ PublicInterfaceRegion, CheckMembersOfPublicInterfaceRegion }
 		};
 
-		private static DiagnosticDescriptor EnforceMemberLocation = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceRegions), EnforceRegionTitle,
+		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(Helper.ToDiagnosticId(DiagnosticIds.EnforceRegions), EnforceRegionTitle,
 			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
-		private static DiagnosticDescriptor EnforceNonDupliateRegion = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceNonDuplicateRegion),
+		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(Helper.ToDiagnosticId(DiagnosticIds.EnforceNonDuplicateRegion),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
-		private static DiagnosticDescriptor NonCheckedMember = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.NonCheckedRegionMember),
+		private static readonly DiagnosticDescriptor NonCheckedMember = new(Helper.ToDiagnosticId(DiagnosticIds.NonCheckedRegionMember),
 			NonCheckedRegionMemberTitle, NonCheckedRegionMemberTitleMessageFormat, NonCheckedRegionMemberTitleCategory,
 			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
 
@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
 
-			RegionVisitor visitor = new RegionVisitor();
+			RegionVisitor visitor = new();
 
 			visitor.Visit(classDeclaration);
 
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <returns>Dictionary of region name and LocationRangeModel object</returns>
 		private static Dictionary<string, LocationRangeModel> PopulateRegionLocations(List<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
-			Dictionary<string, LocationRangeModel> regionLocations = new Dictionary<string, LocationRangeModel>();
+			Dictionary<string, LocationRangeModel> regionLocations = new();
 
 			string regionTag = "#region ";
 			string regionStartName = "";
@@ -169,7 +169,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <returns>List of members belonging to the given region</returns>
 		private static List<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
 		{
-			List<MemberDeclarationSyntax> filteredMembers = new List<MemberDeclarationSyntax>();
+			List<MemberDeclarationSyntax> filteredMembers = new();
 			foreach (MemberDeclarationSyntax member in members)
 			{
 				if (MemberPresentInRegion(member, locationRange))
@@ -231,7 +231,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="context"></param>
 		private static void VerifyMemberForPublicInterfaceRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTokenList modifiers = default(SyntaxTokenList);
+			SyntaxTokenList modifiers = default;
 			bool shouldCheck = false;
 			switch (member.Kind())
 			{
@@ -344,7 +344,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="context"></param>
 		private static void VerifyMemberForNonPublicPropertiesAndMethods(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTokenList modifiers = default(SyntaxTokenList);
+			SyntaxTokenList modifiers = default;
 			bool shouldProcess = false;
 			switch (member.Kind())
 			{
@@ -428,7 +428,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
-				VerifyMemberForNonPublicDataMemberRegion(member, locationRange, context);
+				VerifyMemberForNonPublicDataMemberRegion(member, context);
 			}
 			return true;
 		}
@@ -439,11 +439,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// if member is of type field, check if it is non-public
 		/// </summary>
 		/// <param name="member"></param>
-		/// <param name="locationRange"></param>
 		/// <param name="context"></param>
-		private static void VerifyMemberForNonPublicDataMemberRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+		private static void VerifyMemberForNonPublicDataMemberRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTokenList modifiers = default(SyntaxTokenList);
+			SyntaxTokenList modifiers = default;
 			bool shouldProcess = false;
 			switch (member.Kind())
 			{

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Methods may not have Thread.Sleep to prevent inaccurate timeout.";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -32,9 +32,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
-			MemberAccessExpressionSyntax memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
 
-			if (memberAccessExpression == null)
+			if (invocationExpression.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
 				return;
 			}
@@ -42,16 +41,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			string memberName = memberAccessExpression.Expression.ToString();
 			string name = memberAccessExpression.Name.ToString();
 
-			Location location;
 
 			if (memberName == @"Thread" && name == @"Sleep")
 			{
 				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node.Parent.Parent.Parent.Parent;
 				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out location))
+				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _))
 				{
-					IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol as IMethodSymbol;
-					if ((memberSymbol != null) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
+					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 					{
 						Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpression.GetLocation());
 						context.ReportDiagnostic(diagnostic);

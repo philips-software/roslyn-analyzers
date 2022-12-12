@@ -39,7 +39,7 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 		[DataTestMethod]
 		public void CantBeDynamic(string testCode, int errorCount)
 		{
-			List<DiagnosticResult> results = new List<DiagnosticResult>();
+			List<DiagnosticResult> results = new();
 			for (int i = 0; i < errorCount; i++)
 			{
 				results.Add(DiagnosticResultHelper.Create(DiagnosticIds.DynamicKeywordProhibited));

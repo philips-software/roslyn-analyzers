@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ $@"dotnet_code_quality.{ NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id }.namespace_prefix", configuredPrefix  }
 			};
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 
 			string code = string.Format(ClassString, prefix);
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix),
 				Message = new Regex(".+ "),
