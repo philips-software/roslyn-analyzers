@@ -19,14 +19,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			return new AvoidRedundantSwitchStatementAnalyzer();
 		}
 
-		
-		protected override MetadataReference[] GetMetadataReferences()
-		{
-			string referenceLocation = typeof(GeneratedCodeAttribute).Assembly.Location;
-			MetadataReference reference = MetadataReference.CreateFromFile(referenceLocation);
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
-		}
-
 		[DataRow("byte")]
 		[DataRow("int")]
 		[DataRow("string")]
@@ -49,6 +41,32 @@ public static class Foo
 ";
 
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+		}
+
+
+		[TestMethod]
+		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
+		{
+			string input = @"
+[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
+public class Foo
+{
+  public static void Method(int data)
+  {
+    switch(data)
+    {
+      default:
+        System.Console.WriteLine(data);
+        break;
+    }
+    int a = data switch
+    {
+      _ => 1
+    }
+  }
+}
+";
+			VerifyCSharpDiagnostic(input);
 		}
 
 		[DataRow("byte", "1")]
