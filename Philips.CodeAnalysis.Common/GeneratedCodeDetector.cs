@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Common
 	public class GeneratedCodeDetector
 	{
 		private const string AttributeName = @"GeneratedCode";
-		private readonly string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
+		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
 		private bool HasGeneratedCodeAttribute(SyntaxNode node, Func<SemanticModel> getSemanticModel)
 		{

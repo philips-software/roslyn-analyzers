@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidRedundantSwitchStatementAnalyzer();
+			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
 
 		[DataRow("byte")]
