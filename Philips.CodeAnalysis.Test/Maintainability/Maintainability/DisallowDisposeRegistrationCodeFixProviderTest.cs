@@ -28,7 +28,7 @@ class Foo
   public void MyHandler(object sender, EventArgs e) => {{ }}
 }}
 ";
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.DisallowDisposeRegistration),
 				Message = new Regex(DisallowDisposeRegistrationAnalyzer.MessageFormat),

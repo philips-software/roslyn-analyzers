@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new Dictionary<string, string>
+			Dictionary<string, string> options = new()
 			{
 				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue) }.additional_useless_words", configuredAdditionalUselessWords  }
 			};

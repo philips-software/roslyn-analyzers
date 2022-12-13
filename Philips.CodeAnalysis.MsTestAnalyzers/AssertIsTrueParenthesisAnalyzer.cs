@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Assert.IsTrue((<actual> == <expected>)) => Assert.IsTrue(<expected> == <actual>)";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueParenthesis), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueParenthesis), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -40,8 +40,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
-			MemberAccessExpressionSyntax memberAccessExpression = invocationExpression.Expression as MemberAccessExpressionSyntax;
-			if (memberAccessExpression == null)
+			if (invocationExpression.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
 				return;
 			}

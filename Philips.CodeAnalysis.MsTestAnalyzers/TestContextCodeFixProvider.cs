@@ -64,8 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			string varName = string.Empty;
 			if (returnStatement != null)
 			{
-				IdentifierNameSyntax returnVar = returnStatement.Expression as IdentifierNameSyntax;
-				if (returnVar != null)
+				if (returnStatement.Expression is IdentifierNameSyntax returnVar)
 				{
 					varName = returnVar.Identifier.ToString();
 				}

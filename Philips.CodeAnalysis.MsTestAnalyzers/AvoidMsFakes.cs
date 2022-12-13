@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Avoid MS Fakes. Use Moq instead for example.  If applicable, remove the Reference and the .fakes file as well.";
 		private const string Category = Categories.Maintainability;
 
-		public static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidMsFakes), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidMsFakes), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -30,8 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			UsingStatementSyntax usingStatement = context.Node as UsingStatementSyntax;
-			if (usingStatement == null)
+			if (context.Node is not UsingStatementSyntax usingStatement)
 			{
 				return;
 			}

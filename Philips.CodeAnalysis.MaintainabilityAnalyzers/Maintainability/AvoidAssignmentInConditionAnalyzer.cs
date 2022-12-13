@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =
-			new DiagnosticDescriptor(
+			new(
 				Helper.ToDiagnosticId(DiagnosticIds.AvoidAssignmentInCondition),
 				Title,
 				Message,
@@ -52,9 +52,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeTernary, SyntaxKind.ConditionalExpression);
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context) {
+		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
+		{
 			var filePath = context.Node.SyntaxTree.FilePath;
-			if (Helper.IsGeneratedCode(filePath)) {
+			if (Helper.IsGeneratedCode(filePath))
+			{
 				return;
 			}
 
@@ -69,6 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return;
 			}
+
 			var condition = ((ConditionalExpressionSyntax)context.Node).Condition;
 			CheckDescendantHasNoAssignment(context, condition);
 		}

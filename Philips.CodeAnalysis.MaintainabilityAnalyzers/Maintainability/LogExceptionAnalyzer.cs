@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =
-			new DiagnosticDescriptor(
+			new(
 				Helper.ToDiagnosticId(DiagnosticIds.LogException),
 				Title,
 				Message,
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string InvalidSetupTitle = @"Log caught exceptions setup";
 		private const string InvalidSetupMessage = @"This analyzer requires an .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list of allowed method calls inside catch blocks.";
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig.";
-		private static DiagnosticDescriptor InvalidSetupRule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
+		private static readonly DiagnosticDescriptor InvalidSetupRule = new(Helper.ToDiagnosticId(DiagnosticIds.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
 
 		/// <summary>
@@ -90,9 +90,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var catchNode = (CatchClauseSyntax)context.Node;
 				// Look for logging method calls underneath this node.
 				var hasCallingLogNodes = catchNode.DescendantNodes()
-					.OfType<InvocationExpressionSyntax>().Any(x => IsCallingLogMethod(context, x));
+					.OfType<InvocationExpressionSyntax>()
+					.Any(x => IsCallingLogMethod(x));
 				// If another exception is thrown, logging is not required.
-				var hasThrowNodes = catchNode.DescendantNodes().OfType<ThrowStatementSyntax>().Any();
+				var hasThrowNodes = catchNode.DescendantNodes()
+					.OfType<ThrowStatementSyntax>()
+					.Any();
 				if (!hasCallingLogNodes && !hasThrowNodes)
 				{
 					var location = catchNode.CatchKeyword.GetLocation();
@@ -106,7 +109,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames));
 			}
 
-			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, SyntaxNode node)
+			private bool IsCallingLogMethod(SyntaxNode node)
 			{
 				var isLoggingMethod = false;
 				var invocation = (InvocationExpressionSyntax)node;

@@ -44,7 +44,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep),
 				Message = new Regex(AvoidThreadSleepAnalyzer.MessageFormat),

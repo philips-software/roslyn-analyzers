@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AvoidTryParseWithoutCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture),
 				Message = new Regex(".+ "),
@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string editorCode = string.Format(ClassString, s);
 			string code = string.Concat(editorCode, TestParserDefinition);
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture),
 				Message = new Regex(".+ "),

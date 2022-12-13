@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private SourceText AddLineToSourceText(SourceText sourceText, string line)
 		{
-			List<string> list = new List<string>();
+			List<string> list = new();
 			foreach (TextLine textLine in sourceText.Lines)
 			{
 				list.Add(textLine.ToString());

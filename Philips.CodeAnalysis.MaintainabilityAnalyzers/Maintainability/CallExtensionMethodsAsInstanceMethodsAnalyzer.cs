@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var statics = semantic.LookupStaticMembers(context.Operation.Syntax.SpanStart);
 
-			if (HasMultipleCallables(context.Operation.Syntax.SpanStart, context.Compilation, semantic, statics, invocationOperation.TargetMethod))
+			if (HasMultipleCallables(context.Operation.Syntax.SpanStart, semantic, statics, invocationOperation.TargetMethod))
 			{
 				return;
 			}
@@ -63,10 +63,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.ReportDiagnostic(Diagnostic.Create(Rule, invocationOperation.Syntax.GetLocation(), invocationOperation.TargetMethod.Name));
 		}
 
-		private bool HasMultipleCallables(int position, Compilation compilation, SemanticModel semanticModel, ImmutableArray<ISymbol> statics, IMethodSymbol currentMethod)
+		private bool HasMultipleCallables(int position, SemanticModel semanticModel, ImmutableArray<ISymbol> statics, IMethodSymbol currentMethod)
 		{
-			HashSet<ISymbol> didCheck = new HashSet<ISymbol>();
-			Queue<ISymbol> toCheck = new Queue<ISymbol>(statics);
+			HashSet<ISymbol> didCheck = new();
+			Queue<ISymbol> toCheck = new(statics);
 
 			int count = 0;
 			while (toCheck.Count != 0)

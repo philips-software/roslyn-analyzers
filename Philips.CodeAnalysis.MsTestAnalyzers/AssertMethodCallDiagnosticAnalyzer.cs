@@ -20,8 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
-			MemberAccessExpressionSyntax memberAccessExpression = invocationExpression?.Expression as MemberAccessExpressionSyntax;
-			if (memberAccessExpression == null)
+			if (invocationExpression?.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
 				return;
 			}
@@ -30,8 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression) ?? Array.Empty<Diagnostic>())
 				{
-					IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol as IMethodSymbol;
-					if ((memberSymbol == null) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
 					{
 						return;
 					}

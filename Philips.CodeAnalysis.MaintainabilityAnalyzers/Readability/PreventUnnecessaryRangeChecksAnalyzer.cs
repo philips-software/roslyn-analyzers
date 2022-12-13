@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"";
 		private const string Category = Categories.Readability;
 
-		public DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			forEachStatementSyntax = null;
 
-			if (!(ifStatementSyntax.Statement is BlockSyntax block))
+			if (ifStatementSyntax.Statement is not BlockSyntax block)
 			{
 				forEachStatementSyntax = ifStatementSyntax.Statement as ForEachStatementSyntax;
 
@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					return false;
 			}
 
-			if (!(condition.Right is LiteralExpressionSyntax literal))
+			if (condition.Right is not LiteralExpressionSyntax literal)
 			{
 				return false;
 			}
@@ -218,8 +218,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
 		{
 			ifIdentifier = null;
-			method = null;
-
 			method = expression.Name as IdentifierNameSyntax;
 
 			if (method == null)

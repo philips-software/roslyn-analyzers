@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal class AdditionalFilesHelper
+	public class AdditionalFilesHelper
 	{
 		private readonly ImmutableArray<AdditionalText> _additionalFiles;
 		private readonly AnalyzerOptions _options;
@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Common
 		public virtual HashSet<string> InitializeExceptions(string exceptionsFile, string diagnosticId)
 		{
 			ExceptionsOptions = LoadExceptionsOptions(diagnosticId);
-			HashSet<string> exceptions = new HashSet<string>();
+			HashSet<string> exceptions = new();
 			if (!ExceptionsOptions.IgnoreExceptionsFile)
 			{
 				exceptions = LoadExceptions(exceptionsFile);
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public virtual HashSet<string> Convert(SourceText text)
 		{
-			HashSet<string> result = new HashSet<string>();
+			HashSet<string> result = new();
 			foreach (TextLine line in text.Lines)
 			{
 				result.Add(line.ToString());
@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public virtual ExceptionsOptions LoadExceptionsOptions(string diagnosticId)
 		{
-			ExceptionsOptions options = new ExceptionsOptions();
+			ExceptionsOptions options = new();
 
 			string ignoreExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
 			options.IgnoreExceptionsFile = !string.IsNullOrWhiteSpace(ignoreExceptionsFile);
@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public virtual List<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
-			List<string> values = new List<string>();
+			List<string> values = new();
 			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
 
 			foreach (string v in value.Split(','))
@@ -116,7 +116,7 @@ namespace Philips.CodeAnalysis.Common
 	}
 
 
-	internal class ExceptionsOptions
+	public class ExceptionsOptions
 	{
 		public bool IgnoreExceptionsFile { get; set; } = false;
 		public bool GenerateExceptionsFile { get; set; } = false;

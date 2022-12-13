@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				AssertMetadata metadata = new AssertMetadata()
+				AssertMetadata metadata = new()
 				{
 					FailMethods = assertClass.GetMembers("Fail").OfType<IMethodSymbol>().ToImmutableArray(),
 				};
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (!(invocation.Parent is IExpressionStatementOperation expressionOperation))
+			if (invocation.Parent is not IExpressionStatementOperation expressionOperation)
 			{
 				return;
 			}
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// { Assert.Fail() }
 			if (expressionOperation.Parent is IBlockOperation blockOperation)
 			{
-				if (CheckBlock(blockOperation, expressionOperation, invocation))
+				if (CheckBlock(blockOperation, expressionOperation))
 				{
 					obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
 					return;
@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 		}
 
-		private bool CheckBlock(IBlockOperation blockOperation, IExpressionStatementOperation expressionOperation, IInvocationOperation invocation)
+		private bool CheckBlock(IBlockOperation blockOperation, IExpressionStatementOperation expressionOperation)
 		{
 			if (blockOperation.Parent is IUsingOperation || blockOperation.Parent is ICatchClauseOperation)
 			{
@@ -115,15 +115,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				static bool IsContinue(IOperation operation)
 				{
-					switch (operation)
+					return operation switch
 					{
-						case IBranchOperation branch:
-							return branch.Target.Name == "continue";
-						case IBlockOperation block:
-							return block.Operations.Length == 1 && IsContinue(block.Operations[0]);
-						default:
-							return false;
-					}
+						IBranchOperation branch => branch.Target.Name == "continue",
+						IBlockOperation block => block.Operations.Length == 1 && IsContinue(block.Operations[0]),
+						_ => false,
+					};
 				}
 
 				if (IsContinue(conditional.WhenTrue))

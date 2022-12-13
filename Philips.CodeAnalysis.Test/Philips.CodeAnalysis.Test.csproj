@@ -1,30 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <CodeAnalysisRuleSet />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <CodeAnalysisRuleSet />
-  </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Include="..\Philips.CodeAnalysis.Common\AdditionalFilesHelper.cs" Link="Common\AdditionalFilesHelper.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\AllowedSymbols.cs" Link="Common\AllowedSymbols.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\AttributeDefinition.cs" Link="Common\AttributeDefinition.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\AttributeModel.cs" Link="Common\AttributeModel.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\Categories.cs" Link="Common\Categories.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\DiagnosticIds.cs" Link="Common\DiagnosticIds.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\Helper.cs" Link="Common\Helper.cs" />
-    <Compile Include="..\Philips.CodeAnalysis.Common\MsTestFrameworkDefinitions.cs" Link="Common\MsTestFrameworkDefinitions.cs" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
@@ -34,15 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Philips.CodeAnalysis.Common\Philips.CodeAnalysis.Common.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.DuplicateCodeAnalyzer\Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.MaintainabilityAnalyzers\Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.MoqAnalyzers\Philips.CodeAnalysis.MoqAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.MsTestAnalyzers\Philips.CodeAnalysis.MsTestAnalyzers.csproj" />
     <ProjectReference Include="..\Philips.CodeAnalysis.SecurityAnalyzers\Philips.CodeAnalysis.SecurityAnalyzers.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
-
 </Project>

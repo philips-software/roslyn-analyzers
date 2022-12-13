@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"TestContext should not be included in test classes unless it is actually used.";
 		private const string Category = Categories.Maintainability;
 
-		private static DiagnosticDescriptor Rule = new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -47,8 +47,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			ITypeSymbol symbol = context.SemanticModel.GetSymbolInfo(property.Type).Symbol as ITypeSymbol;
-			if ((symbol == null) || (symbol.ToString() != @"Microsoft.VisualStudio.TestTools.UnitTesting.TestContext"))
+			if ((context.SemanticModel.GetSymbolInfo(property.Type).Symbol is not ITypeSymbol symbol) || (symbol.ToString() != @"Microsoft.VisualStudio.TestTools.UnitTesting.TestContext"))
 			{
 				return;
 			}
@@ -62,8 +61,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				ReturnStatementSyntax returnStatement = returnNodes.First();
 				if (returnStatement != null)
 				{
-					IdentifierNameSyntax returnVar = returnStatement.Expression as IdentifierNameSyntax;
-					if (returnVar != null)
+					if (returnStatement.Expression is IdentifierNameSyntax returnVar)
 					{
 						varName = returnVar.Identifier.ToString();
 					}
@@ -74,14 +72,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			foreach (IdentifierNameSyntax identifier in context.Node.Parent.DescendantNodes().OfType<IdentifierNameSyntax>())
 			{
 				if ((identifier.Identifier.ToString() == propName) && (identifier.Parent != property) &&
-					!(context.SemanticModel.GetSymbolInfo(identifier).Symbol is ITypeSymbol))
+					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the propery and it's not a type or the original instance, it's used
 					return;
 				}
 
-				if ((identifier.Identifier.ToString() == varName) && !(identifier.Parent is VariableDeclarationSyntax) &&
-					!propNodes.Contains(identifier) && !(context.SemanticModel.GetSymbolInfo(identifier).Symbol is ITypeSymbol))
+				if ((identifier.Identifier.ToString() == varName)
+					&& identifier.Parent is not VariableDeclarationSyntax
+					&& !propNodes.Contains(identifier)
+					&& context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the variable and it's not a type, the original declaration, or part of the property, it's used
 					return;

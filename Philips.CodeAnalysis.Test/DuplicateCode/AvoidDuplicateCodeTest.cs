@@ -66,13 +66,13 @@ Foo.WhitelistedFunction
 
 			for (int i = 1; i < duplicateTokenThreshold * 2; i++)
 			{
-				Mock<TokenInfo> mockToken = new Mock<TokenInfo>(i);
+				Mock<TokenInfo> mockToken = new(i);
 				mockToken.Setup(x => x.GetLocationEnvelope()).Returns(new LocationEnvelope());
 				mockToken.Setup(x => x.GetHashCode()).Returns(i);
 
 				(hash, _) = rollingTokenSet.Add(mockToken.Object);
 
-				int Fib(int n)
+				static int Fib(int n)
 				{
 					if (n == 0) return 0;
 					return n + Fib(n - 1);

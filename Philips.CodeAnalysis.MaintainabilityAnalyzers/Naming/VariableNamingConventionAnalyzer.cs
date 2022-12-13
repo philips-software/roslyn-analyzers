@@ -15,9 +15,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class VariableNamingConventionAnalyzer : DiagnosticAnalyzer
 	{
-		private static Regex _fieldRegex = new Regex(@"^(_|[A-Z]).*$", RegexOptions.Singleline);
-		private static Regex _localRegex = new Regex(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline);
-		private static Regex _eventRegex = new Regex(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline);
+		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline);
+		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline);
+		private static readonly Regex _eventRegex = new(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline);
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_checkFieldVariables = checkFieldVariables;
 		}
 
-		public List<DiagnosticDescriptor> Rules = new List<DiagnosticDescriptor>()
+		public List<DiagnosticDescriptor> Rules = new()
 		{
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
 		};

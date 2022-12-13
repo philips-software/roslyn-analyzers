@@ -215,7 +215,7 @@ public static class Bar
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				List<DiagnosticResult> diagnosticResults = new List<DiagnosticResult>();
+				List<DiagnosticResult> diagnosticResults = new();
 
 				for (int i = 0; i < errorCount; i++)
 				{
@@ -270,7 +270,7 @@ public static class Bar
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				List<DiagnosticResult> diagnosticResults = new List<DiagnosticResult>();
+				List<DiagnosticResult> diagnosticResults = new();
 
 				for (int i = 0; i < errorCount; i++)
 				{

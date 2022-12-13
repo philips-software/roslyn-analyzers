@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Benchmark
 {
 	public class Program
 	{
-		public static void Main(string[] args)
+		public static void Main()
 		{
 			_ = BenchmarkRunner.Run<DuplicationDetectorBenchmark>();
 		}

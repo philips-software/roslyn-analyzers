@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	internal static class Helper
+	public static class Helper
 	{
 		private static bool HasGeneratedCodeAttribute(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Common
 						continue;
 				}
 
-				if (HasAttribute(attributes, context, "GeneratedCode", "System.CodeDom.Compiler.GeneratedCodeAttribute", out Location location))
+				if (HasAttribute(attributes, context, "GeneratedCode", "System.CodeDom.Compiler.GeneratedCodeAttribute", out _))
 				{
 					return true;
 				}
@@ -61,13 +61,13 @@ namespace Philips.CodeAnalysis.Common
 				return false;
 			}
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out Location descriptionLocation);
+			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		public static bool IsTestClass(ClassDeclarationSyntax classDeclaration, SyntaxNodeAnalysisContext context)
 		{
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out Location descriptionLocation);
+			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		/// <summary>
@@ -115,7 +115,6 @@ namespace Philips.CodeAnalysis.Common
 
 		public static bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location)
 		{
-			location = null;
 			return HasAttribute(attributeLists, context, name, fullName, out location, out _);
 		}
 
@@ -127,7 +126,7 @@ namespace Philips.CodeAnalysis.Common
 		public static bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argumentValue)
 		{
 			location = null;
-			argumentValue = default(AttributeArgumentSyntax);
+			argumentValue = default;
 			if (attributeLists == null)
 			{
 				return false;
@@ -154,8 +153,7 @@ namespace Philips.CodeAnalysis.Common
 			{
 				if (attribute.Name.ToString().Contains(name))
 				{
-					IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol as IMethodSymbol;
-					if (memberSymbol != null && memberSymbol.ToString().StartsWith(fullName))
+					if (context.SemanticModel.GetSymbolInfo(attribute).Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 					{
 						location = attribute.GetLocation();
 						return true;
@@ -168,7 +166,7 @@ namespace Philips.CodeAnalysis.Common
 		public static bool HasAttribute(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
 		{
 			location = null;
-			argument = default(AttributeArgumentSyntax);
+			argument = default;
 			foreach (AttributeSyntax attribute in attributes.Attributes)
 			{
 				if (IsAttribute(attribute, context, name, fullName, out location, out argument))
@@ -183,12 +181,11 @@ namespace Philips.CodeAnalysis.Common
 		public static bool IsAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
 		{
 			location = null;
-			argument = default(AttributeArgumentSyntax);
+			argument = default;
 
 			if (attribute.Name.ToString().Contains(name))
 			{
-				IMethodSymbol memberSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol as IMethodSymbol;
-				if (memberSymbol != null && memberSymbol.ToString().StartsWith(fullName))
+				if (context.SemanticModel.GetSymbolInfo(attribute).Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
 					location = attribute.GetLocation();
 					if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
@@ -317,19 +314,12 @@ namespace Philips.CodeAnalysis.Common
 		public static bool IsLiteralTrueFalse(ExpressionSyntax expressionSyntax)
 		{
 			var kind = expressionSyntax.Kind();
-			switch (kind)
+			return kind switch
 			{
-				case SyntaxKind.LogicalNotExpression:
-					//recurse.
-					return IsLiteralTrueFalse(((PrefixUnaryExpressionSyntax)expressionSyntax).Operand);
-
-				case SyntaxKind.TrueLiteralExpression:
-				case SyntaxKind.FalseLiteralExpression:
-					//literal true/false
-					return true;
-				default:
-					return false;
-			}
+				SyntaxKind.LogicalNotExpression => IsLiteralTrueFalse(((PrefixUnaryExpressionSyntax)expressionSyntax).Operand),//recurse.
+				SyntaxKind.TrueLiteralExpression or SyntaxKind.FalseLiteralExpression => true,//literal true/false
+				_ => false,
+			};
 		}
 
 		public static bool IsDerivedFrom(this INamedTypeSymbol symbol, INamedTypeSymbol other)

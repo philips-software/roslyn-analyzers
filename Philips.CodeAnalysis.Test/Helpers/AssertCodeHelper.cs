@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test
 	{
 		#region Non-Public Data Members
 
-		private static string TestTemplate = @"
+		private static readonly string TestTemplate = @"
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

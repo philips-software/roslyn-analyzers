@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test
 	{
 		#region Non-Public Data Members
 
-		private AssertCodeHelper _helper = new AssertCodeHelper();
+		private readonly AssertCodeHelper _helper = new();
 
 		#endregion
 

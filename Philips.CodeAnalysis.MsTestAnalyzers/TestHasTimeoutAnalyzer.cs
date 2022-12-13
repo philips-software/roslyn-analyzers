@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static string DefaultTimeoutKey = "defaultTimeout";
 
-		public static DiagnosticDescriptor Rule => new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		public static DiagnosticDescriptor Rule => new(Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -33,8 +33,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private class TestHasTimeout : TestMethodImplementation
 		{
 			private readonly AdditionalFilesHelper _additionalFilesHelper;
-			private readonly object _lock1 = new object();
-			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new Dictionary<string, ImmutableList<string>>();
+			private readonly object _lock1 = new();
+			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new();
 
 			public TestHasTimeout(MsTestAttributeDefinitions definitions, AdditionalFilesHelper additionalFilesHelper) : base(definitions)
 			{
@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-				bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location _, out AttributeArgumentSyntax categoryArgumentSyntax);
+				bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
 
 				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
@@ -97,7 +97,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				if (!TryExtractAttributeArgument(context, categoryArgumentSyntax, out string categoryArgumentString, out string category))
+				if (!TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string category))
 				{
 					return;
 				}
@@ -153,7 +153,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (!timeouts.Contains(argumentString))
 				{
-					List<string> timeoutStrings = new List<string>();
+					List<string> timeoutStrings = new();
 					foreach (string timeoutString in timeouts)
 					{
 						timeoutStrings.Add($"\"{timeoutString}\"");

@@ -42,12 +42,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterCodeFix(
 				CodeAction.Create(
 					title: Title,
-					createChangedDocument: c => RemoveConstructor(context.Document, diagnostic, token, c),
+					createChangedDocument: c => RemoveConstructor(context.Document, token, c),
 					equivalenceKey: Title),
 				diagnostic);
 		}
 
-		private async Task<Document> RemoveConstructor(Document document, Diagnostic diagnostic, ConstructorDeclarationSyntax ctor, CancellationToken c)
+		private async Task<Document> RemoveConstructor(Document document, ConstructorDeclarationSyntax ctor, CancellationToken c)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
