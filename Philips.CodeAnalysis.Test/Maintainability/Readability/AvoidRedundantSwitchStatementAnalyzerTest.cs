@@ -69,6 +69,31 @@ public class Foo
 			VerifyCSharpDiagnostic(input);
 		}
 
+
+		[TestMethod]
+		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
+		{
+			string input = @"
+public class Foo
+{
+  public static void Method(int data)
+  {
+    switch(data)
+    {
+      default:
+        System.Console.WriteLine(data);
+        break;
+    }
+    int a = data switch
+    {
+      _ => 1
+    }
+  }
+}
+";
+			VerifyCSharpDiagnostic(input, @"Foo.designer");
+		}
+
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
