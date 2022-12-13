@@ -44,14 +44,10 @@ public static class Foo
 		}
 
 
-		[TestMethod]
-		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
-		{
-			string input = @"
-[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
+		private const string SampleMethodWithSwitches = @"
 public class Foo
 {
-  public static void Method(int data)
+  public void Method(int data)
   {
     switch(data)
     {
@@ -66,6 +62,11 @@ public class Foo
   }
 }
 ";
+
+		[TestMethod]
+		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
+		{
+			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
 			VerifyCSharpDiagnostic(input);
 		}
 
@@ -73,25 +74,7 @@ public class Foo
 		[TestMethod]
 		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
-			string input = @"
-public class Foo
-{
-  public static void Method(int data)
-  {
-    switch(data)
-    {
-      default:
-        System.Console.WriteLine(data);
-        break;
-    }
-    int a = data switch
-    {
-      _ => 1
-    }
-  }
-}
-";
-			VerifyCSharpDiagnostic(input, @"Foo.designer");
+			VerifyCSharpDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
 		}
 
 		[DataRow("byte", "1")]
