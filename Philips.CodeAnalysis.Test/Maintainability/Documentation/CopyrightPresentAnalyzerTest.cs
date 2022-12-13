@@ -194,14 +194,6 @@ using System.Reflection;
 			VerifyCSharpDiagnostic(text, filenamePrefix, expected);
 		}
 
-		[DataRow(@"Foo.Designer.cs")]
-		[DataRow(@"Foo.designer.cs")]
-		[DataRow(@"Foo.g.cs")]
-		[DataTestMethod]
-		public void IsGeneratedCaseAgnostic(string text)
-		{
-			Assert.IsTrue(Helper.IsGeneratedCode(text));
-		}
 		#endregion
 	}
 }

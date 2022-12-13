@@ -11,38 +11,6 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class Helper
 	{
-		private static bool HasGeneratedCodeAttribute(SyntaxNodeAnalysisContext context, SyntaxNode node)
-		{
-			while (node != null)
-			{
-				SyntaxList<AttributeListSyntax> attributes;
-				switch (node)
-				{
-					case ClassDeclarationSyntax cls:
-						attributes = cls.AttributeLists;
-						break;
-					case StructDeclarationSyntax st:
-						attributes = st.AttributeLists;
-						break;
-					case MethodDeclarationSyntax method:
-						attributes = method.AttributeLists;
-						break;
-					default:
-						node = node.Parent;
-						continue;
-				}
-
-				if (HasAttribute(attributes, context, "GeneratedCode", "System.CodeDom.Compiler.GeneratedCodeAttribute", out _))
-				{
-					return true;
-				}
-
-				node = node.Parent;
-			}
-
-			return false;
-		}
-
 		public static string ToDiagnosticId(DiagnosticIds id)
 		{
 			return @"PH" + ((int)id).ToString();
@@ -125,6 +93,10 @@ namespace Philips.CodeAnalysis.Common
 
 		public static bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argumentValue)
 		{
+			return HasAttribute(attributeLists, () => { return context.SemanticModel; }, name, fullName, out location, out argumentValue);
+		}
+		public static bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, Func<SemanticModel> getSemanticModel, string name, string fullName, out Location location, out AttributeArgumentSyntax argumentValue)
+		{
 			location = null;
 			argumentValue = default;
 			if (attributeLists == null)
@@ -133,7 +105,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
-				if (HasAttribute(attributes, context, name, fullName, out location, out argumentValue))
+				if (HasAttribute(attributes, getSemanticModel, name, fullName, out location, out argumentValue))
 				{
 					return true;
 				}
@@ -163,13 +135,13 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static bool HasAttribute(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
+		public static bool HasAttribute(AttributeListSyntax attributes, Func<SemanticModel> getSemanticModel, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
 		{
 			location = null;
 			argument = default;
 			foreach (AttributeSyntax attribute in attributes.Attributes)
 			{
-				if (IsAttribute(attribute, context, name, fullName, out location, out argument))
+				if (IsAttribute(attribute, getSemanticModel, name, fullName, out location, out argument))
 				{
 					return true;
 				}
@@ -178,21 +150,25 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static bool IsAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
+		public static bool IsAttribute(AttributeSyntax attribute, Func<SemanticModel> getSemanticModel, string name, string fullName, out Location location, out AttributeArgumentSyntax argument)
 		{
 			location = null;
 			argument = default;
 
 			if (attribute.Name.ToString().Contains(name))
 			{
-				if (context.SemanticModel.GetSymbolInfo(attribute).Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
+				SymbolInfo symbolInfo = getSemanticModel().GetSymbolInfo(attribute);
+				if (symbolInfo.Symbol is IMethodSymbol memberSymbol)
 				{
-					location = attribute.GetLocation();
-					if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
+					if (memberSymbol.ToString().StartsWith(fullName))
 					{
-						argument = attribute.ArgumentList.Arguments.First();
+						location = attribute.GetLocation();
+						if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
+						{
+							argument = attribute.ArgumentList.Arguments.First();
+						}
+						return true;
 					}
-					return true;
 				}
 			}
 
@@ -200,7 +176,7 @@ namespace Philips.CodeAnalysis.Common
 		}
 		public static bool IsAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, AttributeDefinition attributeDefinition, out Location location, out AttributeArgumentSyntax argument)
 		{
-			return IsAttribute(attribute, context, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
+			return IsAttribute(attribute, () => { return context.SemanticModel; }, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
 		}
 
 		public static bool IsDataRowAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context)
@@ -264,22 +240,7 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static bool IsGeneratedCode(SyntaxNodeAnalysisContext context)
-		{
-			string myFilePath = context.Node.SyntaxTree.FilePath;
-
-			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context, context.Node);
-		}
-
-		public static bool IsGeneratedCode(string filePath)
-		{
-			string fileName = GetFileName(filePath);
-			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
-			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
-			return isDesignerFile || isGeneratedFile;
-		}
-
-		private static string GetFileName(string filePath)
+		public static string GetFileName(string filePath)
 		{
 			string[] nodes = filePath.Split('/', '\\');
 			return nodes[nodes.Length - 1];
