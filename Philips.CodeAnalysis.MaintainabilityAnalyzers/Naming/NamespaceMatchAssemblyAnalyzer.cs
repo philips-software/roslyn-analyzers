@@ -39,17 +39,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			string myNamespace = namespaceDeclaration.Name.ToString();
 			string myFilePath = context.Node.SyntaxTree.FilePath;
-			string[] nodes = myFilePath.Split('/', '\\');
+
+			// Check file path
+			if (IsFilePartOfPath(myNamespace, myFilePath))
+			{
+				return;
+			}
+
+			// Check assembly name
+			string myAssemblyName = context.Compilation?.AssemblyName;
+			if (string.IsNullOrEmpty(myAssemblyName) || myAssemblyName.Contains(myNamespace))
+			{
+				return;
+			}
+
+			Diagnostic diagnostic = Diagnostic.Create(Rule, namespaceDeclaration.Name.GetLocation());
+			context.ReportDiagnostic(diagnostic);
+		}
+
+		private static bool IsFilePartOfPath(string ns, string path)
+		{
+			string[] nodes = path.Split('/', '\\');
 
 			for (int i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
 			{
-				if (string.Compare(nodes[i], myNamespace, StringComparison.OrdinalIgnoreCase) == 0)
+				if (string.Compare(nodes[i], ns, StringComparison.OrdinalIgnoreCase) == 0)
 				{
-					return;
+					return true;
 				}
 			}
-			Diagnostic diagnostic = Diagnostic.Create(Rule, namespaceDeclaration.Name.GetLocation());
-			context.ReportDiagnostic(diagnostic);
+
+			return false;
 		}
 	}
 }
