@@ -189,7 +189,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(file);
 		}
 
 		/// <summary>
@@ -313,7 +313,7 @@ class ContainerControl
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
 		{
 			string code = CreateCode(@"", @"");
-			VerifyCSharpDiagnostic(code, @"Test.Designer", new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(code, @"Test.Designer");
 		}
 
 		#endregion

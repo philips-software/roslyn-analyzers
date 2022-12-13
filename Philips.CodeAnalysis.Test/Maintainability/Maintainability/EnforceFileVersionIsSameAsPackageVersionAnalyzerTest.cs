@@ -49,7 +49,7 @@ class FooClass
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+				VerifyCSharpDiagnostic(code);
 			}
 		}
 
@@ -72,7 +72,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(code);
 		}
 
 		[TestMethod]
@@ -91,7 +91,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(code);
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

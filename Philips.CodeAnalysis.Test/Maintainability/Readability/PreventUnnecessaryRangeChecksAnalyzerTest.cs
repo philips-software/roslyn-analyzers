@@ -353,7 +353,7 @@ using System.Collections.Generic;
 class Foo {{
 public void test()
 {{
-	{1};
+	{0};
 	if(data.{1} > 0)
 	{{
 		foreach(int i in data)
@@ -384,7 +384,7 @@ using System.Collections.Generic;
 class Foo {{
 public void test()
 {{
-	{1};
+	{0};
 	if(data.{1} != 0)
 	{{
 		foreach(int i in data)
@@ -413,7 +413,7 @@ using System.Collections.Generic;
 class Foo {{
 public void test()
 {{
-	{1};
+	{0};
 	if(data.{1} != 0)
 	{{
 		foreach(int i in data)

@@ -82,7 +82,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		public void DoNotReportANamespacePrefixError()
 		{
 			string code = string.Format(ClassString, configuredPrefix + ".");
-			VerifyCSharpDiagnostic(code, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(code);
 		}
 
 		#endregion

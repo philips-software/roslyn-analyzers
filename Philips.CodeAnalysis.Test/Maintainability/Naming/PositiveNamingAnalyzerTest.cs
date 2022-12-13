@@ -40,7 +40,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(template);
 		}
 
 		[TestMethod]

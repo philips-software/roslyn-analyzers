@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -40,9 +41,9 @@ namespace Philips.CodeAnalysis.Benchmark
 		{
 			get
 			{
-				foreach (var dir in new string[] { })
+				foreach (var dir in Array.Empty<string>())
 				{
-					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = new Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>>();
+					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = new();
 
 					foreach (var file in Directory.EnumerateFiles(dir, "*.cs", SearchOption.AllDirectories))
 					{
@@ -89,7 +90,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new();
 
 			TestDictionary(_library, 2048, 1723);
 		}
@@ -97,7 +98,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new();
 
 			TestDictionary(_library, 227, 1000005);
 		}
