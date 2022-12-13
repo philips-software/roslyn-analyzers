@@ -87,7 +87,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void AnalyzeCondition(SyntaxNodeAnalysisContext context, ExpressionSyntax conditionNode)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}

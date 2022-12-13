@@ -52,7 +52,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -73,7 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			if (Helper.IsGeneratedCode(context))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}

@@ -53,13 +53,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
-			var filePath = context.Tree.FilePath;
-
-			if (Helper.IsGeneratedCode(filePath))
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
 
+			var filePath = context.Tree.FilePath;
 			if (filePath.IndexOf(' ') != -1)
 			{
 				var location = Location.Create(context.Tree, TextSpan.FromBounds(0, 0));
