@@ -13,8 +13,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AssertAreEqualAnalyzer : AssertMethodCallDiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"Assert.AreEqual/AreNotEqual should be of the form AreEqual(<Expected Non-Null Literal>, <Actual Expression>).";
 		private const string Title = @"Assert.AreEqual/AreNotEqual Usage";
-		private const string MessageFormat = @"Assert.AreEqual/AreNotEqual should be of the form AreEqual(<Expected Non-Null Literal>, <Actual Expression>).";
 		private const string Description = @"Assert.AreEqual(<actual>, <expected>) => Assert.AreEqual(<expected>, <actual>) and Assert.AreEqual(null, <actual>) => Assert.IsNull(<actual>).";
 		private const string Category = Categories.Maintainability;
 
@@ -45,18 +45,19 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			bool arg0Literal = IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
 			bool arg1Literal = IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			bool arg0Null = IsNull(argumentList.Arguments[0].Expression);
 
 			if (!arg0Literal && !arg1Literal)
 			{
 				return null;
 			}
 
-			if (arg0Literal)
+			if (arg0Literal && !arg0Null)
 			{
 				return null;
 			}
 
-			if (arg1Literal)
+			if (arg1Literal || arg0Null)
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
 				return new[] { diagnostic };
@@ -86,6 +87,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			return false;
+		}
+
+		private bool IsNull(ExpressionSyntax expression)
+		{
+			return expression.ToString().Contains("null");
 		}
 	}
 }

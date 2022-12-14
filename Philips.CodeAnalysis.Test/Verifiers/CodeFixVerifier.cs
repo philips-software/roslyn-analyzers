@@ -137,7 +137,8 @@ namespace Philips.CodeAnalysis.Test
 			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length);
 			for (int i = 0; i < actualSourceLines.Length; i++)
 			{
-				Assert.AreEqual(expectedSourceLines[i], actualSourceLines[i], $"Source line {i}");
+				// Trimming the lines, to ignore indentation differences.
+				Assert.AreEqual(expectedSourceLines[i].Trim(), actualSourceLines[i].Trim(), $"Source line {i}");
 			}
 		}
 	}
