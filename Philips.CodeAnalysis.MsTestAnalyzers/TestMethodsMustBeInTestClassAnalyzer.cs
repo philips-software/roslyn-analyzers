@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsMustBeInTestClassAnalyzer : TestAttributeDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must be in [TestClass]";
-		public static string MessageFormat = @"{0} is not in a [TestClass]";
+		public readonly static string MessageFormat = @"{0} is not in a [TestClass]";
 		private const string Description = @"Tests are only executed if they are [TestClass]";
 		private const string Category = Categories.Maintainability;
 

@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			IEnumerable<MethodDeclarationSyntax> ancestorMethods = context.Node.Ancestors().OfType<MethodDeclarationSyntax>();
-			if (ancestorMethods.Count() > 0)
+			if (ancestorMethods.Any())
 			{
 				MethodDeclarationSyntax parentMethod = ancestorMethods.First();
 				if (parentMethod.Identifier.Text == @"Dispose")

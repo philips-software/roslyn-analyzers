@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Solution> AdditionalDocumentAppendLine(Document document, TextDocument textDocument, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
 		{
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-			string newLine = semanticModel.GetDeclaredSymbol(classDeclaration).ToDisplayString();
+			string newLine = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken).ToDisplayString();
 
 			SourceText sourceText = await textDocument.GetTextAsync(cancellationToken).ConfigureAwait(false);
 			SourceText newSourceText = AddLineToSourceText(sourceText, newLine);

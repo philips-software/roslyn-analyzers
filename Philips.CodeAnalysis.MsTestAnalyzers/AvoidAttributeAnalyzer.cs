@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
 
-		public static ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
+		public readonly static ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
 

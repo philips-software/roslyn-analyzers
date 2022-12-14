@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsShouldHaveUniqueNamesAnalyzer : TestClassDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods should not have the same name";
-		public static string MessageFormat = @"Multiple tests named '{0}'";
+		public readonly static string MessageFormat = @"Multiple tests named '{0}'";
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 

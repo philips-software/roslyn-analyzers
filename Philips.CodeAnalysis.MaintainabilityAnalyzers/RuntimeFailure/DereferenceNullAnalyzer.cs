@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Description = @"Using the 'as' expression means a check should be made before dereferencing, or cast if you definitively know it will be this type in this context.";
 		private const string Category = Categories.RuntimeFailure;
 
-		public static DiagnosticDescriptor Rule = new(
+		public readonly static DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticIds.DereferenceNull),
 			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

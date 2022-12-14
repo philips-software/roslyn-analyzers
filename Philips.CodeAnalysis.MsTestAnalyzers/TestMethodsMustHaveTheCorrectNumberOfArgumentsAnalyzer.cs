@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must have the correct number of arguments";
-		public static string MessageFormat = @"'{0}' has the wrong number of parameters";
+		public readonly static string MessageFormat = @"'{0}' has the wrong number of parameters";
 		private const string Description = @"DataTestMethods should have the same number of parameters of the DataRows, TestMethods should have no arguments";
 		private const string Category = Categories.Maintainability;
 

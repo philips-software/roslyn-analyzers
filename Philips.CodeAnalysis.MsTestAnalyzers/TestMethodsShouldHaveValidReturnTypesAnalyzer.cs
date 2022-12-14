@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsShouldHaveValidReturnTypesAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods must return void or Task for async methods";
-		public static string MessageFormat = @"Test method should return '{0}', actually returns '{1}'";
+		public readonly static string MessageFormat = @"Test method should return '{0}', actually returns '{1}'";
 		private const string Description = @"MSTest will not run tests that return something other than void, or Task for async tests.";
 		private const string Category = Categories.Maintainability;
 

@@ -123,7 +123,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return !GetMethod(prefixUnaryExpressionSyntax.Operand);
 			}
 
-			throw new ArgumentException(nameof(literalExpected));
+			throw new ArgumentException(@"A literal was expected.", nameof(literalExpected));
 		}
 	}
 }

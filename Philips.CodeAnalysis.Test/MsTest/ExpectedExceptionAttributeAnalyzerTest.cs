@@ -28,7 +28,7 @@ namespace ExpectedAnalyzerAttributeTest
   }
 }
 ";
-			DiagnosticResult expected = new DiagnosticResult
+			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.ExpectedExceptionAttribute),
 				Message = new Regex(ExpectedExceptionAttributeAnalyzer.MessageFormat),

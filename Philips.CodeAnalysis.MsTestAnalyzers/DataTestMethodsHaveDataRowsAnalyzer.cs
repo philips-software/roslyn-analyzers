@@ -14,10 +14,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		private const string Title = @"DataTestMethods must have at least 1 DataRow or 1 DynamicData, TestMethods must have none";
 
-		public static string MessageFormatMismatchedCount = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
+		public readonly static string MessageFormatMismatchedCount = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
 
-		public static string MessageFormatIsTestMethod = @"TestMethod has parameterized input data.  Convert to DataTestMethod.";
-		public static string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
+		public readonly static string MessageFormatIsTestMethod = @"TestMethod has parameterized input data.  Convert to DataTestMethod.";
+		public readonly static string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
 
 		private const string Description = @"DataTestMethods are only executed with DataRows";
 		private const string Category = Categories.Maintainability;

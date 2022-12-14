@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			string propName = property.Identifier.ToString();
 			IEnumerable<SyntaxNode> propNodes = context.Node.DescendantNodes();
 			IEnumerable<ReturnStatementSyntax> returnNodes = propNodes.OfType<ReturnStatementSyntax>();
-			if (returnNodes.Count() > 0)
+			if (returnNodes.Any())
 			{
 				ReturnStatementSyntax returnStatement = returnNodes.First();
 				if (returnStatement != null)

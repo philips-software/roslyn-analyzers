@@ -135,9 +135,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 					if (RegionChecks.ContainsKey(regionName))
 					{
-						if (regionLocations.ContainsKey(regionName))
+						if (regionLocations.Remove(regionName))
 						{
-							regionLocations.Remove(regionName);
 							CreateDiagnostic(region.DirectiveNameToken.GetLocation(), context, regionName, EnforceNonDupliateRegion);
 						}
 						else

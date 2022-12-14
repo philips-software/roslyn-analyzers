@@ -68,38 +68,16 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 
 		private string GetWellKnownTypeName(string variableName)
 		{
-			string typeName;
-			switch (variableName)
+			string typeName = variableName switch
 			{
-				case "i":
-				case "j":
-					typeName = "int";
-					break;
-				case "str1":
-				case "str2":
-					typeName = "string";
-					break;
-				case "f1":
-				case "f2":
-					typeName = "float";
-					break;
-				case "d1":
-				case "d2":
-					typeName = "double";
-					break;
-				case "b1":
-				case "b2":
-					typeName = "bool";
-					break;
-				case "x1":
-				case "x2":
-					typeName = "byte";
-					break;
-				default:
-					typeName = "";
-					break;
-			}
-
+				"i" or "j" => "int",
+				"str1" or "str2" => "string",
+				"f1" or "f2" => "float",
+				"d1" or "d2" => "double",
+				"b1" or "b2" => "bool",
+				"x1" or "x2" => "byte",
+				_ => "",
+			};
 			return typeName;
 		}
 	}

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		#region Non-Public Data Members
 
 		private const string Title = @"Check for UserControl constructor chains calls to InitializeComponent()";
-		public static string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
+		public readonly static string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
 		private const string Category = Categories.Maintainability;
 
