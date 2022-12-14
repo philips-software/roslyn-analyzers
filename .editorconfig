@@ -21,11 +21,15 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # IDE0060 should not trip on [DataRow] tests
 dotnet_code_quality_unused_parameters = non_public
 
-dotnet_diagnostic.RS1017.severity = none
-dotnet_diagnostic.RS1024.severity = error
-dotnet_diagnostic.RS1025.severity = error
-dotnet_diagnostic.RS1026.severity = error
-dotnet_diagnostic.TI11409.severity = none
+# Do not facilitate static methods
+dotnet_diagnostic.CA1822.severity = none
+
+dotnet_diagnostic.CA1825.severity = error
+dotnet_diagnostic.CA1829.severity = error
+dotnet_diagnostic.CA2241.severity = error
+
+# We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.
+dotnet_diagnostic.SYSLIB1045.severity = none
 
 dotnet_diagnostic.IDE0009.severity = error
 dotnet_diagnostic.IDE0018.severity = error
@@ -43,6 +47,8 @@ dotnet_diagnostic.IDE0062.severity = error
 dotnet_diagnostic.IDE0066.severity = error
 dotnet_diagnostic.IDE0074.severity = error
 dotnet_diagnostic.IDE0083.severity = error
+dotnet_diagnostic.IDE0090.severity = error
+dotnet_diagnostic.IDE0250.severity = error
 
 # Cannot use index/range with .NET Standard 2.0
 dotnet_diagnostic.IDE0056.severity = none

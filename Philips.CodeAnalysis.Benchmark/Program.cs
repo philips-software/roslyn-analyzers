@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -10,6 +12,7 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
 namespace Philips.CodeAnalysis.Benchmark
 {
+    [ExcludeFromCodeCoverage]
 	public class Program
 	{
 		public static void Main()
@@ -18,7 +21,8 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	public class Input
+    [ExcludeFromCodeCoverage]
+    public class Input
 	{
 		public string Folder { get; set; }
 		public Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> Data { get; set; }
@@ -29,7 +33,8 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[SimpleJob(launchCount: 3, warmupCount: 2, targetCount: 5)]
+    [ExcludeFromCodeCoverage]
+    [SimpleJob(launchCount: 3, warmupCount: 2, targetCount: 5)]
 	public class DuplicationDetectorBenchmark
 	{
 		[ParamsSource(nameof(ValuesForA))]
@@ -40,9 +45,9 @@ namespace Philips.CodeAnalysis.Benchmark
 		{
 			get
 			{
-				foreach (var dir in new string[] { })
+				foreach (var dir in Array.Empty<string>())
 				{
-					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = new Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>>();
+					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = new();
 
 					foreach (var file in Directory.EnumerateFiles(dir, "*.cs", SearchOption.AllDirectories))
 					{
@@ -89,7 +94,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new();
 
 			TestDictionary(_library, 2048, 1723);
 		}
@@ -97,7 +102,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			DuplicateDetectorDictionary _library = new DuplicateDetectorDictionary();
+			DuplicateDetectorDictionary _library = new();
 
 			TestDictionary(_library, 227, 1000005);
 		}

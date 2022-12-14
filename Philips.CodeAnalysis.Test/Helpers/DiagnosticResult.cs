@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test
 	/// <summary>
 	/// Location where the diagnostic appears, as determined by path, line number, and column number.
 	/// </summary>
-	public struct DiagnosticResultLocation
+	public readonly struct DiagnosticResultLocation
 	{
 		public DiagnosticResultLocation(int? line) : this(null, line, null)
 		{
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			get
 			{
-				locations ??= new DiagnosticResultLocation[] { };
+				locations ??= Array.Empty<DiagnosticResultLocation>();
 				return locations;
 			}
 

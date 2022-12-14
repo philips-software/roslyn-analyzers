@@ -59,7 +59,7 @@ class Foo
 
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult[0]);
+			VerifyCSharpDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
