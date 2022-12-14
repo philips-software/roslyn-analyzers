@@ -16,15 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidRedundantSwitchStatementAnalyzer();
-		}
-
-		
-		protected override MetadataReference[] GetMetadataReferences()
-		{
-			string referenceLocation = typeof(GeneratedCodeAttribute).Assembly.Location;
-			MetadataReference reference = MetadataReference.CreateFromFile(referenceLocation);
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
 
 		[DataRow("byte")]
@@ -49,6 +41,40 @@ public static class Foo
 ";
 
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+		}
+
+
+		private const string SampleMethodWithSwitches = @"
+public class Foo
+{
+  public void Method(int data)
+  {
+    switch(data)
+    {
+      default:
+        System.Console.WriteLine(data);
+        break;
+    }
+    int a = data switch
+    {
+      _ => 1
+    }
+  }
+}
+";
+
+		[TestMethod]
+		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
+		{
+			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
+			VerifyCSharpDiagnostic(input);
+		}
+
+
+		[TestMethod]
+		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
+		{
+			VerifyCSharpDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
 		}
 
 		[DataRow("byte", "1")]

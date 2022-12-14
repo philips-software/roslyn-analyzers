@@ -11,18 +11,8 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class GeneratedCodeDetector
 	{
-		private readonly string _attributeName;
-		private readonly string _fullAttributeName;
-
-		public GeneratedCodeDetector()
-			: this(@"GeneratedCode", @"System.CodeDom.Compiler.GeneratedCodeAttribute")
-		{ }
-
-		public GeneratedCodeDetector(string attributeName, string fullAttributeName)
-		{
-			_attributeName = attributeName;
-			_fullAttributeName = fullAttributeName;
-		}
+		private const string AttributeName = @"GeneratedCode";
+		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
 		private bool HasGeneratedCodeAttribute(SyntaxNode node, Func<SemanticModel> getSemanticModel)
 		{
@@ -45,7 +35,7 @@ namespace Philips.CodeAnalysis.Common
 						continue;
 				}
 
-				if (Helper.HasAttribute(attributes, getSemanticModel, _attributeName, _fullAttributeName, out _, out _))
+				if (Helper.HasAttribute(attributes, getSemanticModel, AttributeName, FullAttributeName, out _, out _))
 				{
 					return true;
 				}
