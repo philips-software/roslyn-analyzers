@@ -1,3 +1,5 @@
+// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;

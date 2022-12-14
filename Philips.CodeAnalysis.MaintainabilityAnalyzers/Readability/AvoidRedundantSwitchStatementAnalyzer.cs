@@ -12,6 +12,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidRedundantSwitchStatementAnalyzer : DiagnosticAnalyzer
 	{
+		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
+
 		private const string Title = @"Do not use redundant switch statements";
 		private const string MessageFormat = @"Switch statement only has a default case.  Remove the switch statement and just use the default case code.";
 		private const string Description = @"Elide the switch statement";
@@ -19,11 +21,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidSwitchStatementsWithNoCases), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
+		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags = GeneratedCodeAnalysisFlags.None)
+		{
+			_generatedCodeFlags = generatedCodeFlags;
+		}
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
 			context.EnableConcurrentExecution();
 			context.RegisterOperationAction(Analyze, OperationKind.Switch);
 			context.RegisterOperationAction(AnalyzeExpression, OperationKind.SwitchExpression);
@@ -31,6 +38,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void Analyze(OperationAnalysisContext operationContext)
 		{
+			GeneratedCodeDetector generatedCodeDetector= new();
+			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			{
+				return;
+			}
+
 			ISwitchOperation operation = (ISwitchOperation)operationContext.Operation;
 			if (operation.Cases.Length != 1)
 			{
@@ -48,8 +61,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
-			ISwitchExpressionOperation operation = (ISwitchExpressionOperation)operationContext.Operation;
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			{
+				return;
+			}
 
+			ISwitchExpressionOperation operation = (ISwitchExpressionOperation)operationContext.Operation;
 			if (operation.Arms.Length != 1)
 			{
 				return;

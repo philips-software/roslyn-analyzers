@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using System.Collections.Immutable;
-using System.Text;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Common;
-using Microsoft.CodeAnalysis.Operations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 
-namespace Philips.CodeAnalysis.Test.CommonTest
+namespace Philips.CodeAnalysis.Test.Common
 {
 	[TestClass]
 	public class GeneratedCodeDetectorTest : DiagnosticVerifier

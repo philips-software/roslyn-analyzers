@@ -14,19 +14,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class TestContextAnalyzer : DiagnosticAnalyzer
 	{
+		public const string MessageFormat = @"TestContext should be used or removed.";
 		private const string Title = @"TestContext Usage";
-		private const string MessageFormat = @"TestContext should be used or removed.";
 		private const string Description = @"TestContext should not be included in test classes unless it is actually used.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public string MahTitle
-		{
-			get { return Title; }
-		}
 
 		public override void Initialize(AnalysisContext context)
 		{
