@@ -21,11 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidSwitchStatementsWithNoCases), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public AvoidRedundantSwitchStatementAnalyzer()
-			: this(GeneratedCodeAnalysisFlags.None)
-		{ }
-
-		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
+		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags = GeneratedCodeAnalysisFlags.None)
 		{
 			_generatedCodeFlags = generatedCodeFlags;
 		}
