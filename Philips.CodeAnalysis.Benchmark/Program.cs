@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -11,6 +12,7 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
 namespace Philips.CodeAnalysis.Benchmark
 {
+    [ExcludeFromCodeCoverage]
 	public class Program
 	{
 		public static void Main()
@@ -19,7 +21,8 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	public class Input
+    [ExcludeFromCodeCoverage]
+    public class Input
 	{
 		public string Folder { get; set; }
 		public Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> Data { get; set; }
@@ -30,7 +33,8 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[SimpleJob(launchCount: 3, warmupCount: 2, targetCount: 5)]
+    [ExcludeFromCodeCoverage]
+    [SimpleJob(launchCount: 3, warmupCount: 2, targetCount: 5)]
 	public class DuplicationDetectorBenchmark
 	{
 		[ParamsSource(nameof(ValuesForA))]
