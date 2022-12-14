@@ -47,12 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check assembly name
-			string myAssemblyName = context.Compilation?.AssemblyName;
-			if (string.IsNullOrEmpty(myAssemblyName) || myAssemblyName.Contains(myNamespace))
-			{
-				return;
-			}
+			// TODO: Check assembly name, see issue #174
 
 			Diagnostic diagnostic = Diagnostic.Create(Rule, namespaceDeclaration.Name.GetLocation());
 			context.ReportDiagnostic(diagnostic);
