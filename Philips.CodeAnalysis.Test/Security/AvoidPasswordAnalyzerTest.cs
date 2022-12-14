@@ -31,7 +31,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow("private string _x, _password);", @"")]
 		[DataRow("private const string MyPassword = \"Hi\");", @"")]
-		[DataRow("public void Password {get; set;}", @"")]
+		[DataRow("public string Password {get; set;}", @"")]
 		[DataRow(@"", "/*  MyPassword */")]
 		[DataRow(@"", "//  MyPassword")]
 		public void CheckPasswordTest(string content0, string content1)
@@ -44,7 +44,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow("private string _x, _y);", @"")]
 		[DataRow("private const string MyField = \"Hi\");", @"")]
-		[DataRow("public void MyProperty {get; set;}", @"")]
+		[DataRow("public string MyProperty {get; set;}", @"")]
 		[DataRow(@"", "/*  MyComment */")]
 		[DataRow(@"", "//  MyComment")]
 		public void CheckNoPasswordTest(string content0, string content1)

@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.MsTestAnalyzers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class AssertAreEquaAnalyzerTest : AssertCodeFixVerifier
+	public class AssertAreEqualAnalyzerTest : AssertCodeFixVerifier
 	{
 		#region Non-Public Data Members
 
@@ -114,6 +114,25 @@ Assert.AreEqual({expectedParameter}, {actualParameter});
 			{
 				VerifyNoError(template);
 			}
+		}
+
+		[DataRow("-1")]
+		[DataRow("1")]
+		[DataRow("0")]
+		[DataRow("-1u")]
+		[DataRow("1u")]
+		[DataRow("0u")]
+		[DataTestMethod]
+		public void CheckNull(string arg)
+		{
+			string template = @$"
+Assert.AreEqual(null, {arg});
+";
+			string fixTemplate = @$"
+Assert.IsNull({arg});
+";
+
+			VerifyChange(template, fixTemplate);
 		}
 
 		[TestMethod]

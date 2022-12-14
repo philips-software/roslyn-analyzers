@@ -75,7 +75,7 @@ namespace ComplexConditionUnitTests {
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(Common.DiagnosticIds.LimitConditionComplexity);
+			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
 			VerifyCSharpDiagnostic(testCode, expected);
 		}
 
