@@ -21,11 +21,20 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # IDE0060 should not trip on [DataRow] tests
 dotnet_code_quality_unused_parameters = non_public
 
+# Do not require CultureInfo for string formatting
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA1310.severity = none
+dotnet_diagnostic.CA1824.severity = none
+
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
 
 dotnet_diagnostic.CA1825.severity = error
+dotnet_diagnostic.CA1827.severity = error
 dotnet_diagnostic.CA1829.severity = error
+dotnet_diagnostic.CA1853.severity = error
+dotnet_diagnostic.CA2016.severity = error
+dotnet_diagnostic.CA2211.severity = error
 dotnet_diagnostic.CA2241.severity = error
 
 # We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.

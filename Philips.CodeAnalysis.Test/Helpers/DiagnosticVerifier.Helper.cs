@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test
 			return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, filenamePrefix, language));
 		}
 
-		private class TestAdditionalText : AdditionalText
+		private sealed class TestAdditionalText : AdditionalText
 		{
 			private readonly SourceText _sourceText;
 
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.Test
 			}
 		}
 
-		private class TestAnalyzerConfigOptions : AnalyzerConfigOptions
+		private sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 		{
 			private readonly Dictionary<string, string> _options;
 
@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.Test
 			}
 		}
 
-		private class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
+		private sealed class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
 		{
 			private readonly TestAnalyzerConfigOptions _configOptions;
 

@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestClassMustBePublicAnalyzer : TestClassDiagnosticAnalyzer
 	{
 		private const string Title = @"[TestClass] must be a public instance class";
-		public static string MessageFormat = @"'{0}' is not a public instance class";
+		public readonly static string MessageFormat = @"'{0}' is not a public instance class";
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 

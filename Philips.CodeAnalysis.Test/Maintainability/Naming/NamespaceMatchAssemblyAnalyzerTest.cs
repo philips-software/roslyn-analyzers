@@ -30,8 +30,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}}
 			";
 
-		private const string configuredPrefix = @"Philips.";
-
 		#endregion
 
 		#region Non-Public Properties/Methods

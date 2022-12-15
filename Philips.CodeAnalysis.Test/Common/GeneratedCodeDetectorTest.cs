@@ -15,12 +15,12 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		#region Helper Analyzer
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private class AvoidWritingCodeAnalyzer : DiagnosticAnalyzer
+		private sealed class AvoidWritingCodeAnalyzer : DiagnosticAnalyzer
 		{
-			public static bool ShouldAnalyzeTree { get; set; } = false;
-			public static bool ShouldAnalyzeConstructor { get; set; } = false;
-			public static bool ShouldAnalyzeStruct { get; set; } = false;
-			public static bool ShouldAnalyzeSwitch { get; set; } = false;
+			public static bool ShouldAnalyzeTree { get; set; }
+			public static bool ShouldAnalyzeConstructor { get; set; }
+			public static bool ShouldAnalyzeStruct { get; set; }
+			public static bool ShouldAnalyzeSwitch { get; set; }
 
 			private const string Title = @"Avoid writing code";
 			public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodName), Title, Title, Categories.Maintainability, DiagnosticSeverity.Error, true, Title);

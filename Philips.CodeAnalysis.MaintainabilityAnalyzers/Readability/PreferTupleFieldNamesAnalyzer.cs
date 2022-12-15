@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"For readability use the name provided for this field, not a generic field name";
 		private const string Category = Categories.Readability;
 
-		public static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreferUsingNamedTupleField), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public readonly static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreferUsingNamedTupleField), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
