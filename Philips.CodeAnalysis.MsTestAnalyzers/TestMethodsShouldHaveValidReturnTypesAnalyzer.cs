@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
 
-		private class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
+		private sealed class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
 		{
 			private readonly INamedTypeSymbol _taskSymbol;
 

@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
 
-		private class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
+		private sealed class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
 		{
 			public TestMethodsMustHaveTheCorrectNumberOfArguments(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }

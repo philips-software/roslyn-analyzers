@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBePublic(definitions);
 
-		private class TestMethodsMustBePublic : TestMethodImplementation
+		private sealed class TestMethodsMustBePublic : TestMethodImplementation
 		{
 			public TestMethodsMustBePublic(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }

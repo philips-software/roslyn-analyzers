@@ -29,15 +29,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var exceptions = helper.LoadExceptions(FileName);
 			var allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories").ToImmutableHashSet();
 
-			return new TestHasCategoryAttribute(exceptions, allowedCategories, definitions);
+			return new TestHasAttributeCategory(exceptions, allowedCategories, definitions);
 		}
 
-		public class TestHasCategoryAttribute : TestMethodImplementation
+		public class TestHasAttributeCategory : TestMethodImplementation
 		{
 			private readonly HashSet<string> _exceptions;
 			private readonly ImmutableHashSet<string> _allowedCategories;
 
-			public TestHasCategoryAttribute(HashSet<string> exceptions, ImmutableHashSet<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestHasAttributeCategory(HashSet<string> exceptions, ImmutableHashSet<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions)
 			{
 				_exceptions = exceptions;
 				_allowedCategories = allowedCategories;

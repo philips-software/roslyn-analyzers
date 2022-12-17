@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new TestHasTimeout(definitions, additionalFilesHelper);
 		}
 
-		private class TestHasTimeout : TestMethodImplementation
+		private sealed class TestHasTimeout : TestMethodImplementation
 		{
 			private readonly AdditionalFilesHelper _additionalFilesHelper;
 			private readonly object _lock1 = new();

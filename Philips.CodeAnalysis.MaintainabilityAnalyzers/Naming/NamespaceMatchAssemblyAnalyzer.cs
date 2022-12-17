@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			for (int i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
 			{
-				if (string.Compare(nodes[i], ns, StringComparison.OrdinalIgnoreCase) == 0)
+				if (string.Equals(nodes[i], ns, StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
