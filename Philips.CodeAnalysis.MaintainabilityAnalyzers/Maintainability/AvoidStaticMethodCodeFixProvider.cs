@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			var modifierToRemove = method.Modifiers.Where(m => m.ValueText == @"static").First();
-			var newModifiers = ((SyntaxTokenList)method.Modifiers).Remove(modifierToRemove);
+			var newModifiers = method.Modifiers.Remove(modifierToRemove);
 
 			MethodDeclarationSyntax newMethod = method.WithModifiers(newModifiers);
 			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);

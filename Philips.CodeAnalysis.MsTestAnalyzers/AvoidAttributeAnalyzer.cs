@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
 
-		public readonly static ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
+		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
 
@@ -58,11 +58,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				var builder = ImmutableHashSet.CreateBuilder<string>();
 				if (text != null)
+				{
 					foreach (var textLine in text.Lines)
 					{
 						string line = textLine.ToString();
 						builder.Add(line);
 					}
+				}
 
 				return builder.ToImmutable();
 			}
@@ -110,12 +112,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			id = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 
-			if (whitelist.Contains(id))
-			{
-				return true;
-			}
-
-			return false;
+			return whitelist.Contains(id);
 		}
 
 		private static ImmutableArray<DiagnosticDescriptor> GetRules(ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes)

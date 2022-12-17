@@ -80,11 +80,7 @@ namespace Philips.CodeAnalysis.Common
 #nullable enable
 			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))
 			{
-				if (value == null)
-				{
-					return string.Empty;
-				}
-				return value.ToString();
+				return value == null ? string.Empty : value.ToString();
 			}
 #nullable disable
 			return string.Empty;

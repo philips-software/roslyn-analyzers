@@ -200,28 +200,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			const string IsNull = "IsNull";
 			const string IsNotNull = "IsNotNull";
 
-			if (isIsTrue)
-			{
-				if (isNotEquals)
-				{
-					return isNullArgument ? IsNotNull : AreNotEqual;
-				}
-				else
-				{
-					return isNullArgument ? IsNull : AreEqual;
-				}
-			}
-			else
-			{
-				if (isNotEquals)
-				{
-					return isNullArgument ? IsNull : AreEqual;
-				}
-				else
-				{
-					return isNullArgument ? IsNotNull : AreNotEqual;
-				}
-			}
+			return isIsTrue
+				? isNotEquals ? isNullArgument ? IsNotNull : AreNotEqual : isNullArgument ? IsNull : AreEqual
+				: isNotEquals ? isNullArgument ? IsNull : AreEqual : isNullArgument ? IsNotNull : AreNotEqual;
 		}
 
 		private ArgumentListSyntax DecomposeEqualsFunction(ArgumentListSyntax argumentList, out bool isNotEquals)

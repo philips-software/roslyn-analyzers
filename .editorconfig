@@ -19,7 +19,7 @@ dotnet_style_require_accessibility_modifiers = always:error
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
 # IDE0060 should not trip on [DataRow] tests
-dotnet_code_quality_unused_parameters = non_public
+#dotnet_code_quality_unused_parameters = non_public
 
 # Do not require CultureInfo for string formatting
 dotnet_diagnostic.CA1305.severity = none
@@ -40,28 +40,92 @@ dotnet_diagnostic.CA2241.severity = error
 # We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.
 dotnet_diagnostic.SYSLIB1045.severity = none
 
+dotnet_diagnostic.IDE0001.severity = error
+dotnet_diagnostic.IDE0002.severity = error
+dotnet_diagnostic.IDE0003.severity = error
+dotnet_diagnostic.IDE0004.severity = error
+###dotnet_diagnostic.IDE0005.severity = error
+dotnet_diagnostic.IDE0007.severity = error
+###dotnet_diagnostic.IDE0008.severity = error
 dotnet_diagnostic.IDE0009.severity = error
+dotnet_diagnostic.IDE0010.severity = none   # Do not add missing switch cases. (SyntaxKind has hundreds)
+dotnet_diagnostic.IDE0011.severity = error
+dotnet_diagnostic.IDE0016.severity = error
+dotnet_diagnostic.IDE0017.severity = error
 dotnet_diagnostic.IDE0018.severity = error
 dotnet_diagnostic.IDE0019.severity = error
+dotnet_diagnostic.IDE0020.severity = error
+dotnet_diagnostic.IDE0021.severity = error
+dotnet_diagnostic.IDE0022.severity = error
+dotnet_diagnostic.IDE0024.severity = error
+###dotnet_diagnostic.IDE0025.severity = error
+dotnet_diagnostic.IDE0026.severity = error
+dotnet_diagnostic.IDE0027.severity = error
 dotnet_diagnostic.IDE0028.severity = error
+dotnet_diagnostic.IDE0029.severity = error
+dotnet_diagnostic.IDE0030.severity = error
+dotnet_diagnostic.IDE0031.severity = error
+dotnet_diagnostic.IDE0032.severity = error
+dotnet_diagnostic.IDE0033.severity = error
 dotnet_diagnostic.IDE0034.severity = error
+dotnet_diagnostic.IDE0035.severity = error
+dotnet_diagnostic.IDE0036.severity = error
+dotnet_diagnostic.IDE0037.severity = error
 dotnet_diagnostic.IDE0038.severity = error
+dotnet_diagnostic.IDE0039.severity = error
+dotnet_diagnostic.IDE0040.severity = error
+dotnet_diagnostic.IDE0041.severity = error
+dotnet_diagnostic.IDE0042.severity = error
 dotnet_diagnostic.IDE0044.severity = error
+###dotnet_diagnostic.IDE0045.severity = error
+dotnet_diagnostic.IDE0046.severity = error
+dotnet_diagnostic.IDE0047.severity = error
+dotnet_diagnostic.IDE0048.severity = error
+dotnet_diagnostic.IDE0049.severity = error
+dotnet_diagnostic.IDE0050.severity = error
 dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0052.severity = error
+dotnet_diagnostic.IDE0053.severity = error
 dotnet_diagnostic.IDE0054.severity = error
+###dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0056.severity = none   # Cannot use index/range with .NET Standard 2.0
+dotnet_diagnostic.IDE0057.severity = none   # Cannot use index/range with .NET Standard 2.0
+###dotnet_diagnostic.IDE0058.severity = error
 dotnet_diagnostic.IDE0059.severity = error
-dotnet_diagnostic.IDE0060.severity = error
+dotnet_diagnostic.IDE0060.severity = none   # Revisit!
+dotnet_diagnostic.IDE0061.severity = error
 dotnet_diagnostic.IDE0062.severity = error
+dotnet_diagnostic.IDE0063.severity = error
+dotnet_diagnostic.IDE0064.severity = error
+dotnet_diagnostic.IDE0065.severity = error
 dotnet_diagnostic.IDE0066.severity = error
+dotnet_diagnostic.IDE0070.severity = error
+dotnet_diagnostic.IDE0071.severity = error
+dotnet_diagnostic.IDE0072.severity = none   # Do not add missing switch cases. (SyntaxKind has hundreds)
+dotnet_diagnostic.IDE0073.severity = error
 dotnet_diagnostic.IDE0074.severity = error
+dotnet_diagnostic.IDE0075.severity = error
+dotnet_diagnostic.IDE0076.severity = error
+dotnet_diagnostic.IDE0077.severity = error
+dotnet_diagnostic.IDE0078.severity = error
+dotnet_diagnostic.IDE0079.severity = error
+dotnet_diagnostic.IDE0080.severity = error
+dotnet_diagnostic.IDE0081.severity = error
+dotnet_diagnostic.IDE0082.severity = error
 dotnet_diagnostic.IDE0083.severity = error
+dotnet_diagnostic.IDE0084.severity = error
 dotnet_diagnostic.IDE0090.severity = error
+dotnet_diagnostic.IDE0100.severity = error
+dotnet_diagnostic.IDE0110.severity = error
+dotnet_diagnostic.IDE0140.severity = error
+dotnet_diagnostic.IDE0150.severity = error
+dotnet_diagnostic.IDE0160.severity = error
+dotnet_diagnostic.IDE0161.severity = error
+dotnet_diagnostic.IDE0170.severity = error
+dotnet_diagnostic.IDE0180.severity = error
 dotnet_diagnostic.IDE0250.severity = error
-
-# Cannot use index/range with .NET Standard 2.0
-dotnet_diagnostic.IDE0056.severity = none
-dotnet_diagnostic.IDE0057.severity = none
+dotnet_diagnostic.IDE1005.severity = error
+dotnet_diagnostic.IDE1006.severity = error
 
 dotnet_code_quality.PH2028.company_name = Koninklijke Philips N.V.
 

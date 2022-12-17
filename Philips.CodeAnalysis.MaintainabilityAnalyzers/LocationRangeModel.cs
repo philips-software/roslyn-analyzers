@@ -4,24 +4,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
 	public class LocationRangeModel
 	{
-		private readonly int _startLine;
-		private int _endLine;
-
 		public LocationRangeModel(int startLine, int endLine)
 		{
-			_startLine = startLine;
-			_endLine = endLine;
+			StartLine = startLine;
+			EndLine = endLine;
 		}
 
-		public int StartLine
-		{
-			get { return _startLine; }
-		}
+		public int StartLine { get; }
 
-		public int EndLine
-		{
-			get { return _endLine; }
-			set { _endLine = value; }
-		}
+		public int EndLine { get; set; }
 	}
 }

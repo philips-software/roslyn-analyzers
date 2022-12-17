@@ -14,10 +14,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		private const string Title = @"DataTestMethods must have at least 1 DataRow or 1 DynamicData, TestMethods must have none";
 
-		public readonly static string MessageFormatMismatchedCount = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
+		public static readonly string MessageFormatMismatchedCount = @"Test {0} has {1} DataRowAttributes and {2} DynamicDataAttributes.";
 
-		public readonly static string MessageFormatIsTestMethod = @"TestMethod has parameterized input data.  Convert to DataTestMethod.";
-		public readonly static string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
+		public static readonly string MessageFormatIsTestMethod = @"TestMethod has parameterized input data.  Convert to DataTestMethod.";
+		public static readonly string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
 
 		private const string Description = @"DataTestMethods are only executed with DataRows";
 		private const string Category = Categories.Maintainability;
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 
 					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
-					if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+					if (symbol.Symbol is not null and IMethodSymbol method)
 					{
 						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
 						{

@@ -24,7 +24,10 @@ namespace Philips.CodeAnalysis.Common
 			foreach (var ctor in constructors)
 			{
 				IMethodSymbol method = context.SemanticModel.GetDeclaredSymbol(ctor);
-				if (method != null) symbolToCtor[method] = ctor;
+				if (method != null)
+				{
+					symbolToCtor[method] = ctor;
+				}
 
 				if (ctor.Initializer != null && ctor.Initializer.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword))
 				{
@@ -62,7 +65,9 @@ namespace Philips.CodeAnalysis.Common
 			while (true)
 			{
 				if (!mapping.TryGetValue(ctor, out ctor))
+				{
 					break;
+				}
 
 				if (!seenConstructors.Add(ctor))
 				{

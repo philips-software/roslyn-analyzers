@@ -74,8 +74,7 @@ Foo.WhitelistedFunction
 
 				static int Fib(int n)
 				{
-					if (n == 0) return 0;
-					return n + Fib(n - 1);
+					return n == 0 ? 0 : n + Fib(n - 1);
 				}
 
 				if (i >= duplicateTokenThreshold)
