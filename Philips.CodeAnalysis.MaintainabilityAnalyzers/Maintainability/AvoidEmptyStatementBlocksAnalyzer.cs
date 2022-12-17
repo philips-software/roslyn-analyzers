@@ -37,8 +37,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			BlockSyntax blockSyntax = context.Node as BlockSyntax;
-			if (blockSyntax != null && blockSyntax.Statements.Any())
+			if (context.Node is not BlockSyntax blockSyntax)
+			{
+				return;
+			}
+
+			if (blockSyntax.Statements.Any())
 			{
 				return;
 			}
