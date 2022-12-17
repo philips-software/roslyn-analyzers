@@ -82,8 +82,8 @@ namespace Philips.CodeAnalysis.Common
 			{
 				return value == null ? string.Empty : value.ToString();
 			}
-#nullable disable
 			return string.Empty;
+#nullable disable
 		}
 
 		public virtual string GetValueFromEditorConfig(string diagnosticId, string settingKey)

@@ -200,7 +200,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var type = context.SemanticModel.GetDeclaredSymbol(property);
-			if (type is not null and IPropertySymbol propertySymbol)
+			if (type is IPropertySymbol propertySymbol)
 			{
 				if (propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
 				{

@@ -21,6 +21,9 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # IDE0060 should not trip on [DataRow] tests
 #dotnet_code_quality_unused_parameters = non_public
 
+# IDE0046 can result in nested ternary operations
+dotnet_style_prefer_conditional_expression_over_return = false
+
 # Do not require CultureInfo for string formatting
 dotnet_diagnostic.CA1305.severity = none
 dotnet_diagnostic.CA1310.severity = none
@@ -78,7 +81,7 @@ dotnet_diagnostic.IDE0041.severity = error
 dotnet_diagnostic.IDE0042.severity = error
 dotnet_diagnostic.IDE0044.severity = error
 ###dotnet_diagnostic.IDE0045.severity = error
-dotnet_diagnostic.IDE0046.severity = error
+dotnet_diagnostic.IDE0046.severity = error  # Also see non-default setting of dotnet_style_prefer_conditional_expression_over_return
 dotnet_diagnostic.IDE0047.severity = error
 dotnet_diagnostic.IDE0048.severity = error
 dotnet_diagnostic.IDE0049.severity = error
