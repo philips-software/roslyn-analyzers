@@ -115,7 +115,6 @@ namespace Philips.CodeAnalysis.Common
 		}
 	}
 
-
 	public class ExceptionsOptions
 	{
 		public bool IgnoreExceptionsFile { get; set; } = false;
