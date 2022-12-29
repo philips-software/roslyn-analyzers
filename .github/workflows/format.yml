@@ -19,5 +19,5 @@ jobs:
 
     - uses: xt0rted/dotnet-format-problem-matcher@v1
     - run: dotnet tool install -g dotnet-format
-    - run: dotnet format
+    - run: dotnet format --check
     
