@@ -85,7 +85,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				ReportDiagnostic(context, tokenBefore);
 			}
 
-			var lastToken = logicalNode.GetLastToken();
 			var violations = logicalNode.DescendantTokens()
 				.Where(ContainsEndOfLine)
 				.Where(IsIllegalLineBreakToken); // Check 2).
