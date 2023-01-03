@@ -20,7 +20,8 @@ namespace MultiLineConditionUnitTests {
         public static void Main(string[] args) {
             if (
                 2 == 3 &&
-                4 == 5) {
+                4 == 5)
+			{
                 Console.WriteLine('Hello world!');
             }
         }
@@ -35,7 +36,8 @@ namespace MultiLineConditionUnitTests {
         public static void Main(string[] args) {
             if (
                 2 == 3 &&
-                4 == 5) {
+                4 == 5)
+			{
                 Console.WriteLine('Hello world!');
             }
         }
@@ -48,7 +50,8 @@ using System;
 namespace MultiLineConditionUnitTests {
     public class Program {
         public static void Main(string[] args) {
-            if (2 == 3 && 4 == 5) {
+            if (2 == 3 && 4 == 5)
+			{
                 Console.WriteLine('Hello world!');
             }
         }
@@ -79,7 +82,8 @@ namespace MultiLineConditionUnitTests {
              if (
                  3.
                    Equals(3) &&
-                 3.Equals(4)) {
+                 3.Equals(4))
+			{
             }
         }
     }
@@ -95,8 +99,9 @@ namespace MultiLineConditionUnitTests {
 				3 == 3 && 
                 5 == 6 && ( 
                     1 == 1 || 
-                    2 == 2)
-            ) {
+                    2 == 2) ||
+				8 == 4)
+			{
             }
         }
     }

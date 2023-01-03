@@ -78,9 +78,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			// Checked in parts:
 			// 1) first line should only have open parentheses.
 			// 2) if newline is on operator or open parentheses.
-			// 3) last line should be the closing parentheses.
 			var tokenBefore = logicalNode.GetFirstToken().GetPreviousToken();
-			var check1Pass = tokenBefore.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia);
+			var check1Pass = ContainsEndOfLine(tokenBefore);
 			if (!check1Pass)
 			{
 				ReportDiagnostic(context, tokenBefore);
@@ -88,9 +87,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			var lastToken = logicalNode.GetLastToken();
 			var violations = logicalNode.DescendantTokens()
-				.Where(token => token.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia))
-				.Where(IsIllegalLineBreakToken) // Check 2).
-				.Where(token2 => IsIllegalLastToken(token2, lastToken)); // Check 3).
+				.Where(ContainsEndOfLine)
+				.Where(IsIllegalLineBreakToken); // Check 2).
 			foreach (var violation in violations)
 			{
 				ReportDiagnostic(context, violation);
@@ -112,15 +110,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return (startLine != endLine);
 		}
 
-		private bool IsIllegalLastToken(SyntaxToken token, SyntaxToken lastToken)
+		private bool ContainsEndOfLine(SyntaxToken token)
 		{
-			bool result = true;
-			if (token.IsKind(SyntaxKind.CloseParenToken))
-			{
-				// Closing parenthesis can only be as last token.
-				result = token != lastToken;
-			}
-			return result;
+			return token.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia);
 		}
 
 		private bool IsIllegalLineBreakToken(SyntaxToken token)
