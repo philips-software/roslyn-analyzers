@@ -58,6 +58,20 @@ namespace MultiLineConditionUnitTests {
     }
 }";
 
+		private const string SingleLineWithCondition = @"
+using System;
+
+namespace MultiLineConditionUnitTests {
+    public class Program {
+        public static void Main(string[] args) {
+            (2 == 3 && 4 == 5) ? 
+				Console.WriteLine('Hello world!') :
+				Console.WriteLine('Goodbye world!');
+            }
+        }
+    }
+}";
+
 		private const string WrongBreak = @"
 using System;
 
@@ -79,12 +93,10 @@ using System;
 namespace MultiLineConditionUnitTests {
     public class Program {
         public static void Main(string[] args) {
-             if (
+             int i = (
                  3.
                    Equals(3) &&
-                 3.Equals(4))
-			{
-            }
+                 3.Equals(4)) ? 5 : 6;
         }
     }
 }";
@@ -138,6 +150,57 @@ namespace MultiLineConditionUnitTests {
     }
 }";
 
+		        private const string CorrectAssignmentToBool = @"
+using System;
+
+namespace MultiLineConditionUnitTests {
+    public class Program {
+        public static void Main(string[] args) {
+            bool b = (
+                2 == 3 &&
+                4 == 5);
+        }
+    }
+}";
+
+		        private const string WrongAssignmentToBool = @"
+using System;
+
+namespace MultiLineConditionUnitTests {
+    public class Program {
+        public static void Main(string[] args) {
+            bool b = (
+                2 == 3
+                && 4 == 5);
+        }
+    }
+}";
+
+		        private const string CorrectReturnStatement = @"
+using System;
+
+namespace MultiLineConditionUnitTests {
+    public class Program {
+        public static bool Main(string[] args) {
+            return (
+                2 == 3 &&
+                4 == 5);
+        }
+    }
+}";
+
+		        private const string WrongReturnStatement = @"
+using System;
+
+namespace MultiLineConditionUnitTests {
+    public class Program {
+        public static bool Main(string[] args) {
+            return (2 == 3 &&
+                4 == 5);
+        }
+    }
+}";
+
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
@@ -145,6 +208,9 @@ namespace MultiLineConditionUnitTests {
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 			DataRow(CorrectClose, DisplayName = nameof(CorrectClose)),
 			DataRow(SingleLine, DisplayName = nameof(SingleLine)),
+			DataRow(SingleLineWithCondition, DisplayName = nameof(SingleLineWithCondition)),
+			DataRow(CorrectAssignmentToBool, DisplayName = nameof(CorrectAssignmentToBool)),
+			DataRow(CorrectReturnStatement, DisplayName = nameof(CorrectReturnStatement)),
 			DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
@@ -158,6 +224,8 @@ namespace MultiLineConditionUnitTests {
 		[DataRow(WrongBreak, 8, 22, DisplayName = nameof(WrongBreak)),
 			DataRow(WrongOpening, 7, 16, DisplayName = nameof(WrongOpening)),
 			DataRow(WrongMultiLine, 10, 26, DisplayName = nameof(WrongMultiLine)),
+			DataRow(WrongReturnStatement, 7, 20, DisplayName = nameof(WrongReturnStatement)),
+			DataRow(WrongAssignmentToBool, 8, 22, DisplayName = nameof(WrongAssignmentToBool)),
 			DataRow(WrongLastTokenDot, 8, 19, DisplayName = nameof(WrongLastTokenDot))
 		]
 		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
