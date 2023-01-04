@@ -34,11 +34,7 @@ public static class Foo
 			VerifyCSharpDiagnostic(input);
 		}
 
-
-		[TestMethod]
-		public void MultipleStatementsOnSameLineTriggersDiagnostics()
-		{
-			string input = $@"
+		private const string WhereOnSameLine = $@"
 public static class Foo
 {{
   public static void Method(int[] customers)
@@ -50,6 +46,23 @@ public static class Foo
 }}
 ";
 
+		private const string SelectOnSameLine = $@"
+public static class Foo
+{{
+  public static void Method(int[] customers)
+  {{
+    var c = 
+      from cust in customers
+      where cust == 0 select cust.ToString();
+  }}
+}}
+";
+
+		[DataTestMethod]
+		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)), 
+		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
+		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
+		{
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
 		}
 		
