@@ -75,8 +75,8 @@
       1.2.30
       * Fixed issue 134: False positive of PH2069 on invocation of a method with FormattableString as one of the arguments.
       1.2.32
-      * Introduce PH2102: Xml documentation should add value.
-      * Fixed issue 156: Multiple false positive on PH2101: Using 'as' expression
+      * PH2102: Xml documentation should add value.
+      * PH2101: Fix multiple false positive on  Using 'as' expression
       * PH2077: AvoidRedundantSwitch should exclude generated code
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2022 Koninklijke Philips N.V.</Copyright>
