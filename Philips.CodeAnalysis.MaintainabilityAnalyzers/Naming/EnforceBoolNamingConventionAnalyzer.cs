@@ -200,7 +200,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var type = context.SemanticModel.GetDeclaredSymbol(property);
-			if (type != null && (type is IPropertySymbol propertySymbol))
+			if (type is IPropertySymbol propertySymbol)
 			{
 				if (propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
 				{
@@ -223,12 +223,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			string name = identifier.ValueText;
 
-			if (validator.IsMatch(name))
-			{
-				return true;
-			}
-
-			return false;
+			return validator.IsMatch(name);
 		}
 
 		private bool IsTypeBool(TypeSyntax typeSyntax, SemanticModel semanticModel)

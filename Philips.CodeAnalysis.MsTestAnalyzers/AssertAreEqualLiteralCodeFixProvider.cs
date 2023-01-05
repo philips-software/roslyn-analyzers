@@ -109,14 +109,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			if (literalExpected is LiteralExpressionSyntax literal)
 			{
-				if (literal.Token.IsKind(SyntaxKind.TrueKeyword))
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return literal.Token.IsKind(SyntaxKind.TrueKeyword);
 			}
 			else if (literalExpected is PrefixUnaryExpressionSyntax prefixUnaryExpressionSyntax)
 			{

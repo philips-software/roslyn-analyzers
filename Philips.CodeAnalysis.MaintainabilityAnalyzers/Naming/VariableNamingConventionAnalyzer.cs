@@ -144,12 +144,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			string name = identifier.ValueText;
 
-			if (validator.IsMatch(name))
-			{
-				return true;
-			}
-
-			return false;
+			return validator.IsMatch(name);
 		}
 	}
 }

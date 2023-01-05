@@ -41,7 +41,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// ignore struct
 			if (fieldDeclaration.Parent.Kind() == SyntaxKind.StructDeclaration)
+			{
 				return;
+			}
 
 			if (fieldDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
 			{

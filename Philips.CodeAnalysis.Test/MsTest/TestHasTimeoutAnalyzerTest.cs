@@ -31,12 +31,15 @@ class TestDefinitions
 }";
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions() => new()
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
-			{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
-			{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
-		};
+			return new()
+			{
+				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
+				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
+				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
+			};
+		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]

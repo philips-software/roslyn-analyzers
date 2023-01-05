@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsMustBeInTestClassAnalyzer : TestAttributeDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must be in [TestClass]";
-		public readonly static string MessageFormat = @"{0} is not in a [TestClass]";
+		public static readonly string MessageFormat = @"{0} is not in a [TestClass]";
 		private const string Description = @"Tests are only executed if they are [TestClass]";
 		private const string Category = Categories.Maintainability;
 
@@ -24,7 +24,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public TestMethodsMustBeInTestClassAnalyzer()
 		{ }
 
-		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBeInTestClass();
+		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			return new TestMethodsMustBeInTestClass();
+		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

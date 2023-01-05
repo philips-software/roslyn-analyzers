@@ -130,12 +130,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			if (type.BaseType is null)
-			{
-				return false;
-			}
-
-			return HasMatchingMethod(type.BaseType, targetMethod);
+			return type.BaseType is not null && HasMatchingMethod(type.BaseType, targetMethod);
 		}
 	}
 }

@@ -50,7 +50,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)
 				{
 					if (_exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
+					{
 						return;
+					}
 				}
 
 				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
