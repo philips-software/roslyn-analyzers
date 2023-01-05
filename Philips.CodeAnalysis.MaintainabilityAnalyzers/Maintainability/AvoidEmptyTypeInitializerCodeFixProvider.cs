@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			rootNode = rootNode.ReplaceNode(ctor, newCtor);
 
-			ClassDeclarationSyntax cls = (ClassDeclarationSyntax)rootNode.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>().First(x => x.Identifier.Text == ctor.Identifier.Text);
+			ClassDeclarationSyntax cls = rootNode.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>().First(x => x.Identifier.Text == ctor.Identifier.Text);
 
 			ctor = (ConstructorDeclarationSyntax)cls.Members.First(x => x.IsKind(SyntaxKind.ConstructorDeclaration) && ((ConstructorDeclarationSyntax)x).Modifiers.Any(SyntaxKind.StaticKeyword));
 

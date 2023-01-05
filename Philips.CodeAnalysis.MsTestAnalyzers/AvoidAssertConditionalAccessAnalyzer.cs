@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			string memberName = memberAccessExpression.Name.ToString();
-			if (memberName != @"AreEqual" && memberName != @"AreNotEqual")
+			if (memberName is not @"AreEqual" and not @"AreNotEqual")
 			{
 				yield break;
 			}

@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				SimpleNameSyntax name => name.ToString()
 			};
 
-			if ((memberName != @"AreEqual") && (memberName != @"AreNotEqual"))
+			if (memberName is not @"AreEqual" and not @"AreNotEqual")
 			{
 				return null;
 			}
@@ -76,17 +76,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			var constant = semanticModel.GetConstantValue(expression);
-			if (constant.HasValue)
-			{
-				return true;
-			}
-
-			if (Helper.IsConstantExpression(expression, semanticModel))
-			{
-				return true;
-			}
-
-			return false;
+			return constant.HasValue || Helper.IsConstantExpression(expression, semanticModel);
 		}
 
 		private bool IsNull(ExpressionSyntax expression)

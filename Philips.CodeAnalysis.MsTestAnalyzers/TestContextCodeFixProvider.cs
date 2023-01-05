@@ -84,7 +84,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						{
 							// remove the underlying variable
 							if (varDeclaration.Parent != null)
+							{
 								rootNode = rootNode.RemoveNode(varDeclaration.Parent, SyntaxRemoveOptions.KeepNoTrivia);
+							}
+
 							break;
 						}
 					}

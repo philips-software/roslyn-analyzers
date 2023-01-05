@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public int DefaultDuplicateTokenThreshold = 100;
 
-		public readonly static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
@@ -623,7 +623,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			if (isPurged)
 			{
 				// Remove old value
-				HashCode = (HashCode - ((purgedHashComponent.GetHashCode() * _basePowMaxComponentsModulusCache) % _modulus) + _modulus) % _modulus;
+				HashCode = (HashCode - (purgedHashComponent.GetHashCode() * _basePowMaxComponentsModulusCache % _modulus) + _modulus) % _modulus;
 			}
 		}
 	}

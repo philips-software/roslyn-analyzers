@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// ParanthesizedLambdaExpressions are acceptable () => { }, until a pre-canned static "EmptyAction" is defined.
-			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax || blockSyntax.Parent is SimpleLambdaExpressionSyntax)
+			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax or SimpleLambdaExpressionSyntax)
 			{
 				return;
 			}

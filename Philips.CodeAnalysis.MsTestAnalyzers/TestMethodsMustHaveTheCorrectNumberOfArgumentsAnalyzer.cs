@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must have the correct number of arguments";
-		public readonly static string MessageFormat = @"'{0}' has the wrong number of parameters";
+		public static readonly string MessageFormat = @"'{0}' has the wrong number of parameters";
 		private const string Description = @"DataTestMethods should have the same number of parameters of the DataRows, TestMethods should have no arguments";
 		private const string Category = Categories.Maintainability;
 
@@ -25,7 +25,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 
-		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			return new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
+		}
 
 		private class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
 		{
@@ -84,7 +87,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 
 					var symbol = context.SemanticModel.GetSymbolInfo(attribute);
-					if (symbol.Symbol != null && symbol.Symbol is IMethodSymbol method)
+					if (symbol.Symbol is IMethodSymbol method)
 					{
 						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
 						{
