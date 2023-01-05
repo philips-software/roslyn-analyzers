@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (nodesToRemove.Length != attributelist.Attributes.Count)
 				{
-					var newAttribute = (AttributeListSyntax)attributelist.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
+					var newAttribute = attributelist.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
 					newAttributes = newAttributes.Add(newAttribute);
 				}
 			}

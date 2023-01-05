@@ -53,13 +53,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TypeInfo actualType = context.SemanticModel.GetTypeInfo(actual.Expression);
 
 			Conversion conversion = context.SemanticModel.Compilation.ClassifyConversion(actualType.Type, expectedType.Type);
-			if (conversion.IsNullable)
-			{
-				return null;
-			}
-
-
-			return new[] { Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation()) };
+			return conversion.IsNullable ? null : (IEnumerable<Diagnostic>)(new[] { Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation()) });
 		}
 
 		private bool IsLiteral(ExpressionSyntax expression)

@@ -57,7 +57,7 @@ public static class Program
 }}
 ";
 
-			string text = string.Format(Template, (isExtensionMethod ? "this" : ""), call);
+			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 
 			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();
 			if (isError)
@@ -69,7 +69,7 @@ public static class Program
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
-				string newText = string.Format(Template, (isExtensionMethod ? "this" : ""), fixedText);
+				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
 				VerifyCSharpFix(text, newText);
 			}
 		}

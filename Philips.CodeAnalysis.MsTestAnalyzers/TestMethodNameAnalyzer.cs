@@ -37,15 +37,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			foreach (AttributeSyntax attribute in attributesNode.Attributes)
 			{
 				if (attribute.Name.ToString() == @"TestMethod")
+				{
 					found = true;
+				}
 			}
-			if (!found) return;
+			if (!found)
+			{
+				return;
+			}
 
 			SyntaxNode methodNode = attributesNode.Parent;
 
 			// Confirm this is actually a method...
 			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
+			{
 				return;
+			}
 
 			string invalidPrefix = string.Empty;
 			foreach (SyntaxToken token in methodNode.ChildTokens())

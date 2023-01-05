@@ -115,7 +115,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, string name)
 		{
 			if (string.IsNullOrEmpty(name))
+			{
 				return;
+			}
 
 			name = name.ToLowerInvariant();
 			var xmlElements = context.Node.GetLeadingTrivia()
@@ -125,7 +127,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			foreach(var xmlElement in xmlElements)
 			{
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
+				{
 					continue;
+				}
 
 				string content = GetContent(xmlElement);
 
