@@ -95,5 +95,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidPasswordField = 2100,
 		DereferenceNull = 2101,
 		XmlDocumentationShouldAddValue = 2102,
+		AvoidMultipleLambdasOnSingleLine = 2105,
 	}
 }
