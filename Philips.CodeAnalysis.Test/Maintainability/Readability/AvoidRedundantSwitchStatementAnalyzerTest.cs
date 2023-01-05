@@ -12,11 +12,20 @@ using System.CodeDom.Compiler;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
+	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+		}
+	}
+
+	[TestClass]
+	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new AvoidRedundantSwitchStatementAnalyzer();
 		}
 
 		[DataRow("byte")]
