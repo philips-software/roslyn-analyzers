@@ -197,7 +197,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
 		private Document[] GetDocuments(string[] sources, string filenamePrefix, string language)
 		{
-			if (language != LanguageNames.CSharp && language != LanguageNames.VisualBasic)
+			if (language is not LanguageNames.CSharp and not LanguageNames.VisualBasic)
 			{
 				throw new ArgumentException("Unsupported Language");
 			}

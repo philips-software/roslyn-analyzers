@@ -71,12 +71,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			//would love to check if the types are actually IComparable<> here.  Speaks to intent.
-			if (sym.Name == "Equals")
-			{
-				return true;
-			}
-
-			return false;
+			return sym.Name == "Equals";
 		}
 	}
 }

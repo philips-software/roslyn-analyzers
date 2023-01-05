@@ -21,7 +21,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new XmlDocumentationShouldAddValueAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new XmlDocumentationShouldAddValueAnalyzer();
+		}
 
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
 		{
