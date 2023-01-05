@@ -1,6 +1,8 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using Microsoft.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,13 +37,25 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			var results = new[] { new DiagnosticResult()
+					{
+						Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidInvocationAsArgument),
+						Message = new Regex(".*"),
+						Severity = DiagnosticSeverity.Error,
+						Locations = new[]
+						{
+							new DiagnosticResultLocation("Test0.cs", 14, 19)
+						}
+					}
+				};
+
+			VerifyCSharpDiagnostic(template, results);
 		}
 
 		[TestMethod]
 		public void AvoidInvocationAsArgumentReturnTest()
 		{
-			string template = @"
+			string errorContent = @"
 class Foo
 {{
   public string Do() {{ return ""hi"";}}
@@ -53,7 +67,22 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+
+			string fixedContent = @"
+class Foo
+{{
+  public string Do() {{ return ""hi"";}}
+  public string Moo(string s) {{ return ""hi"";}}
+
+  public string MyTest()
+  {{
+    var resultOfDo = Do();
+    return Moo(resultOfDo);
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyCSharpFix(errorContent, fixedContent);
 		}
 
 		[TestMethod]
@@ -77,8 +106,8 @@ class Foo
   public void Moo(string x) { }
   public void MyTest()
   {
-     var renameMe = Do();
-     Moo(renameMe);
+     var resultOfDo = Do();
+     Moo(resultOfDo);
   }
 }
 ";
@@ -108,8 +137,8 @@ class Foo
   public string Moo(string x) { }
   public void MyTest()
   {
-     var renameMe = Do();
-     string x = Moo(renameMe);
+     var resultOfDo = Do();
+     string x = Moo(resultOfDo);
   }
 }
 ";
@@ -141,8 +170,8 @@ class Foo
   public void MyTest()
   {
      string x;
-     var renameMe = Do();
-     x = Moo(renameMe);
+     var resultOfDo = Do();
+     x = Moo(resultOfDo);
   }
 }
 ";
@@ -175,8 +204,8 @@ class Foo
   public string MyTest()
   {
      // Comment
-     var renameMe = Do();
-     return Moo(renameMe);
+     var resultOfDo = Do();
+     return Moo(resultOfDo);
   }
 }
 ";
@@ -209,8 +238,8 @@ class Foo
   {
      if (true)
      {
-       var renameMe = Do();
-       Moo(renameMe);
+       var resultOfDo = Do();
+       Moo(resultOfDo);
      }
   }
 }
@@ -240,8 +269,8 @@ class Foo
   public string Do() { return ""hi"";}
   public void MyTest()
   {
-     var renameMe = Do();
-     new Meow(renameMe);
+     var resultOfDo = Do();
+     new Meow(resultOfDo);
   }
 }
 ";
@@ -279,7 +308,7 @@ class Foo
      int i;
      switch (i)
      {
-       case 0: var renameMe = Do(); Moo(renameMe); break;
+       case 0: var resultOfDo = Do(); Moo(resultOfDo); break;
      }
   }
 }

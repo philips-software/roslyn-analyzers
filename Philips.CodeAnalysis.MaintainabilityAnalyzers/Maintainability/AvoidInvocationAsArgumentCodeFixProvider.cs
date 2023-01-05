@@ -63,7 +63,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> ExtractLocalVariable(Document document, ExpressionSyntax argumentSyntax, CancellationToken c)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
-			const string NewName = @"renameMe";
+			string newName = @"renameMe";
+			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
+			{
+				newName = @"resultOf" + invocationExpressionSyntax.Expression.GetText();
+			}
 
 			// Build "var renameMe = [blah]"
 			LocalDeclarationStatementSyntax localDeclarationStatementSyntax =
@@ -71,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				  SyntaxFactory.VariableDeclaration(
 					  SyntaxFactory.ParseTypeName("var"))
 					.AddVariables(
-					  SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(NewName).WithAdditionalAnnotations(RenameAnnotation.Create()))
+					  SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create()))
 						.WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax))));
 
 
@@ -81,7 +85,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			fullExistingExpressionSyntax ??= argumentSyntax.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
 
 			// Replace the violation with "renameMe"
-			IdentifierNameSyntax identifierSyntax = SyntaxFactory.IdentifierName(NewName);
+			IdentifierNameSyntax identifierSyntax = SyntaxFactory.IdentifierName(newName);
 			var newFullExistingExpressionSyntax = fullExistingExpressionSyntax.ReplaceNode(argumentSyntax, identifierSyntax);
 
 			// Move all the leading trivia from the existing statement to our new statement
@@ -97,7 +101,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If we're not already inside a block statement, we need to make it so.
 			// (E.g., "if (true) Foo(Moo())" => "if (true) { var renameMe=Moo();Foo(renameMe); }"
-			if (fullExistingExpressionSyntax.Parent is StatementSyntax && fullExistingExpressionSyntax.Parent is not BlockSyntax)
+			if (fullExistingExpressionSyntax.Parent is StatementSyntax and not BlockSyntax)
 			{
 				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedLocalDeclarationSyntax, newFullExistingExpressionSyntax);
 				rootNode = rootNode.ReplaceNode(fullExistingExpressionSyntax, blockSyntax);

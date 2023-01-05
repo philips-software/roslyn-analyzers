@@ -54,8 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If nested calls (e.g., Foo(Bar(Meow()))), only trigger the outer violation Bar(Meow())
-			ArgumentSyntax nestedArgumentSyntax = argumentSyntax.Ancestors().OfType<ArgumentSyntax>().FirstOrDefault();
-			if (nestedArgumentSyntax != null)
+			if (argumentSyntax.Ancestors().OfType<ArgumentSyntax>().Any())
 			{
 				return;
 			}
