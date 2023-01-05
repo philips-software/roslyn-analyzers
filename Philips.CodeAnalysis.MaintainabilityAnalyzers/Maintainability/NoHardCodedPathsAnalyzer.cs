@@ -33,10 +33,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Get the text value of the string literal expression.
 			string pathValue = stringLiteralExpressionNode.Token.ValueText;
 
-			if (pathValue.Length < 2) return;
+			if (pathValue.Length < 2)
+			{
+				return;
+			}
 
 			//if the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
-			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/')) return;
+			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/'))
+			{
+				return;
+			}
 
 			// If the pattern matches the text value, report the diagnostic.
 			if (WindowsPattern.IsMatch(pathValue))
@@ -48,7 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		#endregion
 
 		#region Public Interface
-		public readonly static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.NoHardcodedPaths), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.NoHardcodedPaths), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
 		{
 			get { return ImmutableArray.Create(Rule); }

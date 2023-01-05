@@ -14,7 +14,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new DontLockNewObjectAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new DontLockNewObjectAnalyzer();
+		}
 
 		#endregion
 

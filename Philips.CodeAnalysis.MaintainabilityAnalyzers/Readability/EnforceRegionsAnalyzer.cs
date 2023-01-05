@@ -188,11 +188,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
 		{
 			int memberLocation = GetMemberLineNumber(member.GetLocation());
-			if (memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine)
-			{
-				return true;
-			}
-			return false;
+			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
 		}
 
 		/// <summary>

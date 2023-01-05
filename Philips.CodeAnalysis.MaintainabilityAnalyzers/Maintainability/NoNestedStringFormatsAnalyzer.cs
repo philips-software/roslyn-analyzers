@@ -54,8 +54,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var onlyInterpolation = interpolation.Parts[0];
 
 			if (
-				onlyInterpolation is not IInterpolatedStringTextOperation && 
-				onlyInterpolation is IInterpolationOperation interpolationOperation)
+				onlyInterpolation is not IInterpolatedStringTextOperation and
+				IInterpolationOperation interpolationOperation)
 			{
 				if (interpolationOperation.FormatString is not null)
 				{
@@ -109,7 +109,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					break;
 			}
 
-			if (returnType.SpecialType == SpecialType.System_String || returnType.SpecialType == SpecialType.System_Void)
+			if (returnType.SpecialType is SpecialType.System_String or SpecialType.System_Void)
 			{
 				var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
 
@@ -264,12 +264,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var arrayType = ((IArrayTypeSymbol)possibleArgsParameter.Type).ElementType;
 
-			if (arrayType.SpecialType != SpecialType.System_Object)
-			{
-				return false;
-			}
-
-			return true;
+			return arrayType.SpecialType == SpecialType.System_Object;
 		}
 
 		private static bool IsFormattableStringMethodArgument(IInterpolationOperation interpolationOperation)

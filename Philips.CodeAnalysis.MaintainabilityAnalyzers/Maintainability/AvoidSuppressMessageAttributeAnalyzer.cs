@@ -59,11 +59,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 				var builder = ImmutableHashSet.CreateBuilder<string>();
 				if (text != null)
+				{
 					foreach (var textLine in text.Lines)
 					{
 						var line = textLine.ToString();
 						builder.Add(line);
 					}
+				}
 
 				return builder.ToImmutable();
 			}
