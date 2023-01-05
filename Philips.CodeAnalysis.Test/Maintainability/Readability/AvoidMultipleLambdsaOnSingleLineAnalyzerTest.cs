@@ -16,7 +16,18 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			return new AvoidMultipleLambdasOnSingleLineAnalyzer();
 		}
 
-		private const string Correct = @"
+		private const string CorrectSingle = @"
+using System.Collections.Generic;
+public static class Foo
+{{
+  public static void Method(List<int> data)
+  {{
+    data.Where(i => i == 0);
+  }}
+}}
+";
+
+		private const string CorrectMultiple = @"
 using System.Collections.Generic;
 public static class Foo
 {{
@@ -29,7 +40,20 @@ public static class Foo
 }}
 ";
 
-		private const string Wrong = $@"
+		private const string CorrectParenthesized = @"
+using System.Collections.Generic;
+public static class Foo
+{{
+  public static void Method(List<int> data)
+  {{
+    data
+      .Where((i) => i == 0)
+      .Select((d) => { return d.ToString();});
+  }}
+}}
+";
+
+		private const string WrongMultiple = $@"
 using System.Collections.Generic;
 public static class Foo
 {{
@@ -40,25 +64,40 @@ public static class Foo
 }}
 ";
 
-		[TestMethod]
-		public void FlagWhen2LambdasOnSameLine()
+		private const string WrongParenthesized = $@"
+using System.Collections.Generic;
+public static class Foo
+{{
+  public static void Method(List<int> data)
+  {{
+    data.Where((i) => i == 0).Select((d) => {{ return d.ToString();}});
+  }}
+}}
+";
+
+		[DataTestMethod]
+		[DataRow(WrongMultiple, DisplayName = nameof(WrongMultiple)),
+		 DataRow(WrongParenthesized, DisplayName = nameof(WrongParenthesized))]
+		public void FlagWhen2LambdasOnSameLine(string input)
 		{
 
-			VerifyCSharpDiagnostic(Wrong, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
+			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
 		}
 
 
-		[TestMethod]
-		public void CorrectDoesNotFlag()
+		[DataTestMethod]
+		[DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
+		 DataRow(CorrectMultiple, DisplayName = nameof(CorrectMultiple)),
+		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
+		public void CorrectDoesNotFlag(string input)
 		{
-			VerifyCSharpDiagnostic(Correct);
+			VerifyCSharpDiagnostic(input);
 		}
-
 
 		[TestMethod]
 		public void GeneratedFileWrongIsNotFlagged()
 		{
-			VerifyCSharpDiagnostic(Wrong, @"Foo.designer");
+			VerifyCSharpDiagnostic(WrongMultiple, @"Foo.designer");
 		}
 	}
 }
