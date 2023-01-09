@@ -99,10 +99,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			location = null;
 			argumentValue = default;
-			if (attributeLists == null)
-			{
-				return false;
-			}
+
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
 				if (HasAttribute(attributes, getSemanticModel, name, fullName, out location, out argumentValue))
