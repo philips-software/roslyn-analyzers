@@ -53,7 +53,7 @@ namespace TestMethodNameAnalyzerTest
 				}
 			}};
 
-			VerifyCSharpDiagnostic(givenText, "Test0", (isError) ? expected : Array.Empty<DiagnosticResult>());
+			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
 			VerifyCSharpFix(givenText, fixedText);
 		}
 		

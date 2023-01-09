@@ -159,7 +159,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			for (int i = firstArgument; i < argumentsToCheck; i++)
 			{
-				ArgumentSyntax argument = invocationExpressionSyntax.ArgumentList.Arguments[(i + 1) - firstArgument];
+				ArgumentSyntax argument = invocationExpressionSyntax.ArgumentList.Arguments[i + 1 - firstArgument];
 				ITypeSymbol expectedType = namedTypeSymbol.DelegateInvokeMethod.Parameters[i].Type;
 
 				SymbolInfo typeSymbol = context.SemanticModel.GetSymbolInfo(argument.Expression);

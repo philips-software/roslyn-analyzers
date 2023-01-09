@@ -58,7 +58,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 				}
 			}};
 
-			VerifyCSharpDiagnostic(givenText, "Test0", (isError) ? expected : Array.Empty<DiagnosticResult>());
+			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
 		}
 		
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()

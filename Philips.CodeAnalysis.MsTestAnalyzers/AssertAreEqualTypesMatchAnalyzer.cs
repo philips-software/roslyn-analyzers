@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			string memberName = maes.Name.ToString();
-			if ((memberName != @"AreEqual") && (memberName != @"AreNotEqual"))
+			if (memberName is not @"AreEqual" and not @"AreNotEqual")
 			{
 				return;
 			}
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			ArgumentListSyntax argumentList = mds.ArgumentList as ArgumentListSyntax;
+			ArgumentListSyntax argumentList = mds.ArgumentList;
 			TypeInfo ti1 = context.SemanticModel.GetTypeInfo(argumentList.Arguments[0].Expression);
 			TypeInfo ti2 = context.SemanticModel.GetTypeInfo(argumentList.Arguments[1].Expression);
 

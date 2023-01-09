@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,19 +34,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			// Only interested in TestMethod attributes
-			bool found = false;
-			foreach (AttributeSyntax attribute in attributesNode.Attributes)
+			if(!attributesNode.Attributes.Any(attr => attr.Name.ToString() == @"TestMethod"))
 			{
-				if (attribute.Name.ToString() == @"TestMethod")
-					found = true;
+				return;
 			}
-			if (!found) return;
 
 			SyntaxNode methodNode = attributesNode.Parent;
 
 			// Confirm this is actually a method...
 			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
+			{
 				return;
+			}
 
 			string invalidPrefix = string.Empty;
 			foreach (SyntaxToken token in methodNode.ChildTokens())

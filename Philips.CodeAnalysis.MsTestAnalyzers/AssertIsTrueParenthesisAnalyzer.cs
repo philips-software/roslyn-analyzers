@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			string memberName = memberAccessExpression.Name.ToString();
-			if (memberName != "IsTrue" && memberName != "IsFalse")
+			if (memberName is not "IsTrue" and not "IsFalse")
 			{
 				return;
 			}
