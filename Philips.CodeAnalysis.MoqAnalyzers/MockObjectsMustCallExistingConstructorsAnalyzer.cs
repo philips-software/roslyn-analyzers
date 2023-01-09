@@ -133,12 +133,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			ImmutableArray<ArgumentSyntax> arguments = ImmutableArray<ArgumentSyntax>.Empty;
 
-			if (argumentList != null)
+			if (argumentList?.Arguments != null)
 			{
 				arguments = argumentList.Arguments.ToImmutableArray();
 			}
 
-			if (canHaveMockBehavior && arguments.Length > 0 && argumentList.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+			if (canHaveMockBehavior && arguments.Length > 0 && argumentList?.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
 				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text == "MockBehavior")
 				{
@@ -146,7 +146,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					arguments = arguments.RemoveAt(0);
 				}
 			}
-			else if (canHaveMockBehavior && arguments.Length > 0 && argumentList.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax)
+			else if (canHaveMockBehavior && arguments.Length > 0 && argumentList?.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax)
 			{
 				SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(identifierNameSyntax);
 
@@ -187,7 +187,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 					if (mockedClass.TypeKind == TypeKind.Delegate)
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList.GetLocation(), argumentList));
+						context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList?.GetLocation(), argumentList));
 						return;
 					}
 					break;
@@ -248,7 +248,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				}
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList.GetLocation(), argumentList));
+			context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList?.GetLocation(), argumentList));
 		}
 	}
 }
