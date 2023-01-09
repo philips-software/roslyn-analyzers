@@ -546,6 +546,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			return _hash;
 		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is TokenInfo info && _syntaxToken.Equals(info._syntaxToken);
+		}
 	}
 
 	public class RollingHashCalculator<T>
