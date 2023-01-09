@@ -120,6 +120,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				node = node.Parent;
 			}
 
+			// Should not happen
+			if (parentBlock == null)
+			{
+				return document;
+			}
+
 			int statementIndex = parentBlock.Statements.IndexOf(x => x.Contains(invocationExpression));
 
 			StatementSyntax statement = parentBlock.Statements[statementIndex];
