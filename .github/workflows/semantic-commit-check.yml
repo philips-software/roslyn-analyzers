@@ -1,5 +1,6 @@
 name: "Semantic Commit Check"
 on:
+  workflow_call:
   pull_request:
     types:
       - opened
