@@ -1,36 +1,32 @@
 name: SonarCloud
 on:
   push:
-    branches: [ master, release/** ]
+    branches: [master, release/**]
   pull_request:
-    branches: [ master, release/** ]
+    branches: [master, release/**]
 jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@1df8dbefe2a8cbc99770194893dd902763bee34b # ratchet:actions/setup-java@v3
         with:
           java-version: '17'
           distribution: temurin
-
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@a351d9ea84bc76ec7508debf02a39d88f8b6c0c0 # ratchet:actions/setup-dotnet@v2
         with:
-          dotnet-version: | 
+          dotnet-version: |
             3.1.x
             7.0.x
-        
       - name: Install Tools
         run: |
           dotnet tool update dotnet-sonarscanner --global
           dotnet tool update dotnet-coverage --global
-
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,4 +36,3 @@ jobs:
           dotnet build --configuration Debug
           dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
           dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
-          
