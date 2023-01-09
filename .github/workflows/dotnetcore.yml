@@ -1,28 +1,21 @@
 name: .NET Core
-
 on:
   push:
-    branches: [ master, release/** ]
+    branches: [master, release/**]
   pull_request:
-    branches: [ master, release/** ]
-
+    branches: [master, release/**]
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: | 
-          3.1.x
-          7.0.x
-          
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-
-    - name: Test with dotnet
-      run: dotnet test --configuration Release
+      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@608ee757cfcce72c2e91e99aca128e0cae67de87 # ratchet:actions/setup-dotnet@v1
+        with:
+          dotnet-version: |
+            3.1.x
+            7.0.x
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
+      - name: Test with dotnet
+        run: dotnet test --configuration Release
