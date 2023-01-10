@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				});
 		}
 
-		private class CompilationAnalyzer
+		private sealed class CompilationAnalyzer
 		{
 			private readonly IEnumerable<string> _logMethodNames;
 			public CompilationAnalyzer(IEnumerable<string> logMethodNames)

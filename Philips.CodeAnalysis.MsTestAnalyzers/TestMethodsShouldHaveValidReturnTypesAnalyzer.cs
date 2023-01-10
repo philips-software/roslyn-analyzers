@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
 		}
 
-		private class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
+		private sealed class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
 		{
 			private readonly INamedTypeSymbol _taskSymbol;
 

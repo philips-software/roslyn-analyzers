@@ -96,5 +96,8 @@ namespace Philips.CodeAnalysis.Common
 		DereferenceNull = 2101,
 		XmlDocumentationShouldAddValue = 2102,
 		AvoidMultipleConditionsOnSameLine = 2103,
+		AvoidInvocationAsArgument = 2103,
+		EveryLinqStatementOnSeparateLine = 2104,
+		AvoidMultipleConditionsOnSameLine = 2106,
 	}
 }
