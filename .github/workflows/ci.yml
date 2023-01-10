@@ -13,7 +13,11 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@bcollamore-ci
 
   semantic-commit:
-    if: ${{ ( github.event_name == 'pull_request' ) }}
+    if: ${{ ( github.event_name == 'pull_request' && (
+        github.event.action == 'opened' ||
+        github.event.action == 'reopened' ||
+        github.event.action == 'synchronize' 
+      )) }}
     uses: philips-software/roslyn-analyzers/.github/workflows/semantic-commit-check.yml@bcollamore-ci
 
   build:
