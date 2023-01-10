@@ -6,18 +6,18 @@ on:
     branches: [master]
 jobs:
   codeql:
-    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@bcollamore-ci
 
   pinnedactions:
-    uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@bcollamore-ci
 
   semantic-commit:
     if: ${{ ( github.event_name == 'pull_request' ) }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/semantic-commit-check.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/semantic-commit-check.yml@bcollamore-ci
 
   build:
-    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@bcollamore-ci
 
   sonarcloud:
-    uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@bcollamore-ci
 
