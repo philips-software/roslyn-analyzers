@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -80,7 +81,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private Diagnostic CheckComment(string comment, Location location)
 		{
-			return comment.ToLower().Contains(@"password") ? Diagnostic.Create(Rule, location) : null;
+			if (comment.ToLower(CultureInfo.CurrentCulture).Contains(@"password"))
+			{
+				return Diagnostic.Create(Rule, location);
+			}
+			return null;
 		}
 
 		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)

@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Do not unnecessarily mark methods as static.";
 		private const string Category = Categories.Maintainability;
 
-		public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// The Main entrypoint to the program must be static
-			if (methodDeclarationSyntax.Identifier != null && methodDeclarationSyntax.Identifier.ValueText == @"Main")
+			if (methodDeclarationSyntax.Identifier.ValueText == @"Main")
 			{
 				return;
 			}
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Check if this method is being used for DynamicData, if so, let it go
 			string returnType = methodDeclarationSyntax.ReturnType.ToString();
-			if (string.Equals(returnType, "IEnumerable<object[]>", StringComparison.CurrentCultureIgnoreCase))
+			if (string.Equals(returnType, "IEnumerable<object[]>", StringComparison.OrdinalIgnoreCase))
 			{
 				return;
 			}

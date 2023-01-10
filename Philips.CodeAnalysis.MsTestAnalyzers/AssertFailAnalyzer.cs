@@ -8,7 +8,7 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	internal class AssertMetadata
+	internal sealed class AssertMetadata
 	{
 		public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
 	}
