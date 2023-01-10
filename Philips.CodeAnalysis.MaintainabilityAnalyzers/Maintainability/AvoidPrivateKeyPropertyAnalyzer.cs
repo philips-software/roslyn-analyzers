@@ -32,14 +32,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (!memberAccessExpressionSyntax.Name.ToString().Equals(PrivateKeyProperty))
+			if (!memberAccessExpressionSyntax.Name.ToString().Equals(PrivateKeyProperty, System.StringComparison.Ordinal))
 			{
 				return;
 			}
 
 			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type;
 
-			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType))
+			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType, System.StringComparison.Ordinal))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, memberAccessExpressionSyntax.GetLocation());
 				context.ReportDiagnostic(diagnostic);
