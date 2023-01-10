@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@608ee757cfcce72c2e91e99aca128e0cae67de87 # ratchet:actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
         with:
           dotnet-version: |
             3.1.x
