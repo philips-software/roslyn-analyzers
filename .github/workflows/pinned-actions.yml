@@ -1,9 +1,6 @@
 name: Pinned Actions
 on:
   workflow_call:
-  pull_request:
-    branches:
-      - master
 jobs:
   pinned_actions:
     name: Pin GitHub Actions to SHA
