@@ -9,6 +9,7 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@bcollamore-ci
 
   pinnedactions:
+    if: ${{ ( github.event_name == 'pull_request' ) }}
     uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@bcollamore-ci
 
   semantic-commit:
