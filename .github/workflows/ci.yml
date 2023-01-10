@@ -4,26 +4,28 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+    types:
+      - opened
+      - edited
+      - synchronize
 jobs:
   codeql:
+    if: ${{ ( github.event_name == 'pull_request' && (github.event.action != 'synchronize' )) }}
     uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@bcollamore-ci
 
   pinnedactions:
-    if: ${{ ( github.event_name == 'pull_request' ) }}
+    if: ${{ ( github.event_name == 'pull_request' && (github.event.action != 'synchronize' )) }}
     uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@bcollamore-ci
 
   semantic-commit:
-    if: ${{ ( github.event_name == 'pull_request' && (
-        github.event.action == 'opened' ||
-        github.event.action == 'reopened' ||
-        github.event.action == 'synchronize' 
-      )) }}
     uses: philips-software/roslyn-analyzers/.github/workflows/semantic-commit-check.yml@bcollamore-ci
 
   build:
+    if: ${{ github.event.action != 'synchronize' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@bcollamore-ci
 
   sonarcloud:
+    if: ${{ github.event.action != 'synchronize' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@bcollamore-ci
     secrets:
       sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
