@@ -2,7 +2,7 @@ name: SonarCloud
 on:
   workflow_call:
     secrets:    
-      sonar_auth_token:
+      sonar-auth-token:
         required: true
 jobs:
   sonarcloud:
@@ -30,7 +30,7 @@ jobs:
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.sonar_auth_token }}
+          SONAR_TOKEN: ${{ secrets.sonar-auth-token }}
         run: |
           dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Debug
