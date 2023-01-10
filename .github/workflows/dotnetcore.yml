@@ -15,7 +15,19 @@ jobs:
           dotnet-version: |
             3.1.x
             7.0.x
+            
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --logger "trx;LogFileName=test-results.trx" || true
+        
       - name: Test with dotnet
         run: dotnet test --configuration Release
+
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test-Reporter
+          path: "**/test-results.trx"                            
+          reporter: dotnet-trx
+          fail-on-error: true
+        
