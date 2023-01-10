@@ -1,6 +1,10 @@
 name: "Semantic Commit Check"
 on:
-  workflow_call:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
 jobs:
   main:
     name: Semantic Commit Message Check
