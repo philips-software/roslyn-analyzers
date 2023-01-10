@@ -21,4 +21,5 @@ jobs:
 
   sonarcloud:
     uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@bcollamore-ci
-
+    secrets:
+      sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
