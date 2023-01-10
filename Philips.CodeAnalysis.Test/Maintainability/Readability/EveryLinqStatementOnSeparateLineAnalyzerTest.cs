@@ -34,11 +34,43 @@ public static class Foo
 }}
 ";
 
-		[TestMethod]
-		public void SingleStatementsPerLineDoesNotTriggersDiagnostics()
+		private const string CorrectWithComments = $@"
+public static class Foo
+{{
+  public static void Method(int[] customers)
+  {{
+    var c = 
+      from cust in customers // Get customers
+      where cust == 0 // Which have not bought anything
+      select cust.ToString(); // And report them
+  }}
+}}
+";
+
+		private const string CorrectWithCommentsOnSeparateLine = $@"
+public static class Foo
+{{
+  public static void Method(int[] customers)
+  {{
+    var c = 
+      // Get customers
+      from cust in customers 
+      // Which have not bought anything
+      where cust == 0 
+      // And report them
+      select cust.ToString();
+  }}
+}}
+";
+
+		[DataTestMethod]
+		[DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectWithComments, DisplayName = nameof(CorrectWithComments)),
+		 DataRow(CorrectWithCommentsOnSeparateLine, DisplayName = nameof(CorrectWithCommentsOnSeparateLine))]
+		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyCSharpDiagnostic(Correct);
+			VerifyCSharpDiagnostic(input);
 		}
 
 		private const string WhereOnSameLine = $@"
