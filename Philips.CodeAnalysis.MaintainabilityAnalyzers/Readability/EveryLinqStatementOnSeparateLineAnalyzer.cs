@@ -23,13 +23,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.QueryExpression);
 		}
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
+			GeneratedCodeDetector detector = new();
+			if (detector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			QueryExpressionSyntax query = (QueryExpressionSyntax)context.Node;
 
 			FromClauseSyntax from = query.FromClause;

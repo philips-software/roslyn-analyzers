@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -105,6 +106,15 @@ public static class Foo
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
 			VerifyCSharpFix(input, Correct);
 		}
-		
+
+		/// <summary>
+		/// No diagnostics expected to show up 
+		/// </summary>
+		[TestMethod]
+		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		{
+			VerifyCSharpDiagnostic(testCode, filePath);
+		}
 	}
 }
