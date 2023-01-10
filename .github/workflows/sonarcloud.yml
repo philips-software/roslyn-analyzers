@@ -35,4 +35,4 @@ jobs:
           dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.sonar-auth-token }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Debug
           dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.sonar-auth-token }}"
