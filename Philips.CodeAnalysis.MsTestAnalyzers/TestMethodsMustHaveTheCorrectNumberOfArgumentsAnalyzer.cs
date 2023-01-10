@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
 		}
 
-		private class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
+		private sealed class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
 		{
 			public TestMethodsMustHaveTheCorrectNumberOfArguments(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }

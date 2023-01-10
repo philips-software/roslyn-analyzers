@@ -29,6 +29,9 @@ dotnet_diagnostic.CA1305.severity = none
 dotnet_diagnostic.CA1310.severity = none
 dotnet_diagnostic.CA1824.severity = none
 
+# string.Contains(char) is not available in .NET Standard 2.0
+dotnet_diagnostic.CA1847.severity = none
+
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
 

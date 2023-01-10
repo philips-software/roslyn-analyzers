@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
-		public int DefaultDuplicateTokenThreshold = 100;
+		public int DefaultDuplicateTokenThreshold { get; set; } = 100;
 
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -79,9 +79,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return new HashSet<ISymbol>();
 		}
 
-		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic error)
+		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic diagnosticError)
 		{
-			error = null;
+			diagnosticError = null;
 			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
@@ -98,19 +98,19 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (!isParseSuccessful)
 				{
 					duplicateTokenThreshold = DefaultDuplicateTokenThreshold;
-					error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
+					diagnosticError = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
 				}
 
 				const int MaxTokenCount = 200;
 				if (duplicateTokenThreshold > MaxTokenCount)
 				{
-					error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
+					diagnosticError = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
 					duplicateTokenThreshold = MaxTokenCount;
 				}
 				const int MinTokenCount = 20;
 				if (duplicateTokenThreshold < MinTokenCount)
 				{
-					error = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
+					diagnosticError = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
 					duplicateTokenThreshold = MinTokenCount;
 				}
 				options.TokenCount = duplicateTokenThreshold;
@@ -153,9 +153,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return result;
 		}
 
-		private class CompilationAnalyzer
+		private sealed class CompilationAnalyzer
 		{
-			private readonly DuplicateDetectorDictionary _library = new();
+			private readonly DuplicateDetector _library = new();
 			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
 			private readonly HashSet<ISymbol> _exceptions;
@@ -208,7 +208,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 						if (rollingTokenSet.IsFull())
 						{
-							Evidence existingEvidence = _library.TryAdd(hash, evidence);
+							Evidence existingEvidence = _library.Register(hash, evidence);
 							if (existingEvidence != null)
 							{
 								Location location = evidence.LocationEnvelope.Contents();
@@ -449,12 +449,12 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public bool GenerateExceptionsFile { get; set; }
 	}
 
-	public class DuplicateDetectorDictionary
+	public class DuplicateDetector
 	{
 		private readonly Dictionary<int, List<Evidence>> _library = new();
 		private readonly object _lock = new();
 
-		public Evidence TryAdd(int key, Evidence value)
+		public Evidence Register(int key, Evidence value)
 		{
 			lock (_lock)
 			{
@@ -555,7 +555,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class RollingHashCalculator<T>
 	{
-		protected Queue<T> _components = new();
+		public Queue<T> Components { get; } = new();
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
@@ -574,8 +574,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				_basePowMaxComponentsModulusCache %= _modulus;
 			}
 		}
-
-		public Queue<T> Components { get { return _components; } }
 
 		public (List<int> components, int hash) ToComponentHashes()
 		{
@@ -597,22 +595,22 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public bool IsFull()
 		{
-			return _components.Count >= MaxItems;
+			return Components.Count >= MaxItems;
 		}
 
 		public T Add(T token)
 		{
-			_components.Enqueue(token);
+			Components.Enqueue(token);
 			T purgedHashComponent = default;
 			bool isPurged = false;
-			if (_components.Count > MaxItems)
+			if (Components.Count > MaxItems)
 			{
 				// Remove old value
-				purgedHashComponent = _components.Dequeue();
+				purgedHashComponent = Components.Dequeue();
 				isPurged = true;
 			}
 			CalcNewHashCode(token, isPurged, purgedHashComponent);
-			return _components.Peek();
+			return Components.Peek();
 		}
 
 		protected virtual void CalcNewHashCode(T hashComponent, bool isPurged, T purgedHashComponent)

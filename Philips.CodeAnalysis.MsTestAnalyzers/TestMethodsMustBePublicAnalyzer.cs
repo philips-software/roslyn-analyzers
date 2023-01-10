@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new TestMethodsMustBePublic(definitions);
 		}
 
-		private class TestMethodsMustBePublic : TestMethodImplementation
+		private sealed class TestMethodsMustBePublic : TestMethodImplementation
 		{
 			public TestMethodsMustBePublic(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }
