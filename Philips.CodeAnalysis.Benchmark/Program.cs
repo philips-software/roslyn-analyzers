@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.Benchmark
 				}
 			}
 		}
-		private void TestDictionary(DuplicateDetectorDictionary _library, int baseModulus, int modulus)
+		private void TestDictionary(DuplicateDetector _library, int baseModulus, int modulus)
 		{
 			A.Data.AsParallel().ForAll(kvp =>
 			{
@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.Benchmark
 
 					if (rollingTokenSet.IsFull())
 					{
-						_ = _library.TryAdd(hash, evidence);
+						_ = _library.Register(hash, evidence);
 					}
 				}
 			});
@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			DuplicateDetectorDictionary _library = new();
+			DuplicateDetector _library = new();
 
 			TestDictionary(_library, 2048, 1723);
 		}
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			DuplicateDetectorDictionary _library = new();
+			DuplicateDetector _library = new();
 
 			TestDictionary(_library, 227, 1000005);
 		}

@@ -87,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					continue;
 				}
-				if (string.Equals(@"InitializeComponent", name.Identifier.ValueText))
+				if (string.Equals(@"InitializeComponent", name.Identifier.ValueText, System.StringComparison.Ordinal))
 				{
 					count++;
 				}

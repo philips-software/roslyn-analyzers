@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Do not use #pragma warning";
 		private const string Category = Categories.Maintainability;
 
-		public List<DiagnosticDescriptor> Rules = new()
+		public List<DiagnosticDescriptor> Rules { get; } = new()
 		{
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description),
 		};
