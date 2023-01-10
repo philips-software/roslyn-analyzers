@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string ContainingNamespace = @"Tasks";
 		private const string ContainingType = @"Task";
-		public string Identifier = @"Result";
+		private const string Identifier = @"Result";
 
 		public override void Initialize(AnalysisContext context)
 		{

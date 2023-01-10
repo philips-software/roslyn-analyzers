@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
 		private const string Category = Categories.Security;
 
-		public readonly static DiagnosticDescriptor Rule = new(
+		public static readonly DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
 			Title, MessageFormat, Category, 
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
@@ -40,25 +41,31 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			if (context.Node is PropertyDeclarationSyntax propertyDeclarationSyntax)
+			{
 				Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
 					propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+			}
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
+			{
 				Diagnose(methodDeclarationSyntax.Identifier.ValueText,
 					methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+			}
 		}
 
 		private void AnalyzeFields(SyntaxNodeAnalysisContext context)
 		{
 			if (context.Node is FieldDeclarationSyntax fieldDeclarationSyntax)
+			{
 				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
 				{
 					Diagnose(variable.Identifier.ValueText,
 						fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
 				}
+			}
 		}
 
 
@@ -74,13 +81,13 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private Diagnostic CheckComment(string comment, Location location)
 		{
-			if (comment.ToLower().Contains(@"password"))
+			if (comment.ToLower(CultureInfo.CurrentCulture).Contains(@"password"))
 			{
 				return Diagnostic.Create(Rule, location);
 			}
 			return null;
 		}
-		
+
 		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)
 		{
 			Diagnostic diagnostic = CheckComment(valueText, location);

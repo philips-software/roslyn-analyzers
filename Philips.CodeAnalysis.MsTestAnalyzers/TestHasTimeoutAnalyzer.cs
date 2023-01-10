@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Tests that lack a Timeout may indefinitely block.";
 		private const string Category = Categories.Maintainability;
 
-		public readonly static string DefaultTimeoutKey = "defaultTimeout";
+		public static readonly string DefaultTimeoutKey = "defaultTimeout";
 
 		public static DiagnosticDescriptor Rule => new(Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new TestHasTimeout(definitions, additionalFilesHelper);
 		}
 
-		private class TestHasTimeout : TestMethodImplementation
+		private sealed class TestHasTimeout : TestMethodImplementation
 		{
 			private readonly AdditionalFilesHelper _additionalFilesHelper;
 			private readonly object _lock1 = new();

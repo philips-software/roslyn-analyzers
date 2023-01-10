@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"";
 		private const string Category = Categories.Readability;
 
-		public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -78,27 +78,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			forEachStatementSyntax = block.Statements[0] as ForEachStatementSyntax;
 
-			if (forEachStatementSyntax == null)
-			{
-				return false;
-			}
-
-			return true;
+			return forEachStatementSyntax != null;
 		}
 
 		private bool IsCountGreaterThanZero(ExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
-			if (condition is ParenthesizedExpressionSyntax parenthesized)
-			{
-				return IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
-			}
-
-			if (condition is BinaryExpressionSyntax binaryExpressionSyntax)
-			{
-				return IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
-			}
-
-			return false;
+			return condition is ParenthesizedExpressionSyntax parenthesized
+				? IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel)
+				: condition is BinaryExpressionSyntax binaryExpressionSyntax
+					&& IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
 		}
 		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
@@ -143,12 +131,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (foreachExpression is IdentifierNameSyntax identifier && ifExpression is IdentifierNameSyntax ifIdentifier)
 			{
-				if (ifIdentifier.Identifier.Text != identifier.Identifier.Text)
-				{
-					return false;
-				}
-
-				return true;
+				return ifIdentifier.Identifier.Text == identifier.Identifier.Text;
 			}
 
 			if (foreachExpression is MemberAccessExpressionSyntax memberAccess && ifExpression is MemberAccessExpressionSyntax ifMemberAccess)
@@ -162,17 +145,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					}
 
 					var rightSymbol = model.GetSymbolInfo(right);
-					if (rightSymbol.Symbol is null)
-					{
-						return false;
-					}
-
-					if (!SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol))
-					{
-						return false;
-					}
-
-					return true;
+					return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
 				}
 
 				var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
@@ -202,17 +175,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			ifIdentifier = null;
 			method = null;
 
-			if (expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
-			{
-				return TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method);
-			}
-
-			if (expression is InvocationExpressionSyntax invocationExpression)
-			{
-				return TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
-			}
-
-			return false;
+			return expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
+				? TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method)
+				: expression is InvocationExpressionSyntax invocationExpression
+				&& TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
 		}
 
 		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
@@ -232,12 +198,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 
 			ifIdentifier = expression.Expression as MemberAccessExpressionSyntax;
-			if (ifIdentifier != null)
-			{
-				return true;
-			}
-
-			return false;
+			return ifIdentifier != null;
 		}
 	}
 }

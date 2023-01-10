@@ -48,7 +48,7 @@ Foo.WhitelistedFunction
 			protected override void CalcNewHashCode(TokenInfo hashComponent, bool isPurged, TokenInfo purgedHashComponent)
 			{
 				HashCode = 0;
-				foreach (TokenInfo value in _components)
+				foreach (TokenInfo value in Components)
 				{
 					HashCode += value.GetHashCode();
 				}
@@ -74,8 +74,7 @@ Foo.WhitelistedFunction
 
 				static int Fib(int n)
 				{
-					if (n == 0) return 0;
-					return n + Fib(n - 1);
+					return n == 0 ? 0 : n + Fib(n - 1);
 				}
 
 				if (i >= duplicateTokenThreshold)
@@ -251,25 +250,25 @@ Foo.WhitelistedFunction
 		[TestMethod]
 		public void DuplicateDictionaryTest()
 		{
-			var dictionary = new DuplicateDetectorDictionary();
+			var dictionary = new DuplicateDetector();
 			var e1 = new Evidence(null, new List<int>() { 10 }, 10);
 
-			Evidence existing = dictionary.TryAdd(1, e1);
+			Evidence existing = dictionary.Register(1, e1);
 			Assert.IsNull(existing);
 
 			var e2 = new Evidence(null, new List<int>() { 20 }, 20);
 
-			existing = dictionary.TryAdd(2, e2);
+			existing = dictionary.Register(2, e2);
 			Assert.IsNull(existing);
 
 			var e3 = new Evidence(null, new List<int>() { 30 }, 30);
 
-			existing = dictionary.TryAdd(2, e3);
+			existing = dictionary.Register(2, e3);
 			Assert.IsNull(existing);
 
 			var e4 = new Evidence(null, new List<int>() { 30 }, 30);
 
-			existing = dictionary.TryAdd(2, e4);
+			existing = dictionary.Register(2, e4);
 			Assert.IsNotNull(existing);
 		}
 

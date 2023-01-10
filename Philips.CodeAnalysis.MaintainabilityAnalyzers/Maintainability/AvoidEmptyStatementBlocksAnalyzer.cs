@@ -24,8 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string CatchBlockDescription = @"Avoid empty catch blocks";
 
 
-		public DiagnosticDescriptor StatementRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		public DiagnosticDescriptor CatchRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
+		public DiagnosticDescriptor StatementRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor CatchRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(StatementRule, CatchRule); } }
 		public override void Initialize(AnalysisContext context)
@@ -37,9 +37,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			BlockSyntax blockSyntax = (BlockSyntax)context.Node;
+			if (context.Node is not BlockSyntax blockSyntax)
+			{
+				return;
+			}
 
-			if (blockSyntax.Statements == null || blockSyntax.Statements.Any())
+			if (blockSyntax.Statements.Any())
 			{
 				return;
 			}
@@ -68,7 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// ParanthesizedLambdaExpressions are acceptable () => { }, until a pre-canned static "EmptyAction" is defined.
-			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax || blockSyntax.Parent is SimpleLambdaExpressionSyntax)
+			if (blockSyntax.Parent is ParenthesizedLambdaExpressionSyntax or SimpleLambdaExpressionSyntax)
 			{
 				return;
 			}

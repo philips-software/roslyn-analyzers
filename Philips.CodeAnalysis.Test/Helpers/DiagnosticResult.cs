@@ -53,19 +53,13 @@ namespace Philips.CodeAnalysis.Test
 				return locations;
 			}
 
-			set
-			{
-				locations = value;
-			}
+			set => locations = value;
 		}
 
 		public DiagnosticResultLocation Location
 		{
-			get { return Locations[0]; }
-			set
-			{
-				Locations = new[] { value };
-			}
+			get => Locations[0];
+			set => Locations = new[] { value };
 		}
 
 		public DiagnosticSeverity Severity { get; set; }

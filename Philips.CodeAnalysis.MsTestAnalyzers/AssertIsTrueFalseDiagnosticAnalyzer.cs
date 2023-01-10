@@ -34,12 +34,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			Diagnostic result = Check(context, invocationExpressionSyntax, invocationExpressionSyntax.ArgumentList, isIsTrue);
 
-			if (result is null)
-			{
-				return Array.Empty<Diagnostic>();
-			}
-
-			return new[] { result };
+			return result is null ? Array.Empty<Diagnostic>() : (IEnumerable<Diagnostic>)(new[] { result });
 		}
 		protected virtual Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ArgumentListSyntax arguments, bool isIsTrue)
 		{
@@ -47,11 +42,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var test = allArguments.FirstOrDefault()?.Expression;
 
-			if (test != null)
-			{
-				return Check(context, node, test, isIsTrue);
-			}
-			return null;
+			return test != null ? Check(context, node, test, isIsTrue) : null;
 		}
 
 		protected abstract Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue);

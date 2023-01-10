@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_checkFieldVariables = checkFieldVariables;
 		}
 
-		public List<DiagnosticDescriptor> Rules = new()
+		public List<DiagnosticDescriptor> Rules { get; } = new()
 		{
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
 		};
@@ -144,12 +144,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			string name = identifier.ValueText;
 
-			if (validator.IsMatch(name))
-			{
-				return true;
-			}
-
-			return false;
+			return validator.IsMatch(name);
 		}
 	}
 }

@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			bool isFirstArgumentNull = false;
 			bool isFirstArgumentConstant = false;
-			ArgumentListSyntax argumentList = invocationExpression.ArgumentList as ArgumentListSyntax;
+			ArgumentListSyntax argumentList = invocationExpression.ArgumentList;
 			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
 				Optional<object> literalValue = semanticModel.GetConstantValue(arg0Literal, cancellationToken);
@@ -118,12 +118,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (argumentList.Arguments.Count == 2)
 				{
-					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>(new ArgumentSyntax[] { argument }));
+					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument }));
 				}
 				else
 				{
 					// make sure not to delete any custom error message
-					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList<ArgumentSyntax>(new ArgumentSyntax[] { argument, argumentList.Arguments[2] }));
+					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument, argumentList.Arguments[2] }));
 				}
 
 				InvocationExpressionSyntax newInvocationExpression = SyntaxFactory.InvocationExpression(newMemberAccess, newArguments);

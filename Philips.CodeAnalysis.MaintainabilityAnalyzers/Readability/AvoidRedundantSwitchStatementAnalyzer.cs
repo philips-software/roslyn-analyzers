@@ -19,9 +19,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"Elide the switch statement";
 		private const string Category = Categories.Readability;
 
-		public readonly static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidSwitchStatementsWithNoCases), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidSwitchStatementsWithNoCases), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags = GeneratedCodeAnalysisFlags.None)
+		public AvoidRedundantSwitchStatementAnalyzer()
+			:this(GeneratedCodeAnalysisFlags.None)
+		{
+		}
+
+		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
 		{
 			_generatedCodeFlags = generatedCodeFlags;
 		}

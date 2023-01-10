@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net7.0;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AnalysisLevel>latest-Recommended</AnalysisLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -74,7 +76,7 @@
       * Fixes for 2028: Allow copyright statement as header of first region
       1.2.30
       * Fixed issue 134: False positive of PH2069 on invocation of a method with FormattableString as one of the arguments.
-      1.2.31
+      1.2.32
       * Introduce PH2102: Xml documentation should add value.
       * Fixed issue 156: Multiple false positive on PH2101: Using 'as' expression
       * Improve PH2077: AvoidRedundantSwitch should exclude generated code
@@ -83,9 +85,9 @@
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.2.31</Version>
+    <Version>1.2.32</Version>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.2.31</FileVersion>
+    <FileVersion>1.2.32</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -100,8 +102,8 @@
   <ItemGroup>
     <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
   </ItemGroup>
 

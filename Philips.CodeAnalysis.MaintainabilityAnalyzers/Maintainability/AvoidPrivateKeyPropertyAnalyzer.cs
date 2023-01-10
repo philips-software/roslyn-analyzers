@@ -32,14 +32,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (!memberAccessExpressionSyntax.Name.ToString().Equals(PrivateKeyProperty))
+			if (!memberAccessExpressionSyntax.Name.ToString().Equals(PrivateKeyProperty, System.StringComparison.Ordinal))
 			{
 				return;
 			}
 
 			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(memberAccessExpressionSyntax.Expression).Type;
 
-			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType))
+			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType, System.StringComparison.Ordinal))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, memberAccessExpressionSyntax.GetLocation());
 				context.ReportDiagnostic(diagnostic);
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		#region Public Interface
 
-		public readonly static DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: helpUri);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: helpUri);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

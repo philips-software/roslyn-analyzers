@@ -17,7 +17,10 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new TestMethodsShouldHaveValidReturnTypesAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new TestMethodsShouldHaveValidReturnTypesAnalyzer();
+		}
 
 		#endregion
 

@@ -29,13 +29,13 @@ namespace Philips.CodeAnalysis.Common
 				return false;
 			}
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		public static bool IsTestClass(ClassDeclarationSyntax classDeclaration, SyntaxNodeAnalysisContext context)
 		{
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		/// <summary>
@@ -99,10 +99,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			location = null;
 			argumentValue = default;
-			if (attributeLists == null)
-			{
-				return false;
-			}
+
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
 				if (HasAttribute(attributes, getSemanticModel, name, fullName, out location, out argumentValue))

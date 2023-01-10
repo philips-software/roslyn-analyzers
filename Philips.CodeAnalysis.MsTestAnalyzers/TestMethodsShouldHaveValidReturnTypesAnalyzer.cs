@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsShouldHaveValidReturnTypesAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods must return void or Task for async methods";
-		public readonly static string MessageFormat = @"Test method should return '{0}', actually returns '{1}'";
+		public static readonly string MessageFormat = @"Test method should return '{0}', actually returns '{1}'";
 		private const string Description = @"MSTest will not run tests that return something other than void, or Task for async tests.";
 		private const string Category = Categories.Maintainability;
 
@@ -22,9 +22,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			return new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
+		}
 
-		private class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
+		private sealed class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
 		{
 			private readonly INamedTypeSymbol _taskSymbol;
 

@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodsMustBePublicAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"TestMethods/DataTestMethods must be public, instance methods";
-		public readonly static string MessageFormat = @"'{0}' is not a public instance method";
+		public static readonly string MessageFormat = @"'{0}' is not a public instance method";
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
@@ -24,9 +24,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions) => new TestMethodsMustBePublic(definitions);
+		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
+		{
+			return new TestMethodsMustBePublic(definitions);
+		}
 
-		private class TestMethodsMustBePublic : TestMethodImplementation
+		private sealed class TestMethodsMustBePublic : TestMethodImplementation
 		{
 			public TestMethodsMustBePublic(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }

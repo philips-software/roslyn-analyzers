@@ -8,7 +8,7 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	internal class AssertMetadata
+	internal sealed class AssertMetadata
 	{
 		public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
 	}
@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private bool CheckBlock(IBlockOperation blockOperation, IExpressionStatementOperation expressionOperation)
 		{
-			if (blockOperation.Parent is IUsingOperation || blockOperation.Parent is ICatchClauseOperation)
+			if (blockOperation.Parent is IUsingOperation or ICatchClauseOperation)
 			{
 				return false;
 			}

@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Description = @"Using the 'as' expression means a check should be made before dereferencing, or cast if you definitively know it will be this type in this context.";
 		private const string Category = Categories.RuntimeFailure;
 
-		public readonly static DiagnosticDescriptor Rule = new(
+		public static readonly DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticIds.DereferenceNull),
 			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
@@ -74,19 +74,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
-			if (binaryExpressionSyntax != null && binaryExpressionSyntax.OperatorToken.Kind() != SyntaxKind.AsKeyword)
-			{
-				return false;
-			}
-
-			if (
-				binaryExpressionSyntax != null && 
-				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
-				equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax)
-			{
-				return true;
-			}
-			return false;
+			return (binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword)
+				&& binaryExpressionSyntax != null 
+				&& binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax
+				&& equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax;
 		}
 
 		/// <summary>
@@ -126,7 +117,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				{
 					SymbolInfo potentialSymbolOfInterest = model.GetSymbolInfo(identifierNameSyntax);
 					if (potentialSymbolOfInterest.Symbol == null)
+					{
 						continue;
+					}
 
 					if (SymbolEqualityComparer.Default.Equals(potentialSymbolOfInterest.Symbol, ourSymbol))
 					{

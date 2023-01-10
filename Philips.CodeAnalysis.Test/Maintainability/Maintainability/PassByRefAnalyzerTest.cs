@@ -187,7 +187,10 @@ public class TestClass {baseClass}
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() => new PassByRefAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new PassByRefAnalyzer();
+		}
 
 		#endregion
 	}
