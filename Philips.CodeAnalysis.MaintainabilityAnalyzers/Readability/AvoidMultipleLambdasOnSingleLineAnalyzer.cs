@@ -56,6 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static IEnumerable<LambdaExpressionSyntax> FindLambdasOnSameLine(List<LambdaExpressionSyntax> lambdas)
 		{
+			// Using HashSet to filter out duplicates.
 			HashSet<LambdaExpressionSyntax> result = new();
 			int previousLine = -1;
 			foreach(LambdaExpressionSyntax lambda in lambdas)
