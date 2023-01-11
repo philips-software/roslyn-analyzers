@@ -22,7 +22,7 @@ Add the rules using Visual Studio's Package Manager, locating these packages on 
 
 Enabling a new rule on a legacy codebase can be daunting.  Some rules (e.g., Avoid Duplicate Code, Avoid Static Classes) support configuration and whitelisting - again via the .editorconfig.
 
-## Visual Studio 2019 Support
+## Visual Studio 2019/2022 Support
 
 These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with Visual Studio 2019 16.6.
 
