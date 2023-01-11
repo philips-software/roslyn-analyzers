@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			BlockSyntax blockSyntax = methodDeclarationSyntax.DescendantNodes().OfType<BlockSyntax>().First();
 			int cognitiveLoad = CalcCognitiveLoad(blockSyntax);
 
-			cognitiveLoad += blockSyntax.DescendantTokens().Where((token) =>
+			cognitiveLoad += blockSyntax.DescendantTokens().Count((token) =>
 			{
 				return
 					token.IsKind(SyntaxKind.BarBarToken) ||
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					token.IsKind(SyntaxKind.BreakKeyword) ||
 					token.IsKind(SyntaxKind.ContinueKeyword)
 					;
-			}).Count();
+			});
 
 			InitializeMaxCognitiveLoad(context);
 			if (cognitiveLoad > MaxCognitiveLoad)
@@ -94,13 +94,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				_additionalFilesHelper ??= new AdditionalFilesHelper(context.Options, context.Compilation);
 				string configuredMaxCognitiveLoad = _additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
-				if (int.TryParse(configuredMaxCognitiveLoad, out int maxAllowedCognitiveLoad))
+				if (int.TryParse(configuredMaxCognitiveLoad, out int maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
 				{
-					if (maxAllowedCognitiveLoad is >= 1 and <= 100)
-					{
-						MaxCognitiveLoad = maxAllowedCognitiveLoad;
-						return;
-					}
+					MaxCognitiveLoad = maxAllowedCognitiveLoad;
+					return;
 				}
 				MaxCognitiveLoad = 25;
 			}
