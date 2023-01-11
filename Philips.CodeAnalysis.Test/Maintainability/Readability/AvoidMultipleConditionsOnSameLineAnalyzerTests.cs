@@ -259,7 +259,9 @@ namespace MultiLineConditionUnitTests {
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() =>
-			new AvoidMultipleConditionsOnSameLineAnalyzer();
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new AvoidMultipleConditionsOnSameLineAnalyzer();
+		}
 	}
 }

@@ -106,7 +106,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var lineSpan = loc.GetLineSpan();
 			var startLine = lineSpan.StartLinePosition.Line;
 			var endLine = lineSpan.EndLinePosition.Line;
-			return (startLine != endLine);
+			return startLine != endLine;
 		}
 
 		private bool ContainsEndOfLine(SyntaxToken token)
