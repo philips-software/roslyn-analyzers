@@ -1,9 +1,9 @@
 name: SonarCloud
 on:
-  push:
-    branches: [master, release/**]
-  pull_request:
-    branches: [master, release/**]
+  workflow_call:
+    secrets:    
+      sonar-auth-token:
+        required: true
 jobs:
   sonarcloud:
     name: SonarCloud
@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@a351d9ea84bc76ec7508debf02a39d88f8b6c0c0 # ratchet:actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
         with:
           dotnet-version: |
             3.1.x
@@ -28,11 +28,12 @@ jobs:
           dotnet tool update dotnet-sonarscanner --global
           dotnet tool update dotnet-coverage --global
       - name: Build and analyze
+        if: ${{ env.SONAR_TOKEN != null }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.sonar-auth-token }}
         run: |
-          dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.host.url="https://sonarcloud.io"
+          dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.sonar-auth-token }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Debug
           dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          dotnet sonarscanner end /d:sonar.login="${{ secrets.sonar-auth-token }}"
