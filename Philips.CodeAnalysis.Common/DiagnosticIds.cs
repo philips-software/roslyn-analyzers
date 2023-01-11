@@ -97,5 +97,6 @@ namespace Philips.CodeAnalysis.Common
 		XmlDocumentationShouldAddValue = 2102,
 		AvoidInvocationAsArgument = 2103,
 		EveryLinqStatementOnSeparateLine = 2104,
+		ReduceCognitiveLoad = 2105,
 	}
 }

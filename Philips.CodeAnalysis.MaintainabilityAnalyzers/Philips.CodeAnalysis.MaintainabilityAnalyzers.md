@@ -53,4 +53,6 @@
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |
 | PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
+| PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
+| PH2105  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
