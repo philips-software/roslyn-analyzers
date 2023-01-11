@@ -14,12 +14,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class ReduceCognitiveLoadAnalyzer : DiagnosticAnalyzer
 	{
+		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
+		private AdditionalFilesHelper _additionalFilesHelper;
+
 		public ReduceCognitiveLoadAnalyzer()
+			: this(GeneratedCodeAnalysisFlags.None, null)
 		{ }
 
-		public ReduceCognitiveLoadAnalyzer(int maxCognitiveLoad)
+		public ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags, AdditionalFilesHelper additionalFilesHelper)
 		{
-			MaxCognitiveLoad = maxCognitiveLoad;
+			_generatedCodeFlags = generatedCodeFlags;
+			_additionalFilesHelper = additionalFilesHelper;
 		}
 
 		private int MaxCognitiveLoad { get; set; }
@@ -35,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 		}
@@ -52,6 +57,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if (generatedCodeDetector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			MethodDeclarationSyntax methodDeclarationSyntax = (MethodDeclarationSyntax)context.Node;
 			BlockSyntax blockSyntax = methodDeclarationSyntax.DescendantNodes().OfType<BlockSyntax>().First();
 			int cognitiveLoad = CalcCognitiveLoad(blockSyntax);
@@ -81,11 +92,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (MaxCognitiveLoad == 0)
 			{
-				var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-				string configuredMaxCognitiveLoad = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
+				_additionalFilesHelper ??= new AdditionalFilesHelper(context.Options, context.Compilation);
+				string configuredMaxCognitiveLoad = _additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
 				if (int.TryParse(configuredMaxCognitiveLoad, out int maxAllowedCognitiveLoad))
 				{
-					if (maxAllowedCognitiveLoad is >= 5 and <= 100)
+					if (maxAllowedCognitiveLoad is >= 1 and <= 100)
 					{
 						MaxCognitiveLoad = maxAllowedCognitiveLoad;
 						return;

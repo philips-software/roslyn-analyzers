@@ -11,16 +11,46 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Collections.Generic;
 using Philips.CodeAnalysis.Test;
 using System.Text.RegularExpressions;
+using Moq;
+using Castle.Core.Internal;
+using System.Collections.Immutable;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerTest : DiagnosticVerifier
 	{
+		private Regex MakeRegex(int expectedLoad)
+		{
+			return new Regex($"Load of {expectedLoad} ");
+		}
+
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new ReduceCognitiveLoadAnalyzer(1);
+			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
+			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
+			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
 		}
+
+		[TestMethod]
+		public void CognitiveLoadGeneratedCodeIgnoredTest()
+		{
+			const string template = @"
+class Foo
+{
+	private void Test()
+	{
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {} // over the threshold
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, "Test.Designer");
+		}
+
 
 		[TestMethod]
 		public void CognitiveLoad1()
@@ -48,7 +78,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 2 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
 		}
 
 		[TestMethod]
@@ -63,7 +93,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -78,7 +108,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -93,7 +123,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -108,7 +138,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -123,7 +153,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -138,7 +168,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 3 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -157,7 +187,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 4 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(4)));
 		}
 
 		[TestMethod]
@@ -178,7 +208,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 6 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(6)));
 		}
 
 		[TestMethod]
@@ -201,7 +231,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 8 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(8)));
 		}
 
 
@@ -223,7 +253,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 7 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(7)));
 		}
 
 		[TestMethod]
@@ -288,7 +318,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 37 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(37)));
 		}
 
 
@@ -350,7 +380,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 31 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(31)));
 		}
 
 		[TestMethod]
@@ -398,16 +428,147 @@ class Foo
 		return document; //41
 	}
 }";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 41 ")));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(41)));
 		}
 	}
 
 	[TestClass]
-	public class ReduceCognitiveLoadAnalyzerInitializationTest : DiagnosticVerifier
+	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			// Force the initialization logic to run, which will default to 25
+			const string InvalidMaxLoad = @"1000";
+			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
+			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
+			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
+		}
+
+		[TestMethod]
+		public void CognitiveLoadInitPassTest()
+		{
+			const string template = @"
+class Foo
+{
+	private void Test()
+	{
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void CognitiveLoadInitFailTest()
+		{
+			const string template = @"
+class Foo
+{
+	private void Test()
+	{
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {} // over the threshold
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+		}
+
+	}
+
+	[TestClass]
+	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest2 : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			const string InvalidMaxLoad = @"0";
+			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
+			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
+			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
+		}
+
+		[TestMethod]
+		public void CognitiveLoadInitPassTest()
+		{
+			const string template = @"
+class Foo
+{
+	private void Test()
+	{
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+	}
+}
+";
+			VerifyCSharpDiagnostic(template);
+		}
+
+		[TestMethod]
+		public void CognitiveLoadInitFailTest()
+		{
+			const string template = @"
+class Foo
+{
+	private void Test()
+	{
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {}
+		if (1!=1) {} // over the threshold
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+		}
+
+	}
+
+	[TestClass]
+	public class ReduceCognitiveLoadAnalyzerDefaultInitializationTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
 			return new ReduceCognitiveLoadAnalyzer();
 		}
 
