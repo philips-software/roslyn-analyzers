@@ -74,7 +74,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					token?.IsKind(SyntaxKind.AmpersandAmpersandToken) ||
 					token?.IsKind(SyntaxKind.ExclamationToken) ||
 					token?.IsKind(SyntaxKind.ExclamationEqualsToken) ||
-					token?.IsKind(SyntaxKind.ReturnKeyword) ||
 					token?.IsKind(SyntaxKind.BreakKeyword) ||
 					token?.IsKind(SyntaxKind.ContinueKeyword)
 					;
