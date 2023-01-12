@@ -15,16 +15,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Diagnostic for inconsistent number of operators in a class.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class OperatorsCountAnalyzer : DiagnosticAnalyzer
+	public class AlignOperatorsCountAnalyzer : DiagnosticAnalyzer
 	{
 		private const string PlusMinusTitle = "Align number of + and - operators.";
 		private const string PlusMinusMessage = "Align number of + and - operators.";
 		private const string PlusMinusDescription = 
-			"A class should have the same number of + as - operators and these shall have the same arguments, in the same order.";
+			"A class should have the same number of + as - operators.";
 		private const string MultiplyDivideTitle = "Align number of * and / operators.";
 		private const string MultiplyDivideMessage = "Align number of * and / operators.";
 		private const string MultiplyDivideDescription =
-			"A class should have the same number of * as / operators and these shall have the same arguments, in the same order.";
+			"A class should have the same number of * as / operators.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor PlusMinusRule =

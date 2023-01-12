@@ -9,10 +9,10 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	/// <summary>
-	/// Test class for <see cref="OperatorsCountAnalyzer"/>.
+	/// Test class for <see cref="AlignOperatorsCountAnalyzer"/>.
 	/// </summary>
 	[TestClass]
-	public class OperatorsCountAnalyzerTest : DiagnosticVerifier
+	public class AlignOperatorsCountAnalyzerTest : DiagnosticVerifier
 	{
 		private const string CorrectNumberOfPlusMinus = @"
     namespace AssignmentInConditionUnitTests {
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
-			return new OperatorsCountAnalyzer();
+			return new AlignOperatorsCountAnalyzer();
 		}
 	}
 }
