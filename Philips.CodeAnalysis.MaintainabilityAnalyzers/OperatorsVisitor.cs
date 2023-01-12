@@ -59,28 +59,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			}
 		}
 
-		public int IncrementCount { get; private set; } = 0;
+		public int IncrementCount { get; private set; }
 
-		public int DecrementCount { get; private set; } = 0;
+		public int DecrementCount { get; private set; }
 
-		public int PlusCount { get; private set; } = 0;
+		public int PlusCount { get; private set; }
 
-		public int MinusCount { get; private set; } = 0;
+		public int MinusCount { get; private set; }
 
-		public int MultiplyCount { get; private set; } = 0;
+		public int MultiplyCount { get; private set; }
 
-		public int DivideCount { get; private set; } = 0;
+		public int DivideCount { get; private set; }
 
-		public int GreaterThanCount { get; private set; } = 0;
+		public int GreaterThanCount { get; private set; }
 
-		public int LessThanCount { get; private set; } = 0;
+		public int LessThanCount { get; private set; }
 
-		public int GreaterThanOrEqualCount { get; private set; } = 0;
+		public int GreaterThanOrEqualCount { get; private set; }
 
-		public int LessThanOrEqualCount { get; private set; } = 0;
+		public int LessThanOrEqualCount { get; private set; }
 
-		public int ShiftRightCount { get; private set; } = 0;
+		public int ShiftRightCount { get; private set; }
 
-		public int ShiftLeftCount { get; private set; } = 0;
+		public int ShiftLeftCount { get; private set; }
 	}
 }
