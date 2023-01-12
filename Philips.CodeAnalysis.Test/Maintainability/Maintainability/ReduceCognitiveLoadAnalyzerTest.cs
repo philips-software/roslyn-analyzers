@@ -108,7 +108,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
 		}
 
 		[TestMethod]
@@ -246,14 +246,14 @@ class Foo
 	{ //1
 		if(1==1)
 		{ //2
-			if(2==2) {return;} //3,4,5
+			if(2==2) {return;} //3,4
 		}
 		if(3==3)
-		{ return;} // 6,7
+		{ return;} // 5
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(7)));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(5)));
 		}
 
 		[TestMethod]
@@ -292,33 +292,33 @@ class Foo
 		{ //15
 			if (dataRowCount != 0 && dynamicDataCount == 0) //16,17
 			{ // 18,19
-				return; // 20
+				return;
 			}
-			if (dataRowCount == 0 && dynamicDataCount == 1) // 21
-			{ //22,23
-				return; //24
+			if (dataRowCount == 0 && dynamicDataCount == 1) // 20
+			{ //21,22
+				return;
 			}
-			if (dataRowCount != 0 && dynamicDataCount != 0) //25,26,27
-			{ //28,29
+			if (dataRowCount != 0 && dynamicDataCount != 0) //23,24,25
+			{ //26,27
 				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
 			}
-			else if (!hasTestSource) // 30
-			{ //31,32
+			else if (!hasTestSource) // 28
+			{ //39,30
 				context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
 			}
 		}
 		else
-		{ //33
-			if (dataRowCount == 0 && dynamicDataCount == 0) //34
-			{ //35,36
-				return; //37
+		{ //31
+			if (dataRowCount == 0 && dynamicDataCount == 0) //32
+			{ //33,34
+				return;
 			}
 			context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, methodDeclaration.Identifier.GetLocation()));
 		}
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(37)));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(34)));
 		}
 
 
@@ -333,54 +333,54 @@ class Foo
 		PropertyDeclarationSyntax property = (PropertyDeclarationSyntax)context.Node;
 		if (property.Type.ToString() != @""TestContext"")										// 2
 		{																						// 3
-			return;																				// 4
+			return;																				
 		}
-																								// 5,6
+																								// 4,5
 		if ((context.SemanticModel.GetSymbolInfo(property.Type).Symbol is not ITypeSymbol symbol) || (symbol.ToString() != @""Microsoft.VisualStudio.TestTools.UnitTesting.TestContext""))
-		{																						// 7
-			return;																				// 8
+		{																						// 6
+			return;																				
 		}
 		string varName = string.Empty;
 		string propName = property.Identifier.ToString();
 		IEnumerable<SyntaxNode> propNodes = context.Node.DescendantNodes();
 		IEnumerable<ReturnStatementSyntax> returnNodes = propNodes.OfType<ReturnStatementSyntax>();
 		if (returnNodes.Any())
-		{																						// 9
+		{																						// 7
 			ReturnStatementSyntax returnStatement = returnNodes.First();
-			if (returnStatement != null)														// 10
-			{																					// 11,12
+			if (returnStatement != null)														// 8
+			{																					// 9,10
 				if (returnStatement.Expression is IdentifierNameSyntax returnVar)
-				{																				// 13,14,15,16
+				{																				// 11,12,13,14
 					varName = returnVar.Identifier.ToString();
 				}
 			}
 		}
 		// find out if the property or its underlying variable is actually used
 		foreach (IdentifierNameSyntax identifier in context.Node.Parent.DescendantNodes().OfType<IdentifierNameSyntax>())
-		{																									// 17
-			if ((identifier.Identifier.ToString() == propName) && (identifier.Parent != property) &&		// 18,19
+		{																									// 15
+			if ((identifier.Identifier.ToString() == propName) && (identifier.Parent != property) &&		// 16,17
 				context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
-			{																								// 20,21
+			{																								// 18,19
 				// if we find the same identifier as the propery and it's not a type or the original instance, it's used
-				return;																						// 22
+				return;																						
 			}
 			if ((identifier.Identifier.ToString() == varName)
-				&& identifier.Parent is not VariableDeclarationSyntax										// 23
-				&& !propNodes.Contains(identifier)															// 24,25
-				&& context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)				// 26
-			{																								// 27,28
+				&& identifier.Parent is not VariableDeclarationSyntax										// 20
+				&& !propNodes.Contains(identifier)															// 21,22
+				&& context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)				// 23
+			{																								// 24,25
 				// if we find the same identifier as the variable and it's not a type, the original declaration, or part of the property, it's used
-				return;																						// 29,30
+				return;																						
 			}
 		}
 		// if not, report a diagnostic error
 		Diagnostic diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
 		context.ReportDiagnostic(diagnostic);
-		return;																								// 31
+		return;																								
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(31)));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(26)));
 		}
 
 		[TestMethod]
@@ -425,10 +425,10 @@ class Foo
 			}
 			document = document.WithSyntaxRoot(rootNode);
 		}
-		return document; //41
+		return document;
 	}
 }";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(41)));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(40)));
 		}
 	}
 
