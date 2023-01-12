@@ -84,8 +84,9 @@
       * Introduce PH2105: Align number of + and - operators.
       * Introduce PH2106: Align number of * and / operators.
       * Introduce PH2107: Align number of &gt; and &lt; operators.
-      * Introduce PH2108: Align number of &gt;&gt; and &lt;&lt; operators.
-      * Introduce PH2109: Align number of ++ and -- operators.
+      * Introduce PH2108: Align number of &gt;= and &lt;= operators.
+      * Introduce PH2109: Align number of &gt;&gt; and &lt;&lt; operators.
+      * Introduce PH2110: Align number of ++ and -- operators.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2022 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

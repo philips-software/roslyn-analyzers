@@ -57,5 +57,6 @@
 | PH2105  | Align number of + and - operators            | Align the number of operators + and -, as these are often used in combination with each other. |
 | PH2106  | Align number of * and / operators            | Align the number of operators * and /, as these are often used in combination with each other. |
 | PH2107  | Align number of > and < operators            | Align the number of operators > and <, as these are often used in combination with each other. |
-| PH2108  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
-| PH2109  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |
+| PH2108  | Align number of >= and <= operators          | Align the number of operators >= and <=, as these are often used in combination with each other. |
+| PH2109  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
+| PH2110  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |

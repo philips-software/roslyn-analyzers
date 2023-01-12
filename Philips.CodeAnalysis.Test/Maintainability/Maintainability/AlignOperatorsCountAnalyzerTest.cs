@@ -72,6 +72,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+		private const string CorrectNumberOfGreaterLessThanOrEqual = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static bool operator >=(Number num1, Number num2)
+            {
+                return num1.n > num2.n;
+            }
+            public static bool operator <=(Number num1, Number num2)
+            {
+                return num1.n < num2.n;
+            }
+        }
+    }";
 		private const string CorrectNumberOfRightLeftShift = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -128,6 +142,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+		private const string WrongNumberOfGreaterLessThanOrEqual = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static bool operator <=(Number num1, Number num2)
+            {
+                return num1.n < num2.n;
+            }
+        }
+    }";
 		private const string WrongNumberOfRightLeftShift = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -152,6 +176,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfPlusMinus, DisplayName = nameof(CorrectNumberOfPlusMinus)),
 		 DataRow(CorrectNumberOfMultiplyDivide, DisplayName = nameof(CorrectNumberOfMultiplyDivide)),
 		 DataRow(CorrectNumberOfGreaterLessThan, DisplayName = nameof(CorrectNumberOfGreaterLessThan)),
+		 DataRow(CorrectNumberOfGreaterLessThanOrEqual, DisplayName = nameof(CorrectNumberOfGreaterLessThanOrEqual)),
 		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
@@ -165,8 +190,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
 		 DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
 		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
-		DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
-		DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift))]
+		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
+		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
+		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
 			VerifyCSharpDiagnostic(testCode, expected);

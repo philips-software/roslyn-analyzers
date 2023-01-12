@@ -44,6 +44,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				case SyntaxKind.LessThanToken:
 					LessThanCount += 1;
 					break;
+				case SyntaxKind.GreaterThanEqualsToken:
+					GreaterThanOrEqualCount += 1;
+					break;
+				case SyntaxKind.LessThanEqualsToken:
+					LessThanOrEqualCount += 1;
+					break;
 				case SyntaxKind.GreaterThanGreaterThanToken:
 					ShiftRightCount += 1;
 					break;
@@ -68,6 +74,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public int GreaterThanCount { get; private set; } = 0;
 
 		public int LessThanCount { get; private set; } = 0;
+
+		public int GreaterThanOrEqualCount { get; private set; } = 0;
+
+		public int LessThanOrEqualCount { get; private set; } = 0;
 
 		public int ShiftRightCount { get; private set; } = 0;
 

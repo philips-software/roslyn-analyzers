@@ -33,7 +33,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			GenerateRule("*", "/", DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators);
 
 		private static readonly DiagnosticDescriptor GreaterLessThanRule =
-			GenerateRule(">", "<", DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators); 
+			GenerateRule(">", "<", DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators);
+
+		private static readonly DiagnosticDescriptor GreaterLessThanOrEqualRule =
+			GenerateRule(">=", "<=", DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators);
 
 		private static readonly DiagnosticDescriptor ShiftRightAndLeftRule =
 			GenerateRule(">>", "<<", DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators);
@@ -55,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
 		/// </summary>
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(IncrementAndDecrementRule, PlusMinusRule, MultiplyDivideRule, GreaterLessThanRule, ShiftRightAndLeftRule);
+			ImmutableArray.Create(IncrementAndDecrementRule, PlusMinusRule, MultiplyDivideRule, GreaterLessThanRule, GreaterLessThanOrEqualRule, ShiftRightAndLeftRule);
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
@@ -102,6 +105,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var location = classDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanRule, location));
+			}
+
+			if (visitor.LessThanOrEqualCount != visitor.GreaterThanOrEqualCount)
+			{
+				var location = classDeclaration.Identifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanOrEqualRule, location));
 			}
 
 			if (visitor.ShiftLeftCount != visitor.ShiftRightCount)
