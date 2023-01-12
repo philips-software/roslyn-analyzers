@@ -21,6 +21,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string PlusMinusMessage = "Align number of + and - operators.";
 		private const string PlusMinusDescription = 
 			"A class should have the same number of + as - operators and these shall have the same arguments, in the same order.";
+		private const string MultiplyDivideTitle = "Align number of * and / operators.";
+		private const string MultiplyDivideMessage = "Align number of * and / operators.";
+		private const string MultiplyDivideDescription =
+			"A class should have the same number of * as / operators and these shall have the same arguments, in the same order.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor PlusMinusRule =
@@ -33,12 +37,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				isEnabledByDefault: true,
 				description: PlusMinusDescription
 			);
+		private static readonly DiagnosticDescriptor MultiplyDivideRule =
+			new(
+				Helper.ToDiagnosticId(DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators),
+				MultiplyDivideTitle,
+				MultiplyDivideMessage,
+				Category,
+				DiagnosticSeverity.Error,
+				isEnabledByDefault: true,
+				description: MultiplyDivideDescription
+			);
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
 		/// </summary>
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(PlusMinusRule);
+			ImmutableArray.Create(PlusMinusRule, MultiplyDivideRule);
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
@@ -63,10 +77,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			OperatorsVisitor visitor = new();
 			visitor.Visit(classDeclaration);
 
-			if (visitor.PlusCount != visitor.MinusCount)
+			if(visitor.PlusCount != visitor.MinusCount)
 			{
 				var location = classDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(PlusMinusRule, location));
+			}
+
+			if(visitor.MultiplyCount != visitor.DivideCount)
+			{
+				var location = classDeclaration.Identifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(MultiplyDivideRule, location));
 			}
 		}
 	}

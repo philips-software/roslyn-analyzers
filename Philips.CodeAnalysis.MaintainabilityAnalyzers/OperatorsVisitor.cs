@@ -28,11 +28,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				case SyntaxKind.MinusToken:
 					MinusCount += 1;
 					break;
+				case SyntaxKind.AsteriskToken:
+					MultiplyCount += 1;
+					break;
+				case SyntaxKind.SlashToken:
+					DivideCount += 1;
+					break;
 			}
 		}
 
 		public int PlusCount { get; private set; }
 
 		public int MinusCount { get; private set; }
+
+		public int MultiplyCount { get; private set; }
+
+		public int DivideCount { get; private set; }
 	}
 }
