@@ -97,6 +97,12 @@ namespace Philips.CodeAnalysis.Common
 		XmlDocumentationShouldAddValue = 2102,
 		AvoidInvocationAsArgument = 2103,
 		EveryLinqStatementOnSeparateLine = 2104,
-		AvoidMultipleLambdasOnSingleLine = 2105,
+		AlignNumberOfPlusAndMinusOperators = 2105,
+		AlignNumberOfMultiplyAndDivideOperators = 2106,
+		AlignNumberOfGreaterAndLessThanOperators = 2107,
+		AlignNumberOfGreaterAndLessThanOrEqualOperators = 2108,
+		AlignNumberOfShiftRightAndLeftOperators = 2109,
+		AlignNumberOfIncrementAndDecrementOperators = 2110,
+		AvoidMultipleLambdasOnSingleLine = 2111,
 	}
 }
