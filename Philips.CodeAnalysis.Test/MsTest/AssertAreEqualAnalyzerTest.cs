@@ -11,12 +11,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AssertAreEqualAnalyzerTest : AssertCodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
 		{
 			return new DiagnosticResult()
@@ -36,10 +30,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			return new AssertAreEqualCodeFixProvider();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
 		public void CheckDefaultBehavior()
@@ -135,6 +125,26 @@ Assert.IsNull({arg});
 			VerifyChange(template, fixTemplate);
 		}
 
+		[DataRow("-1")]
+		[DataRow("1")]
+		[DataRow("0")]
+		[DataRow("-1u")]
+		[DataRow("1u")]
+		[DataRow("0u")]
+		[DataTestMethod]
+		public void CheckNotNull(string arg)
+		{
+			string template = @$"
+Assert.AreNotEqual(null, {arg});
+";
+			string fixTemplate = @$"
+Assert.IsNotNull({arg});
+";
+
+			VerifyChange(template, fixTemplate);
+		}
+
+
 		[TestMethod]
 		public void CheckWillIgnoreTypeArgument()
 		{
@@ -147,7 +157,5 @@ string GetValue()
 Assert.AreEqual<string>(GetValue(), null);
 ");
 		}
-
-		#endregion
 	}
 }
