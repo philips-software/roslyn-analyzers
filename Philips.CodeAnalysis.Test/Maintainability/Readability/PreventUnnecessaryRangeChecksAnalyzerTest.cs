@@ -85,6 +85,38 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		public void CheckElseClause(string declaration, string countLengthMethod)
+		{
+			const string template = @"
+class Foo
+{{
+  public void test()
+  {{
+    {0};
+    // comment
+    if(data.{1} > 0)
+    {{
+      foreach (int i in data)
+      {{
+      }}
+      //middle comment
+    }}
+    else
+    {{ }}
+    // end comment
+  }}
+}}
+";
+			string errorCode = string.Format(template, declaration, countLengthMethod);
+			VerifyCSharpDiagnostic(errorCode);
+		}
+
+
+		[DataRow("int[] data = new int[0]", "Length")]
+		[DataRow("int[] data = new int[0]", "Count()")]
+		[DataRow("List<int> data = new List<int>()", "Count")]
+		[DataRow("List<int> data = new List<int>()", "Count()")]
+		[DataTestMethod]
 		public void CheckNestedRange(string declaration, string countLengthMethod)
 		{
 			const string template = @"
