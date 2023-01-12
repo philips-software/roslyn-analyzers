@@ -55,4 +55,10 @@
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
 | PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
-| PH2105  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
+| PH2105  | Align number of + and - operators            | Align the number of operators + and -, as these are often used in combination with each other. |
+| PH2106  | Align number of * and / operators            | Align the number of operators * and /, as these are often used in combination with each other. |
+| PH2107  | Align number of > and < operators            | Align the number of operators > and <, as these are often used in combination with each other. |
+| PH2108  | Align number of >= and <= operators          | Align the number of operators >= and <=, as these are often used in combination with each other. |
+| PH2109  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
+| PH2110  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |
+| PH2111  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
