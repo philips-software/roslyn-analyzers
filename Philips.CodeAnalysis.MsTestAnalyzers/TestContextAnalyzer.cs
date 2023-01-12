@@ -59,12 +59,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (returnNodes.Any())
 			{
 				ReturnStatementSyntax returnStatement = returnNodes.First();
-				if (returnStatement != null)
+				if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
 				{
-					if (returnStatement.Expression is IdentifierNameSyntax returnVar)
-					{
-						varName = returnVar.Identifier.ToString();
-					}
+					varName = returnVar.Identifier.ToString();
 				}
 			}
 

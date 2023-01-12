@@ -57,11 +57,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			private bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
+			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, 
+												out bool anyCustomDataSources, out bool anyDynamicData, out HashSet<int> dataRowParameters)
 			{
-				bool anyCustomDataSources = false;
-				bool anyDynamicData = false;
-				HashSet<int> dataRowParameters = new();
+				anyCustomDataSources = false;
+				anyDynamicData = false;
+				dataRowParameters = new();
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
 					if (Helper.IsDataRowAttribute(attribute, context))
@@ -97,6 +98,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						continue;
 					}
 				}
+			}
+
+			private bool TryGetExpectedParameters(MethodDeclarationSyntax methodDeclaration, SyntaxNodeAnalysisContext context, out int? expectedNumberOfParameters)
+			{
+				CollectSupportingData(context, methodDeclaration, out bool anyCustomDataSources, out bool anyDynamicData, out HashSet<int> dataRowParameters);
 
 				if (anyDynamicData || anyCustomDataSources)
 				{

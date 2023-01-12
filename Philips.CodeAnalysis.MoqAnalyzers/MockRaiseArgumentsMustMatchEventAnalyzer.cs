@@ -118,6 +118,11 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
+			CheckDiagnostics(context, invocationExpressionSyntax, namedTypeSymbol, raiseMethodSymbol);
+		}
+
+		private void CheckDiagnostics(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, INamedTypeSymbol namedTypeSymbol, IMethodSymbol raiseMethodSymbol)
+		{
 			int firstArgument = 0;
 			int argumentsToCheck;
 			if (raiseMethodSymbol.Parameters.Last().IsParams)
@@ -171,5 +176,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				}
 			}
 		}
+
 	}
 }
