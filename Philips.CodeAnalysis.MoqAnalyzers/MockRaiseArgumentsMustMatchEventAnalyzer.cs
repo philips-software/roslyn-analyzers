@@ -137,19 +137,14 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 			else
 			{
-				bool isError = false;
 				//it has a single eventargs argument.  Compiler has made sure that the types are the same, make sure the delegate takes object sender, event args
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != 2)
 				{
-					isError = true;
+					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
+					return;
 				}
 
-				if (!isError && namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
-				{
-					isError = true;
-				}
-
-				if (isError)
+				if (namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
 				{
 					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
 					return;

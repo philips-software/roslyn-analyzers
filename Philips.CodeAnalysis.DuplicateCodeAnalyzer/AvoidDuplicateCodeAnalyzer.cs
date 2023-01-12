@@ -121,23 +121,25 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private void RegisterAllowedMethods(HashSet<ISymbol> result, string line, Compilation compilation)
 		{
 			var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(line, compilation);
-			if (!symbols.IsDefaultOrEmpty)
+			if (symbols.IsDefaultOrEmpty)
 			{
-				foreach (var symbol in symbols)
+				return;
+			}
+
+			foreach (var symbol in symbols)
+			{
+				if (symbol is IMethodSymbol)
 				{
-					if (symbol is IMethodSymbol)
+					result.Add(symbol);
+				}
+				else if (symbol is ITypeSymbol typeSymbol)
+				{
+					var members = typeSymbol.GetMembers();
+					foreach (var member in members)
 					{
-						result.Add(symbol);
-					}
-					else if (symbol is ITypeSymbol typeSymbol)
-					{
-						var members = typeSymbol.GetMembers();
-						foreach (var member in members)
+						if (member is IMethodSymbol)
 						{
-							if (member is IMethodSymbol)
-							{
-								result.Add(member);
-							}
+							result.Add(member);
 						}
 					}
 				}
