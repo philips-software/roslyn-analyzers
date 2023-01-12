@@ -99,5 +99,8 @@ namespace Philips.CodeAnalysis.Common
 		EveryLinqStatementOnSeparateLine = 2104,
 		AlignNumberOfPlusAndMinusOperators = 2105,
 		AlignNumberOfMultiplyAndDivideOperators = 2106,
+		AlignNumberOfGreaterAndLessThanOperators = 2107,
+		AlignNumberOfShiftRightAndLeftOperators = 2108,
+		AlignNumberOfIncrementAndDecrementOperators = 2109,
 	}
 }

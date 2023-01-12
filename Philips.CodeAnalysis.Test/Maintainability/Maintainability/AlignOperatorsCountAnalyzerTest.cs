@@ -14,6 +14,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AlignOperatorsCountAnalyzerTest : DiagnosticVerifier
 	{
+		private const string CorrectNumberOfIncrementDecrement = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator ++(Number num1)
+            {
+                return num1.n + 1;
+            }
+            public static Number operator --(Number num1)
+            {
+                return num1.n - num2.n;
+            }
+        }
+    }";
+
 		private const string CorrectNumberOfPlusMinus = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -43,7 +58,45 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+		private const string CorrectNumberOfGreaterLessThan = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static bool operator >(Number num1, Number num2)
+            {
+                return num1.n > num2.n;
+            }
+            public static bool operator <(Number num1, Number num2)
+            {
+                return num1.n < num2.n;
+            }
+        }
+    }";
+		private const string CorrectNumberOfRightLeftShift = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator >>(Number num1, int i)
+            {
+                return num1.n >> i;
+            }
+            public static Number operator <<(Number num1, int i)
+            {
+                return num1.n << i;
+            }
+        }
+    }";
 
+		private const string WrongNumberOfIncrementDecrement = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator ++(Number num1)
+            {
+                return num1.n + 1;
+            }
+        }
+    }";
 		private const string WrongNumberOfPlusMinus = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -65,14 +118,41 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+		private const string WrongNumberOfGreaterLessThan = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static bool operator <(Number num1, Number num2)
+            {
+                return num1.n < num2.n;
+            }
+        }
+    }";
+		private const string WrongNumberOfRightLeftShift = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator >>(Number num1, int i)
+            {
+                return num1.n >> i;
+            }
+            public static Number operator >>(Number num1, int i)
+            {
+                return num1.n >> i;
+            }
+        }
+    }";
 
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
 		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
+		 DataRow(CorrectNumberOfIncrementDecrement, DisplayName = nameof(CorrectNumberOfIncrementDecrement)),
 		 DataRow(CorrectNumberOfPlusMinus, DisplayName = nameof(CorrectNumberOfPlusMinus)),
-		 DataRow(CorrectNumberOfMultiplyDivide, DisplayName = nameof(CorrectNumberOfMultiplyDivide))]
+		 DataRow(CorrectNumberOfMultiplyDivide, DisplayName = nameof(CorrectNumberOfMultiplyDivide)),
+		 DataRow(CorrectNumberOfGreaterLessThan, DisplayName = nameof(CorrectNumberOfGreaterLessThan)),
+		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
@@ -82,8 +162,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// Diagnostics expected to show up
 		/// </summary>
 		[TestMethod]
-		[DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
-		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide))]
+		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
+		 DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
+		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
+		DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
+		DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
 			VerifyCSharpDiagnostic(testCode, expected);

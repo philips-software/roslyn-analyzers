@@ -56,3 +56,6 @@
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
 | PH2105  | Align number of + and - operators            | Align the number of operators + and -, as these are often used in combination with each other. |
 | PH2106  | Align number of * and / operators            | Align the number of operators * and /, as these are often used in combination with each other. |
+| PH2107  | Align number of > and < operators            | Align the number of operators > and <, as these are often used in combination with each other. |
+| PH2108  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
+| PH2109  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |

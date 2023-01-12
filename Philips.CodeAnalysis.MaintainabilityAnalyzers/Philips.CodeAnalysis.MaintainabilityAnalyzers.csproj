@@ -80,6 +80,12 @@
       * Introduce PH2102: Xml documentation should add value.
       * Fixed issue 156: Multiple false positive on PH2101: Using 'as' expression
       * Improve PH2077: AvoidRedundantSwitch should exclude generated code
+      * Introduce PH2204: Put every Linq statement on a separate line.
+      * Introduce PH2105: Align number of + and - operators.
+      * Introduce PH2106: Align number of * and / operators.
+      * Introduce PH2107: Align number of &gt; and &lt; operators.
+      * Introduce PH2108: Align number of &gt;&gt; and &lt;&lt; operators.
+      * Introduce PH2109: Align number of ++ and -- operators.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2022 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
