@@ -54,4 +54,10 @@
 | PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
-| PH2105  | Every Lambda expression on separate line     | Avoid putting mutliple lambda statements on a single line for readability. |
+| PH2105  | Align number of + and - operators            | Align the number of operators + and -, as these are often used in combination with each other. |
+| PH2106  | Align number of * and / operators            | Align the number of operators * and /, as these are often used in combination with each other. |
+| PH2107  | Align number of > and < operators            | Align the number of operators > and <, as these are often used in combination with each other. |
+| PH2108  | Align number of >= and <= operators          | Align the number of operators >= and <=, as these are often used in combination with each other. |
+| PH2109  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
+| PH2110  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |
+| PH2111  | Every Lambda expression on separate line     | Avoid putting mutliple lambda statements on a single line for readability. |
