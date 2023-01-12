@@ -13,8 +13,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	{
 		public OperatorsVisitor() : base(SyntaxWalkerDepth.Node)
 		{
-			PlusCount = 0;
-			MinusCount = 0;
 		}
 
 		public override void VisitOperatorDeclaration(OperatorDeclarationSyntax node)
@@ -22,6 +20,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			base.VisitOperatorDeclaration(node);
 			switch(node.OperatorToken.Kind())
 			{
+				case SyntaxKind.PlusPlusToken:
+					IncrementCount += 1;
+					break;
+				case SyntaxKind.MinusMinusToken:
+					DecrementCount += 1;
+					break;
 				case SyntaxKind.PlusToken:
 					PlusCount += 1;
 					break;
@@ -34,8 +38,30 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				case SyntaxKind.SlashToken:
 					DivideCount += 1;
 					break;
+				case SyntaxKind.GreaterThanToken:
+					GreaterThanCount += 1;
+					break;
+				case SyntaxKind.LessThanToken:
+					LessThanCount += 1;
+					break;
+				case SyntaxKind.GreaterThanEqualsToken:
+					GreaterThanOrEqualCount += 1;
+					break;
+				case SyntaxKind.LessThanEqualsToken:
+					LessThanOrEqualCount += 1;
+					break;
+				case SyntaxKind.GreaterThanGreaterThanToken:
+					ShiftRightCount += 1;
+					break;
+				case SyntaxKind.LessThanLessThanToken:
+					ShiftLeftCount += 1;
+					break;
 			}
 		}
+
+		public int IncrementCount { get; private set; }
+
+		public int DecrementCount { get; private set; }
 
 		public int PlusCount { get; private set; }
 
@@ -44,5 +70,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public int MultiplyCount { get; private set; }
 
 		public int DivideCount { get; private set; }
+
+		public int GreaterThanCount { get; private set; }
+
+		public int LessThanCount { get; private set; }
+
+		public int GreaterThanOrEqualCount { get; private set; }
+
+		public int LessThanOrEqualCount { get; private set; }
+
+		public int ShiftRightCount { get; private set; }
+
+		public int ShiftLeftCount { get; private set; }
 	}
 }
