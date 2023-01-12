@@ -27,7 +27,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-
 			context.RegisterCompilationStartAction(startContext =>
 			{
 				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestContext") == null)
