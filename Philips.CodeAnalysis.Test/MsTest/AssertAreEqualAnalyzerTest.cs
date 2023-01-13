@@ -96,9 +96,19 @@ int GetValue()
 Assert.AreEqual({expectedParameter}, {actualParameter});
 ";
 
+			string fixTemplate = @$"
+int GetValue()
+{{
+	return 0;
+}}
+
+Assert.AreEqual({actualParameter}, {expectedParameter});
+";
+
 			if (isError)
 			{
 				VerifyError(template);
+				VerifyChange(template, fixTemplate);
 			}
 			else
 			{

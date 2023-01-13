@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isFirstArgumentConstant = Helper.IsConstantExpression(argumentList.Arguments[0].Expression, semanticModel);
+				isFirstArgumentConstant = Helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
 			bool isSecondArgumentNull = false;
@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isSecondArgumentConstant = Helper.IsConstantExpression(argumentList.Arguments[1].Expression, semanticModel);
+				isSecondArgumentConstant = Helper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
 			}
 
 			if (isFirstArgumentNull || isSecondArgumentNull)

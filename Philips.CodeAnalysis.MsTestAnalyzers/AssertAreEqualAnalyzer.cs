@@ -43,8 +43,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			bool arg0Literal = IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
-			bool arg1Literal = IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			bool arg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			bool arg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
 			bool arg0Null = IsNull(argumentList.Arguments[0].Expression);
 
 			if (!arg0Literal && !arg1Literal)
@@ -66,18 +66,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return null;
 		}
 
-		private bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
-		{
-			if (expression is LiteralExpressionSyntax literal)
-			{
-				Optional<object> literalValue = semanticModel.GetConstantValue(literal);
-
-				return literalValue.HasValue;
-			}
-
-			var constant = semanticModel.GetConstantValue(expression);
-			return constant.HasValue || Helper.IsConstantExpression(expression, semanticModel);
-		}
 
 		private bool IsNull(ExpressionSyntax expression)
 		{
