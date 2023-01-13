@@ -216,7 +216,20 @@ namespace Philips.CodeAnalysis.Common
 			return returnValue;
 		}
 
-		public static bool IsConstantExpression(ExpressionSyntax expression, SemanticModel semanticModel)
+		public static bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
+		{
+			if (expression is LiteralExpressionSyntax literal)
+			{
+				Optional<object> literalValue = semanticModel.GetConstantValue(literal);
+
+				return literalValue.HasValue;
+			}
+
+			var constant = semanticModel.GetConstantValue(expression);
+			return constant.HasValue || IsConstantExpression(expression, semanticModel);
+		}
+
+		private static bool IsConstantExpression(ExpressionSyntax expression, SemanticModel semanticModel)
 		{
 			// this assumes you've already checked for literals
 			if (expression is MemberAccessExpressionSyntax)

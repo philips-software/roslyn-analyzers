@@ -3,6 +3,8 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -12,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
+using Document = Microsoft.CodeAnalysis.Document;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
@@ -72,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isFirstArgumentConstant = Helper.IsConstantExpression(argumentList.Arguments[0].Expression, semanticModel);
+				isFirstArgumentConstant = Helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
 			bool isSecondArgumentNull = false;
@@ -85,51 +88,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isSecondArgumentConstant = Helper.IsConstantExpression(argumentList.Arguments[1].Expression, semanticModel);
+				isSecondArgumentConstant = Helper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
 			}
 
 			if (isFirstArgumentNull || isSecondArgumentNull)
 			{
-				// replace with IsNull or IsNotNull
-				ArgumentSyntax argument;
-				if (isFirstArgumentNull)
-				{
-					argument = argumentList.Arguments[1];
-				}
-				else
-				{
-					argument = argumentList.Arguments[0];
-				}
-
-				NameSyntax identifier;
-				MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocationExpression.Expression;
-				string memberName = memberAccess.Name.ToString();
-				if (memberName == @"AreEqual")
-				{
-					identifier = SyntaxFactory.ParseName(@"IsNull");
-				}
-				else
-				{
-					identifier = SyntaxFactory.ParseName(@"IsNotNull");
-				}
-
-				MemberAccessExpressionSyntax newMemberAccess = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, memberAccess.Expression, (SimpleNameSyntax)identifier);
-				ArgumentListSyntax newArguments;
-
-				if (argumentList.Arguments.Count == 2)
-				{
-					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument }));
-				}
-				else
-				{
-					// make sure not to delete any custom error message
-					newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument, argumentList.Arguments[2] }));
-				}
-
-				InvocationExpressionSyntax newInvocationExpression = SyntaxFactory.InvocationExpression(newMemberAccess, newArguments);
-				SyntaxNode oldRoot = await document.GetSyntaxRootAsync(cancellationToken);
-				SyntaxNode newRoot = oldRoot.ReplaceNode(invocationExpression, newInvocationExpression);
-				document = document.WithSyntaxRoot(newRoot);
+				return await ReplaceWithIsNull(document, argumentList, invocationExpression, isFirstArgumentNull, cancellationToken);
 			}
 			else if (isSecondArgumentConstant && !isFirstArgumentConstant)
 			{
@@ -143,6 +107,50 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			return document;
+		}
+
+		private async Task<Document> ReplaceWithIsNull(Document document, ArgumentListSyntax argumentList, InvocationExpressionSyntax invocationExpressionSyntax, bool isFirstArgumentNull, CancellationToken cancellationToken)
+		{
+			// replace with IsNull or IsNotNull
+			ArgumentSyntax argument;
+			if (isFirstArgumentNull)
+			{
+				argument = argumentList.Arguments[1];
+			}
+			else
+			{
+				argument = argumentList.Arguments[0];
+			}
+
+			NameSyntax identifier;
+			MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
+			string memberName = memberAccess.Name.ToString();
+			if (memberName == @"AreEqual")
+			{
+				identifier = SyntaxFactory.ParseName(@"IsNull");
+			}
+			else
+			{
+				identifier = SyntaxFactory.ParseName(@"IsNotNull");
+			}
+
+			MemberAccessExpressionSyntax newMemberAccess = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, memberAccess.Expression, (SimpleNameSyntax)identifier);
+			ArgumentListSyntax newArguments;
+
+			if (argumentList.Arguments.Count == 2)
+			{
+				newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument }));
+			}
+			else
+			{
+				// make sure not to delete any custom error message
+				newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new ArgumentSyntax[] { argument, argumentList.Arguments[2] }));
+			}
+
+			InvocationExpressionSyntax newInvocationExpression = SyntaxFactory.InvocationExpression(newMemberAccess, newArguments);
+			SyntaxNode oldRoot = await document.GetSyntaxRootAsync(cancellationToken);
+			SyntaxNode newRoot = oldRoot.ReplaceNode(invocationExpressionSyntax, newInvocationExpression);
+			return document.WithSyntaxRoot(newRoot);
 		}
 	}
 }
