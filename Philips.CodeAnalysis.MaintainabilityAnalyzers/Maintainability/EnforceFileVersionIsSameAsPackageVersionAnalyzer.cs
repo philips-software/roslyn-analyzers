@@ -35,13 +35,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			foreach (var attr in attributes)
 			{
-				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyFileVersionAttribute))
+				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyFileVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
-					if (!attr.ConstructorArguments.IsEmpty)
-					{
-						fileVersion = new Version((string)attr.ConstructorArguments[0].Value ?? string.Empty);
-						fileVersion = SetRevisionToZeroIfMissing(fileVersion);
-					}
+					fileVersion = new Version((string)attr.ConstructorArguments[0].Value ?? string.Empty);
+					fileVersion = SetRevisionToZeroIfMissing(fileVersion);
 				}
 
 				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute))

@@ -212,10 +212,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return isNullArgument ? IsNotNull : AreNotEqual;
 				}
-				else
-				{
-					return isNullArgument ? IsNull : AreEqual;
-				}
+				return isNullArgument ? IsNull : AreEqual;
 			}
 			else
 			{
@@ -223,10 +220,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					return isNullArgument ? IsNull : AreEqual;
 				}
-				else
-				{
-					return isNullArgument ? IsNotNull : AreNotEqual;
-				}
+				return isNullArgument ? IsNotNull : AreNotEqual;
 			}
 		}
 

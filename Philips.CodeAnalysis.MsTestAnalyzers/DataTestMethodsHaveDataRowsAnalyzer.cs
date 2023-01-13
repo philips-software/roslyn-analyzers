@@ -39,12 +39,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			public DataTestMethodsHaveDataRowsImplementation(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }
-
-			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration,
+												out int dynamicDataCount, out int dataRowCount, out bool hasTestSource)
 			{
-				int dynamicDataCount = 0;
-				int dataRowCount = 0;
-				bool hasTestSource = false;
+				dynamicDataCount = 0;
+				dataRowCount = 0;
+				hasTestSource = false;
+
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
 					if (Helper.IsDataRowAttribute(attribute, context))
@@ -68,6 +69,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						}
 					}
 				}
+			}
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				CollectSupportingData(context, methodDeclaration, out int dynamicDataCount, out int dataRowCount, out bool hasTestSource);
 
 				if (isDataTestMethod)
 				{

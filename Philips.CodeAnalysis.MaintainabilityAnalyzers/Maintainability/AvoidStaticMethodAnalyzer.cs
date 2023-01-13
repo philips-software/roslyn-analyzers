@@ -73,22 +73,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			foreach (IdentifierNameSyntax identifierNameSyntax in methodDeclarationSyntax.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+			if (ReferencesAnotherStatic(methodDeclarationSyntax, us, context))
 			{
-				ISymbol symbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax).Symbol;
-				if (symbol == null)
-				{
-					continue;
-				}
-				if (symbol.IsStatic && !symbol.IsExtern)
-				{
-					// We found a static thing being used in this method.  Is the thing ours?
-					if (SymbolEqualityComparer.Default.Equals(symbol.ContainingType, us))
-					{
-						// This method must be static because it references something static of ours.  We are done.
-						return;
-					}
-				}
+				return;
 			}
 
 			// Hunt for evidence that this is a factory method
@@ -110,6 +97,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation());
 			context.ReportDiagnostic(diagnostic);
+		}
+
+		private bool ReferencesAnotherStatic(MethodDeclarationSyntax methodDeclarationSyntax, INamedTypeSymbol us, SyntaxNodeAnalysisContext context)
+		{
+			foreach (IdentifierNameSyntax identifierNameSyntax in methodDeclarationSyntax.DescendantNodesAndSelf().OfType<IdentifierNameSyntax>())
+			{
+				ISymbol symbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax).Symbol;
+				if (symbol == null)
+				{
+					continue;
+				}
+				if (symbol.IsStatic && !symbol.IsExtern)
+				{
+					// We found a static thing being used in this method.  Is the thing ours?
+					if (SymbolEqualityComparer.Default.Equals(symbol.ContainingType, us))
+					{
+						// This method must be static because it references something static of ours.  We are done.
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 	}
 }
