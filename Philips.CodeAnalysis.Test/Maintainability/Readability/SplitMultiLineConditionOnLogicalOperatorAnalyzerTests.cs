@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -9,15 +10,18 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class AvoidMultipleConditionsOnSameLineAnalyzerTests : DiagnosticVerifier
+	public class SplitMultiLineConditionOnLogicalOperatorAnalyzerTests : DiagnosticVerifier
 	{
 
 		private const string Correct = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (
                 2 == 3 &&
                 4 == 5)
@@ -31,9 +35,12 @@ namespace MultiLineConditionUnitTests {
 		private const string CorrectClose = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests 
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (
                 2 == 3 &&
                 4 == 5)
@@ -47,9 +54,12 @@ namespace MultiLineConditionUnitTests {
 		private const string SingleLine = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (2 == 3 && 4 == 5)
 			{
                 Console.WriteLine('Hello world!');
@@ -61,9 +71,12 @@ namespace MultiLineConditionUnitTests {
 		private const string SingleLineWithCondition = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             (2 == 3 && 4 == 5) ? 
 				Console.WriteLine('Hello world!') :
 				Console.WriteLine('Goodbye world!');
@@ -75,9 +88,12 @@ namespace MultiLineConditionUnitTests {
 		private const string WrongBreak = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (
                 3 == 4
                 && 4 == 5) {
@@ -90,9 +106,12 @@ namespace MultiLineConditionUnitTests {
 		private const string WrongLastTokenDot = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
              int i = (
                  3.
                    Equals(3) &&
@@ -104,9 +123,12 @@ namespace MultiLineConditionUnitTests {
 		private const string CorrectMultiLine = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (
 				3 == 3 && 
                 5 == 6 && ( 
@@ -122,15 +144,19 @@ namespace MultiLineConditionUnitTests {
 		private const string WrongMultiLine = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (
 				3 == 3 && 
                 5 == 6 && ( 
                     1 == 1 
-                    || 2 == 2)
-            ) {
+                    || 2 == 2))
+            {
+                // Blah
             }
         }
     }
@@ -139,11 +165,15 @@ namespace MultiLineConditionUnitTests {
 		        private const string WrongOpening = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             if (2 == 3 &&
-                4 == 5) {
+                4 == 5)
+            {
                 Console.WriteLine('Hello world!');
             }
         }
@@ -153,9 +183,12 @@ namespace MultiLineConditionUnitTests {
 		        private const string CorrectAssignmentToBool = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             bool b = (
                 2 == 3 &&
                 4 == 5);
@@ -166,9 +199,12 @@ namespace MultiLineConditionUnitTests {
 		        private const string WrongAssignmentToBool = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static void Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             bool b = (
                 2 == 3
                 && 4 == 5);
@@ -179,9 +215,12 @@ namespace MultiLineConditionUnitTests {
 		        private const string CorrectReturnStatement = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static bool Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static bool Main(string[] args)
+        {
             return (
                 2 == 3 &&
                 4 == 5);
@@ -192,11 +231,29 @@ namespace MultiLineConditionUnitTests {
 		        private const string WrongReturnStatement = @"
 using System;
 
-namespace MultiLineConditionUnitTests {
-    public class Program {
-        public static bool Main(string[] args) {
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static bool Main(string[] args)
+        {
             return (2 == 3 &&
                 4 == 5);
+        }
+    }
+}";
+
+		        private const string Wrong4Violations = @"
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static bool Main(string[] args)
+        {
+            if (str.StartsWith(EqualsSign, System.StringComparison.Ordinal)
+		    || str.StartsWith(MinusSign, System.StringComparison.Ordinal)
+		    || str.StartsWith(PlusSign, System.StringComparison.Ordinal)
+		    || str.StartsWith(AtSymbol, System.StringComparison.Ordinal))
         }
     }
 }";
@@ -221,12 +278,12 @@ namespace MultiLineConditionUnitTests {
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongBreak, 8, 22, DisplayName = nameof(WrongBreak)),
-			DataRow(WrongOpening, 7, 16, DisplayName = nameof(WrongOpening)),
-			DataRow(WrongMultiLine, 10, 26, DisplayName = nameof(WrongMultiLine)),
-			DataRow(WrongReturnStatement, 7, 20, DisplayName = nameof(WrongReturnStatement)),
-			DataRow(WrongAssignmentToBool, 8, 22, DisplayName = nameof(WrongAssignmentToBool)),
-			DataRow(WrongLastTokenDot, 8, 19, DisplayName = nameof(WrongLastTokenDot))
+		[DataRow(WrongBreak, 11, 22, DisplayName = nameof(WrongBreak)),
+			DataRow(WrongOpening, 10, 13, DisplayName = nameof(WrongOpening)),
+			DataRow(WrongMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
+			DataRow(WrongReturnStatement, 10, 20, DisplayName = nameof(WrongReturnStatement)),
+			DataRow(WrongAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
+			DataRow(WrongLastTokenDot, 11, 18, DisplayName = nameof(WrongLastTokenDot))
 		]
 		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
 			string testCode,
@@ -236,7 +293,7 @@ namespace MultiLineConditionUnitTests {
 		{
 			var expected = new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidMultipleConditionsOnSameLine),
+				Id = Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
 				Severity = DiagnosticSeverity.Warning,
 				Locations =
 					new[] {
@@ -244,6 +301,28 @@ namespace MultiLineConditionUnitTests {
 					}
 			};
 			VerifyCSharpDiagnostic(testCode, expected);
+		}
+
+		/// <summary>
+		/// Diagnostics expected to show up.
+		/// </summary>
+		[DataTestMethod]
+		[DataRow(Wrong4Violations, 4, DisplayName = nameof(Wrong4Violations))
+		]
+		public void WhenMultiLineConditionIsIncorrectInMorePlacesCorrectNumberOfDiagnosticIsTriggered(
+			string testCode,
+			int expectedCount
+		)
+		{
+			var expected = new DiagnosticResult
+			{
+				Id = Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
+				Severity = DiagnosticSeverity.Warning,
+				Location = new DiagnosticResultLocation()
+			};
+			var expectedArray = new DiagnosticResult[expectedCount];
+			Array.Fill(expectedArray, expected);
+			VerifyCSharpDiagnostic(testCode, expectedArray);
 		}
 
 		/// <summary>
@@ -261,7 +340,7 @@ namespace MultiLineConditionUnitTests {
 		/// </summary>
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-			return new AvoidMultipleConditionsOnSameLineAnalyzer();
+			return new SplitMultiLineConditionOnLogicalOperatorAnalyzer();
 		}
 	}
 }

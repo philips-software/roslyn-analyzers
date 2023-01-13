@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -14,21 +13,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	/// Report when a multi line condition statement (if or ?), does not include a newline on its logical operators.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidMultipleConditionsOnSameLineAnalyzer : DiagnosticAnalyzer
+	public class SplitMultiLineConditionOnLogicalOperatorAnalyzer : DiagnosticAnalyzer
 	{
 		/// <summary>
 		/// Diagnostic Id for this analyzer.
 		/// </summary>
-		private const string Title = "Divide multiline conditions on the logical operators.";
+		private const string Title = "Avoid multiple conditions on the same line.";
 		private const string Message =
-			"Divide multiline conditions around line {0} such, that the logical operators are at the end " +
+			"Split multiline conditions around line {0} such that the logical operators are at the end " +
 			"of the line.";
-		private const string Description = "Divide long conditions in consistent way";
-		private const string Category = "Shoscar";
+		private const string Description = "Avoid multiple conditions on the same line of a multi-line condition statement. Instead, break lines right after the logical operators.";
+		private const string Category = "Readability";
 
 		private static readonly DiagnosticDescriptor Rule =
 			new (
-				Helper.ToDiagnosticId(DiagnosticIds.AvoidMultipleConditionsOnSameLine),
+				Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
 				Title,
 				Message,
 				Category,
@@ -61,7 +60,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var logicalNode = context.Node;
+			var logicalNode = FindHighestLogicalInHierarchy(context.Node);
+			if (!ReferenceEquals(logicalNode, context.Node))
+			{
+				return;
+			}
+
 			var location = logicalNode.GetLocation();
 			if (!IsMultiLine(location))
 			{
@@ -69,11 +73,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			
 			var childNodes = logicalNode.ChildNodes();
-			bool hasCombinedNode = childNodes.OfType<ParenthesizedExpressionSyntax>().Any();
-			if (hasCombinedNode)
-			{
-				return;
-			}
+			//bool hasCombinedNode = childNodes.OfType<ParenthesizedExpressionSyntax>().Any();
+			//if (hasCombinedNode)
+			//{
+			//	return;
+			//}
 
 			// Checked in parts:
 			// 1) first line should only have open parentheses.
@@ -96,9 +100,33 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxToken violation)
 		{
-			var loc = violation.GetLocation();
+			// Report the location of the nearest SyntaxNode.
+			var loc = violation.Parent?.GetLocation();
 			var lineNumber = loc.GetLineSpan().StartLinePosition.Line + 1;
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc, lineNumber));
+		}
+
+		private SyntaxNode FindHighestLogicalInHierarchy(SyntaxNode startNode)
+		{
+			SyntaxNode foundNode = startNode;
+			SyntaxNode parent = startNode.Parent;
+			while (parent != null)
+			{
+				SyntaxKind currentKind = parent.Kind();
+				if (currentKind is SyntaxKind.LogicalAndExpression or SyntaxKind.LogicalOrExpression)
+				{
+					foundNode = parent;
+				}
+
+				if (currentKind is SyntaxKind.IfStatement
+				    or SyntaxKind.SimpleAssignmentExpression
+				    or SyntaxKind.ReturnStatement)
+				{
+					break;
+				}
+				parent = parent.Parent;
+			}
+			return foundNode;
 		}
 
 		private bool IsMultiLine(Location loc)
