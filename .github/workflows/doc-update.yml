@@ -22,8 +22,11 @@ jobs:
             if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]; then
               echo "Added Analyzer: $file"
             fi
-            if [[ "$file" =~ ^.+\.yml$ ]] && [[ "$status" == "M" ]]; then
+            if [[ "$file" =~ ^.+\.yml$ ]] && [[ "$status" == "A" ]]; then
               echo "Added YAML file: $file"
+            fi            
+            if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]; then
+              echo "Modified CI YAML file"
             fi            
             if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]; then
               echo "Modified markdown file: $file"
