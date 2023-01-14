@@ -19,6 +19,7 @@ jobs:
           echo "Pull request on $BRANCH to target $TARGET"
           for line in $(git diff --name-status origin/$TARGET..HEAD)
           do
+            echo "Status line: $line"
             if [[ "$line" =~ ^A\s+(.+Analyzer\.cs)$ ]]; then
               echo "Added Analyzer: ${BASH_REMATCH[1]}"
             fi
