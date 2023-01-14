@@ -231,7 +231,6 @@ class Foo
 			VerifyCSharpDiagnostic(template);
 		}
 
-
 		[TestMethod]
 		public void EmptyLockBlocksAllowed()
 		{
@@ -242,8 +241,8 @@ class Foo
 {
 	public void Meow()
 	{
-			object lock = new object();
-			lock (lock) { }
+			object l = new object();
+			lock (l) { }
 	}
 }
 ";
