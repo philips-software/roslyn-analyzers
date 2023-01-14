@@ -67,13 +67,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if(generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -83,39 +84,60 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			OperatorsVisitor visitor = new();
 			visitor.Visit(classDeclaration);
 
+			AnalyzeVisitor(context, visitor, classDeclaration.Identifier);
+		}
+
+		private void AnalyzeStruct(SyntaxNodeAnalysisContext context)
+		{
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if(generatedCodeDetector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
+			StructDeclarationSyntax structDeclaration = (StructDeclarationSyntax)context.Node;
+
+			OperatorsVisitor visitor = new();
+			visitor.Visit(structDeclaration);
+
+			AnalyzeVisitor(context, visitor, structDeclaration.Identifier);
+		}
+
+		private void AnalyzeVisitor(SyntaxNodeAnalysisContext context, OperatorsVisitor visitor, SyntaxToken identifier)
+		{
 			if (visitor.IncrementCount != visitor.DecrementCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(IncrementAndDecrementRule, location));
 			}
 
 			if (visitor.PlusCount != visitor.MinusCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(PlusMinusRule, location));
 			}
 
 			if (visitor.MultiplyCount != visitor.DivideCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(MultiplyDivideRule, location));
 			}
 
 			if (visitor.LessThanCount != visitor.GreaterThanCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanRule, location));
 			}
 
 			if (visitor.LessThanOrEqualCount != visitor.GreaterThanOrEqualCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanOrEqualRule, location));
 			}
 
 			if (visitor.ShiftLeftCount != visitor.ShiftRightCount)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(ShiftRightAndLeftRule, location));
 			}
 		}
