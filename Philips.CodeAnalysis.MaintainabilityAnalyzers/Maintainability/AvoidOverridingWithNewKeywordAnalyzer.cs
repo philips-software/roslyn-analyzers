@@ -12,12 +12,12 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	/// <summary>
-	/// Diagnostic for inconsistent number of operators in a class.
+	/// Diagnostic of overriding methods or properties with the new keyword.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidOverridingWithNewKeywordAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = "Avoid overriding methods or porperties with the new keyword.";
+		private const string Title = "Avoid overriding methods or properties with the new keyword.";
 		private const string MessageFormat = "Avoid overriding {0} with the new keyword.";
 		private const string Description = "Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property.";
 		private const string Category = Categories.Maintainability;
@@ -75,7 +75,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var method = (MethodDeclarationSyntax)context.Node;
 			
-
 			if (method.Modifiers.Any(SyntaxKind.NewKeyword))
 			{
 				var location = method.Identifier.GetLocation();
