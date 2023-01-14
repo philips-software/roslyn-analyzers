@@ -17,6 +17,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class MergeIfStatementsAnalyzer : DiagnosticAnalyzer
 	{
+		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
+
 		private const string TitleFormat = "Merge If Statements";
 		private const string MessageFormat = "Merge If Statements";
 		private const string DescriptionFormat = "Merging If statement with outer If statement to reduce cognitive load";
@@ -27,9 +29,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		public MergeIfStatementsAnalyzer()
+			: this(GeneratedCodeAnalysisFlags.None)
+		{ }
+
+		public MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
+		{
+			_generatedCodeFlags = generatedCodeFlags;
+		}
+
+
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.IfStatement);
 		}

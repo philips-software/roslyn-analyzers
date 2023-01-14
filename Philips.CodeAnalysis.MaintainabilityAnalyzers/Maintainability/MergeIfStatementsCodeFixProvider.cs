@@ -61,18 +61,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				parent = parent.Parent;
 			}
-			if (parent is not IfStatementSyntax parentIfStatementSyntax)
+			if (parent is IfStatementSyntax parentIfStatementSyntax)
 			{
-				// Something is unexpected
-				return document;
+				ExpressionSyntax mergedExpression = SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, parentIfStatementSyntax.Condition, ifStatementSyntax.Condition);
+				IfStatementSyntax newIfStatement = SyntaxFactory.IfStatement(mergedExpression, ifStatementSyntax.Statement)
+					.WithTriviaFrom(parentIfStatementSyntax)
+					.WithAdditionalAnnotations(Formatter.Annotation);
+
+				rootNode = rootNode.ReplaceNode(parentIfStatementSyntax, newIfStatement);
 			}
-
-			ExpressionSyntax mergedExpression =	SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, parentIfStatementSyntax.Condition, ifStatementSyntax.Condition);
-			IfStatementSyntax newIfStatement = SyntaxFactory.IfStatement(mergedExpression, ifStatementSyntax.Statement)
-				.WithTriviaFrom(parentIfStatementSyntax)
-				.WithAdditionalAnnotations(Formatter.Annotation); ;
-
-			rootNode = rootNode.ReplaceNode(parentIfStatementSyntax, newIfStatement);
 			return document.WithSyntaxRoot(rootNode);
 		}
 	}

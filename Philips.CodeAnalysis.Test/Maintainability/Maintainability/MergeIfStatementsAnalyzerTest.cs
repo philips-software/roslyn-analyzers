@@ -11,6 +11,36 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
+	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		{
+			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+		}
+
+		[TestMethod]
+		public void DoNotMergeIfsGeneratedCodeTest()
+		{
+			const string testCode = @"
+		        public class MyClass
+				{
+					public void Foo()
+					{
+						if (1 == 1) 
+						{
+							if (2 == 2)
+							{ }
+						}
+					}
+			    }";
+
+			VerifyCSharpDiagnostic(testCode, "Test.Designer");
+		}
+	}
+
+
+
+	[TestClass]
 	public class MergeIfStatementsAnalyzerTest : CodeFixVerifier
 	{
 		protected override CodeFixProvider GetCSharpCodeFixProvider()
