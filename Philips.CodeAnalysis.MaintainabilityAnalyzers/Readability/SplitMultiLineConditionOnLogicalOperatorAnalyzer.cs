@@ -72,13 +72,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 			
-			var childNodes = logicalNode.ChildNodes();
-			//bool hasCombinedNode = childNodes.OfType<ParenthesizedExpressionSyntax>().Any();
-			//if (hasCombinedNode)
-			//{
-			//	return;
-			//}
-
 			// Checked in parts:
 			// 1) first line should only have open parentheses.
 			// 2) if newline is on operator or open parentheses.
@@ -89,9 +82,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				ReportDiagnostic(context, tokenBefore);
 			}
 
+			var lastToken = logicalNode.GetLastToken();
 			var violations = logicalNode.DescendantTokens()
 				.Where(ContainsEndOfLine)
-				.Where(IsIllegalLineBreakToken); // Check 2).
+				.Where(IsIllegalLineBreakToken) // Check 2).
+				.Where(t => t != lastToken);
 			foreach (var violation in violations)
 			{
 				ReportDiagnostic(context, violation);

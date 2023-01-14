@@ -3,6 +3,7 @@
 using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
@@ -10,7 +11,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class SplitMultiLineConditionOnLogicalOperatorAnalyzerTests : DiagnosticVerifier
+	public class SplitMultiLineConditionOnLogicalOperatorAnalyzerTests : CodeFixVerifier
 	{
 
 		private const string Correct = @"
@@ -154,8 +155,8 @@ namespace MultiLineConditionUnitTests
 				3 == 3 && 
                 5 == 6 && ( 
                     1 == 1 
-                    || 2 == 2))
-            {
+                    || 2 == 2)
+            ) {
                 // Blah
             }
         }
@@ -278,15 +279,16 @@ namespace MultiLineConditionUnitTests
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongBreak, 11, 22, DisplayName = nameof(WrongBreak)),
+		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak)),
 			DataRow(WrongOpening, 10, 13, DisplayName = nameof(WrongOpening)),
-			DataRow(WrongMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
-			DataRow(WrongReturnStatement, 10, 20, DisplayName = nameof(WrongReturnStatement)),
-			DataRow(WrongAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
-			DataRow(WrongLastTokenDot, 11, 18, DisplayName = nameof(WrongLastTokenDot))
+			DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
+			DataRow(WrongReturnStatement, CorrectReturnStatement, 10, 20, DisplayName = nameof(WrongReturnStatement)),
+			DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
+			DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))
 		]
 		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
 			string testCode,
+			string fixedCode,
 			int line,
 			int column
 		)
@@ -301,6 +303,10 @@ namespace MultiLineConditionUnitTests
 					}
 			};
 			VerifyCSharpDiagnostic(testCode, expected);
+			if (!string.IsNullOrEmpty(fixedCode))
+			{
+				VerifyCSharpFix(testCode, fixedCode);
+			}
 		}
 
 		/// <summary>
@@ -341,6 +347,11 @@ namespace MultiLineConditionUnitTests
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new SplitMultiLineConditionOnLogicalOperatorAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new SplitMultiLineConditionOnLogicalOperatorCodeFixProvider();
 		}
 	}
 }
