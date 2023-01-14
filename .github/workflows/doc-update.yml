@@ -15,8 +15,9 @@ jobs:
       - name: 
         env:
           BRANCH: ${{ github.head_ref }}
+          TARGET: ${{ github.base_ref }}
         run: |
-          echo "Branch is ... ${BRANCH}"
+          echo "Pull request on brnach $BRANCH to target branch $TARGET"
           for line in $(git diff --name-status origin/master..HEAD)
           do
             if [[ "$line" =~ ^A\s+(.*Analyzer.cs)$ ]]; then
