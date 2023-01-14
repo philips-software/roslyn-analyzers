@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

@@ -83,13 +83,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// We need to let it go if it's white-listed (i.e., legacy)
-			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)))
+			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) && _exceptions.Contains(context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString()))
 			{
-				// We probably have a whitelisted class.  Let's confirm.
-				if (_exceptions.Contains(context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString()))
-				{
-					return;
-				}
+				return;
 			}
 
 			// Even more likely to have a whitelisted class, with the wildcard on the namespace
@@ -100,15 +96,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Check if this is an extension class
 			var model = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
-			if (model is {MightContainExtensionMethods: true})
-			{
-				if (!model.GetMembers().Any(m =>
+			if (model is { MightContainExtensionMethods: true } && !model.GetMembers().Any(m =>
 											m.Kind == SymbolKind.Method &&
 											m.DeclaredAccessibility == Accessibility.Public &&
 											!((IMethodSymbol)m).IsExtensionMethod))
-				{
-					return;
-				}
+			{
+				return;
 			}
 
 			if (_generateExceptionsFile)

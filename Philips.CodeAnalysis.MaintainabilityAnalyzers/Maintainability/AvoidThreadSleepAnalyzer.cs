@@ -46,13 +46,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node.Parent.Parent.Parent.Parent;
 				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _))
+				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _) && (context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
-					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
-					{
-						Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpression.GetLocation());
-						context.ReportDiagnostic(diagnostic);
-					}
+					Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpression.GetLocation());
+					context.ReportDiagnostic(diagnostic);
 				}
 			}
 		}
