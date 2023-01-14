@@ -88,18 +88,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Has ||
-			if (ifStatementSyntax.Condition.DescendantTokens().Any((token) => { return token.Kind() == SyntaxKind.BarBarToken; }))
+			if (IfConditionHasLogicalAnd(ifStatementSyntax))
 			{
 				return;
 			}
 
 			// Parent has ||
-			if (parentIfSyntax.Condition.DescendantTokens().Any((token) => { return token.Kind() == SyntaxKind.BarBarToken; }))
+			if (IfConditionHasLogicalAnd(parentIfSyntax))
 			{
 				return;
 			}
 
 			context.ReportDiagnostic(Diagnostic.Create(Rule, ifStatementSyntax.IfKeyword.GetLocation()));
+		}
+
+		private bool IfConditionHasLogicalAnd(IfStatementSyntax ifStatement)
+		{
+			return ifStatement.Condition.DescendantTokens().Any((token) => { return token.Kind() == SyntaxKind.BarBarToken; });
 		}
 	}
 }
