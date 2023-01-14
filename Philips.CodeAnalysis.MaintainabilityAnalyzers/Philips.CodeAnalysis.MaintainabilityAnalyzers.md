@@ -62,3 +62,4 @@
 | PH2109  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
 | PH2110  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |
 | PH2111  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
+| PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
