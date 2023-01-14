@@ -17,19 +17,19 @@ jobs:
           BRANCH=${{github.head_ref}}
           TARGET=${{github.base_ref}}
           echo "Pull request on $BRANCH to target $TARGET"
-          git diff --name-status origin/$TARGET..HEAD | while read $modifier $path
+          git diff --name-status origin/$TARGET..HEAD | while read $modifier $file
           do
-            echo "File changed: $path"
-            if [[ "$path" =~ ^.+Analyzer\.cs$ ]]; then
-              echo "Added Analyzer: $path"
+            echo "File changed: $file with modifier: $modifier"
+            if [[ "$file" =~ ^.+Analyzer\.cs$ ]]; then
+              echo "Added Analyzer: $file"
             fi
-            if [[ "$line" =~ ^.+\.yml$ ]]; then
-              echo "Added YAML file: $path"
+            if [[ "$file" =~ ^.+\.yml$ ]]; then
+              echo "Added YAML file: $file"
             fi            
-            if [[ "$line" =~ ^.+\.md$ ]]; then
-              echo "Modified markdown file: $path"
+            if [[ "$file" =~ ^.+\.md$ ]]; then
+              echo "Modified markdown file: $file"
             fi
-            if [[ "$line" =~ ^.+\.csproj$ ]]; then
-              echo "Modified project file: $path"
+            if [[ "$file" =~ ^.+\.csproj$ ]]; then
+              echo "Modified project file: $file"
             fi            
           done
