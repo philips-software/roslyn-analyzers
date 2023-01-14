@@ -91,6 +91,7 @@
       * Introduce PH2110: Align number of ++ and -- operators.
       * Introduce PH2111: Reduce Cognitive Load
       * Introduce PH2112: Avoid overriding with new keyword.
+      * Introduce PH2114: Avoid empty statement.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

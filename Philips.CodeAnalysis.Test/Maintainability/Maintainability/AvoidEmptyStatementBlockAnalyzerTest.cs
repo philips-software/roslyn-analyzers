@@ -34,6 +34,23 @@ class Foo
 		}
 
 		[TestMethod]
+		public void CatchesEmptyStatementMethod()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	private void Test()
+	{
+		;
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+
+		}
+
+		[TestMethod]
 		public void CatchesEmptyStatementBlock()
 		{
 			const string template = @"
