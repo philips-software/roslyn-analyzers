@@ -56,14 +56,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 
 		[DataTestMethod]
-		[DataRow(@"if (1==1) { if(1==1) {} else {} }", "Has else clause")]
-		[DataRow(@"if (1==1) { int x; if (1==1) {} }", "Has multiple statements")]
-		[DataRow(@"if (1==1) { if (1==1) {} ; int x}", "Has multiple statements")]
-		[DataRow(@"{ if (1==1) {} }", "Parent is not if statement")]
-		[DataRow(@"if (1==1) { if (1==1) {} } else {}", "Parent has else clause")]      
-		[DataRow(@"if (1==1) { if (1==1 || 2==2) {} }", "Has ||")]
-		[DataRow(@"if (1==1 || 2==2) { if (1==1) {} }", "Parent has ||")]
-		[DataRow(@"if (1==1 || 2==2) if (2==2) {}", "Parent has ||, no { }")]
+		[DataRow(@"if (1==1) { if(1==1) {} else {} }", DisplayName = "Has else clause")]
+		[DataRow(@"if (1==1) { int x; if (1==1) {} }", DisplayName = "Has multiple statements")]
+		[DataRow(@"if (1==1) { if (1==1) {} ; int x}", DisplayName = "Has multiple statements")]
+		[DataRow(@"{ if (1==1) {} }", DisplayName = "Parent is not if statement")]
+		[DataRow(@"if (1==1) { if (1==1) {} } else {}", DisplayName = "Parent has else clause")]      
+		[DataRow(@"if (1==1) { if (1==1 || 2==2) {} }", DisplayName = "Has ||")]
+		[DataRow(@"if (1==1 || 2==2) { if (1==1) {} }", DisplayName = "Parent has ||")]
+		[DataRow(@"if (1==1 || 2==2) if (2==2) {}", DisplayName = "Parent has ||, no { }")]
 		public void DoNotMergeIfsTest(string test)
 		{
 			const string testCodeTemplate = @"
