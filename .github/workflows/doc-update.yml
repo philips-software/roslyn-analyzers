@@ -16,16 +16,19 @@ jobs:
         run: |
           BRANCH=${{github.head_ref}}
           TARGET=${{github.base_ref}}
-          echo "Pull request on branch $BRANCH to target branch $TARGET"
-          for line in $(git diff --name-status origin/master..HEAD)
+          echo "Pull request on $BRANCH to target $TARGET"
+          for line in $(git diff --name-status origin/$TARGET..HEAD)
           do
-            if [[ "$line" =~ ^A\s+(.*Analyzer.cs)$ ]]; then
+            if [[ "$line" =~ ^A\s+(.+Analyzer\.cs)$ ]]; then
               echo "Added Analyzer: ${BASH_REMATCH[1]}"
             fi
-            if [[ "$line" =~ ^M\s+(.*.md)$ ]]; then
+            if [[ "$line" =~ ^A\s+(.+\.yml)$ ]]; then
+              echo "Added YAML file: ${BASH_REMATCH[1]}"
+            fi            
+            if [[ "$line" =~ ^M\s+(.+\.md)$ ]]; then
               echo "Modified markdown file: ${BASH_REMATCH[1]}"
             fi
-            if [[ "$line" =~ ^M\s+(.*.csproj)$ ]]; then
+            if [[ "$line" =~ ^M\s+(.+\.csproj)$ ]]; then
               echo "Modified project file: ${BASH_REMATCH[1]}"
             fi            
           done
