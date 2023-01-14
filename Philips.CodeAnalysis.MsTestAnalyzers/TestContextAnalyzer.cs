@@ -27,7 +27,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-
 			context.RegisterCompilationStartAction(startContext =>
 			{
 				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestContext") == null)
@@ -59,12 +58,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (returnNodes.Any())
 			{
 				ReturnStatementSyntax returnStatement = returnNodes.First();
-				if (returnStatement != null)
+				if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
 				{
-					if (returnStatement.Expression is IdentifierNameSyntax returnVar)
-					{
-						varName = returnVar.Identifier.ToString();
-					}
+					varName = returnVar.Identifier.ToString();
 				}
 			}
 

@@ -103,6 +103,8 @@ namespace Philips.CodeAnalysis.Common
 		AlignNumberOfGreaterAndLessThanOrEqualOperators = 2108,
 		AlignNumberOfShiftRightAndLeftOperators = 2109,
 		AlignNumberOfIncrementAndDecrementOperators = 2110,
-		AvoidMultipleLambdasOnSingleLine = 2111,
+		ReduceCognitiveLoad = 2111,
+		AvoidOverridingWithNewKeyword = 2112,
+		AvoidMultipleLambdasOnSingleLine = 2115,
 	}
 }
