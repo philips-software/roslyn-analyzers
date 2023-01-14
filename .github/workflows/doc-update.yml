@@ -1,0 +1,23 @@
+name: doc-update
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Check if documentation is updated
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+
+      - name: 
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          echo "Branch is ... ${BRANCH}"
+          for line in $(git diff --name-only "$GITHUB_BASE_REF..${BRANCH}" -- "**/*Analyser.cs")
+          do
+            echo "You have added $line"
+          done
