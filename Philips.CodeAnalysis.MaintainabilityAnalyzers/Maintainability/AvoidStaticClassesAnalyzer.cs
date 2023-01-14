@@ -83,7 +83,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// We need to let it go if it's white-listed (i.e., legacy)
-			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) && _exceptions.Contains(context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString()))
+			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) && 
+				_exceptions.Contains(context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString()))
 			{
 				return;
 			}
