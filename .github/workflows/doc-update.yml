@@ -12,11 +12,11 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: 
+      - name: Display some files
         run: |
           BRANCH=${{github.head_ref}}
           TARGET=${{github.base_ref}}
-          echo "Pull request on brnach $BRANCH to target branch $TARGET"
+          echo "Pull request on branch $BRANCH to target branch $TARGET"
           for line in $(git diff --name-status origin/master..HEAD)
           do
             if [[ "$line" =~ ^A\s+(.*Analyzer.cs)$ ]]; then
