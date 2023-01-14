@@ -44,6 +44,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
+		private const string CorrectNumberOfPlusMinusOnStruct = @"
+    namespace AssignmentInConditionUnitTests {
+        public struct Number {
+			private int n;
+            public static Number operator +(Number num1, Number num2)
+            {
+                return num1.n + num2.n;
+            }
+            public static Number operator -(Number num1, Number num2)
+            {
+                return num1.n - num2.n;
+            }
+        }
+    }";
+
 		private const string CorrectNumberOfMultiplyDivide = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -111,9 +126,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+
 		private const string WrongNumberOfPlusMinus = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
+			private int n;
+            public static Number operator +(Number num1, Number num2)
+            {
+                return num1.n + num2.n;
+            }
+        }
+    }";
+		
+		private const string WrongNumberOfPlusMinusOnStruct = @"
+    namespace AssignmentInConditionUnitTests {
+        public struct Number {
 			private int n;
             public static Number operator +(Number num1, Number num2)
             {
@@ -174,6 +201,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectNumberOfIncrementDecrement, DisplayName = nameof(CorrectNumberOfIncrementDecrement)),
 		 DataRow(CorrectNumberOfPlusMinus, DisplayName = nameof(CorrectNumberOfPlusMinus)),
+		 DataRow(CorrectNumberOfPlusMinusOnStruct, DisplayName = nameof(CorrectNumberOfPlusMinusOnStruct)),
 		 DataRow(CorrectNumberOfMultiplyDivide, DisplayName = nameof(CorrectNumberOfMultiplyDivide)),
 		 DataRow(CorrectNumberOfGreaterLessThan, DisplayName = nameof(CorrectNumberOfGreaterLessThan)),
 		 DataRow(CorrectNumberOfGreaterLessThanOrEqual, DisplayName = nameof(CorrectNumberOfGreaterLessThanOrEqual)),
@@ -189,6 +217,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
 		 DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
+		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticIds.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
 		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
 		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
 		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
