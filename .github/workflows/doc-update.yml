@@ -19,16 +19,16 @@ jobs:
           echo "Pull request on $BRANCH to target $TARGET"
           git diff --name-status origin/$TARGET..HEAD | while read status file
           do
-            if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A"]]; then
+            if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]; then
               echo "Added Analyzer: $file"
             fi
-            if [[ "$file" =~ ^.+\.yml$ ]] && [[ "$status" == "M"]]; then
+            if [[ "$file" =~ ^.+\.yml$ ]] && [[ "$status" == "M" ]]; then
               echo "Added YAML file: $file"
             fi            
-            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M"]]; then
+            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]; then
               echo "Modified markdown file: $file"
             fi
-            if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M"]]; then
+            if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]; then
               echo "Modified project file: $file"
             fi            
           done
