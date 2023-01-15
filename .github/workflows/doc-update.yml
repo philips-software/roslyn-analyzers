@@ -51,28 +51,28 @@ jobs:
             fi            
           done
 
-          if [ -n "$ADDED_ANALYZER" ]
+          if [[ -v ADDED_ANALYZER ]]
           then
-            if [ -n "$UPDATED_MARKDOWN" ]
+            if [[ ! -v UPDATED_MARKDOWN ]]
             then
               echo "You forgot to update the user documentation MarkDown file."
               exit 1
             fi
-            if [ -n "$UPDATED_PROJECT" ]
+            if [[ ! -v UPDATED_PROJECT ]]
             then
               echo "You forgot to update the changelog in the project file."
               exit 1
             fi
-            if [ -n "$ADDED_TEST" ]
+            if [[ ! -v ADDED_TEST ]]
             then
               echo "You forgot to add a test class."
               exit 1
             fi
           fi
 
-          if [ -n "$ADDED_WORKFLOW" ]
+          if [[ -v ADDED_WORKFLOW ]]
           then
-            if [ -n "$UPDATED_CI" ]
+            if [[ ! -v UPDATED_CI ]]
             then
               echo "You forgot to update the CI.yml file with your workflow."
               exit 1
