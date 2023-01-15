@@ -50,7 +50,7 @@ jobs:
               echo "Modified Test code file: $file"
             fi            
           done
-
+          # See if we have an Analyzer added
           if [[ ! -z "$ADDED_ANALYZER" ]]
           then
             if [[ -z "$UPDATED_MARKDOWN" ]]
@@ -70,7 +70,7 @@ jobs:
             fi
             echo "Added analyzer has all the associated files updated."
           fi
-
+          # See if we have an Workflow added
           if [[ ! -z "$ADDED_WORKFLOW" ]]
           then
             if [[ -z "$UPDATED_CI" ]]
