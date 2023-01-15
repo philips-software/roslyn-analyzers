@@ -12,32 +12,69 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Determine target branch
+      - name: Documentation check
         run: |
-          export BRANCH=${{github.head_ref}}
-          export TARGET=${{github.base_ref}}
-
-      - name: Determine changed files
-        run: |
+          BRANCH=${{github.head_ref}}
+          TARGET=${{github.base_ref}}
           echo "Pull request on $BRANCH to target $TARGET"
           git diff --name-status origin/$TARGET..HEAD | while read status file
           do
-            if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]; then
+            if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_ANALYZER = "true";
               echo "Added Analyzer: $file"
             fi
-            if [[ "$file" =~ ^.+\.yml$ ]] && [[ "$status" == "A" ]]; then
+            if [[ "$file" =~ ^\.github/workflows/.+\.yml$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_WORKFLOW = "true";
               echo "Added YAML file: $file"
             fi            
-            if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]; then
+            if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_CI = "true";
               echo "Modified CI YAML file"
             fi            
-            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]; then
+            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_MARKDOWN = "true";
               echo "Modified markdown file: $file"
             fi
-            if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]; then
+            if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_PROJECT = "true";
               echo "Modified project file: $file"
             fi            
-            if [[ "$file" =~ ^.+Test\.cs$ ]] && [[ "$status" == "M" ]]; then
+            if [[ "$file" =~ ^.+Test\.cs$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_TEST = "true";
               echo "Modified Test code file: $file"
             fi            
           done
+
+          if [ -n "$ADDED_ANALYZER" ]
+          then
+            if [ -n "UPDATED_MARKDOWN" ]
+            then
+              echo "You forgot to update the user documentation MarkDown file."
+              exit 1
+            fi
+            if [ -n "UPDATED_PROJECT" ]
+            then
+              echo "You forgot to update the changelog in the project file."
+              exit 1
+            fi
+            if [ -n "ADDED_TEST" ]
+            then
+              echo "You forgot to add a test class."
+              exit 1
+            fi
+          fi
+
+          if [ -n "$ADDED_WORKFLOW" ]
+          then
+            if [ -n "UPDATED_CI" ]
+            then
+              echo "You forgot to update the CI.yml file with your workflow."
+              exit 1
+            fi
+          fi
