@@ -1,13 +1,10 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Reflection;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Operations;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -38,11 +35,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var variable = (VariableDeclarationSyntax)context.Node;
+			if (variable.Type is not SimpleNameSyntax typeName)
+			{
+				// Full (or partial) namespace syntax, check right-most entry only.
+				if (variable.Type is QualifiedNameSyntax qualifiedName)
+				{
+					typeName = qualifiedName.Right;
+				}
+				else
+				{
+					// Some thing else is mentioned here.
+					return;
+				}
+			}
+
+			if (!typeName.Identifier.Text.Contains("ArrayList"))
+			{
+				return;
+			}
+
+			// Sanity check if we got ArrayList from the correct namespace.
 			var typeSymbol = context.SemanticModel.GetSymbolInfo(variable.Type).Symbol as INamedTypeSymbol;
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
 				var variableName = variable.Variables.First().Identifier.Text;
-				context.ReportDiagnostic(Diagnostic.Create(Rule, variable.Type.GetLocation(), variableName));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, typeName.GetLocation(), variableName));
 			}
 		}
 	}
