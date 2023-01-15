@@ -21,32 +21,32 @@ jobs:
           do
             if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]
             then
-              ADDED_ANALYZER = "true";
+              ADDED_ANALYZER="true";
               echo "Added Analyzer: $file"
             fi
             if [[ "$file" =~ ^\.github/workflows/.+\.yml$ ]] && [[ "$status" == "A" ]]
             then
-              ADDED_WORKFLOW = "true";
+              ADDED_WORKFLOW="true";
               echo "Added YAML file: $file"
             fi            
             if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]
             then
-              UPDATED_CI = "true";
+              UPDATED_CI="true";
               echo "Modified CI YAML file"
             fi            
             if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]
             then
-              UPDATED_MARKDOWN = "true";
+              UPDATED_MARKDOWN="true";
               echo "Modified markdown file: $file"
             fi
             if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]
             then
-              UPDATED_PROJECT = "true";
+              UPDATED_PROJECT="true";
               echo "Modified project file: $file"
             fi            
             if [[ "$file" =~ ^.+Test\.cs$ ]] && [[ "$status" == "A" ]]
             then
-              ADDED_TEST = "true";
+              ADDED_TEST="true";
               echo "Modified Test code file: $file"
             fi            
           done
