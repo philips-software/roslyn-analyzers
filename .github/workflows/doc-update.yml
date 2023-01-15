@@ -32,7 +32,7 @@ jobs:
             if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]
             then
               #UPDATED_CI="true";
-              echo "Modified CI YAML file"
+              echo "[DISABLED] Modified CI YAML file"
             fi            
             if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]
             then
@@ -68,6 +68,7 @@ jobs:
               echo "You forgot to add a test class."
               exit 1
             fi
+            echo "Added analyzer has all the associated files updated."
           fi
 
           if [[ -v ADDED_WORKFLOW ]]
@@ -77,4 +78,5 @@ jobs:
               echo "You forgot to update the CI.yml file with your workflow."
               exit 1
             fi
+            echo "Added workflow has all the associated files updated."
           fi
