@@ -15,22 +15,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoProtectedFieldsAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Do not use protected fields";
 		private const string MessageFormat = @"Do not use protected fields";
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor _rule = new(Helper.ToDiagnosticId(DiagnosticIds.NoProtectedFields), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(_rule);
 
@@ -51,7 +41,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.ReportDiagnostic(Diagnostic.Create(_rule, fieldDeclarationSyntax.GetLocation()));
 			}
 		}
-
-		#endregion
 	}
 }

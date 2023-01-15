@@ -200,12 +200,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var type = context.SemanticModel.GetDeclaredSymbol(property);
-			if (type is IPropertySymbol propertySymbol)
+			if (type is IPropertySymbol propertySymbol && propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
 			{
-				if (propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
-				{
-					return;
-				}
+				return;
 			}
 
 			Regex validator = _publicFieldRegex;
