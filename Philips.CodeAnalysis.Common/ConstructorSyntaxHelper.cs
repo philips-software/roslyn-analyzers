@@ -39,12 +39,9 @@ namespace Philips.CodeAnalysis.Common
 			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> result = new();
 			foreach (var ctor in constructors)
 			{
-				if (deferredCtor.TryGetValue(ctor, out var otherCtor))
+				if (deferredCtor.TryGetValue(ctor, out var otherCtor) && otherCtor != null)
 				{
-					if (otherCtor != null)
-					{
-						result[ctor] = symbolToCtor[otherCtor];
-					}
+					result[ctor] = symbolToCtor[otherCtor];
 				}
 			}
 
