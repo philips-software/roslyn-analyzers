@@ -12,10 +12,13 @@ jobs:
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
-      - name: Display some files
+      - name: Determine target branch
         run: |
-          BRANCH=${{github.head_ref}}
-          TARGET=${{github.base_ref}}
+          export BRANCH=${{github.head_ref}}
+          export TARGET=${{github.base_ref}}
+
+      - name: Determine changed files
+        run: |
           echo "Pull request on $BRANCH to target $TARGET"
           git diff --name-status origin/$TARGET..HEAD | while read status file
           do
@@ -33,5 +36,8 @@ jobs:
             fi
             if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]; then
               echo "Modified project file: $file"
+            fi            
+            if [[ "$file" =~ ^.+Test\.cs$ ]] && [[ "$status" == "M" ]]; then
+              echo "Modified Test code file: $file"
             fi            
           done
