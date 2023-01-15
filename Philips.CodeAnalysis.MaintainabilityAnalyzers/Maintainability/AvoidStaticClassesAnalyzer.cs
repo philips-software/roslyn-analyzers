@@ -82,25 +82,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// We need to let it go if it's white-listed (i.e., legacy)
-			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) && 
-				_exceptions.Contains(context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString()))
-			{
-				return;
-			}
-
-			// Even more likely to have a whitelisted class, with the wildcard on the namespace
+			// Even more likely to have a whitelisted class with the wildcard on the namespace
 			if (_exceptions.Any(str => str.EndsWith(@"*." + classDeclarationSyntax.Identifier.ValueText)))
 			{
 				return;
 			}
 
-			// Check if this is an extension class
-			var model = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
-			if (model is { MightContainExtensionMethods: true } && !model.GetMembers().Any(m =>
-											m.Kind == SymbolKind.Method &&
-											m.DeclaredAccessibility == Accessibility.Public &&
-											!((IMethodSymbol)m).IsExtensionMethod))
+			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+
+			// We need to let it go if it's white-listed (i.e., legacy)
+			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) &&
+				_exceptions.Contains(declaredSymbol.ToDisplayString()))
+			{
+				return;
+			}
+
+			if (Helper.IsExtensionClass(declaredSymbol))
 			{
 				return;
 			}

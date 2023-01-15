@@ -244,6 +244,15 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
+		public static bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
+		{
+			return declaredSymbol is { MightContainExtensionMethods: true } && !declaredSymbol.GetMembers().Any(m =>
+											m.Kind == SymbolKind.Method &&
+											m.DeclaredAccessibility == Accessibility.Public &&
+											!((IMethodSymbol)m).IsExtensionMethod);
+		}
+
+
 		public static string GetFileName(string filePath)
 		{
 			string[] nodes = filePath.Split('/', '\\');
