@@ -82,7 +82,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			InitializeMaxCognitiveLoad(context);
 			if (cognitiveLoad > MaxCognitiveLoad)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclarationSyntax.GetLocation(), cognitiveLoad, MaxCognitiveLoad);
+				var location = methodDeclarationSyntax.Identifier.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, cognitiveLoad, MaxCognitiveLoad);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
