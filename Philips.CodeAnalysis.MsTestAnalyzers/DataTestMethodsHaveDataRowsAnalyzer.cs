@@ -61,12 +61,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 
 					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
-					if (symbol.Symbol is IMethodSymbol method)
+					if (symbol.Symbol is IMethodSymbol method && method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
 					{
-						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
-						{
-							hasTestSource = true;
-						}
+						hasTestSource = true;
 					}
 				}
 			}

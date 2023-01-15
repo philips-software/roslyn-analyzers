@@ -108,14 +108,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					continue;
 				}
-				if (symbol.IsStatic && !symbol.IsExtern)
+
+				// Look for a static thing being used in this method that is ours
+				if (symbol.IsStatic && !symbol.IsExtern && SymbolEqualityComparer.Default.Equals(symbol.ContainingType, us))
 				{
-					// We found a static thing being used in this method.  Is the thing ours?
-					if (SymbolEqualityComparer.Default.Equals(symbol.ContainingType, us))
-					{
-						// This method must be static because it references something static of ours.  We are done.
-						return true;
-					}
+					// This method must be static because it references something static of ours.  We are done.
+					return true;
 				}
 			}
 			return false;

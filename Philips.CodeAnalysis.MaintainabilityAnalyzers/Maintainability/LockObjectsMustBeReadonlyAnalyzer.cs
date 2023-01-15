@@ -36,12 +36,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				SymbolInfo info = obj.SemanticModel.GetSymbolInfo(identifier);
 
-				if (info.Symbol is IFieldSymbol field)
+				if (info.Symbol is IFieldSymbol field && !field.IsReadOnly)
 				{
-					if (!field.IsReadOnly)
-					{
-						obj.ReportDiagnostic(Diagnostic.Create(Rule, identifier.GetLocation(), identifier.ToString()));
-					}
+					obj.ReportDiagnostic(Diagnostic.Create(Rule, identifier.GetLocation(), identifier.ToString()));
 				}
 			}
 
