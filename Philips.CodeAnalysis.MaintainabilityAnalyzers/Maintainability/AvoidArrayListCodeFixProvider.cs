@@ -1,9 +1,8 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -19,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidArrayListAnalyzer)), Shared]
 	public class AvoidArrayListCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Call extension methods as if they were instance methods";
+		private const string Title = "Replaces ArrayList with List<T>";
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList));
 
@@ -48,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync();
 
-			var variable = token.Parent.Parent as VariableDeclarationSyntax;
+			var variable = token.Parent?.Parent as VariableDeclarationSyntax;
 			var type = variable?.Type;
 
 			if (root != null && type != null)
