@@ -22,4 +22,4 @@ jobs:
 
   docupdate:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@update-doc-check
+    uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
