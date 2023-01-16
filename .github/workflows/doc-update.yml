@@ -73,7 +73,7 @@ jobs:
             fi
             if [[ -z "$ADDED_TEST" ]]
             then
-              echo "You forgot to add a test class."
+              echo "You forgot to add a unit test class."
               exit 1
             fi
             echo "Added analyzer has all the associated files updated."
