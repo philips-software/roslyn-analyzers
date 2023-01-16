@@ -134,7 +134,7 @@ namespace Philips.CodeAnalysis.Test
 			string actualSource = GetStringFromDocument(document);
 			string[] actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			string[] expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length);
+			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
 			for (int i = 0; i < actualSourceLines.Length; i++)
 			{
 				// Trimming the lines, to ignore indentation differences.

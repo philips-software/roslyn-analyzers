@@ -118,6 +118,34 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return options;
 		}
 
+		private void RegisterAllowedMethods(HashSet<ISymbol> result, string line, Compilation compilation)
+		{
+			var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(line, compilation);
+			if (symbols.IsDefaultOrEmpty)
+			{
+				return;
+			}
+
+			foreach (var symbol in symbols)
+			{
+				if (symbol is IMethodSymbol)
+				{
+					result.Add(symbol);
+				}
+				else if (symbol is ITypeSymbol typeSymbol)
+				{
+					var members = typeSymbol.GetMembers();
+					foreach (var member in members)
+					{
+						if (member is IMethodSymbol)
+						{
+							result.Add(member);
+						}
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Load the methods for which duplicate code is allowed.
 		/// </summary>
@@ -127,28 +155,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			foreach (TextLine textLine in text.Lines)
 			{
 				var line = textLine.ToString();
-				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(line, compilation);
-				if (!symbols.IsDefaultOrEmpty)
-				{
-					foreach (var symbol in symbols)
-					{
-						if (symbol is IMethodSymbol)
-						{
-							result.Add(symbol);
-						}
-						else if (symbol is ITypeSymbol typeSymbol)
-						{
-							var members = typeSymbol.GetMembers();
-							foreach (var member in members)
-							{
-								if (member is IMethodSymbol)
-								{
-									result.Add(member);
-								}
-							}
-						}
-					}
-				}
+				RegisterAllowedMethods(result, line, compilation);
 			}
 			return result;
 		}
@@ -213,23 +220,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 							{
 								Location location = evidence.LocationEnvelope.Contents();
 								Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
-
-								// We found a duplicate, but if it's partially duplicated with itself, ignore it.
-								if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
-								{
-									string shapeDetails = GetShapeDetails(token);
-									string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
-
-									_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
-
-									if (_generateExceptionsFile)
-									{
-										File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
-									}
-
-									// Don't pile on.  Move on to the next method.
-									return;
-								}
+								CreateDuplicateDiagnostic(location, existingEvidenceLocation, token, methodDeclarationSyntax);
 
 								// Don't pile on.  Move on to the next method.
 								return;
@@ -239,22 +230,44 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 				catch (Exception ex)
 				{
-					string result = string.Empty;
-					string[] lines = ex.StackTrace.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-					foreach (string line in lines)
-					{
-						if (line.StartsWith("line") && line.Length >= 8)
-						{
-							result += line.Substring(0, 8);
-							result += " ";
-						}
-					}
-					if (string.IsNullOrWhiteSpace(result))
-					{
-						result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
-					}
-					_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, obj.Node.GetLocation(), result, ex.Message));
+					CreateExceptionDiagnostic(ex, obj);
 				}
+			}
+
+			private void CreateDuplicateDiagnostic(Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
+			{
+				// We found a duplicate, but if it's partially duplicated with itself, ignore it.
+				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
+				{
+					string shapeDetails = GetShapeDetails(token);
+					string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
+
+					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
+
+					if (_generateExceptionsFile)
+					{
+						File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
+					}
+				}
+			}
+
+			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
+			{
+				string result = string.Empty;
+				string[] lines = ex.StackTrace.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (string line in lines)
+				{
+					if (line.StartsWith("line") && line.Length >= 8)
+					{
+						result += line.Substring(0, 8);
+						result += " ";
+					}
+				}
+				if (string.IsNullOrWhiteSpace(result))
+				{
+					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
+				}
+				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, syntaxNodeAnalysisContext.Node.GetLocation(), result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)

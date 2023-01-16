@@ -66,13 +66,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// check if they did this:
 			// if/else/foreach/using ( something )
 			// { Assert.Fail() }
-			if (expressionOperation.Parent is IBlockOperation blockOperation)
+			if (expressionOperation.Parent is IBlockOperation blockOperation && CheckBlock(blockOperation, expressionOperation))
 			{
-				if (CheckBlock(blockOperation, expressionOperation))
-				{
-					obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
-					return;
-				}
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				return;
 			}
 
 			// bare if/else (IE, no block)

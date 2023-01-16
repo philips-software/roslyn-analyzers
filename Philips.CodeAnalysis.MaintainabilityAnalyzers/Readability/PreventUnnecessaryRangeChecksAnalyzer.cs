@@ -134,40 +134,40 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return ifIdentifier.Identifier.Text == identifier.Identifier.Text;
 			}
 
-			if (foreachExpression is MemberAccessExpressionSyntax memberAccess && ifExpression is MemberAccessExpressionSyntax ifMemberAccess)
+			if (foreachExpression is not MemberAccessExpressionSyntax memberAccess || ifExpression is not MemberAccessExpressionSyntax ifMemberAccess)
 			{
-				static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
-				{
-					var leftSymbol = model.GetSymbolInfo(left);
-					if (leftSymbol.Symbol is null)
-					{
-						return false;
-					}
+				return false;
+			}
 
-					var rightSymbol = model.GetSymbolInfo(right);
-					return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
-				}
+			var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
+			var ifMemberAccessNodes = ifMemberAccess.DescendantNodesAndSelf().ToList();
 
-				var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
-				var ifMemberAccessNodes = ifMemberAccess.DescendantNodesAndSelf().ToList();
+			if (foreachMemberAccessNodes.Count != ifMemberAccessNodes.Count)
+			{
+				return false;
+			}
 
-				if (foreachMemberAccessNodes.Count != ifMemberAccessNodes.Count)
+			static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
+			{
+				var leftSymbol = model.GetSymbolInfo(left);
+				if (leftSymbol.Symbol is null)
 				{
 					return false;
 				}
 
-				for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
-				{
-					if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
-					{
-						return false;
-					}
-				}
-
-				return true;
+				var rightSymbol = model.GetSymbolInfo(right);
+				return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
 			}
 
-			return false;
+			for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
+			{
+				if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private bool TryGetIdentifiers(ExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)

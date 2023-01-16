@@ -34,44 +34,44 @@ namespace Philips.CodeAnalysis.Common
 		{
 			foreach (var textLine in text.Lines)
 			{
-				var line = StripComments(textLine.ToString());
-				if (line.StartsWith("~"))
+				string line = StripComments(textLine.ToString());
+				RegisterLine(line, compilation);
+			}
+		}
+
+		private void RegisterLine(string line, Compilation compilation)
+		{
+			if (line.StartsWith("~"))
+			{
+				var symbols =
+					DocumentationCommentId.GetSymbolsForDeclarationId(line.Substring(1), compilation);
+				if (!symbols.IsDefaultOrEmpty)
 				{
-					var symbols =
-						DocumentationCommentId.GetSymbolsForDeclarationId(line.Substring(1), compilation);
-					if (!symbols.IsDefaultOrEmpty)
+					foreach (var symbol in symbols)
 					{
-						foreach (var symbol in symbols)
+						if (symbol is IMethodSymbol methodSymbol)
 						{
-							if (symbol is IMethodSymbol methodSymbol)
-							{
-								_allowedMethods.Add(methodSymbol);
-							}
-							else if (symbol is ITypeSymbol typeSymbol)
-							{
-								_allowedTypes.Add(typeSymbol);
-							}
-							else if (symbol is INamespaceSymbol namespaceSymbol)
-							{
-								_allowedNamespaces.Add(namespaceSymbol);
-							}
-							else
-							{
-								throw new InvalidDataException(
-									"Invalid symbol type found: " + symbol.MetadataName);
-							}
+							_allowedMethods.Add(methodSymbol);
+						}
+						else if (symbol is ITypeSymbol typeSymbol)
+						{
+							_allowedTypes.Add(typeSymbol);
+						}
+						else if (symbol is INamespaceSymbol namespaceSymbol)
+						{
+							_allowedNamespaces.Add(namespaceSymbol);
+						}
+						else
+						{
+							throw new InvalidDataException(
+								"Invalid symbol type found: " + symbol.MetadataName);
 						}
 					}
 				}
-				else if (line.StartsWith("#") || line.StartsWith("//"))
-				{
-					// Skip comments.
-					continue;
-				}
-				else
-				{
-					_allowedLines.Add(line);
-				}
+			}
+			else if (!line.StartsWith("#") && !line.StartsWith("//"))
+			{
+				_allowedLines.Add(line);
 			}
 		}
 
