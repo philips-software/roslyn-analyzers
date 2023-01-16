@@ -33,8 +33,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string Category = Categories.Maintainability;
 
-		private static readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
-		private static readonly Regex _substitutionRegex = new(@"\{(\d+)\}");
+		private static readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _substitutionRegex = new(@"\{(\d+)\}", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
