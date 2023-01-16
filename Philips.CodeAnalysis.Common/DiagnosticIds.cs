@@ -108,5 +108,7 @@ namespace Philips.CodeAnalysis.Common
 		MergeIfStatements = 2113,
 		AvoidEmptyStatement = 2114,
 		AvoidArrayList = 2116,
+		AlignNumberOfArgumentsStringFormats = 2117,
+		SubstitutionsShouldBeAscending = 2118,
 	}
 }

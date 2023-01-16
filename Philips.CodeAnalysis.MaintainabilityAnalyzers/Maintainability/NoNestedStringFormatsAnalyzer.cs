@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -22,12 +23,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string UnnecessaryStringFormatMessageFormat = UnnecessaryStringFormatTitle;
 		private const string UnnecessaryStringFormatDescription = UnnecessaryStringFormatTitle;
 
+		private const string CountArgumentsStringFormatTitle = @"Same number of substitutions";
+		private const string CountArgumentsStringFormatMessageFormat = @"Align the number substitutions with the number of arguments of string.Format";
+		private const string CountArgumentsStringFormatDescription = CountArgumentsStringFormatMessageFormat;
+
+		private const string MissingArgumentsStringFormatTitle = @"Don't skip a substitution numbers";
+		private const string MissingArgumentsStringFormatMessageFormat = @"Substitution number {0} is not used";
+		private const string MissingArgumentsStringFormatDescription = CountArgumentsStringFormatTitle;
+
 		private const string Category = Categories.Maintainability;
 
-		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
+		private static readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
+		private static readonly Regex _substitutionRegex = new(@"\{(\d+)\}");
 
 		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
+		private static readonly DiagnosticDescriptor CountRule = new(Helper.ToDiagnosticId(DiagnosticIds.AlignNumberOfArgumentsStringFormats), CountArgumentsStringFormatTitle, CountArgumentsStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CountArgumentsStringFormatDescription);
+		private static readonly DiagnosticDescriptor MissingRule = new(Helper.ToDiagnosticId(DiagnosticIds.SubstitutionsShouldBeAscending), MissingArgumentsStringFormatTitle, MissingArgumentsStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: MissingArgumentsStringFormatDescription);
 
 		private void Analyze(CompilationStartAnalysisContext context)
 		{
@@ -105,7 +117,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					break;
 			}
 
-			if (returnType.SpecialType is SpecialType.System_String or SpecialType.System_Void)
+			var formatValue = (string)argument.ConstantValue.Value;
+			if(returnType.SpecialType is SpecialType.System_String or SpecialType.System_Void)
 			{
 				var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
 
@@ -120,8 +133,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
 					{
-						string formatValue = (string)argument.ConstantValue.Value;
-
 						if (_formatRegex.IsMatch(formatValue))
 						{
 							if (arrayCreation.Initializer.ElementValues.Length == 0)
@@ -138,6 +149,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 								return;
 							}
 						}
+
+						var numSubstitutions = GetNumberOfUniqueSubstitutions(operationContext, argument, formatValue);
+						if(numSubstitutions == -1)
+						{
+							return;
+						}
+
+						if(numSubstitutions != arrayCreation.Initializer.ElementValues.Length)
+						{
+							operationContext.ReportDiagnostic(Diagnostic.Create(CountRule, argument.Syntax.GetLocation()));
+							return;
+						}
 					}
 				}
 				else if (paramsArguments is IConversionOperation conversion && 
@@ -148,6 +171,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
 					return;
+				}
+				else if (formatValue != null)
+				{
+					var numSubstitutions = GetNumberOfUniqueSubstitutions(operationContext, argument, formatValue);
+					if (numSubstitutions == -1)
+					{
+						return;
+					}
+					var numArgsAfter = invocation.Arguments.Length - formatStringParameterIndex - 1;
+					if (numSubstitutions != numArgsAfter)
+					{
+						operationContext.ReportDiagnostic(Diagnostic.Create(CountRule, argument.Syntax.GetLocation()));
+						return;
+					}
 				}
 			}
 		}
@@ -278,7 +315,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return false;
 		}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(NestedRule, UnnecessaryRule);
+		private int GetNumberOfUniqueSubstitutions(OperationAnalysisContext operationContext, IOperation operation, string formatValue)
+		{
+			var matches = _substitutionRegex.Matches(formatValue);
+			var list = new SortedSet<int>();
+			foreach (Match match in matches)
+			{
+				var number = int.Parse(match.Groups[1].Value);
+				list.Add(number);
+			}
+
+			// Check if all numbers are referenced.
+			int i = 0;
+			foreach (int item in list)
+			{
+				if (item != i)
+				{
+					operationContext.ReportDiagnostic(Diagnostic.Create(MissingRule, operation.Syntax.GetLocation(), i));
+					return -1;
+				}
+				i++;
+			}
+			return list.Count;
+		}
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(NestedRule, UnnecessaryRule, CountRule, MissingRule);
 
 		public override void Initialize(AnalysisContext context)
 		{

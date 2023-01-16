@@ -67,7 +67,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats), DiagnosticResultHelper.Create(DiagnosticIds.AlignNumberOfArgumentsStringFormats));
 		}
 
 		[TestMethod]
@@ -80,12 +80,12 @@ class Foo
 {
 	public void Test()
 	{
-		string t = string.Format(""test"");
+		string t = string.Format(""test"", 1);
 	}
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AlignNumberOfArgumentsStringFormats));
 		}
 
 		[TestMethod]
@@ -593,11 +593,52 @@ class Foo
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
 		}
 
+		[DataRow(@"string.Format(""Test with {0}"", 5, 42)")]
+		[DataRow(@"string.Format(""Test with {0} and {1}"", Environment.NewLine)")]
+		[DataRow(@"string.Format(""Test with {0} and {1}"", new object[] { Environment.NewLine })")]
+		[DataTestMethod]
+		public void ErrorsOnNumberOfArguments(string argument)
+		{
+			string template = @$"
+using System;
+class Foo
+{{
+	public void Test()
+	{{
+		string t = {argument};
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AlignNumberOfArgumentsStringFormats));
+		}
+
+		[DataRow(@"string.Format(""Missing numbers {0} and {3}"", Environment.NewLine, 2, 42)")]
+		[DataRow(@"string.Format(""Missing is wrong order {3} and {0}"", Environment.NewLine, 2, 42)")]
+		[DataTestMethod]
+		public void ErrorsOnMissingSubstitutionNumber(string argument)
+		{
+			string template = @$"
+using System;
+class Foo
+{{
+	public void Test()
+	{{
+		string t = {argument};
+	}}
+}}
+";
+
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.SubstitutionsShouldBeAscending));
+		}
+
 		[DataRow(@"$""{Test()}""")]
 		[DataRow(@"$""{4}""")]
 		[DataRow(@"$""{4:x}""")]
 		[DataRow(@"$""this is a test {Environment.NewLine}""")]
 		[DataRow(@"string.Format(""This is a test {0}"", Environment.NewLine)")]
+		[DataRow(@"string.Format(""Multiple {0} and {1}"", Environment.NewLine, 4)")]
+		[DataRow(@"string.Format(""Duplicates {0} and {0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""This is a test {0}"", new object[] { Environment.NewLine })")]
 		[DataTestMethod]
 		public void IgnoresFormatStringsWithAdditionalText(string argument)

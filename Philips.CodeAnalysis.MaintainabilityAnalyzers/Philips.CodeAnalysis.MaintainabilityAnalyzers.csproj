@@ -94,7 +94,9 @@
       * Introduce PH2113: Merge If Statements
       * Introduce PH2114: Avoid empty statement.
       * Introduce PH2116: Avoid ArrayList, use List&lt;T&gt; instead.
-    </PackageReleaseNotes>
+      * Introduce PH2117: Same number of substitutions.
+      * Introduce PH2118: Don't skip a substitution numbers.
+	</PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>

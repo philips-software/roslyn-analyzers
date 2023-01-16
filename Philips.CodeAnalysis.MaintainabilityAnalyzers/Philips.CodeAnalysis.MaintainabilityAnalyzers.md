@@ -66,3 +66,5 @@
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| PH2117  | Same number of substitutions                 | Align the number substitutions ("{0}") with the number of arguments of string.Format. |
+| PH2118  | Don't skip a substitution numbers            | Substitution numbers in string.Format should not skip a number. |
