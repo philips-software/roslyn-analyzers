@@ -181,20 +181,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 					// string y = obj as string;
 					// if (y != null && y.ToString() == @"")
 					// Ie there's nothing to analyze between the statements, but within the statement exists a check
-					if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax)
+					if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax && HasNullCheck(ifStatementSyntax.Condition))
 					{
-						if (HasNullCheck(ifStatementSyntax.Condition))
-						{
-							return;
-						}
+						return;
 					}
-					
-					if(firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax)
+
+					if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax && HasNullCheck(whileStatementSyntax.Condition))
 					{
-						if (HasNullCheck(whileStatementSyntax.Condition))
-						{
-							return;
-						}
+						return;
 					}
 
 					if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().Any(c => HasNullCheck(c.Condition)))

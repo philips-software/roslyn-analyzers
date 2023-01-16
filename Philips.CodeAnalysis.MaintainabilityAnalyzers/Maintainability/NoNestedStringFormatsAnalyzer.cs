@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,8 +14,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoNestedStringFormatsAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string NestedStringFormatTitle = @"Don't nest string.Format (or similar) methods";
 		private const string NestedStringFormatMessageFormat = @"Don't nest a call to {0} inside a call to {1}";
 		private const string NestedStringFormatDescription = @"Don't nest string.Format (or similar) methods";
@@ -25,10 +25,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
@@ -144,16 +140,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 						}
 					}
 				}
-				else if (paramsArguments is IConversionOperation conversion)
+				else if (paramsArguments is IConversionOperation conversion && 
+					argument.Kind == OperationKind.Literal && 
+					argument.Type.SpecialType == SpecialType.System_String && 
+					((string)argument.ConstantValue.Value) == "{0}" && 
+					conversion.Operand.Type.SpecialType == SpecialType.System_String)
 				{
-					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
-					{
-						if (((string)argument.ConstantValue.Value) == "{0}" && conversion.Operand.Type.SpecialType == SpecialType.System_String)
-						{
-							operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-							return;
-						}
-					}
+					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+					return;
 				}
 			}
 		}
@@ -284,10 +278,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return false;
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(NestedRule, UnnecessaryRule);
 
 		public override void Initialize(AnalysisContext context)
@@ -297,7 +287,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationStartAction(Analyze);
 		}
-
-		#endregion
 	}
 }

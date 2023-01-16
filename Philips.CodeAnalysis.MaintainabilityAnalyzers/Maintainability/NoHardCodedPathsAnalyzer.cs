@@ -1,4 +1,6 @@
-﻿using System.Collections.Immutable;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,17 +18,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoHardCodedPathsAnalyzer : DiagnosticAnalyzer
 	{
-
-		#region Non-Public Data Members
 		private const string Title = @"Avoid hardcoded absolute paths";
 		private const string MessageFormat = @"Avoid hardcoded absolute paths";
 		private const string Description = @"Avoid hardcoded absolute paths";
 		private const string Category = Categories.Maintainability;
 		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$");
 
-		#endregion
-
-		#region Non-Public Data Members
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			LiteralExpressionSyntax stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
@@ -51,9 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
-		#endregion
 
-		#region Public Interface
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.NoHardcodedPaths), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
 		{
@@ -65,7 +60,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.StringLiteralExpression);
 		}
-		#endregion
-
 	}
 }

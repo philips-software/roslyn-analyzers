@@ -20,17 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PreventUnnecessaryRangeChecksCodeFixProvider)), Shared]
 	public class PreventUnnecessaryRangeChecksCodeFixProvider : CodeFixProvider
 	{
-		#region Non-Public Data Members
-
 		private const string Title = "Don't check a collections' Length or Count before iterating over it";
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks));
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -109,7 +99,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			return document.WithSyntaxRoot(root);
 		}
-
-		#endregion
 	}
 }

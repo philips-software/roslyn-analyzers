@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsGeneratedCode(OperationAnalysisContext context)
 		{
 			string myFilePath = context.Operation.Syntax.SyntaxTree.FilePath;
-			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Operation.Syntax, () => { return context.Operation.SemanticModel; }); ;
+			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Operation.Syntax, () => { return context.Operation.SemanticModel; });
 		}
 
 
