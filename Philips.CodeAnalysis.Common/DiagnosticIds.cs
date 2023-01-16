@@ -106,5 +106,6 @@ namespace Philips.CodeAnalysis.Common
 		ReduceCognitiveLoad = 2111,
 		AvoidOverridingWithNewKeyword = 2112,
 		MergeIfStatements = 2113,
+		AvoidEmptyStatement = 2114,
 	}
 }
