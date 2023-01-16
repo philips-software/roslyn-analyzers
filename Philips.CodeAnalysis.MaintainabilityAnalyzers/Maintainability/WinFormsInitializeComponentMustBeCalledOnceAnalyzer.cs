@@ -14,8 +14,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Check for UserControl constructor chains calls to InitializeComponent()";
 		public static readonly string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
@@ -24,10 +22,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		/// <summary>
 		/// IsInitializeComponentInConstructors
@@ -103,12 +97,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
-			if (!classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+			if (!classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword) && !classDeclaration.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{
-				if (!classDeclaration.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
-				{
-					return;
-				}
+				return;
 			}
 
 			GeneratedCodeDetector generatedCodeDetector = new();
@@ -134,10 +125,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			IsInitializeComponentInConstructors(context, constructors, classDeclaration);
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		/// <summary>
 		/// SupportedDiagnostics
 		/// </summary>
@@ -162,7 +149,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
 			});
 		}
-
-		#endregion
 	}
 }

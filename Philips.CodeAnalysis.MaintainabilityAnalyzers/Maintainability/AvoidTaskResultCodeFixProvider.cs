@@ -20,17 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidTaskResultCodeFixProvider)), Shared]
 	public class AvoidTaskResultCodeFixProvider : CodeFixProvider
 	{
-		#region Non-Public Data Members
-
 		private const string Title = "Use await";
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidTaskResult));
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -67,7 +57,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			rootNode = rootNode.ReplaceNode(resultExpression, newExpression.WithLeadingTrivia(newExpression.GetLeadingTrivia())).WithAdditionalAnnotations(Formatter.Annotation);
 			return document.WithSyntaxRoot(rootNode);
 		}
-
-		#endregion
 	}
 }

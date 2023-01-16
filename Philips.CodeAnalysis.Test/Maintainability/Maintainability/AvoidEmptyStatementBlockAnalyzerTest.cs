@@ -34,6 +34,23 @@ class Foo
 		}
 
 		[TestMethod]
+		public void CatchesEmptyStatementMethod()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	private void Test()
+	{
+		;
+	}
+}
+";
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+
+		}
+
+		[TestMethod]
 		public void CatchesEmptyStatementBlock()
 		{
 			const string template = @"
@@ -214,7 +231,6 @@ class Foo
 			VerifyCSharpDiagnostic(template);
 		}
 
-
 		[TestMethod]
 		public void EmptyLockBlocksAllowed()
 		{
@@ -225,8 +241,8 @@ class Foo
 {
 	public void Meow()
 	{
-			object lock = new object();
-			lock (lock) { }
+			object l = new object();
+			lock (l) { }
 	}
 }
 ";

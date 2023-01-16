@@ -14,25 +14,38 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidEmptyStatementBlocksAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Avoid empty statement blocks";
-		public const string MessageFormat = @"Avoid empty statement blocks";
-		private const string Description = @"Avoid empty statement blocks";
 		private const string Category = Categories.Maintainability;
+
+		private const string BlockTitle = @"Avoid empty statement blocks";
+		public const string BlockMessageFormat = @"Avoid empty statement blocks";
+		private const string BlockDescription = @"Avoid empty statement blocks";
 
 		private const string CatchBlockTitle = @"Avoid empty catch blocks";
 		public const string CatchBlockMessageFormat = @"Avoid empty catch blocks";
 		private const string CatchBlockDescription = @"Avoid empty catch blocks";
 
+		private const string StatementTitle = @"Avoid empty statements";
+		public const string StatementMessageFormat = @"Avoid empty statements";
+		private const string StatementDescription = @"Avoid empty statements";
 
-		public DiagnosticDescriptor StatementRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+
+		public DiagnosticDescriptor BlockRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatementBlock), BlockTitle, BlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: BlockDescription);
 		public DiagnosticDescriptor CatchRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
+		public DiagnosticDescriptor StatementRule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyStatement), StatementTitle, StatementMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: StatementDescription);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(StatementRule, CatchRule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(BlockRule, CatchRule, StatementRule); } }
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.Block);
+			context.RegisterSyntaxNodeAction(AnalyzeEmptyStatement, SyntaxKind.EmptyStatement);
+		}
+
+		private void AnalyzeEmptyStatement(SyntaxNodeAnalysisContext context)
+		{
+			Diagnostic diagnostic = Diagnostic.Create(StatementRule, context.Node.GetLocation());
+			context.ReportDiagnostic(diagnostic);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -82,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(StatementRule, blockSyntax.GetLocation());
+			Diagnostic diagnostic = Diagnostic.Create(BlockRule, blockSyntax.GetLocation());
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

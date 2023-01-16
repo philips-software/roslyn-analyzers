@@ -41,15 +41,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					fileVersion = SetRevisionToZeroIfMissing(fileVersion);
 				}
 
-				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute))
+				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
-					if (!attr.ConstructorArguments.IsEmpty)
-					{
-						string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
-						string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
-						informationalVersion = new Version(strippedsourceRevisionId);
-						informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
-					}
+					string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
+					string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
+					informationalVersion = new Version(strippedsourceRevisionId);
+					informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
 				}
 			}
 
