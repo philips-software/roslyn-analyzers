@@ -42,12 +42,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				string fileName = Path.GetFileName(additionalFile.Path);
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, @".editorconfig"))
+				if (comparer.Equals(fileName, @".editorconfig") && additionalFile.GetText() != null)
 				{
-					if (additionalFile.GetText() != null)
-					{
-						return true;
-					}
+					return true;
 				}
 			}
 			return false;

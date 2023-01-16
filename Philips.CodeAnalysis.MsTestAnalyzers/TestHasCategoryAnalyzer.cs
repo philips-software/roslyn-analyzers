@@ -47,12 +47,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-				if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration)
+				if (methodDeclaration.Parent is ClassDeclarationSyntax classDeclaration && _exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
 				{
-					if (_exceptions.Contains($"{classDeclaration.Identifier.Text}.{methodDeclaration.Identifier.Text}"))
-					{
-						return;
-					}
+					return;
 				}
 
 				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))

@@ -120,13 +120,10 @@ namespace Philips.CodeAnalysis.Common
 			location = null;
 			foreach (AttributeSyntax attribute in attributes.Attributes)
 			{
-				if (attribute.Name.ToString().Contains(name))
+				if (attribute.Name.ToString().Contains(name) && context.SemanticModel.GetSymbolInfo(attribute).Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
-					if (context.SemanticModel.GetSymbolInfo(attribute).Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
-					{
-						location = attribute.GetLocation();
-						return true;
-					}
+					location = attribute.GetLocation();
+					return true;
 				}
 			}
 			return false;
@@ -155,17 +152,14 @@ namespace Philips.CodeAnalysis.Common
 			if (attribute.Name.ToString().Contains(name))
 			{
 				SymbolInfo symbolInfo = getSemanticModel().GetSymbolInfo(attribute);
-				if (symbolInfo.Symbol is IMethodSymbol memberSymbol)
+				if (symbolInfo.Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
-					if (memberSymbol.ToString().StartsWith(fullName))
+					location = attribute.GetLocation();
+					if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
 					{
-						location = attribute.GetLocation();
-						if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
-						{
-							argument = attribute.ArgumentList.Arguments.First();
-						}
-						return true;
+						argument = attribute.ArgumentList.Arguments.First();
 					}
+					return true;
 				}
 			}
 
@@ -249,6 +243,15 @@ namespace Philips.CodeAnalysis.Common
 
 			return false;
 		}
+
+		public static bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
+		{
+			return declaredSymbol is { MightContainExtensionMethods: true } && !declaredSymbol.GetMembers().Any(m =>
+											m.Kind == SymbolKind.Method &&
+											m.DeclaredAccessibility == Accessibility.Public &&
+											!((IMethodSymbol)m).IsExtensionMethod);
+		}
+
 
 		public static string GetFileName(string filePath)
 		{

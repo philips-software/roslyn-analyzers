@@ -79,12 +79,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
-					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic))
+					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
 					{
-						if (TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
-						{
-							additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
-						}
+						additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
 					}
 
 					Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), additionalData, string.Empty);

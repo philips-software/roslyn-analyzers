@@ -105,6 +105,7 @@ namespace Philips.CodeAnalysis.Common
 		AlignNumberOfIncrementAndDecrementOperators = 2110,
 		ReduceCognitiveLoad = 2111,
 		AvoidOverridingWithNewKeyword = 2112,
+		MergeIfStatements = 2113,
 		AvoidMultipleLambdasOnSingleLine = 2115,
 	}
 }
