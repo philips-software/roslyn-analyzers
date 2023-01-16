@@ -17,7 +17,12 @@ jobs:
           BRANCH=${{github.head_ref}}
           TARGET=${{github.base_ref}}
           echo "Pull request on $BRANCH to target $TARGET"
-          git diff --name-status origin/$TARGET..HEAD | while read status file
+          if [[ -z "$TARGET" ]]
+          then
+            # We do NOT run on a pull request branch, ignore silently.
+            exit 0
+          fi
+          while read status file
           do
             if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]
             then
@@ -49,8 +54,11 @@ jobs:
               ADDED_TEST="true"
               echo "Modified Test code file: $file"
             fi            
-          done
+          done < <(git diff --name-status origin/$TARGET..HEAD)
+          echo
+          
           # See if we have an Analyzer added
+          echo "Conclusion:"
           if [[ ! -z "$ADDED_ANALYZER" ]]
           then
             if [[ -z "$UPDATED_MARKDOWN" ]]
@@ -70,6 +78,7 @@ jobs:
             fi
             echo "Added analyzer has all the associated files updated."
           fi
+          
           # See if we have an Workflow added
           if [[ ! -z "$ADDED_WORKFLOW" ]]
           then
