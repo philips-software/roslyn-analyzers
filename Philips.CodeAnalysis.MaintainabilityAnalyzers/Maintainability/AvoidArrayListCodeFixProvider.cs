@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidArrayListAnalyzer)), Shared]
 	public class AvoidArrayListCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Replaces ArrayList with List<T>";
+		private const string Title = "Replace ArrayList with List<T>";
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList));
 
