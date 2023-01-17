@@ -40,13 +40,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				var diagnosticNode = root.FindNode(diagnosticSpan);
 				var secondLambda = diagnosticNode.ChildNodes().OfType<LambdaExpressionSyntax>().FirstOrDefault();
-				var invocation = diagnosticNode.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-				if (secondLambda is null || invocation is null)
+				var parent = GetParentOnHigherLine(secondLambda);
+				if (secondLambda is null || parent is null)
 				{
 					// Apparently, the code is different than what we expect.
 					return;
 				}
-				var firstLambdaOnLine = GetOtherLambdaOnSameLine(invocation, secondLambda);
+				var firstLambdaOnLine = GetOtherLambdaOnSameLine(parent, secondLambda);
 				// Nice location to break the line, after the closing parenthesis of the ArgumentList where the first lambda is part of.
 				var parentOfFirst = firstLambdaOnLine?.Parent?.Parent;
 				if (parentOfFirst is not null)
@@ -61,13 +61,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 		}
 
-		private LambdaExpressionSyntax GetOtherLambdaOnSameLine(InvocationExpressionSyntax parent,
-			LambdaExpressionSyntax second)
+		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
+		{
+			var lineNumber = node.GetLocation().GetLineSpan().StartLinePosition.Line;
+			return node
+				.Ancestors()
+				.FirstOrDefault(l => l.GetLocation().GetLineSpan().StartLinePosition.Line < lineNumber);
+		}
+
+		private LambdaExpressionSyntax GetOtherLambdaOnSameLine(SyntaxNode parent, LambdaExpressionSyntax second)
 		{
 			var lineNumber = second.GetLocation().GetLineSpan().StartLinePosition.Line;
 			return parent
 				.DescendantNodes()
 				.OfType<LambdaExpressionSyntax>()
+				.Where(k => !ReferenceEquals(k, second))
 				.FirstOrDefault(l => l.GetLocation().GetLineSpan().StartLinePosition.Line == lineNumber);
 		}
 
@@ -76,6 +84,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			SyntaxToken lastToken = node.GetLastToken();
+			if (lastToken.GetNextToken().IsKind(SyntaxKind.SemicolonToken))
+			{
+				lastToken = lastToken.GetNextToken();
+				node = lastToken.Parent;
+			}
 			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine("\r\n"));
 
 			root = root.ReplaceNode(node, node.WithTrailingTrivia(newTrivia)).WithAdditionalAnnotations(Formatter.Annotation);
