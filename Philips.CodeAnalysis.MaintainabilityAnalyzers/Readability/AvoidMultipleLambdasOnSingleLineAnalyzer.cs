@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleLambdaExpression);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ParenthesizedLambdaExpression);
-			context.RegisterCompilationAction((ctx) => visitedTypes.Clear());
+			context.RegisterCompilationAction(ClearCache);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -69,6 +69,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				Location loc = violation.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
+			}
+		}
+
+		private void ClearCache(CompilationAnalysisContext _)
+		{
+			lock (visitedTypes)
+			{
+				visitedTypes.Clear();
 			}
 		}
 
