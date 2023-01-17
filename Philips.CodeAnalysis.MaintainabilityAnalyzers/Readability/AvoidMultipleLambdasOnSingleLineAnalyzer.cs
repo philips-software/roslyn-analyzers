@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,21 +26,35 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
+		private readonly HashSet<string> visitedTypes = new();
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleLambdaExpression);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ParenthesizedLambdaExpression);
+			context.RegisterCompilationAction((ctx) => visitedTypes.Clear());
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
+			SyntaxNode node = context.Node;
+			TypeDeclarationSyntax typeDeclaration =
+				node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+			
+			// Prevent reporting the same class twice.
+			string typeName = typeDeclaration?.Identifier.Text;
+			if (visitedTypes.Contains(typeName))
+			{
+				return;
+			}
+			visitedTypes.Add(typeName);
 
 			LambdaVisitor visitor = new();
 
-			visitor.Visit(classDeclaration);
+			visitor.Visit(typeDeclaration);
 
 			List<LambdaExpressionSyntax> lambdas = visitor.Lambdas;
 			if (lambdas.Count <= 1)
