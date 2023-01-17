@@ -22,6 +22,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			return new AvoidMultipleLambdasOnSingleLineCodeFixProvider();
 		}
 
+		private const string CorrectNoLambda = @"
+using System.Collections.Generic;
+using System.Linq;
+
+public static class Foo
+{
+  public static int Method(List<int> data)
+  {
+    return data.[0];
+  }
+}
+";
+
 		private const string CorrectSingle = @"
 using System.Collections.Generic;
 using System.Linq;
@@ -116,7 +129,8 @@ public static class Foo
 
 
 		[DataTestMethod]
-		[DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
+		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)), 
+		 DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
 		 DataRow(CorrectMultiple, DisplayName = nameof(CorrectMultiple)),
 		 DataRow(CorrectMoreLines, DisplayName = nameof(CorrectMoreLines)),
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
