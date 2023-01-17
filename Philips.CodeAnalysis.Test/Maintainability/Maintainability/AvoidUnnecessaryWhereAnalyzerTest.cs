@@ -23,6 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidUnnecessaryWhereAnalyzer();
 		}
 
+		[DataRow("_ = result.OfType<string>().Where(x => true).Count();")]
 		[DataRow("result.OfType<string>().Where(x => true).Count();")]
 		[DataRow("result.OfType<string>().Where(x => true).Any();")]
 		[DataRow("result.OfType<string>().Where(x => true).First();")]
@@ -49,6 +50,8 @@ class Foo
 			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
 		}
 
+
+		[DataRow("result.OfType<string>().Where((x => true)).Count(x => true);")]
 		[DataRow("result.OfType<string>().Where(x => true).Count(x => true);")]
 		[DataRow("result.OfType<string>().Where(x => true).Any(x => true);")]
 		[DataRow("result.OfType<string>().Where(x => true).First(x => true);")]
@@ -61,6 +64,7 @@ class Foo
 		[DataRow("result.OfType<string>().Where(x => true).Any")]
 		[DataRow("result.OfType<string>().First().Single(x => true);")]
 		[DataRow("result.OfType<string>().First.Any());)")]
+		[DataRow("Console.WriteLine(\"ny\")")]
 		[DataTestMethod]
 		public void AvoidUnnecessaryWhereNoFindingTest(string line)
 		{
@@ -75,9 +79,6 @@ class Foo
   }}
 }}
 ";
-			var result = Array.Empty<string>();
-			_ = result.Where(x => true).Count();
-
 			string testCode = string.Format(template, line);
 			VerifyCSharpDiagnostic(testCode);
 		}

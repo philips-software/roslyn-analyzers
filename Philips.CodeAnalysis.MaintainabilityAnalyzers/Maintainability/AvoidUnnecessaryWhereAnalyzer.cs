@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// It's practicially guaranteed we found something, but let's confirm it's System.Linq.Where
 			var whereSymbol = context.SemanticModel.GetSymbolInfo(whereExpression.Name).Symbol as IMethodSymbol;
 			string strWhereSymbol = whereSymbol?.ToString();
-			if (strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
+			if (strWhereSymbol != null && strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
 			{ 
 				Diagnostic diagnostic = Diagnostic.Create(Rule, whereExpression.Name.Identifier.GetLocation(), expressionOfInterest.Name.Identifier.Text);
 				context.ReportDiagnostic(diagnostic);
