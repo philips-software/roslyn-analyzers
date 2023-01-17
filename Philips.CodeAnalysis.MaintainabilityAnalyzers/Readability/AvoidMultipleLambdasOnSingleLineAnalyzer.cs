@@ -52,12 +52,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			visitedTypes.Add(typeName);
 
-			LambdaVisitor visitor = new();
 
-			visitor.Visit(typeDeclaration);
-
-			List<LambdaExpressionSyntax> lambdas = visitor.Lambdas;
-			if (lambdas.Count <= 1)
+			var lambdas = typeDeclaration?.DescendantNodes().OfType<LambdaExpressionSyntax>();
+			if (lambdas == null || !lambdas.Any())
 			{
 				return;
 			}
@@ -69,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 		}
 
-		private static IEnumerable<LambdaExpressionSyntax> FindLambdasOnSameLine(List<LambdaExpressionSyntax> lambdas)
+		private static IEnumerable<LambdaExpressionSyntax> FindLambdasOnSameLine(IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
 			// Using HashSet to filter out duplicates.
 			// And relying on the fact that the order in the SyntaxTree is the same as in the .cs file.
