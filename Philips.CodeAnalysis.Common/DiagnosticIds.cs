@@ -109,5 +109,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidEmptyStatement = 2114,
 		AvoidMultipleLambdasOnSingleLine = 2115,
 		AvoidArrayList = 2116,
+		AvoidUnnecessaryWhere = 2117,
 	}
 }

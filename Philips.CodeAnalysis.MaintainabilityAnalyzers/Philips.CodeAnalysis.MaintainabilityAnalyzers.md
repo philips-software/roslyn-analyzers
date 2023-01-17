@@ -67,3 +67,4 @@
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
 | PH2115  | Every Lambda expression on separate line     | Avoid putting mutliple lambda statements on a single line for readability. |
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
