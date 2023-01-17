@@ -108,5 +108,6 @@ namespace Philips.CodeAnalysis.Common
 		MergeIfStatements = 2113,
 		AvoidEmptyStatement = 2114,
 		AvoidArrayList = 2116,
+		AvoidUnnecessaryWhere = 2117,
 	}
 }
