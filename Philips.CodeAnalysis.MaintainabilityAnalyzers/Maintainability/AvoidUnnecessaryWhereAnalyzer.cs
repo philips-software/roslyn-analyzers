@@ -32,16 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.Linq.Enumerable") == null)
-				{
-					// There's nothing for us to analyze if System.Linq is not in the Compilation types
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
