@@ -1,5 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -26,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		private readonly ImmutableHashSet<string> visitedTypes = ImmutableHashSet<string>.Empty;
+		private readonly HashSet<string> visitedTypes = new();
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -46,11 +48,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			
 			// Prevent reporting the same class twice.
 			string typeName = $"{node.SyntaxTree.FilePath}-{typeDeclaration?.Identifier.Text}";
-			if (visitedTypes.Contains(typeName))
+			lock (visitedTypes)
 			{
-				return;
+				if (visitedTypes.Contains(typeName))
+				{
+					return;
+				}
+
+				visitedTypes.Add(typeName);
 			}
-			visitedTypes.Add(typeName);
 
 
 			var lambdas = typeDeclaration?.DescendantNodes().OfType<LambdaExpressionSyntax>();
