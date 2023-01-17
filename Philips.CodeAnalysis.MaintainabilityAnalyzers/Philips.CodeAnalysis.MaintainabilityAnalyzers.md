@@ -66,3 +66,4 @@
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
