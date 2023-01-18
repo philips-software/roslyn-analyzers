@@ -28,8 +28,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		private readonly HashSet<string> visitedTypes = new();
-
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
@@ -37,65 +35,57 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleLambdaExpression);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ParenthesizedLambdaExpression);
-			context.RegisterCompilationAction(ClearCache);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			SyntaxNode node = context.Node;
-			TypeDeclarationSyntax typeDeclaration =
-				node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+			LambdaExpressionSyntax node = (LambdaExpressionSyntax)context.Node;
+			MethodDeclarationSyntax parent =
+				node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 			
-			// Prevent reporting the same class twice.
-			string typeName = $"{node.SyntaxTree.FilePath}-{typeDeclaration?.Identifier.Text}";
-			lock (visitedTypes)
-			{
-				if (visitedTypes.Contains(typeName))
-				{
-					return;
-				}
-
-				visitedTypes.Add(typeName);
-			}
-
-
-			var lambdas = typeDeclaration?.DescendantNodes().OfType<LambdaExpressionSyntax>();
+			var lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
 			if (lambdas == null || !lambdas.Any())
 			{
 				return;
 			}
 
-			foreach (LambdaExpressionSyntax violation in FindLambdasOnSameLine(lambdas))
+			var lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
+			if (lambdasOnSameLine == null || !lambdasOnSameLine.Any())
 			{
-				Location loc = violation.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
+				return;
 			}
+
+			// Do not trigger a diagnostic on the first lambda on the line.
+			if (IsLeftMost(node, lambdasOnSameLine))
+			{
+				return;
+			}
+
+			Location loc = node.GetLocation();
+			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 		}
 
-		private void ClearCache(CompilationAnalysisContext _)
-		{
-			lock (visitedTypes)
-			{
-				visitedTypes.Clear();
-			}
-		}
-
-		private static IEnumerable<LambdaExpressionSyntax> FindLambdasOnSameLine(IEnumerable<LambdaExpressionSyntax> lambdas)
+		private static IEnumerable<LambdaExpressionSyntax> FindOtherLambdasOnSameLine(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
 			// Using HashSet to filter out duplicates.
 			// And relying on the fact that the order in the SyntaxTree is the same as in the .cs file.
 			HashSet<LambdaExpressionSyntax> result = new();
-			int previousLine = -1;
+			int theLine = ourLambda.GetLocation().GetLineSpan().EndLinePosition.Line;
 			foreach(LambdaExpressionSyntax lambda in lambdas)
 			{
 				int currentLine = lambda.GetLocation().GetLineSpan().EndLinePosition.Line;
-				if (previousLine == currentLine)
+				if (currentLine == theLine && !ReferenceEquals(lambda, ourLambda))
 				{
 					result.Add(lambda);
 				}
-				previousLine = currentLine;
 			}
 			return result;
+		}
+
+		private static bool IsLeftMost(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
+		{
+			int column = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Character;
+			return !lambdas.Any(l => l.GetLocation().GetLineSpan().StartLinePosition.Character < column);
 		}
 	}
 }
