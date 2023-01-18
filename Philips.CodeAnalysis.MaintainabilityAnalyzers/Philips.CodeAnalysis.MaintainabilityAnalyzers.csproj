@@ -96,7 +96,7 @@
       * Introduce PH2115: Every Lambda expression on separate line.
       * Introduce PH2116: Avoid ArrayList, use List&lt;T&gt; instead.
       * Introduce PH2117: Avoid unnecessary Where.
-      * Introduce PH2118: Don't use magic numbers.
+      * Introduce PH2118: Avoid magic numbers.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

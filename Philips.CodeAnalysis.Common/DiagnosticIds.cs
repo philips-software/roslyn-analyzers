@@ -110,6 +110,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidMultipleLambdasOnSingleLine = 2115,
 		AvoidArrayList = 2116,
 		AvoidUnnecessaryWhere = 2117,
-		DontUseMagicNumbers = 2118,
+		AvoidMagicNumbers = 2118,
 	}
 }

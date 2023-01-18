@@ -13,14 +13,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DontUseMagicNumbersAnalyzer : DiagnosticAnalyzer
+	public class AvoidMagicNumbersAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Don't use magic numbers";
-		private const string MessageFormat = @"Don't use magic numbers";
-		private const string Description = @"Don't use magic number, define them as constant instead.";
+		private const string Title = @"Avoid inline magic numbers";
+		private const string MessageFormat = @"Avoid inline magic numbers";
+		private const string Description = @"Avoid inline magic number, define them as constant instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.DontUseMagicNumbers),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidMagicNumbers),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 

@@ -9,10 +9,10 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	/// <summary>
-	/// Test class for <see cref="DontUseMagicNumbersAnalyzer"/>.
+	/// Test class for <see cref="AvoidMagicNumbersAnalyzer"/>.
 	/// </summary>
 	[TestClass]
-	public class DontUseMagicNumbersAnalyzerTest : DiagnosticVerifier
+	public class AvoidMagicNumbersAnalyzerTest : DiagnosticVerifier
 	{
 		private const string CorrectZero = @"
 namespace DontUseMagicNumbersTests {
@@ -153,7 +153,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.DontUseMagicNumbers);
+			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidMagicNumbers);
 			VerifyCSharpDiagnostic(testCode, expected);
 		}
 
@@ -168,7 +168,7 @@ namespace DontUseMagicNumbersTests {
 		}
 
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
-			return new DontUseMagicNumbersAnalyzer();
+			return new AvoidMagicNumbersAnalyzer();
 		}
 	}
 }
