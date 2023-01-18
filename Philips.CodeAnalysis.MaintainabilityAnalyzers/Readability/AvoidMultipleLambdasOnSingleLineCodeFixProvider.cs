@@ -84,6 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			SyntaxToken lastToken = node.GetLastToken();
+			// If the 2 lambdas are distinct statements, put the new line after the semicolon.
 			if (lastToken.GetNextToken().IsKind(SyntaxKind.SemicolonToken))
 			{
 				lastToken = lastToken.GetNextToken();
