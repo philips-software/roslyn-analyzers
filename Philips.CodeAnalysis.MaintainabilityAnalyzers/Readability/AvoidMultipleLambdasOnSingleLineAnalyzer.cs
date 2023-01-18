@@ -1,7 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -44,11 +42,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 			
 			var lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
-			if (lambdas == null || !lambdas.Any())
+			if (lambdas == null || lambdas.Count() < 2)
 			{
 				return;
 			}
 
+			// Get a list of the lambdas that start on the same line, excluding our lambda.
 			var lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
 			if (lambdasOnSameLine == null || !lambdasOnSameLine.Any())
 			{
@@ -69,11 +68,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			// Using HashSet to filter out duplicates.
 			// And relying on the fact that the order in the SyntaxTree is the same as in the .cs file.
-			HashSet<LambdaExpressionSyntax> result = new();
-			int theLine = ourLambda.GetLocation().GetLineSpan().EndLinePosition.Line;
+			List<LambdaExpressionSyntax> result = new();
+			int theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 			foreach(LambdaExpressionSyntax lambda in lambdas)
 			{
-				int currentLine = lambda.GetLocation().GetLineSpan().EndLinePosition.Line;
+				int currentLine = lambda.GetLocation().GetLineSpan().StartLinePosition.Line;
+				// Do not report ourLambda itself.
 				if (currentLine == theLine && !ReferenceEquals(lambda, ourLambda))
 				{
 					result.Add(lambda);
@@ -84,8 +84,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static bool IsLeftMost(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
+			// ourLambda is the left most if all the lambdas are further to the right, whihc means a higher Character number.
 			int column = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Character;
-			return !lambdas.Any(l => l.GetLocation().GetLineSpan().StartLinePosition.Character < column);
+			return lambdas.All(l => l.GetLocation().GetLineSpan().StartLinePosition.Character > column);
 		}
 	}
 }
