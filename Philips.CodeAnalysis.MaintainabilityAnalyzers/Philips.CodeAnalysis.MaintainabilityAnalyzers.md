@@ -68,3 +68,4 @@
 | PH2115  | Every Lambda expression on separate line     | Avoid putting multiple lambda statements on a single line for readability. |
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
+| PH2118  | Don't use magic numbers                      | Don't use magic number, define them as constant instead. |
