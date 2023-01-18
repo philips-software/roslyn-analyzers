@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -8,12 +9,21 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidEmptyStatementBlockAnalyzerTest : DiagnosticVerifier
+	public class AvoidEmptyStatementBlockAnalyzerTest : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
-
 			return new AvoidEmptyStatementBlocksAnalyzer();
+		}
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new AvoidEmptyStatementBlocksCodeFixProvider();
+		}
+
+		[TestMethod]
+		public void FixAllProviderTest()
+		{
+			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCSharpCodeFixProvider().GetFixAllProvider());
 		}
 
 		[TestMethod]
@@ -42,12 +52,23 @@ class Foo
 {
 	private void Test()
 	{
-		;
+		Console.WriteLine(""hi""); ; // stuff
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+			const string fixedCode = @"
+using System;
+class Foo
+{
+	private void Test()
+	{
+		Console.WriteLine(""hi"");  // stuff
+	}
+}
+";
 
+			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+			VerifyCSharpFix(template, fixedCode);
 		}
 
 		[TestMethod]
