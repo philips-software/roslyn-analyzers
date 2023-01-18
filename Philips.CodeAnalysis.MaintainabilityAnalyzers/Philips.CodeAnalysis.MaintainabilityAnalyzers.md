@@ -65,5 +65,6 @@
 | PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
+| PH2115  | Every Lambda expression on separate line     | Avoid putting multiple lambda statements on a single line for readability. |
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
