@@ -1,8 +1,9 @@
 # Introduction 
-Roslyn Diagnostic Analyzers are customized compiler errors providing real-time feedback to C# developers.  Each Analyzer optionally includes an automatic Code Fixer.  Microsoft (and other organizations) offer many analyzers, but the market is nascent.
+Roslyn Diagnostic Analyzers are customized compiler errors providing real-time feedback to C# developers. Many Analyzers include an automatic Code Fixer. While Microsoft (and other organizations) offer many analyzers, the market is nascent. Moreover, many tools offer a rich set of rules, but lack the shift-left integration that Roslyn achieves.
 
 We have a policy whereby Code Reviewers ask themselves if a review comment can be automated.  If so, and if a Diagnostic Analyzer is the right tool for the scenario in question, and if an Analyzer does not readily exist in the market already, an issue is created to track the need. That is, all analyzers herein are based on real-world code review feedback. This project is the result. It was open-sourced in 2020.
 
+## Rules Documentation
 Consult the following for details on the available rules:
 
 * [Philips.CodeAnalysis.DuplicateCodeAnalyzer](./Philips.CodeAnalysis.DuplicateCodeAnalyzer/Philips.CodeAnalysis.DuplicateCodeAnalyzer.md)
@@ -31,4 +32,4 @@ These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with 
 If you are still working with Visual Studio 2017, use the 1.0.x versions of the analyzers.
 
 ## CI/CD
-See (this page)[cicd.md] for details on the CI/CD pipeline.
+[Learn more](./cicd.md) about the CI/CD pipeline.
