@@ -17,13 +17,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead.";
 		private const string Category = Categories.Maintainability;
 
+		private const string ArrayListTypeName = "System.Collections.ArrayList";
+
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		private static readonly string ArrayListTypeName = "System.Collections.ArrayList";
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var typeSymbol = context.SemanticModel.GetSymbolInfo(variable.Type).Symbol as INamedTypeSymbol;
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
-				var variableName = variable.Variables.First().Identifier.Text;
+				var variableName = variable.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
 				context.ReportDiagnostic(Diagnostic.Create(Rule, typeName.GetLocation(), variableName));
 			}
 		}

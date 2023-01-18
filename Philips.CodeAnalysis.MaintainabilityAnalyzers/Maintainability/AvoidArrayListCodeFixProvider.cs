@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidArrayListCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Replace ArrayList with List<T>";
+		private readonly SyntaxAnnotation annotation = new("ReplaceArrayList");
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList));
 
@@ -47,14 +48,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync();
 
-			var variable = token.Parent?.Parent as VariableDeclarationSyntax;
-			var type = variable?.Type;
-
-			if (root != null && type != null)
+			if (token.Parent?.Parent is VariableDeclarationSyntax variable)
 			{
-				var list = SyntaxFactory.ParseTypeName("System.Collections.Generic.List<int>");
-				
-				root = root.ReplaceNode(type, list.WithTriviaFrom(type).WithAdditionalAnnotations(Formatter.Annotation));
+				var type = variable?.Type;
+				root = ReplaceTypeWithList(root, type);
+				var replacedVariable = root.GetAnnotatedNodes(annotation).FirstOrDefault()?.Ancestors()
+					.OfType<VariableDeclarationSyntax>().FirstOrDefault();
+				if (
+					replacedVariable != null &&
+					replacedVariable.Variables[0]?.Initializer?.Value is ObjectCreationExpressionSyntax creation)
+				{
+					root = ReplaceTypeWithList(root, creation.Type);
+				}
 
 				return document.WithSyntaxRoot(root);
 			}
@@ -62,9 +67,61 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return document;
 		}
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		private SyntaxNode ReplaceTypeWithList(SyntaxNode root, TypeSyntax existingType)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			if (root != null && existingType != null)
+			{
+				var parameterType = SyntaxFactory.ParseTypeName("int")
+					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
+				var list = CreateGenericTypeSyntax("List", parameterType);
+
+				root = root.ReplaceNode(existingType,
+					list.WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation));
+			}
+
+			return root;
+		}
+
+		public override FixAllProvider GetFixAllProvider()
+		{
+			return null;
+		}
+
+		/// <summary>
+		/// Used to generate a type with generic arguments. Taken over from: https://gist.github.com/frankbryce/a4ee2bf799ab3878ae91
+		/// </summary>
+		/// <param name="identifier">Name of the Generic Type</param>
+		/// <param name="arguments">
+		/// Types of the Generic Arguments, which themselves may be generic types
+		/// </param>
+		/// <returns>An instance of TypeSyntax from the Roslyn Model</returns>
+		private static TypeSyntax CreateGenericTypeSyntax(string identifier, params TypeSyntax[] arguments)
+		{
+			return
+				SyntaxFactory.GenericName(
+					SyntaxFactory.Identifier(identifier),
+					SyntaxFactory.TypeArgumentList(
+						SyntaxFactory.SeparatedList(
+							arguments.Select(
+								x =>
+								{
+									if (x is GenericNameSyntax generic)
+									{
+										return
+											CreateGenericTypeSyntax(
+												generic.Identifier.ToString(),
+												generic.TypeArgumentList.Arguments.ToArray()
+											);
+									}
+									else
+									{
+										return x;
+									}
+								}
+							)
+						)
+					)
+				);
 		}
 	}
 }

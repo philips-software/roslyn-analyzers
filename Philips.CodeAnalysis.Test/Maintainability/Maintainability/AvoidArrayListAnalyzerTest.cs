@@ -44,7 +44,7 @@ namespace AvoidArrayListTests {
 using System.Collections;
 namespace AvoidArrayListTests {
     public class Number {
-		private System.Collections.Generic.List<int> nn;
+		private List<int> nn;
     }
 }";
 
@@ -60,7 +60,7 @@ using System.Collections;
 namespace AvoidArrayListTests {
     public class Number {
         public Number() {
-            ArrayList nn;
+            ArrayList nn = new ArrayList();
         }
     }
 }";
@@ -69,7 +69,7 @@ using System.Collections;
 namespace AvoidArrayListTests {
     public class Number {
         public Number() {
-            System.Collections.Generic.List<int> nn;
+            List<int> nn = new List<int>();
         }
     }
 }";
