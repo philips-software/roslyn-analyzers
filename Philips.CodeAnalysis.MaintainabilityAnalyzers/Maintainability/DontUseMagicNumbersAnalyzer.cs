@@ -63,7 +63,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsAllowedNumber(string text)
 		{
-			long parsed = long.MaxValue;
+			// Initialize with first number that is NOT allowed.
+			long parsed = 3L;
 			string trimmed = text.TrimEnd('f', 'd');
 			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
 			{
@@ -79,7 +80,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			return 
-				parsed is 0 or 90 or 180 or 270 or 360 ||
+				parsed is -1 or 0 or 90 or 180 or 270 or 360 ||
 				IsPowerOf(parsed, 2) ||
 				IsPowerOf(parsed, 10);
 		}
@@ -97,8 +98,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsStaticOrConst(FieldDeclarationSyntax field)
 		{
-			bool isStatic = field.Modifiers.IndexOf(SyntaxKind.StaticKeyword) >= 0;
-			bool isConst = field.Modifiers.IndexOf(SyntaxKind.ConstKeyword) >= 0;
+			bool isStatic = field.Modifiers.Any(SyntaxKind.StaticKeyword);
+			bool isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
 			return isStatic || isConst;
 		}
 	}
