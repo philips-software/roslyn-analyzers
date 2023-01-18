@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (!IsMagicNumber(literal.Token.Text))
+			if (IsAllowedNumber(literal.Token.Text))
 			{
 				return;
 			}
@@ -61,26 +61,38 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private static bool IsMagicNumber(string text)
+		private static bool IsAllowedNumber(string text)
 		{
-			bool result = true;
+			long parsed = long.MaxValue;
 			string trimmed = text.TrimEnd('f', 'd');
-			if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integer))
+			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
 			{
-				if (integer is 0 or 1)
+				parsed = integer;
+			}
+			else if(double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+			{
+				double rounded = (long)value;
+				if (Math.Abs(rounded - value) < double.Epsilon)
 				{
-					result = false;
+					parsed = (long)value;
 				}
 			}
-			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+
+			return 
+				parsed is 0 or 90 or 180 or 270 or 360 ||
+				IsPowerOf(parsed, 2) ||
+				IsPowerOf(parsed, 10);
+		}
+
+		private static bool IsPowerOf(long nut, int bas)
+		{
+			long current = 1L;
+			while (nut > current)
 			{
-				if (value is 0d or 1d)
-				{
-					result = false;
-				}
+				current *= bas;
 			}
-			Console.WriteLine($"Text '{text}' is magic {result}");
-			return result;
+
+			return nut == current;
 		}
 
 		private static bool IsStaticOrConst(FieldDeclarationSyntax field)

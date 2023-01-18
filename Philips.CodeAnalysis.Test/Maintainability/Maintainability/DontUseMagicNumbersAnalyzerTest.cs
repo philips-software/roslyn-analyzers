@@ -70,6 +70,27 @@ namespace DontUseMagicNumbersTests {
     }
 }";
 
+		private const string CorrectPowerOf10 = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private int Magic = 100;
+    }
+}";
+
+		private const string CorrectPowerOf2 = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private int Magic = 16;
+    }
+}";
+
+		private const string CorrectAngle = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private int Magic = 90;
+    }
+}";
+
 		private const string WrongInstanceField = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
@@ -114,7 +135,10 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectZeroFloat, DisplayName = nameof(CorrectZeroFloat)),
 		 DataRow(CorrectOneFloat, DisplayName = nameof(CorrectOneFloat)),
 		 DataRow(CorrectField, DisplayName = nameof(CorrectField)),
-		 DataRow(CorrectConst, DisplayName = nameof(CorrectConst))]
+		 DataRow(CorrectConst, DisplayName = nameof(CorrectConst)),
+		 DataRow(CorrectPowerOf10, DisplayName = nameof(CorrectPowerOf10)),
+		 DataRow(CorrectPowerOf2, DisplayName = nameof(CorrectPowerOf2)),
+		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
