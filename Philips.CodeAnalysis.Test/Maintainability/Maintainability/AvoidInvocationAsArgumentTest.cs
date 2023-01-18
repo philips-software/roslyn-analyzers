@@ -117,6 +117,37 @@ class Foo
 		}
 
 		[TestMethod]
+		public void AvoidInvocationAsMemberAccessArgumentFixTest()
+		{
+			string errorContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public void Moo(string x) { }
+  public void MyTest()
+  {
+     Moo(this.Do());
+  }
+}
+";
+			string fixedContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public void Moo(string x) { }
+  public void MyTest()
+  {
+     var resultOfDo = this.Do();
+     Moo(resultOfDo);
+  }
+}
+";
+
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[TestMethod]
 		public void AvoidInvocationAsArgumentLocalAssignmentTest()
 		{
 			string errorContent = @"
