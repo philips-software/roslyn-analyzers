@@ -93,6 +93,7 @@
       * Introduce PH2112: Avoid overriding with new keyword.
       * Introduce PH2113: Merge If Statements
       * Introduce PH2114: Avoid empty statement.
+      * Introduce PH2115: Every Lambda expression on separate line.
       * Introduce PH2116: Avoid ArrayList, use List&lt;T&gt; instead.
       * Introduce PH2117: Avoid unnecessary Where
     </PackageReleaseNotes>

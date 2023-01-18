@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					var result = semanticModel.LookupStaticMembers(position, namedType, currentMethod.Name);
 
-					count += result.OfType<IMethodSymbol>().Where(x => x.IsExtensionMethod && x.Parameters.Length == currentMethod.Parameters.Length).Count();
+					count += result.OfType<IMethodSymbol>().Count(x => x.IsExtensionMethod && x.Parameters.Length == currentMethod.Parameters.Length);
 				}
 				else if (symbol is INamespaceSymbol namespaceSymbol)
 				{
