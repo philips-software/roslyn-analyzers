@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -11,21 +12,30 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	/// Class for testing AvoidStaticMethodAnalyzer
 	/// </summary>
 	[TestClass]
-	public class AvoidStaticMethodAnalyzerTest : DiagnosticVerifier
+	public class AvoidStaticMethodAnalyzerTest : CodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
 		{
 			return new AvoidStaticMethodAnalyzer();
 		}
 
+		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		{
+			return new AvoidStaticMethodCodeFixProvider();
+		}
+
 		protected string CreateFunction(string methodStaticModifier, string classStaticModifier = "", string externKeyword = "", string methodName = "GoodTimes", string returnType = "void", string localMethodModifier = "", string foreignMethodModifier = "", bool factoryMethod = false)
 		{
+			if (!string.IsNullOrWhiteSpace(methodStaticModifier))
+			{
+				methodStaticModifier += @" ";
+			}
+
+			if (!string.IsNullOrWhiteSpace(externKeyword))
+			{
+				externKeyword += @" ";
+			}
+
 			string localMethod = $@"public {localMethodModifier} string BaBaBummmm(string services)
 					{{
 						return services;
@@ -47,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				{{
 					{localMethod}
 
-					public {methodStaticModifier} {externKeyword} {returnType} {methodName}()
+					public {methodStaticModifier}{externKeyword}{returnType} {methodName}()
 					{{
 						{objectDeclaration}
 						{useLocalMethod}
@@ -61,10 +71,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				}}
 			}}";
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
 		public void AllowExternalCode()
@@ -128,7 +134,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string template = CreateFunction("static");
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidStaticMethods));
+
+			string fixedCode = CreateFunction(@"");
+			VerifyCSharpFix(template, fixedCode);
 		}
-		#endregion
 	}
 }
