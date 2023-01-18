@@ -66,8 +66,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static IEnumerable<LambdaExpressionSyntax> FindOtherLambdasOnSameLine(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
-			// Using HashSet to filter out duplicates.
-			// And relying on the fact that the order in the SyntaxTree is the same as in the .cs file.
 			List<LambdaExpressionSyntax> result = new();
 			int theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 			foreach(LambdaExpressionSyntax lambda in lambdas)
