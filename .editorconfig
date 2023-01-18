@@ -29,6 +29,8 @@ dotnet_diagnostic.CA1305.severity = none
 dotnet_diagnostic.CA1310.severity = none
 dotnet_diagnostic.CA1824.severity = none
 
+# string.Contains(ReadOnlySpan, ReadOnlySpan) is not available in .NET Standard 2.0
+dotnet_diagnostic.CA1845.severity = none
 # string.Contains(char) is not available in .NET Standard 2.0
 dotnet_diagnostic.CA1847.severity = none
 

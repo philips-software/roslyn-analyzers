@@ -68,7 +68,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			string newName = @"renameMe";
 			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
 			{
-				newName = @"resultOf" + invocationExpressionSyntax.Expression.GetText();
+				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+				int indexOfDot = newNameSuffix.LastIndexOf('.');
+				if (indexOfDot != -1)
+				{
+					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+				}
+				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() + newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+				newName = @"resultOf" + newNameSuffix;
 			}
 
 			// Build "var renameMe = [blah]"
