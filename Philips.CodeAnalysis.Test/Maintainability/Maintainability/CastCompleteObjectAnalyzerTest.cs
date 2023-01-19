@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 namespace CastCompleteTests {
     public class Number {
         private int n;
-        publis static explicit operator int(Number num) { return num.n; }
+        public static explicit operator int(Number num) { return num.n; }
     }
 }";
 
@@ -26,7 +26,7 @@ namespace CastCompleteTests {
 namespace CastCompleteTests {
     public class Number {
         private int n;
-        publis static explicit operator double(Number num) { return (double)num.n; }
+        public static explicit operator double(Number num) { return (double)num.n; }
     }
 }";
 
@@ -35,7 +35,7 @@ namespace CastCompleteTests {
     public class Number {
         private int n;
         private string str;
-        publis static explicit operator int(Number num) { return num.n; }
+        public static explicit operator int(Number num) { return num.n; }
     }
 }";
 		
