@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		private const string Title = @"Namespace matches File Path";
 		private const string MessageFormat = @"Namespace, File Path, Assembly, and Project must all match";
-		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path, Assembly, Project, and Namespace must all match";
+		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path, Assembly, Project, and Namespace must all match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
 		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.NamespaceMatchAssembly), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
