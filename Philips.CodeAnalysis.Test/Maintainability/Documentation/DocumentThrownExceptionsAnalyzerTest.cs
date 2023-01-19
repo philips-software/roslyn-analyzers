@@ -67,7 +67,25 @@ public class Foo
         throw CreateException();
     }
 
-    private ArgumentException CreateEzxception() { return new ArgumentException(""FromFactory"");}
+    private ArgumentException CreateException() { return new ArgumentException(""FromFactory"");}
+}
+";
+
+        private const string CorrectRethrow = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA()
+    {
+        try {
+            DangerousMethod();
+        } catch (ArgumentException ex) {
+            throw ex;
+        }
+    }
+
+    private ArgumentException DangerousMethod() { return new ArgumentException(""FromFactory"");}
 }
 ";
 
@@ -132,11 +150,29 @@ public class Foo
 }
 ";
 
+        private const string WrongRethrow = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    public void MethodA()
+    {
+        try {
+            DangerousMethod();
+        } catch (Exception ex) {
+            throw ex;
+        }
+    }
+
+    private ArgumentException DangerousMethod() { return new ArgumentException(""FromFactory"");}
+}
+";
+
         [DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
 		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
-		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
+		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
+		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
@@ -147,7 +183,8 @@ public class Foo
 		 DataRow(WrongNoCref, DisplayName = nameof(WrongNoCref)),
 		 DataRow(WrongEmptyCref, DisplayName = nameof(WrongEmptyCref)),
          DataRow(WrongType, DisplayName = nameof(WrongType)),
-		 DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty))]
+		 DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty)),
+		 DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));

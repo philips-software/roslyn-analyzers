@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -35,12 +36,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var throwStatement = (ThrowStatementSyntax)context.Node;
-			if (throwStatement.Expression is not ObjectCreationExpressionSyntax exceptionType)
+			var thrownExceptionName = ((throwStatement.Expression as ObjectCreationExpressionSyntax)?.Type as IdentifierNameSyntax)?.Identifier.Text;
+			if (thrownExceptionName == null)
 			{
-				return;
+				// Rethrowing an existing Exception instance.
+				if(throwStatement.Expression is IdentifierNameSyntax localVar)
+				{
+					thrownExceptionName = context.SemanticModel.GetTypeInfo(localVar).Type?.Name;
+				}
 			}
 
-			var thrownExceptionName = (exceptionType.Type as IdentifierNameSyntax)?.Identifier.Text;
 			if (string.IsNullOrEmpty(thrownExceptionName))
 			{
 				return;
@@ -64,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Select(GetCrefAttributeValue);
 			if (!mentionedExceptions.Contains(thrownExceptionName))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, exceptionType.GetLocation(), thrownExceptionName);
+				Diagnostic diagnostic = Diagnostic.Create(Rule, throwStatement.GetLocation(), thrownExceptionName);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
