@@ -85,7 +85,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				if (RegionChecks.TryGetValue(pair.Key, out var functionToCall))
 				{
-					functionToCall(GetMembersOfRegion(members, pair.Value), pair.Value, context);
+					var membersOfRegion = GetMembersOfRegion(members, pair.Value);
+					functionToCall(membersOfRegion, pair.Value, context);
 				}
 			}
 
@@ -137,11 +138,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					{
 						if (regionLocations.Remove(regionName))
 						{
-							CreateDiagnostic(region.DirectiveNameToken.GetLocation(), context, regionName, EnforceNonDupliateRegion);
+							var memberLocation = region.DirectiveNameToken.GetLocation();
+							CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
 						}
 						else
 						{
-							int lineNumber = GetMemberLineNumber(region.GetLocation());
+							var location = region.GetLocation();
+							int lineNumber = GetMemberLineNumber(location);
 
 							regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
 							regionStartName = regionName;
@@ -152,7 +155,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				{
 					if (regionLocations.TryGetValue(regionStartName, out LocationRangeModel value))
 					{
-						value.EndLine = GetMemberLineNumber(region.GetLocation());
+						var location = region.GetLocation();
+						value.EndLine = GetMemberLineNumber(location);
 						regionStartName = "";
 					}
 				}
@@ -187,7 +191,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <returns>true if member is inside the given region, else false</returns>
 		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
 		{
-			int memberLocation = GetMemberLineNumber(member.GetLocation());
+			var location = member.GetLocation();
+			int memberLocation = GetMemberLineNumber(location);
 			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
 		}
 
@@ -282,13 +287,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (shouldCheck)
 			{
+				var memberLocation = member.GetLocation();
 				if (!HasAccessModifier(modifiers))
 				{
-					CreateDiagnostic(member.GetLocation(), context, PublicInterfaceRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
 				}
 				else if (!MemberIsPublic(modifiers))
 				{
-					CreateDiagnostic(member.GetLocation(), context, PublicInterfaceRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
 				}
 				return;
 			}
@@ -299,7 +305,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			else
 			{
-				CreateDiagnostic(member.GetLocation(), context, PublicInterfaceRegion, NonCheckedMember);
+				var memberLocation = member.GetLocation();
+				CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, NonCheckedMember);
 			}
 		}
 
@@ -381,6 +388,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 			}
 
+			var memberLocation = member.GetLocation();
 			if (shouldProcess)
 			{
 				if (!HasAccessModifier(modifiers))
@@ -389,7 +397,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 				else if (MemberIsPublic(modifiers))
 				{
-					CreateDiagnostic(member.GetLocation(), context, NonPublicPropertiesAndMethodsRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, NonPublicPropertiesAndMethodsRegion, EnforceMemberLocation);
 				}
 				return;
 			}
@@ -404,10 +412,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				case SyntaxKind.FieldDeclaration:
 				case SyntaxKind.EnumDeclaration:
 				case SyntaxKind.DelegateDeclaration:
-					CreateDiagnostic(member.GetLocation(), context, NonPublicPropertiesAndMethodsRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, NonPublicPropertiesAndMethodsRegion, EnforceMemberLocation);
 					break;
 				default:
-					CreateDiagnostic(member.GetLocation(), context, NonPublicPropertiesAndMethodsRegion, NonCheckedMember);
+					CreateDiagnostic(memberLocation, context, NonPublicPropertiesAndMethodsRegion, NonCheckedMember);
 					break;
 			}
 		}
@@ -455,6 +463,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 			}
 
+			var memberLocation = member.GetLocation();
 			if (shouldProcess)
 			{
 				if (!HasAccessModifier(modifiers))
@@ -463,7 +472,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 				else if (MemberIsPublic(modifiers))
 				{
-					CreateDiagnostic(member.GetLocation(), context, NonPublicDataMembersRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, NonPublicDataMembersRegion, EnforceMemberLocation);
 				}
 				return;
 			}
@@ -484,10 +493,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				case SyntaxKind.ClassDeclaration:
 				case SyntaxKind.IndexerDeclaration:
 				case SyntaxKind.DestructorDeclaration:
-					CreateDiagnostic(member.GetLocation(), context, NonPublicDataMembersRegion, EnforceMemberLocation);
+					CreateDiagnostic(memberLocation, context, NonPublicDataMembersRegion, EnforceMemberLocation);
 					break;
 				default:
-					CreateDiagnostic(member.GetLocation(), context, NonPublicDataMembersRegion, NonCheckedMember);
+					CreateDiagnostic(memberLocation, context, NonPublicDataMembersRegion, NonCheckedMember);
 					break;
 			}
 		}

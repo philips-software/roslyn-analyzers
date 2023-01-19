@@ -47,13 +47,15 @@ class Foo
 		[TestMethod]
 		public void AvoidMsFakesTest()
 		{
-			VerifyDiagnostic(CreateFunction("using (ShimsContext.Create()) {}"));
+			var file = CreateFunction("using (ShimsContext.Create()) {}");
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void AvoidMsFakesNotRelevantTest()
 		{
-			VerifyNoDiagnostic(CreateFunction("using (new MemoryStream()) {}"));
+			var file = CreateFunction("using (new MemoryStream()) {}");
+			VerifyNoDiagnostic(file);
 		}
 
 

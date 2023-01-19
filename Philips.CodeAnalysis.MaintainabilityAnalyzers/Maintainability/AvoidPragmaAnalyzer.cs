@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description),
 		};
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rules.ToArray()); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { var rulesArray = Rules.ToArray(); return ImmutableArray.Create(rulesArray); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -47,7 +47,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			CSharpSyntaxNode violation = pragma;
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation());
+			var location = violation.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

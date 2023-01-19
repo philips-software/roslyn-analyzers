@@ -73,7 +73,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 				if (comparer.Equals(fileName, AllowedFileName))
 				{
-					return LoadAllowedMethods(additionalFile.GetText(), compilation);
+					var allowedMethods = additionalFile.GetText();
+					return LoadAllowedMethods(allowedMethods, compilation);
 				}
 			}
 			return new HashSet<ISymbol>();
@@ -240,7 +241,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
 				{
 					string shapeDetails = GetShapeDetails(token);
-					string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
+					var existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
+					string reference = ToPrettyReference(existingEvidenceLineSpan);
 
 					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
@@ -547,7 +549,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public virtual LocationEnvelope GetLocationEnvelope()
 		{
-			return new LocationEnvelope(_syntaxToken.GetLocation());
+			var location = _syntaxToken.GetLocation();
+			return new LocationEnvelope(location);
 		}
 
 		public virtual SyntaxTree GetSyntaxTree()
@@ -676,7 +679,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
 				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
 				TextSpan textSpan = TextSpan.FromBounds(start, end);
-				Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
+				var firstTokenSyntax = firstToken.GetSyntaxTree();
+				Location location = Location.Create(firstTokenSyntax, textSpan);
 
 				cache = new LocationEnvelope(location);
 

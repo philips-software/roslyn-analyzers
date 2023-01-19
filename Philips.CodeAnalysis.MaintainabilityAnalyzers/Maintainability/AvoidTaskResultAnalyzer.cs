@@ -56,7 +56,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
 					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, propertySyntax.Name.GetLocation());
+					var location = propertySyntax.Name.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

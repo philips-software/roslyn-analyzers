@@ -45,7 +45,9 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 ";
 
 			string givenText = string.Format(baseline, arg1, arg2);
-			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, GetWellKnownTypeName(arg1), GetWellKnownTypeName(arg2));
+			var arg1Type = GetWellKnownTypeName(arg1);
+			var arg2Type = GetWellKnownTypeName(arg2);
+			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{

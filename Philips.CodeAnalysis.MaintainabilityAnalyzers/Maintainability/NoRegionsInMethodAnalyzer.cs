@@ -40,13 +40,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var descendants = node.DescendantNodes(node.Span, null, descendIntoTrivia: true);
 			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
 			{
-				var diagnostic = Diagnostic.Create(Rule, regionDirective.GetLocation());
+				var location = regionDirective.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 
 			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
 			{
-				var diagnostic = Diagnostic.Create(Rule, endRegionDirective.GetLocation());
+				var location = endRegionDirective.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

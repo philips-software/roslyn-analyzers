@@ -80,7 +80,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (!context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, mds.GetLocation(), ti1.Type.ToString(), ti2.Type.ToString());
+				var location = mds.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, ti1.Type.ToString(), ti2.Type.ToString());
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -105,7 +105,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			public void ReportParsingError(CompilationAnalysisContext context)
 			{
-				var loc = Location.Create(context.Compilation.SyntaxTrees.First(), TextSpan.FromBounds(0, 0));
+				var syntaxTree = context.Compilation.SyntaxTrees.First();
+				var loc = Location.Create(syntaxTree, TextSpan.FromBounds(0, 0));
 				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames));
 			}
 

@@ -66,11 +66,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ExpressionSyntax thisObject = invocation.ArgumentList.Arguments[0].Expression;
 			ArgumentListSyntax newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(invocation.ArgumentList.Arguments.Skip(1).ToArray()));
 
-			MemberAccessExpressionSyntax newExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisObject, name.WithoutLeadingTrivia());
+			name = name.WithoutLeadingTrivia();
+			MemberAccessExpressionSyntax newExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisObject, name);
 
 			InvocationExpressionSyntax newInvocation = SyntaxFactory.InvocationExpression(newExpression, newArguments);
 
-			root = root.ReplaceNode(invocation, newInvocation.WithLeadingTrivia(invocation.GetLeadingTrivia()));
+			var trivia = invocation.GetLeadingTrivia();
+			var newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
+			root = root.ReplaceNode(invocation, newInvocationWithLeadingTrivia);
 
 			return document.WithSyntaxRoot(root);
 		}

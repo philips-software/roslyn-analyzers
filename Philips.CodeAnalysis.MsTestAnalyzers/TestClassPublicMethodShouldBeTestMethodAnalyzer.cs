@@ -83,7 +83,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (!isAllowedToBePublic)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
+				var location = methodDeclaration.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

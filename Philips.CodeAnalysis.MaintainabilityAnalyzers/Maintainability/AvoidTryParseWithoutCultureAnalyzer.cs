@@ -66,7 +66,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (member is IMethodSymbol method && HasCultureParameter(method))
 				{
 					// There is an overload that can accept culture as a parameter. Display an error.
-					Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
+					var location = invocationExpressionSyntax.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}

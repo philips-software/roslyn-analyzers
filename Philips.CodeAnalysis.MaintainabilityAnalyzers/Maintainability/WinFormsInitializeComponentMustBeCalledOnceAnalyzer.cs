@@ -34,7 +34,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (constructors.Length == 0)
 			{
-				Diagnostic diagnostic0 = Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier.ToString(), 0);
+				var location = classDeclaration.Identifier.GetLocation();
+				Diagnostic diagnostic0 = Diagnostic.Create(Rule, location, classDeclaration.Identifier.ToString(), 0);
 				context.ReportDiagnostic(diagnostic0);
 				return;
 			}

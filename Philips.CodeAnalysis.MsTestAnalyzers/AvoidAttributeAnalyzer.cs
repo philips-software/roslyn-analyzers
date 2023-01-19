@@ -119,7 +119,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			var builder = ImmutableArray.CreateBuilder<DiagnosticDescriptor>();
 
-			builder.AddRange(attributes.SelectMany(x => x.Value).Select(x => x.Rule));
+			var items = attributes.SelectMany(x => x.Value).Select(x => x.Rule);
+			builder.AddRange(items);
 
 			return builder.ToImmutable();
 		}

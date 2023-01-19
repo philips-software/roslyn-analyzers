@@ -53,8 +53,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> ReplaceWithAwait(Document document, MemberAccessExpressionSyntax resultExpression, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
+			var trivia = resultExpression.GetLeadingTrivia();
 			var newExpression = SyntaxFactory.AwaitExpression(resultExpression.Expression);
-			rootNode = rootNode.ReplaceNode(resultExpression, newExpression.WithLeadingTrivia(newExpression.GetLeadingTrivia())).WithAdditionalAnnotations(Formatter.Annotation);
+			var newExpressionWithLeadingTrivia = newExpression.WithLeadingTrivia(trivia);
+			rootNode = rootNode.ReplaceNode(resultExpression, newExpressionWithLeadingTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 			return document.WithSyntaxRoot(rootNode);
 		}
 	}

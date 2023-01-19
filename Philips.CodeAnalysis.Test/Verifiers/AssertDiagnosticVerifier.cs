@@ -20,13 +20,14 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifyCSharpDiagnostic(test, expectedDiagnosticIds.Select(expectedDiagnosticId =>
+			var expected = expectedDiagnosticIds.Select(expectedDiagnosticId =>
 				new DiagnosticResult()
 				{
 					Id = expectedDiagnosticId,
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
-				}).ToArray());
+				}).ToArray();
+			VerifyCSharpDiagnostic(test, expected);
 		}
 
 		protected void VerifyNoError(string methodBody)

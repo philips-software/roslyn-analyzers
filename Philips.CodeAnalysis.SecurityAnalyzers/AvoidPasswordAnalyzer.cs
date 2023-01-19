@@ -42,8 +42,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is PropertyDeclarationSyntax propertyDeclarationSyntax)
 			{
-				Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
-					propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+				var location = propertyDeclarationSyntax.GetLocation();
+				Diagnose(propertyDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
 
@@ -51,8 +51,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 			{
-				Diagnose(methodDeclarationSyntax.Identifier.ValueText,
-					methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+				var location = methodDeclarationSyntax.GetLocation();
+				Diagnose(methodDeclarationSyntax.Identifier.ValueText,location, context.ReportDiagnostic);
 			}
 		}
 
@@ -62,8 +62,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
 				{
-					Diagnose(variable.Identifier.ValueText,
-						fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+					var location = fieldDeclarationSyntax.GetLocation();
+					Diagnose(variable.Identifier.ValueText, location, context.ReportDiagnostic);
 				}
 			}
 		}
@@ -75,7 +75,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			var comments = root.DescendantTrivia().Where((t) => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia));
 			foreach (SyntaxTrivia comment in comments)
 			{
-				Diagnose(comment.ToString(), comment.GetLocation(), context.ReportDiagnostic);
+				var location = comment.GetLocation();
+				Diagnose(comment.ToString(), location, context.ReportDiagnostic);
 			}
 		}
 

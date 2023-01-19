@@ -39,7 +39,8 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		protected void VerifyCSharpDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
 		{
-			VerifyDiagnostics(new[] { source }, filenamePrefix, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+			var analyzer = GetCSharpDiagnosticAnalyzer();
+			VerifyDiagnostics(new[] { source }, filenamePrefix, LanguageNames.CSharp, analyzer, expected);
 		}
 
 		/// <summary>
@@ -61,7 +62,8 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
 		protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected)
 		{
-			VerifyDiagnostics(new[] { source }, null, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+			var analyzer = GetBasicDiagnosticAnalyzer();
+			VerifyDiagnostics(new[] { source }, null, LanguageNames.VisualBasic, analyzer, expected);
 		}
 
 		/// <summary>
@@ -72,7 +74,8 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
 		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
 		{
-			VerifyDiagnostics(sources, null, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+			var analyzer = GetCSharpDiagnosticAnalyzer();
+			VerifyDiagnostics(sources, null, LanguageNames.CSharp, analyzer, expected);
 		}
 
 		/// <summary>
@@ -83,7 +86,8 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
 		protected void VerifyBasicDiagnostic(string[] sources, params DiagnosticResult[] expected)
 		{
-			VerifyDiagnostics(sources, null, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+			var analyzer = GetBasicDiagnosticAnalyzer();
+			VerifyDiagnostics(sources, null, LanguageNames.VisualBasic, analyzer, expected);
 		}
 
 		/// <summary>
@@ -117,7 +121,8 @@ namespace Philips.CodeAnalysis.Test
 
 			if (expectedCount != actualCount)
 			{
-				string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
+				var diagnostics = actualResults.ToArray();
+				string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, diagnostics) : "    NONE.";
 
 				Assert.IsTrue(false,
 					string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" actual \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput));
@@ -139,7 +144,8 @@ namespace Philips.CodeAnalysis.Test
 				}
 				else
 				{
-					VerifyDiagnosticLocation(analyzer, actual, actual.Location, expected.Locations.First());
+					var first = expected.Locations.First();
+					VerifyDiagnosticLocation(analyzer, actual, actual.Location, first);
 					var additionalLocations = actual.AdditionalLocations.ToArray();
 
 					if (additionalLocations.Length != expected.Locations.Length - 1)
@@ -170,7 +176,8 @@ namespace Philips.CodeAnalysis.Test
 							expected.Severity, actual.Severity, FormatDiagnostics(analyzer, actual)));
 				}
 
-				if (expected.Message != null && !expected.Message.IsMatch(actual.GetMessage()))
+				var input = actual.GetMessage();
+				if (expected.Message != null && !expected.Message.IsMatch(input))
 				{
 					Assert.IsTrue(false,
 						string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",

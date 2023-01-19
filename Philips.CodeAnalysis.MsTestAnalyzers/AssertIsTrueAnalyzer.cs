@@ -25,6 +25,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected override Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue)
 		{
 			var kind = test.Kind();
+			var location = node.GetLocation();
 			switch (kind)
 			{
 				case SyntaxKind.LogicalNotExpression:
@@ -34,17 +35,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				case SyntaxKind.LogicalAndExpression:
 					if (isIsTrue)
 					{
-						return Diagnostic.Create(IsEqualRule, node.GetLocation());
+						return Diagnostic.Create(IsEqualRule, location);
 					}
 					return null;
 				case SyntaxKind.EqualsExpression:
 				case SyntaxKind.NotEqualsExpression:
-					return Diagnostic.Create(IsEqualRule, node.GetLocation());
+					return Diagnostic.Create(IsEqualRule, location);
 				case SyntaxKind.InvocationExpression:
 					//they are calling a function.  Don't let them calls .Equals or something like that.
 					if (CheckForEqualityFunction(context, (InvocationExpressionSyntax)test))
 					{
-						return Diagnostic.Create(IsEqualRule, node.GetLocation());
+						return Diagnostic.Create(IsEqualRule, location);
 					}
 					return null;
 				case SyntaxKind.IdentifierName:
