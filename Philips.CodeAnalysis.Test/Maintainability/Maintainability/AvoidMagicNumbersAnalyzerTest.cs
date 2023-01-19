@@ -91,7 +91,15 @@ namespace DontUseMagicNumbersTests {
     }
 }";
 
-		private const string WrongInstanceField = @"
+		private const string CorrectInEnum = @"
+namespace DontUseMagicNumbersTests {
+    public enum NumberEnmeration {
+        None = 0,
+        Magic = 3
+    }
+}";
+
+        private const string WrongInstanceField = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
         private int Magic = 5;
@@ -138,7 +146,8 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectConst, DisplayName = nameof(CorrectConst)),
 		 DataRow(CorrectPowerOf10, DisplayName = nameof(CorrectPowerOf10)),
 		 DataRow(CorrectPowerOf2, DisplayName = nameof(CorrectPowerOf2)),
-		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle))]
+		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle)),
+		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
