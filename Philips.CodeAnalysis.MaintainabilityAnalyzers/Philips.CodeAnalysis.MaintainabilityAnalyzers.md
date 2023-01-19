@@ -70,4 +70,3 @@
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
 | PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
 | PH2120  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method |
-| PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
