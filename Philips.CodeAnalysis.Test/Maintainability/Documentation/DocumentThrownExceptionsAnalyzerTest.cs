@@ -42,7 +42,21 @@ public class Foo
 }
 ";
 
-		private const string WrongNoDoc = @"
+		private const string CorrectWithMethod = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA()
+    {
+        throw CreateException();
+    }
+
+    private ArgumentException CreateEzxception() { return new ArgumentException(""FromFactory"");}
+}
+";
+
+        private const string WrongNoDoc = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -53,7 +67,31 @@ public class Foo
 }
 ";
 
-		private const string WrongType = @"
+		private const string WrongNoCref = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception>
+    public void MethodA()
+    {
+        throw new ArgumentException(""Error"");
+    }
+}
+";
+
+		private const string WrongEmptyCref = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref="""">
+    public void MethodA()
+    {
+        throw new ArgumentException(""Error"");
+    }
+}
+";
+
+        private const string WrongType = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -67,7 +105,8 @@ public class Foo
 
 		[DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
-		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow))]
+		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
+		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
@@ -75,7 +114,9 @@ public class Foo
 
 		[DataTestMethod]
 		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc)),
-		 DataRow(WrongType, DisplayName = nameof(WrongType))]
+		 DataRow(WrongNoCref, DisplayName = nameof(WrongNoCref)),
+		 DataRow(WrongEmptyCref, DisplayName = nameof(WrongEmptyCref)),
+         DataRow(WrongType, DisplayName = nameof(WrongType))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
