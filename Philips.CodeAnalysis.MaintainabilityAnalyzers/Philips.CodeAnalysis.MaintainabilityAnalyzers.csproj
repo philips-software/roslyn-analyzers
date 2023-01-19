@@ -97,6 +97,7 @@
       * Introduce PH2116: Avoid ArrayList, use List&lt;T&gt; instead.
       * Introduce PH2117: Avoid unnecessary Where.
       * Introduce PH2118: Avoid magic numbers.
+      * PH2006 now supports folders in namespace
       * Introduce PH2119: Cast complete object.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
