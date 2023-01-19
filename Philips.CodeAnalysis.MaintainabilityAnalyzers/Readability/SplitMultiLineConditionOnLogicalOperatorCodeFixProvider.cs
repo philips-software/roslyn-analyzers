@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.Formatting;
 
 using Philips.CodeAnalysis.Common;
@@ -22,6 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	public class SplitMultiLineConditionOnLogicalOperatorCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Put every linq statement on a separate line";
+		private static readonly SyntaxAnnotation annotation = new($"SplitCondition");
 
 		public override ImmutableArray<string> FixableDiagnosticIds =>
 			ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator));
@@ -54,12 +54,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private async Task<Document> ApplyCodeFix(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			var annotation = new SyntaxAnnotation("SplitCondition");
+			if (root == null)
+			{
+				return document;
+			}
 
 			// First remove the EOL from the violating token.
 			var oldTrivia = node.GetTrailingTrivia();
 			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
-			if (index >= 0 && root != null)
+			if (index >= 0)
 			{
 				SyntaxTriviaList newTrivia = oldTrivia.RemoveAt(index);
 				var newNode = node.WithTrailingTrivia(newTrivia)
@@ -70,9 +73,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			// Next add EOL to the || or && token immediately following.
 			node = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
 			var logicalToken = node.GetLastToken().GetNextToken();
-			var newLineTrivia = SyntaxFactory.CarriageReturnLineFeed;
-			
-			root = root.ReplaceToken(logicalToken, logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia).WithAdditionalAnnotations(Formatter.Annotation));
+			if (logicalToken.Text is "||" or "&&")
+			{
+				var newLineTrivia = SyntaxFactory.CarriageReturnLineFeed;
+
+				root = root.ReplaceToken(logicalToken,
+					logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
+						.WithAdditionalAnnotations(Formatter.Annotation));
+			}
 
 			return document.WithSyntaxRoot(root);
 		}

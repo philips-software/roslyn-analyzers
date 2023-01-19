@@ -113,12 +113,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					foundNode = parent;
 				}
 
+				// Prevent breaking out of the context.
 				if (currentKind is SyntaxKind.IfStatement
 				    or SyntaxKind.SimpleAssignmentExpression
 				    or SyntaxKind.ReturnStatement)
 				{
 					break;
 				}
+
 				parent = parent.Parent;
 			}
 			return foundNode;
