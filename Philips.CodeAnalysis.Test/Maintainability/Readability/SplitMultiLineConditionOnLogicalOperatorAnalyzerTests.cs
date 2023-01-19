@@ -134,9 +134,9 @@ namespace MultiLineConditionUnitTests
 				3 == 3 && 
                 5 == 6 && ( 
                     1 == 1 || 
-                    2 == 2) ||
-				8 == 4)
-			{
+                    2 == 2)
+            ) {
+                // Blah
             }
         }
     }
@@ -280,7 +280,7 @@ namespace MultiLineConditionUnitTests
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak)),
-			DataRow(WrongOpening, 10, 13, DisplayName = nameof(WrongOpening)),
+			DataRow(WrongOpening, null, 10, 13, DisplayName = nameof(WrongOpening)),
 			DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
 			DataRow(WrongReturnStatement, CorrectReturnStatement, 10, 20, DisplayName = nameof(WrongReturnStatement)),
 			DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
