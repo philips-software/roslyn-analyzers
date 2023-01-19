@@ -106,6 +106,12 @@ namespace Philips.CodeAnalysis.Common
 		ReduceCognitiveLoad = 2111,
 		AvoidOverridingWithNewKeyword = 2112,
 		MergeIfStatements = 2113,
-		SplitMultiLineConditionOnLogicalOperator = 2116,
+		AvoidEmptyStatement = 2114,
+		AvoidMultipleLambdasOnSingleLine = 2115,
+		AvoidArrayList = 2116,
+		AvoidUnnecessaryWhere = 2117,
+		AvoidMagicNumbers = 2118,
+		DocumentThrownExceptions = 2120,
+		SplitMultiLineConditionOnLogicalOperator = 2121,
 	}
 }

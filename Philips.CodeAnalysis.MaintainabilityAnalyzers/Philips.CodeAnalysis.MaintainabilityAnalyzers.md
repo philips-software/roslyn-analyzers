@@ -1,7 +1,7 @@
 | Rule ID | Title                                        | Description                                                  |
 | ------- | -------------------------------------------- | ------------------------------------------------------------ |
 | PH2001  | Avoid empty XML Summary comments             | Summary XML comments for classes, methods, etc. must be non-empty or non-existent. |
-| PH2006  | Match namespace, path, assembly, and project | The File Path, Assembly, Project, and Namespace must all match |
+| PH2006  | Match namespace, path, assembly, and project | The File Path, Assembly, Project, and Namespace must all match. To include folders in the namespace, add `dotnet_code_quality.PH2006.folder_in_namespace = true` to the .editorconfig.|
 | PH2020  | Avoid Thread.Sleep                           | This method is a code smell.                                 |
 | PH2021  | Avoid inline new                             | Do not inline the constructor call.  Instead, create a local variable or a field for the temporary instance. |
 | PH2026  | Avoid SuppressMessage attribute              | SuppressMessage results in violations of codified coding guidelines.|
@@ -50,7 +50,7 @@
 | PH2096  | Prefer async Task methods over async void methods | Wherever possible return Task rather then void for async methods. Exception are Event handlers |
 | PH2097  | Avoid Empty Statement Blocks                 | Avoid empty statement blocks |
 | PH2098  | Avoid Empty Catch Block                      | Avoid try-catch-swallow pattern |
-| PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces the .NET AssemblyFileVersion value to be equal to the AssemblyInformationalVersion. |
+| PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces that the .NET AssemblyFileVersion is equal to the AssemblyInformationalVersion. AssemblyFileVersion is not used at runtime, so it is helpful for it to match the Package Version. Set it with the &lt;FileVersion&gt; tag in the project file. If not set, it will inherit from &lt;AssemblyVersion&gt;, which if not set will inherit from &lt;Version&gt;|
 | PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
 | PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
@@ -64,4 +64,10 @@
 | PH2111  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
 | PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
-| PH2116  | Split multi-line condition on logical operator | In case that the condition of an "if" or "?" statement covers more then one line, its line endings should be right after the logical operators (&& and ||). This is aligns with the mental split when reading the code. |
+| PH2114  | Avoid empty statement                        | Avoid empty statements. |
+| PH2115  | Every Lambda expression on separate line     | Avoid putting multiple lambda statements on a single line for readability. |
+| PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
+| PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
+| PH2120  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method |
+| PH2121  | Split multi-line condition on logical operator | In case that the condition of an "if" or "?" statement covers more then one line, its line endings should be right after the logical operators (&& and ||). This is aligns with the mental split when reading the code. |

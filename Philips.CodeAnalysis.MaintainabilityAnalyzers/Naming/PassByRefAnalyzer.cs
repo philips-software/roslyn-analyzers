@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PassByRefAnalyzer : DiagnosticAnalyzer

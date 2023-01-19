@@ -93,7 +93,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var numOperators = conditionNode.DescendantTokens().Where(IsLogicalOperator).Count();
+			var numOperators = conditionNode.DescendantTokens().Count(IsLogicalOperator);
 			if (numOperators >= _maxOperators)
 			{
 				var newLineLocation = conditionNode.GetLocation();
