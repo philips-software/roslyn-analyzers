@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = @"Avoid inline magic numbers";
 		private const string MessageFormat = @"Avoid inline magic numbers";
-		private const string Description = @"Avoid inline magic number, define them as constant instead.";
+		private const string Description = @"Avoid inline magic number, define them as constant or include in an enumeration instead.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidMagicNumbers),
@@ -49,6 +49,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			if (IsAllowedNumber(literal.Token.Text))
+			{
+				return;
+			}
+
+			// Magic number are allowed in enumerations, as they give meaning to the number.
+			if (literal.Ancestors().OfType<EnumMemberDeclarationSyntax>().Any())
 			{
 				return;
 			}
