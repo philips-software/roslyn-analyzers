@@ -1,7 +1,7 @@
 | Rule ID | Title                                        | Description                                                  |
 | ------- | -------------------------------------------- | ------------------------------------------------------------ |
 | PH2001  | Avoid empty XML Summary comments             | Summary XML comments for classes, methods, etc. must be non-empty or non-existent. |
-| PH2006  | Match namespace, path, assembly, and project | The File Path, Assembly, Project, and Namespace must all match |
+| PH2006  | Match namespace, path, assembly, and project | The File Path, Assembly, Project, and Namespace must all match. To include folders in the namespace, add `dotnet_code_quality.PH2006.folder_in_namespace = true` to the .editorconfig.|
 | PH2020  | Avoid Thread.Sleep                           | This method is a code smell.                                 |
 | PH2021  | Avoid inline new                             | Do not inline the constructor call.  Instead, create a local variable or a field for the temporary instance. |
 | PH2026  | Avoid SuppressMessage attribute              | SuppressMessage results in violations of codified coding guidelines.|
