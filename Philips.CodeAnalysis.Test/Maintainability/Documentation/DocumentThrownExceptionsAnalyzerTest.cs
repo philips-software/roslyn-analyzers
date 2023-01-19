@@ -42,7 +42,22 @@ public class Foo
 }
 ";
 
-		private const string CorrectWithMethod = @"
+		private const string CorrectInProperty = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentOutOfRangeException"">
+    public int Index
+    {
+        get
+        {
+            throw new ArgumentOutOfRangeException(""Error"");
+        }
+    }
+}
+";
+
+        private const string CorrectWithMethod = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -103,9 +118,24 @@ public class Foo
 }
 ";
 
-		[DataTestMethod]
+        private const string WrongInProperty = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    public int Index
+    {
+        get
+        {
+            throw new ArgumentOutOfRangeException(""Error"");
+        }
+    }
+}
+";
+
+        [DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
+		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
@@ -116,7 +146,8 @@ public class Foo
 		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc)),
 		 DataRow(WrongNoCref, DisplayName = nameof(WrongNoCref)),
 		 DataRow(WrongEmptyCref, DisplayName = nameof(WrongEmptyCref)),
-         DataRow(WrongType, DisplayName = nameof(WrongType))]
+         DataRow(WrongType, DisplayName = nameof(WrongType)),
+		 DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));

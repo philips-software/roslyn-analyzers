@@ -46,10 +46,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var methodDeclaration = throwStatement.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+			SyntaxNode methodDeclaration = throwStatement.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
 			if (methodDeclaration == null)
 			{
-				return;
+				methodDeclaration = throwStatement.Ancestors().OfType<BasePropertyDeclarationSyntax>().FirstOrDefault();
+				if (methodDeclaration == null)
+				{
+					return;
+				}
 			}
 
 			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
