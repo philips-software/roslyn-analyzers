@@ -112,5 +112,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidUnnecessaryWhere = 2117,
 		AvoidMagicNumbers = 2118,
 		CastCompleteObject = 2119,
+		DocumentThrownExceptions = 2120,
 	}
 }
