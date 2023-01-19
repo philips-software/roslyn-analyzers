@@ -82,12 +82,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			context.ReportDiagnostic(diagnostic);
 		}
 
-		private bool IsNamespacePartOfPath(string namespact, string path)
+		private bool IsNamespacePartOfPath(string ns, string path)
 		{
 			string[] nodes = path.Split(Path.DirectorySeparatorChar);
 			for (int i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
 			{
-				if (string.Equals(nodes[i], namespact, StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(nodes[i], ns, StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
