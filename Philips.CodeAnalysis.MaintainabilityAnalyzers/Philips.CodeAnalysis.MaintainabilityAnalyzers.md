@@ -69,5 +69,6 @@
 | PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
 | PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
+| PH2119  | Cast complete object                         | A cast should include all information from the previous type. By casting to a type of one of the fields, the cast is losing information. Use an AsType() or ToType() method instead. |
 | PH2120  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method. |
 | PH2121  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |

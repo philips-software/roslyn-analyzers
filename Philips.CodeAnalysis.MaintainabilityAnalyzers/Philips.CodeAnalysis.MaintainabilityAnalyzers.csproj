@@ -98,6 +98,7 @@
       * Introduce PH2117: Avoid unnecessary Where.
       * Introduce PH2118: Avoid magic numbers.
       * PH2006 now supports folders in namespace
+      * Introduce PH2119: Cast complete object.
       * Introduce PH2120: Document thrown exceptions.
       * Introduce PH2121: Throw informational exceptions.
     </PackageReleaseNotes>
