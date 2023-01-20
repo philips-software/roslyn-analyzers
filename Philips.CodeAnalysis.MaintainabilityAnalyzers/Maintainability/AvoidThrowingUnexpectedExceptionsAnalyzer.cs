@@ -28,8 +28,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		[SuppressMessage("", "IDE0090", Justification = "When type is removed the literal type cannot be deduced")]
 		private static readonly Dictionary<string, string> specialMethods = new Dictionary<string, string>
 		{
-			{ ".ctor", "constructor" },
-			{ ".cctor", "static constructor" },
 			{ "Equals", "Equals method" },
 			{ "GetHashCode", "GetHashCode method" },
 			{ "Dispose", "Dispose method" },
@@ -63,6 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Check if the Parent is an unexpected location.
 			if (methodDeclaration is MethodDeclarationSyntax method)
 			{
+				// Check overriden methods of Object.
 				if (specialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 				{
 					var loc = method.Identifier.GetLocation();
@@ -72,18 +71,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" } operatorDeclaration)
 			{
+				// Check == and != operators.
 				var loc = operatorDeclaration.OperatorKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "equality comparison operator");
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" } conversionDeclaration)
 			{
+				// Check implicit cast operators.
 				var loc = conversionDeclaration.OperatorKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (methodDeclaration is ConstructorDeclarationSyntax constructorDeclaration)
 			{
+				// Check constructors of an Exception.
 				bool? withinExceptionClass =
 					(methodDeclaration.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
 				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
@@ -95,6 +97,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 			else if (methodDeclaration is DestructorDeclarationSyntax destructorDeclaration)
 			{
+				// Check finalizers.
 				var loc = destructorDeclaration.Identifier.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "finalizer");
 				context.ReportDiagnostic(diagnostic);
