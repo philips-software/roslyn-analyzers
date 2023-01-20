@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test
 	{
 		#region To be implemented by Test classes
 		/// <summary>
-		/// Get the CSharp analyzer being tested - to be implemented in non-abstract class
+		/// Get the Analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
 		protected abstract DiagnosticAnalyzer GetDiagnosticAnalyzer();
 
@@ -218,7 +218,7 @@ namespace Philips.CodeAnalysis.Test
 							Assert.IsTrue(location.IsInSource,
 								$"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostics[i]}\r\n");
 
-							string resultMethodName = diagnostics[i].Location.SourceTree.FilePath.EndsWith(".cs") ? "GetCSharpResultAt" : "GetBasicResultAt";
+							string resultMethodName = "GetCSharpResultAt";
 							var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
 							builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
