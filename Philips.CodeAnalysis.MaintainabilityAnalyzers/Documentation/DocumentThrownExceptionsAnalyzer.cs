@@ -43,6 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			string thrownExceptionName = null;
 			if(throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
+				// Search of string arguments in the constructor invocation.
 				thrownExceptionName = (exceptionCreation.Type as IdentifierNameSyntax)?.Identifier.Text;
 				if(!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
@@ -104,24 +105,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			const string stringTypeName = "String";
 			return attributeList.Arguments.Any(a =>
 			{
+				SyntaxNode node = null;
 				if (a.Expression is LiteralExpressionSyntax literal)
 				{
-					return context.SemanticModel.GetTypeInfo(literal).Type?.Name == stringTypeName;
+					node = literal;
 				}
 				else if (a.Expression is IdentifierNameSyntax identifierName)
 				{
-					return context.SemanticModel.GetTypeInfo(identifierName).Type?.Name == stringTypeName;
+					node = identifierName;
 				} 
-				else if (a.Expression is MemberAccessExpressionSyntax memberAccess)
-				{
-					return (context.SemanticModel.GetSymbolInfo(memberAccess).Symbol as IMethodSymbol)?.ReturnType.Name == stringTypeName;
-				}
 				else if(a.Expression is InvocationExpressionSyntax invocation)
 				{
-					return context.SemanticModel.GetTypeInfo(invocation).Type?.Name == stringTypeName;
+					node = invocation;
+				}
+				else
+				{
+					return false;
 				}
 
-				return false;
+				return context.SemanticModel.GetTypeInfo(node).Type?.Name == stringTypeName;
 			});
 		}
 	}
