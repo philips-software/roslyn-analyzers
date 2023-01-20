@@ -135,7 +135,7 @@ var foo = 4;
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasTimeoutCodeFixProvider();
 		}

@@ -68,7 +68,7 @@ namespace TestContextAnalyzerTest
 			return new TestContextAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestContextCodeFixProvider();
 		}

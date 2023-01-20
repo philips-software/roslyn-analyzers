@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidStaticMethodAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidStaticMethodCodeFixProvider();
 		}

@@ -116,7 +116,7 @@ namespace AvoidArrayListTests {
 			return new AvoidArrayListAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidArrayListCodeFixProvider();
 		}

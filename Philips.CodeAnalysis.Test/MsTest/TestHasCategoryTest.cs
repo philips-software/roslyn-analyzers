@@ -173,7 +173,7 @@ class Foo
 			return new TestHasCategoryAttributeAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasCategoryCodeFixProvider();
 		}

@@ -62,7 +62,7 @@ class Foo
 			return new AvoidAttributeAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidOwnerAttributeCodeFixProvider();
 		}

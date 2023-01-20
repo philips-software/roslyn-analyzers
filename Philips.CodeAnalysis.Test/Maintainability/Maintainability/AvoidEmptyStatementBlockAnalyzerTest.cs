@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			return new AvoidEmptyStatementBlocksAnalyzer();
 		}
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidEmptyStatementBlocksCodeFixProvider();
 		}
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		public void FixAllProviderTest()
 		{
-			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCSharpCodeFixProvider().GetFixAllProvider());
+			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCodeFixProvider().GetFixAllProvider());
 		}
 
 		[TestMethod]

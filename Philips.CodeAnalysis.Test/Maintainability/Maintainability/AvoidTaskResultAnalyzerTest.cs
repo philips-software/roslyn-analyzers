@@ -106,7 +106,7 @@ class FooClass
 			VerifyCSharpFix(before, after);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidTaskResultCodeFixProvider();
 		}

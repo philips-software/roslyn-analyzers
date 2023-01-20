@@ -64,7 +64,7 @@ namespace TestMethodNameAnalyzerTest
 			return new TestMethodNameAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestMethodNameCodeFixProvider();
 		}

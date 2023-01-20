@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			return new PreventUnnecessaryRangeChecksAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new PreventUnnecessaryRangeChecksCodeFixProvider();
 		}

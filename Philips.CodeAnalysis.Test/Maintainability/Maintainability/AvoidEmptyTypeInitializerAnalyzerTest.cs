@@ -101,7 +101,7 @@ static Foo() {{ }}", summaryComment));
 			VerifyCSharpFix(classContent, expected);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidEmptyTypeInitializerCodeFixProvider();
 		}

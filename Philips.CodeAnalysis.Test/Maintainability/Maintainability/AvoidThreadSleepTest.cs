@@ -66,7 +66,7 @@ class Foo
 			return new AvoidThreadSleepAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidThreadSleepCodeFixProvider();
 		}

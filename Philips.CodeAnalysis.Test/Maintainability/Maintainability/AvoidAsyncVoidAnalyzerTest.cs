@@ -130,7 +130,7 @@ class FooClass
 		}
 
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			throw new NotImplementedException();
 		}

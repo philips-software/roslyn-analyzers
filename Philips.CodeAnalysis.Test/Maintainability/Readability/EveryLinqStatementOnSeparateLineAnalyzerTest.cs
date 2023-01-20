@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			return new EveryLinqStatementOnSeparateLineAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EveryLinqStatementOnSeparateLineCodeFixProvider();
 		}

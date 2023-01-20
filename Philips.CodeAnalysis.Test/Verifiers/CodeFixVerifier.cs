@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
 		/// </summary>
 		/// <returns>The CodeFixProvider to be used for CSharp code</returns>
-		protected abstract CodeFixProvider GetCSharpCodeFixProvider();
+		protected abstract CodeFixProvider GetCodeFixProvider();
 
 		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.Test
 		protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
 			var analyzer = GetCSharpDiagnosticAnalyzer();
-			var codeFixProvider = GetCSharpCodeFixProvider();
+			var codeFixProvider = GetCodeFixProvider();
 			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 

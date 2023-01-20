@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			return new XmlDocumentationShouldAddValueAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new XmlDocumentationCodeFixProvider();
 		}

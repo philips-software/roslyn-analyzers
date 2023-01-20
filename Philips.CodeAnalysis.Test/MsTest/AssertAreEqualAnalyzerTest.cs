@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new AssertAreEqualAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AssertAreEqualCodeFixProvider();
 		}

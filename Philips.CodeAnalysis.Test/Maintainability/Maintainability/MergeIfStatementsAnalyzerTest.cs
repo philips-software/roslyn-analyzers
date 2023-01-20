@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class MergeIfStatementsAnalyzerTest : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new MergeIfStatementsCodeFixProvider();
 		}

@@ -468,7 +468,7 @@ class Foo
 			//VerifyCSharpFix(errorContent, fixedContent);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidInvocationAsArgumentCodeFixProvider();
 		}

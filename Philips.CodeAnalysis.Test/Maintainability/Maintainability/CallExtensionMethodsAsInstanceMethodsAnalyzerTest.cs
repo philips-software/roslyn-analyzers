@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new CallExtensionMethodsAsInstanceMethodsAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new CallExtensionMethodsAsInstanceMethodsCodeFixProvider();
 		}

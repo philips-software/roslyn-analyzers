@@ -45,7 +45,7 @@ class Foo
 			VerifyCSharpFix(givenText, expectedText);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new DisallowDisposeRegistrationCodeFixProvider();
 		}
