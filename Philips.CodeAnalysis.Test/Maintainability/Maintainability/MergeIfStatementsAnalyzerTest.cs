@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}
 			    }";
 
-			VerifyCSharpDiagnostic(testCode, "Test.Designer");
+			VerifyDiagnostic(testCode, "Test.Designer");
 		}
 	}
 

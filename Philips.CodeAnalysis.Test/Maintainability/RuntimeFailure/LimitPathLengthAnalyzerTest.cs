@@ -60,7 +60,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(Correct, filePath);
+			VerifyDiagnostic(Correct, filePath);
 		}
 
 		/// <summary>
@@ -73,7 +73,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
 		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
-			VerifyCSharpDiagnostic(Correct, filePath, expected);
+			VerifyDiagnostic(Correct, filePath, expected);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

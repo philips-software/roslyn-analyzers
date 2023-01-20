@@ -72,7 +72,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText, "Test.Designer");
+			VerifyDiagnostic(givenText, "Test.Designer");
 		}
 
 

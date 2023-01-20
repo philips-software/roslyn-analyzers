@@ -191,7 +191,7 @@ public class Foo
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			VerifyDiagnostic(input, fileNamePrefix, expected);
 		}
 
 		[DataRow(@"Foo")]
@@ -203,7 +203,7 @@ public class Foo
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			VerifyDiagnostic(input, fileNamePrefix, expected);
 		}
 	}
 }

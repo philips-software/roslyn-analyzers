@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, path, expected);
 		}
 
 		[DataTestMethod]
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			path = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
-			VerifyCSharpDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
 		}
 	}
 
@@ -110,7 +110,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, path, expected);
 		}
 
 		[DataTestMethod]
@@ -120,7 +120,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			path = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
-			VerifyCSharpDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
 		}
 	}
 

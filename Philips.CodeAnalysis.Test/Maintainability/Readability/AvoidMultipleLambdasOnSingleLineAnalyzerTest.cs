@@ -171,7 +171,7 @@ public static class Foo
 		[TestMethod]
 		public void GeneratedFileWrongIsNotFlagged()
 		{
-			VerifyCSharpDiagnostic(WrongMultiple, @"Foo.designer");
+			VerifyDiagnostic(WrongMultiple, @"Foo.designer");
 		}
 	}
 }

@@ -102,7 +102,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongMethod, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			VerifyDiagnostic(testCode, filePath);
 		}
 	}
 }

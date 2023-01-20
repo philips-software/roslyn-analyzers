@@ -83,7 +83,7 @@ public class Foo
 		[TestMethod]
 		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
-			VerifyCSharpDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
+			VerifyDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
 		}
 
 		[DataRow("byte", "1")]

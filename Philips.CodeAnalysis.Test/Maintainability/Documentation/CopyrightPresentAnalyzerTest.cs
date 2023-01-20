@@ -191,7 +191,7 @@ using System.Reflection;
 		{
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(text, filenamePrefix, expected);
+			VerifyDiagnostic(text, filenamePrefix, expected);
 		}
 
 		#endregion

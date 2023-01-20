@@ -48,7 +48,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, "Test.Designer");
+			VerifyDiagnostic(template, "Test.Designer");
 		}
 
 

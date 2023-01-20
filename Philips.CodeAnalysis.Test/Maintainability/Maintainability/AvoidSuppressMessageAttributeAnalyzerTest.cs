@@ -72,7 +72,7 @@ namespace WpfApp1 {
 }
 			";
 
-			VerifyCSharpDiagnostic(baseline, "BedPosOverlayWindow.g.i");
+			VerifyDiagnostic(baseline, "BedPosOverlayWindow.g.i");
 		}
 
 		[DataRow("NotWhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
