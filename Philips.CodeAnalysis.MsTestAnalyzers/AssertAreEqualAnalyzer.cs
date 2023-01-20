@@ -59,7 +59,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (arg1Literal || arg0Null)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
+				var location = invocationExpressionSyntax.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				return new[] { diagnostic };
 			}
 

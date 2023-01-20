@@ -45,7 +45,9 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 ";
 
 			string givenText = string.Format(baseline, arg1, arg2);
-			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, GetWellKnownTypeName(arg1), GetWellKnownTypeName(arg2));
+			var arg1Type = GetWellKnownTypeName(arg1);
+			var arg2Type = GetWellKnownTypeName(arg2);
+			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{
@@ -58,10 +60,10 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 				}
 			}};
 
-			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualTypesMatchAnalyzer();
 		}

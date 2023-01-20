@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidMsFakesAnalyzer();
 		}
@@ -47,24 +47,26 @@ class Foo
 		[TestMethod]
 		public void AvoidMsFakesTest()
 		{
-			VerifyDiagnostic(CreateFunction("using (ShimsContext.Create()) {}"));
+			var file = CreateFunction("using (ShimsContext.Create()) {}");
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void AvoidMsFakesNotRelevantTest()
 		{
-			VerifyNoDiagnostic(CreateFunction("using (new MemoryStream()) {}"));
+			var file = CreateFunction("using (new MemoryStream()) {}");
+			VerifyNoDiagnostic(file);
 		}
 
 
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidMsFakesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),

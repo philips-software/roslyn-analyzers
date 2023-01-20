@@ -39,7 +39,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static void Report(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifier)
 		{
-			var diagnostic = Diagnostic.Create(Rule, identifier.GetLocation(), identifier.Identifier.ValueText);
+			var location = identifier.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location, identifier.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -92,7 +93,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (blockOfInterest.Statements.Contains(ourStatement))
 			{
 				statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
-				return (blockOfInterest.Statements.ElementAt(statementOfInterestIndex), statementOfInterestIndex);
+				var statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
+				return (statementOfInterest, statementOfInterestIndex);
 			}
 
 			// the statement of interest is nested within another statement

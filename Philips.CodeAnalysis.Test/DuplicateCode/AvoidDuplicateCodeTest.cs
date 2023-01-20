@@ -19,7 +19,7 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
 		}
@@ -276,7 +276,8 @@ Foo.WhitelistedFunction
 		[DataRow("object obj = new object();", "Foo()")]
 		public void AvoidDuplicateCodeNoError(string method1, string method2)
 		{
-			VerifyNoDiagnostic(CreateFunctions(method1, method2));
+			var file = CreateFunctions(method1, method2);
+			VerifyNoDiagnostic(file);
 		}
 
 		[DataTestMethod]
@@ -285,7 +286,8 @@ Foo.WhitelistedFunction
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
-			VerifyDiagnostic(CreateFunctions(method1, method2));
+			var file = CreateFunctions(method1, method2);
+			VerifyDiagnostic(file);
 		}
 
 
@@ -350,12 +352,12 @@ class Foo
 
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file,
+			VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,

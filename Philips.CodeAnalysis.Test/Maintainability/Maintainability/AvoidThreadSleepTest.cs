@@ -55,18 +55,18 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
+			VerifyFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidThreadSleepAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidThreadSleepCodeFixProvider();
 		}

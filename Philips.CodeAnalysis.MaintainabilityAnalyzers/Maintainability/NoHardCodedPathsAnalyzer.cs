@@ -44,7 +44,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// If the pattern matches the text value, report the diagnostic.
 			if (WindowsPattern.IsMatch(pathValue))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, stringLiteralExpressionNode.GetLocation());
+				var location = stringLiteralExpressionNode.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

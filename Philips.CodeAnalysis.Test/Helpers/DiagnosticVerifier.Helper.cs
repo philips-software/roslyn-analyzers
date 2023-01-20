@@ -35,7 +35,6 @@ namespace Philips.CodeAnalysis.Test
 
 		internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
-		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
 
 		#region  Get Diagnostics
@@ -44,12 +43,12 @@ namespace Philips.CodeAnalysis.Test
 		/// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source classes are in</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer)
+		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer)
 		{
-			return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, filenamePrefix, language));
+			var documents = GetDocuments(sources, filenamePrefix);
+			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
 		}
 
 		private sealed class TestAdditionalText : AdditionalText
@@ -136,7 +135,8 @@ namespace Philips.CodeAnalysis.Test
 					}
 				}
 
-				var modified = compilation.WithOptions(compilation.Options.WithSpecificDiagnosticOptions(specificOptions));
+				var options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
+				var modified = compilation.WithOptions(options);
 
 				List<AdditionalText> additionalTextsBuilder = new();
 				foreach (var (name, content) in GetAdditionalTexts())
@@ -144,7 +144,8 @@ namespace Philips.CodeAnalysis.Test
 					additionalTextsBuilder.Add(new TestAdditionalText(name, SourceText.From(content)));
 				}
 
-				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(GetAdditionalAnalyzerConfigOptions());
+				var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
+				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(analyzerConfigOptions);
 				AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
 
 				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
@@ -186,23 +187,18 @@ namespace Philips.CodeAnalysis.Test
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}
 
-		#endregion
+        #endregion
 
-		#region Set up compilation and documents
-		/// <summary>
-		/// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
-		/// </summary>
-		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source code is in</param>
+        #region Set up compilation and documents
+        /// <summary>
+        /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
+        /// </summary>
+        /// <param name="sources">Classes in the form of strings</param>
+        /// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private Document[] GetDocuments(string[] sources, string filenamePrefix, string language)
+        private Document[] GetDocuments(string[] sources, string filenamePrefix)
 		{
-			if (language is not LanguageNames.CSharp and not LanguageNames.VisualBasic)
-			{
-				throw new ArgumentException("Unsupported Language");
-			}
-
-			var project = CreateProject(sources, filenamePrefix, language);
+			var project = CreateProject(sources, filenamePrefix);
 			var documents = project.Documents.ToArray();
 
 			return documents;
@@ -212,11 +208,10 @@ namespace Philips.CodeAnalysis.Test
 		/// Create a Document from a string through creating a project that contains it.
 		/// </summary>
 		/// <param name="source">Classes in the form of a string</param>
-		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Document created from the source string</returns>
-		protected Document CreateDocument(string source, string language = LanguageNames.CSharp)
+		protected Document CreateDocument(string source)
 		{
-			return CreateProject(new[] { source }, language).Documents.First();
+			return CreateProject(new[] { source }).Documents.First();
 		}
 
 		protected virtual MetadataReference[] GetMetadataReferences()
@@ -243,19 +238,19 @@ namespace Philips.CodeAnalysis.Test
 		/// Create a project using the inputted strings as sources.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source code is in</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private Project CreateProject(string[] sources, string fileNamePrefix = null, string language = LanguageNames.CSharp)
+		private Project CreateProject(string[] sources, string filenamePrefix = null)
 		{
-			bool isCustomPrefix = fileNamePrefix != null;
-			fileNamePrefix ??= DefaultFilePathPrefix;
-			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
+			bool isCustomPrefix = filenamePrefix != null;
+			filenamePrefix ??= DefaultFilePathPrefix;
+			string fileExt = CSharpDefaultFileExt;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
 			var solution = new AdhocWorkspace()
 				.CurrentSolution
-				.AddProject(projectId, TestProjectName, TestProjectName, language)
+				.AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp)
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
@@ -283,7 +278,8 @@ namespace Philips.CodeAnalysis.Test
 
 			OptionSet newOptionSet = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
 			Workspace workspace = solution.Workspace;
-			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(newOptionSet));
+			var newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
+			workspace.TryApplyChanges(newSolution);
 
 			foreach (var m in solution.GetProject(projectId).MetadataReferences)
 			{
@@ -291,15 +287,16 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			int count = 0;
+			var additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
-				var newFileName = string.Format("{0}{1}.{2}", fileNamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
+				var newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
 
 				count++;
 
 				return (newFileName, x);
 
-			}).Concat(GetAdditionalSourceCode());
+			}).Concat(additionalSourceCode);
 
 			foreach ((string name, string content) in data)
 			{

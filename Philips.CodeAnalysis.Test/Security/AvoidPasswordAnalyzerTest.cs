@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.Test.Security
 	[TestClass]
 	public class AvoidPasswordAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPasswordAnalyzer();
 		}
@@ -36,9 +36,10 @@ class Foo
 		[DataRow(@"", "//  MyPassword")]
 		public void CheckPasswordTest(string content0, string content1)
 		{
-			string testCode = string.Format(GetTemplate(), content0, content1);
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPasswordField);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		[DataTestMethod]
@@ -49,8 +50,9 @@ class Foo
 		[DataRow(@"", "//  MyComment")]
 		public void CheckNoPasswordTest(string content0, string content1)
 		{
-			string testCode = string.Format(GetTemplate(), content0, content1);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 	}
 }

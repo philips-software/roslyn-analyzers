@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsMustBeInTestClassAnalyzer();
 		}
@@ -64,7 +64,7 @@ public {2} class Tests : {3}
 	public void Foo() {{ }}
 }}";
 
-			VerifyCSharpDiagnostic(string.Format(code, "[TestClass]", testType, classQualifier, baseClass));
+			VerifyDiagnostic(string.Format(code, "[TestClass]", testType, classQualifier, baseClass));
 
 			DiagnosticResult[] expectedResult = Array.Empty<DiagnosticResult>();
 
@@ -73,7 +73,7 @@ public {2} class Tests : {3}
 				expectedResult = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustBeInTestClass) };
 			}
 
-			VerifyCSharpDiagnostic(string.Format(code, "", testType, classQualifier, baseClass), expectedResult);
+			VerifyDiagnostic(string.Format(code, "", testType, classQualifier, baseClass), expectedResult);
 		}
 		#endregion
 	}

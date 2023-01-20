@@ -40,7 +40,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(Correct, filePath);
+			VerifyDiagnostic(Correct, filePath);
 		}
 
 		/// <summary>
@@ -52,10 +52,10 @@ namespace PathTooLongUnitTest {
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
 		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.NoSpaceInFilename);
-			VerifyCSharpDiagnostic(Correct, filePath, expected);
+			VerifyDiagnostic(Correct, filePath, expected);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new NoSpaceInFilenameAnalyzer();
 		}
 	}

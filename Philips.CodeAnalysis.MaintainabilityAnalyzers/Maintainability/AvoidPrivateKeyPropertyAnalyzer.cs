@@ -43,7 +43,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType, System.StringComparison.Ordinal))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, memberAccessExpressionSyntax.GetLocation());
+				var location = memberAccessExpressionSyntax.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 

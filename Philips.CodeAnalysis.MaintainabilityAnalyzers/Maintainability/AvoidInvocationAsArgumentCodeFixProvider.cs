@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
@@ -49,6 +50,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			StatementSyntax fullExistingExpressionSyntax = node?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
 			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<ReturnStatementSyntax>();
 			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			if (fullExistingExpressionSyntax != null)
 			{
@@ -65,33 +68,46 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> ExtractLocalVariable(Document document, ExpressionSyntax argumentSyntax, CancellationToken c)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
+
+			var semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
+
 			string newName = @"renameMe";
-			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
+			SyntaxToken identifier;
+			var operation = semanticModel.GetOperation(argumentSyntax, c);
+			if (operation?.Parent is IArgumentOperation argumentOperation)
 			{
-				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
-				int indexOfDot = newNameSuffix.LastIndexOf('.');
-				if (indexOfDot != -1)
+				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
+				newName = parameterSymbol.Name;
+				identifier = SyntaxFactory.Identifier(newName);
+			}
+			else
+			{
+				if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
 				{
-					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+					string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+					int indexOfDot = newNameSuffix.LastIndexOf('.');
+					if (indexOfDot != -1)
+					{
+						newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+					}
+					newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() + newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+					newName = @"resultOf" + newNameSuffix;
 				}
-				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() + newNameSuffix.Substring(1, newNameSuffix.Length - 1);
-				newName = @"resultOf" + newNameSuffix;
+				identifier = SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create());
 			}
 
 			// Build "var renameMe = [blah]"
-			LocalDeclarationStatementSyntax localDeclarationStatementSyntax =
-				SyntaxFactory.LocalDeclarationStatement(
-				  SyntaxFactory.VariableDeclaration(
-					  SyntaxFactory.ParseTypeName("var"))
-					.AddVariables(
-					  SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create()))
-						.WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax))));
+			var variableDeclarator = SyntaxFactory.VariableDeclarator(identifier).WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax));
+			var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var")).AddVariables(variableDeclarator);
+			LocalDeclarationStatementSyntax localDeclarationStatementSyntax = SyntaxFactory.LocalDeclarationStatement(variableDeclaration);
 
 
 			// Get the whole statement that contains the violation
 			StatementSyntax fullExistingExpressionSyntax = argumentSyntax.FirstAncestorOrSelf<ExpressionStatementSyntax>();
 			fullExistingExpressionSyntax ??= argumentSyntax.FirstAncestorOrSelf<ReturnStatementSyntax>();
 			fullExistingExpressionSyntax ??= argumentSyntax.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= argumentSyntax.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= argumentSyntax.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			// Replace the violation with "renameMe"
 			IdentifierNameSyntax identifierSyntax = SyntaxFactory.IdentifierName(newName);

@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 		}
 
 		[DataRow("static", "", true)]
@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				results = Array.Empty<DiagnosticResult>();
 			}
 
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 		}
 
 		[DataRow("  /// <summary />")]
@@ -98,15 +98,15 @@ static Foo() {{ }}", summaryComment));
 
 			string expected = string.Format(template, "  \r\n");
 
-			VerifyCSharpFix(classContent, expected);
+			VerifyFix(classContent, expected);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidEmptyTypeInitializerCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidEmptyTypeInitializer();
 		}

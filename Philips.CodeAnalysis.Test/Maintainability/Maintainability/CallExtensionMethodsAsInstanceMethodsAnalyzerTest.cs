@@ -13,12 +13,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class CallExtensionMethodsAsInstanceMethodsAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new CallExtensionMethodsAsInstanceMethodsAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new CallExtensionMethodsAsInstanceMethodsCodeFixProvider();
 		}
@@ -65,12 +65,12 @@ public static class Program
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
 				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
-				VerifyCSharpFix(text, newText);
+				VerifyFix(text, newText);
 			}
 		}
 
@@ -96,10 +96,10 @@ public static class Foo
 
 			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
-			VerifyCSharpFix(text, newText);
+			VerifyFix(text, newText);
 		}
 
 		[TestMethod]
@@ -129,10 +129,10 @@ public static class Foo
 
 			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
-			VerifyCSharpFix(text, newText);
+			VerifyFix(text, newText);
 		}
 
 		[DataRow(@"
@@ -300,7 +300,7 @@ public class Baz
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
-			VerifyCSharpDiagnostic(template, result);
+			VerifyDiagnostic(template, result);
 		}
 	}
 }

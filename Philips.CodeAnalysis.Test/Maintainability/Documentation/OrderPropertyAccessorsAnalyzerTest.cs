@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new OrderPropertyAccessorsAnalyzer();
 		}
@@ -40,7 +40,7 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(text, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.OrderPropertyAccessors) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(text, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.OrderPropertyAccessors) : Array.Empty<DiagnosticResult>());
 		}
 
 		#endregion

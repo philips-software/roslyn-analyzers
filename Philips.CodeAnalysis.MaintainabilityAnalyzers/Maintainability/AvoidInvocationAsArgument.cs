@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -48,7 +49,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
-			if ((argumentExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text == "ToString")
+			string methodName = (argumentExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
+			if (methodName is "ToString" or "ToArray" or "ToList")
 			{
 				return;
 			}
@@ -84,7 +86,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rule, argumentSyntax.GetLocation(), argumentSyntax.ToString());
+			var location = argumentSyntax.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, argumentSyntax.ToString());
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

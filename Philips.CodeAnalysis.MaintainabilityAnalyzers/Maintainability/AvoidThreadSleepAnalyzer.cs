@@ -49,7 +49,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpression.GetLocation());
+					var location = invocationExpression.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

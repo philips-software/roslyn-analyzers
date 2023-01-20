@@ -133,8 +133,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var leadingTrivia = statement.GetLeadingTrivia();
 			var trailingTrivia = statement.GetTrailingTrivia();
 
-			var statements = parentBlock.Statements.Insert(statementIndex, rightAssert.WithLeadingTrivia().WithTrailingTrivia(trailingTrivia));
-			statements = statements.Insert(statementIndex, leftAssert.WithLeadingTrivia(leadingTrivia));
+			var rightAssertWithTrivia = rightAssert.WithLeadingTrivia().WithTrailingTrivia(trailingTrivia);
+			var statements = parentBlock.Statements.Insert(statementIndex, rightAssertWithTrivia);
+			var leftAssertWithTrivia = leftAssert.WithLeadingTrivia(leadingTrivia);
+			statements = statements.Insert(statementIndex, leftAssertWithTrivia);
 			statements = statements.RemoveAt(statementIndex + 2);
 
 			var newBlock = parentBlock.WithStatements(statements);
@@ -152,9 +154,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			newArguments = newArguments.AddRange(additionalArguments);
 
-			return SyntaxFactory.ExpressionStatement(SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName("Assert"), SyntaxFactory.IdentifierName(isIsTrue ? "IsTrue" : "IsFalse")
-					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken))).WithArgumentList(SyntaxFactory.ArgumentList(arguments: newArguments)));
+					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
+			var invocationExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(SyntaxFactory.ArgumentList(arguments: newArguments));
+			return SyntaxFactory.ExpressionStatement(invocationExpression);
 		}
 
 		private async Task<Document> ReplaceEqualsFunctionCall(Document document, InvocationExpressionSyntax invocationExpression, bool isIsTrue, CancellationToken cancellationToken)
@@ -163,10 +167,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsFunction(invocationExpression.ArgumentList, out bool isNotEquals);
 
-			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(
-				SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName("Assert"), SyntaxFactory.IdentifierName(DetermineFunction(isIsTrue, isNotEquals, false))
-					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken))).WithArgumentList(newArguments);
+					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
+			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
 
 			SyntaxNode newRoot = root.ReplaceNode(invocationExpression, newExpression);
 
@@ -179,14 +183,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsEquals(kind, invocationExpression.ArgumentList, out bool isNotEquals, out bool isNullArgument);
 
-			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(
-				SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName("Assert"), SyntaxFactory.IdentifierName(DetermineFunction(isIsTrue, isNotEquals, isNullArgument))
-					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken))).WithArgumentList(newArguments);
+					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
+			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
 
 			var leading = invocationExpression.GetLeadingTrivia();
 
-			SyntaxNode newRoot = root.ReplaceNode(invocationExpression, newExpression.WithLeadingTrivia(leading));
+			var newNode = newExpression.WithLeadingTrivia(leading);
+			SyntaxNode newRoot = root.ReplaceNode(invocationExpression, newNode);
 			return document.WithSyntaxRoot(newRoot);
 		}
 

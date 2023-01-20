@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidOverridingWithNewKeywordAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidOverridingWithNewKeywordAnalyzer();
 		}
@@ -82,7 +82,7 @@ namespace MultiLineConditionUnitTests
 		public void OverrideVirtualDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[DataTestMethod]
@@ -92,7 +92,7 @@ namespace MultiLineConditionUnitTests
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidOverridingWithNewKeyword,
 				new Regex("Avoid overriding Virtual.* with the new keyword."));
-			VerifyCSharpDiagnostic(input, expected);
+			VerifyDiagnostic(input, expected);
 		}
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongMethod, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			VerifyDiagnostic(testCode, filePath);
 		}
 	}
 }

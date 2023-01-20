@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Public Interface
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoProtectedFieldsAnalyzer();
 		}
@@ -40,7 +40,7 @@ class Foo {{ {0} string _foo; }}
 
 			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template, modifiers), expected);
+			VerifyDiagnostic(string.Format(template, modifiers), expected);
 		}
 
 		#endregion

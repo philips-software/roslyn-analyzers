@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAssertConditionalAccessAnalyzer();
 		}
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString(), $\"error{name1?.ToString()}\")")]
 		public void AvoidAssertConditionalAccessAnalyzerSuccessTest(string test)
 		{
-			VerifyCSharpDiagnostic(test, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(test, Array.Empty<DiagnosticResult>());
 		}
 		#endregion
 	}

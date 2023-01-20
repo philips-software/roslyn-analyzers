@@ -150,7 +150,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -163,7 +163,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidMagicNumbers);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -173,10 +173,10 @@ namespace DontUseMagicNumbersTests {
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(WrongLocal, filePath);
+			VerifyDiagnostic(WrongLocal, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AvoidMagicNumbersAnalyzer();
 		}
 	}

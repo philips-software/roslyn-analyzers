@@ -91,8 +91,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
+			var item = declaredSymbol.ToDisplayString();
 			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) &&
-				_exceptions.Contains(declaredSymbol.ToDisplayString()))
+				_exceptions.Contains(item))
 			{
 				return;
 			}
@@ -107,7 +108,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString() + Environment.NewLine);
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation());
+			var location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidUnnecessaryWhereAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidUnnecessaryWhereAnalyzer();
 		}
@@ -47,7 +47,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
 		}
 
 
@@ -80,7 +80,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 	}
 }
