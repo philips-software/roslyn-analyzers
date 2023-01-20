@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -24,15 +23,6 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <returns>The CodeFixProvider to be used for CSharp code</returns>
 		protected abstract CodeFixProvider GetCSharpCodeFixProvider();
-
-		/// <summary>
-		/// Returns the codefix being tested (VB) - to be implemented in non-abstract class
-		/// </summary>
-		/// <returns>The CodeFixProvider to be used for VisualBasic code</returns>
-		protected virtual CodeFixProvider GetBasicCodeFixProvider()
-		{
-			return null;
-		}
 
 		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
