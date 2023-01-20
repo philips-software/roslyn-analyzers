@@ -43,7 +43,9 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			VerifyFix(LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), GetCSharpCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			var analyzer = GetCSharpDiagnosticAnalyzer();
+			var codeFixProvider = GetCSharpCodeFixProvider();
+			VerifyFix(LanguageNames.CSharp, analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 
 		/// <summary>
@@ -55,7 +57,9 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected void VerifyBasicFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			VerifyFix(LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), GetBasicCodeFixProvider(), oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			var analyzer = GetBasicDiagnosticAnalyzer();
+			var codeFixProvider = GetBasicCodeFixProvider();
+			VerifyFix(LanguageNames.VisualBasic, analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 
 		/// <summary>
@@ -101,21 +105,25 @@ namespace Philips.CodeAnalysis.Test
 
 				if (codeFixIndex != null)
 				{
-					document = ApplyFix(document, actions.ElementAt((int)codeFixIndex));
+					var codeAction1 = actions.ElementAt((int)codeFixIndex);
+					document = ApplyFix(document, codeAction1);
 					break;
 				}
 
-				document = ApplyFix(document, actions.ElementAt(0));
+				var codeAction2 = actions.ElementAt(0);
+				document = ApplyFix(document, codeAction2);
 				analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 
-				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+				var newDiagnostics = GetCompilerDiagnostics(document);
+				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);
 
 				//check if applying the code fix introduced any new compiler diagnostics
 				if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
 				{
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
 					document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
-					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, GetCompilerDiagnostics(document));
+					var newDiagnostics2 = GetCompilerDiagnostics(document);
+					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
 					Assert.IsTrue(false,
 						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",

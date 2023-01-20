@@ -45,7 +45,8 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 				results.Add(DiagnosticResultHelper.Create(DiagnosticIds.DynamicKeywordProhibited));
 			}
 
-			VerifyCSharpDiagnostic(testCode, results.ToArray());
+			var expected = results.ToArray();
+			VerifyCSharpDiagnostic(testCode, expected);
 		}
 
 		#endregion

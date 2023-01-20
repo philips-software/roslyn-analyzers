@@ -58,7 +58,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (!first.Any())
 			{
-				CreateDiagnostic(context, node.GetLocation());
+				var location = node.GetLocation();
+				CreateDiagnostic(context, location);
 				return;
 			}
 
@@ -76,7 +77,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			bool isCorrectStatement = CheckCopyrightStatement(context, copyrightSyntax);
 			if (!isCorrectStatement)
 			{
-				CreateDiagnostic(context, copyrightSyntax.GetLocation());
+				var location = copyrightSyntax.GetLocation();
+				CreateDiagnostic(context, location);
 				return;
 			}
 

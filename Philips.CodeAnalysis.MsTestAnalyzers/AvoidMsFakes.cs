@@ -44,7 +44,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (expression.ToString().Contains(@"ShimsContext.Create"))
 			{
 				CSharpSyntaxNode violation = expression;
-				Diagnostic diagnostic = Diagnostic.Create(Rule, violation.GetLocation());
+				var location = violation.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -135,7 +135,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				if (string.IsNullOrWhiteSpace(content))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, xmlElement.GetLocation());
+					var location = xmlElement.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, location);
 					context.ReportDiagnostic(diagnostic);
 					continue;
 				}

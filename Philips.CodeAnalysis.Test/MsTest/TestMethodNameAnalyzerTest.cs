@@ -39,8 +39,10 @@ namespace TestMethodNameAnalyzerTest
 ";
 
 			string givenText = string.Format(baseline, name);
-			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, GetPrefix(name));
-			string fixedText = string.Format(baseline, FixName(name));
+			var prefix = GetPrefix(name);
+			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
+			var fixedName = FixName(name);
+			string fixedText = string.Format(baseline, fixedName);
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{

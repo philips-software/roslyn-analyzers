@@ -43,8 +43,8 @@ namespace Philips.CodeAnalysis.Common
 		{
 			if (line.StartsWith("~"))
 			{
-				var symbols =
-					DocumentationCommentId.GetSymbolsForDeclarationId(line.Substring(1), compilation);
+				var id = line.Substring(1);
+				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, compilation);
 				if (!symbols.IsDefaultOrEmpty)
 				{
 					foreach (var symbol in symbols)

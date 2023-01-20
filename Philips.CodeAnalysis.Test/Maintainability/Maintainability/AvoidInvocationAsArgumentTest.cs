@@ -26,10 +26,16 @@ class Foo
   public Foo(string h) {}
   public static string Do() {{ return ""hi"";}}
   public string Moo(string s) {{ return ""hi"";}}
+  public string ToString() {{ return ""hi"";}}
+  public string ToList() {{ return ""hi"";}}
+  public string ToArray() {{ return ""hi"";}}
 
   public void MyTest()
   {{
     string.Format(Foo.Do());
+    string.Format(Foo.ToString());
+    string.Format(Foo.ToList());
+    string.Format(Foo.ToArray());
     string.Format(nameof(MyTest));
     string.Format(5.ToString());
     string.Format(Moo(Do()));	  // Finding
@@ -44,7 +50,7 @@ class Foo
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
 						{
-							new DiagnosticResultLocation("Test0.cs", 14, 19)
+							new DiagnosticResultLocation("Test0.cs", 20, 19)
 						}
 					}
 				};
@@ -72,6 +78,37 @@ class Foo
 class Foo
 {{
   public string Do() {{ return ""hi"";}}
+  public string Moo(string s) {{ return ""hi"";}}
+
+  public string MyTest()
+  {{
+    var s = Do();
+    return Moo(s);
+  }}
+}}
+";
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[TestMethod]
+		public void AvoidInvocationAsUnknownSymbolArgumentReturnTest()
+		{
+			string errorContent = @"
+class Foo
+{{
+  public string Moo(string s) {{ return ""hi"";}}
+
+  public string MyTest()
+  {{
+    return Moo(Do());
+  }}
+}}
+";
+
+			string fixedContent = @"
+class Foo
+{{
   public string Moo(string s) {{ return ""hi"";}}
 
   public string MyTest()
@@ -106,8 +143,74 @@ class Foo
   public void Moo(string x) { }
   public void MyTest()
   {
-     var resultOfDo = Do();
-     Moo(resultOfDo);
+     var x = Do();
+     Moo(x);
+  }
+}
+";
+
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[TestMethod]
+		public void AvoidInvocationInIfStatementTest()
+		{
+			string errorContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public bool Moo(string x) { }
+  public void MyTest()
+  {
+     if (Moo(Do()))
+       { var y = 1; }
+  }
+}
+";
+			string fixedContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public bool Moo(string x) { }
+  public void MyTest()
+  {
+     var x = Do();
+     if (Moo(x))
+       { var y = 1; }
+  }
+}
+";
+
+			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyCSharpFix(errorContent, fixedContent);
+		}
+
+		[TestMethod]
+		public void AvoidInvocationInWhileStatementTest()
+		{
+			string errorContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public bool Moo(string x) { }
+  public void MyTest()
+  {
+     while (Moo(Do()))
+       { var y = 1; }
+  }
+}
+";
+			string fixedContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public bool Moo(string x) { }
+  public void MyTest()
+  {
+     var x = Do();
+     while (Moo(x))
+       { var y = 1; }
   }
 }
 ";
@@ -137,8 +240,8 @@ class Foo
   public void Moo(string x) { }
   public void MyTest()
   {
-     var resultOfDo = this.Do();
-     Moo(resultOfDo);
+     var x = this.Do();
+     Moo(x);
   }
 }
 ";
@@ -157,7 +260,7 @@ class Foo
   public string Moo(string x) { }
   public void MyTest()
   {
-     string x = Moo(Do());
+     string y = Moo(Do());
   }
 }
 ";
@@ -168,8 +271,8 @@ class Foo
   public string Moo(string x) { }
   public void MyTest()
   {
-     var resultOfDo = Do();
-     string x = Moo(resultOfDo);
+     var x = Do();
+     string y = Moo(x);
   }
 }
 ";
@@ -188,8 +291,8 @@ class Foo
   public string Moo(string x) { }
   public void MyTest()
   {
-     string x;
-     x = Moo(Do());
+     string y;
+     y = Moo(Do());
   }
 }
 ";
@@ -200,9 +303,9 @@ class Foo
   public string Moo(string x) { }
   public void MyTest()
   {
-     string x;
-     var resultOfDo = Do();
-     x = Moo(resultOfDo);
+     string y;
+     var x = Do();
+     y = Moo(x);
   }
 }
 ";
@@ -235,8 +338,8 @@ class Foo
   public string MyTest()
   {
      // Comment
-     var resultOfDo = Do();
-     return Moo(resultOfDo);
+     var x = Do();
+     return Moo(x);
   }
 }
 ";
@@ -269,8 +372,8 @@ class Foo
   {
      if (true)
      {
-       var resultOfDo = Do();
-       Moo(resultOfDo);
+       var x = Do();
+       Moo(x);
      }
   }
 }
@@ -300,8 +403,8 @@ class Foo
   public string Do() { return ""hi"";}
   public void MyTest()
   {
-     var resultOfDo = Do();
-     new Meow(resultOfDo);
+     var x = Do();
+     new Meow(x);
   }
 }
 ";
@@ -339,7 +442,7 @@ class Foo
      int i;
      switch (i)
      {
-       case 0: var resultOfDo = Do(); Moo(resultOfDo); break;
+       case 0: var x = Do(); Moo(x); break;
      }
   }
 }

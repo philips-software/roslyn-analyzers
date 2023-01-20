@@ -49,7 +49,8 @@ namespace Philips.CodeAnalysis.Test
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
 		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer)
 		{
-			return GetSortedDiagnosticsFromDocuments(analyzer, GetDocuments(sources, filenamePrefix, language));
+			var documents = GetDocuments(sources, filenamePrefix, language);
+			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
 		}
 
 		private sealed class TestAdditionalText : AdditionalText
@@ -136,7 +137,8 @@ namespace Philips.CodeAnalysis.Test
 					}
 				}
 
-				var modified = compilation.WithOptions(compilation.Options.WithSpecificDiagnosticOptions(specificOptions));
+				var options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
+				var modified = compilation.WithOptions(options);
 
 				List<AdditionalText> additionalTextsBuilder = new();
 				foreach (var (name, content) in GetAdditionalTexts())
@@ -144,7 +146,8 @@ namespace Philips.CodeAnalysis.Test
 					additionalTextsBuilder.Add(new TestAdditionalText(name, SourceText.From(content)));
 				}
 
-				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(GetAdditionalAnalyzerConfigOptions());
+				var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
+				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(analyzerConfigOptions);
 				AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
 
 				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
@@ -283,7 +286,8 @@ namespace Philips.CodeAnalysis.Test
 
 			OptionSet newOptionSet = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
 			Workspace workspace = solution.Workspace;
-			workspace.TryApplyChanges(workspace.CurrentSolution.WithOptions(newOptionSet));
+			var newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
+			workspace.TryApplyChanges(newSolution);
 
 			foreach (var m in solution.GetProject(projectId).MetadataReferences)
 			{
@@ -291,6 +295,7 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			int count = 0;
+			var additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
 				var newFileName = string.Format("{0}{1}.{2}", fileNamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
@@ -299,7 +304,7 @@ namespace Philips.CodeAnalysis.Test
 
 				return (newFileName, x);
 
-			}).Concat(GetAdditionalSourceCode());
+			}).Concat(additionalSourceCode);
 
 			foreach ((string name, string content) in data)
 			{
