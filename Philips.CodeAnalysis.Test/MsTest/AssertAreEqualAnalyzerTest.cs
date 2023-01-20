@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			};
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualAnalyzer();
 		}

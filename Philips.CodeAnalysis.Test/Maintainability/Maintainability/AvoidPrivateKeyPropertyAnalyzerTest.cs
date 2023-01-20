@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPrivateKeyPropertyAnalyzer();
 		}

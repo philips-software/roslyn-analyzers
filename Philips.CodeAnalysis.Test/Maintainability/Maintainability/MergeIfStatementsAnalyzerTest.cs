@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new MergeIfStatementsCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MergeIfStatementsAnalyzer();
 		}

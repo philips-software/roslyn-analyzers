@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new Regex($"Load of {expectedLoad} ");
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
@@ -435,7 +435,7 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			const string InvalidMaxLoad = @"1000";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
@@ -501,7 +501,7 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest2 : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			const string InvalidMaxLoad = @"0";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
@@ -567,7 +567,7 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerDefaultInitializationTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ReduceCognitiveLoadAnalyzer();
 		}

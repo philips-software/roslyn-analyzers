@@ -254,7 +254,7 @@ class Foo
 			VerifyCSharpDiagnostic(givenText);
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}

@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Public Interface
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoProtectedFieldsAnalyzer();
 		}

@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MockObjectsMustCallExistingConstructorsAnalyzer();
 		}

@@ -99,7 +99,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new AvoidMethodsCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}

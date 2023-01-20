@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 	[TestClass]
 	public class DereferenceNullAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DereferenceNullAnalyzer();
 		}

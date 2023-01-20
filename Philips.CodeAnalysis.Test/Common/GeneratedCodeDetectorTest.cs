@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 		#endregion Helper Analyzer
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidWritingCodeAnalyzer();
 		}

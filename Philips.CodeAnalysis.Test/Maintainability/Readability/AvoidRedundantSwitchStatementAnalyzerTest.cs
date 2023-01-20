@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer();
 		}

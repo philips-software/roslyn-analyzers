@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			var analyzer = GetCSharpDiagnosticAnalyzer();
+			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
 			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}

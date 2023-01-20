@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class CallExtensionMethodsAsInstanceMethodsAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new CallExtensionMethodsAsInstanceMethodsAnalyzer();
 		}

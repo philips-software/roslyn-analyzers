@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class PositiveNamingAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PositiveNamingAnalyzer();
 		}

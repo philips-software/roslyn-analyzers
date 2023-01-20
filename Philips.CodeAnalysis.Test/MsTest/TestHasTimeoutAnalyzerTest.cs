@@ -140,7 +140,7 @@ var foo = 4;
 			return new TestHasTimeoutCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestHasTimeoutAttributeAnalyzer();
 		}

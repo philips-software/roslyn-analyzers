@@ -112,7 +112,7 @@ namespace AvoidArrayListTests {
 			VerifyCSharpDiagnostic(WrongLocal, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AvoidArrayListAnalyzer();
 		}
 

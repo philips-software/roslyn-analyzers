@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreventUnnecessaryRangeChecksAnalyzer();
 		}

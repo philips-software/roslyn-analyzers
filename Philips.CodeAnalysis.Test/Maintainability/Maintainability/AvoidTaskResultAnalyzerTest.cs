@@ -111,7 +111,7 @@ class FooClass
 			return new AvoidTaskResultCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidTaskResultAnalyzer();
 		}

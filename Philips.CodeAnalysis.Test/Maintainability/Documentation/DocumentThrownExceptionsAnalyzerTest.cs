@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class DocumentThrownExceptionsAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DocumentThrownExceptionsAnalyzer();
 		}

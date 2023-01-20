@@ -473,7 +473,7 @@ class Foo
 			return new AvoidInvocationAsArgumentCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
         {
             return new AvoidInvocationAsArgumentAnalyzer();
         }

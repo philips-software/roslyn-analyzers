@@ -42,7 +42,7 @@ namespace ExpectedAnalyzerAttributeTest
 			VerifyCSharpDiagnostic(givenText, expected);
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ExpectedExceptionAttributeAnalyzer();
 		}

@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			};
 			return options;
 		}
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();
 		}

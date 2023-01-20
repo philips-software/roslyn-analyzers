@@ -50,7 +50,7 @@ class Foo
 			return new DisallowDisposeRegistrationCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DisallowDisposeRegistrationAnalyzer();
 		}

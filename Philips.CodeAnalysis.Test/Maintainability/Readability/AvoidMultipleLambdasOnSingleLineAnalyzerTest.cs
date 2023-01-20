@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidMultipleLambdasOnSingleLineAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidMultipleLambdasOnSingleLineAnalyzer();
 		}

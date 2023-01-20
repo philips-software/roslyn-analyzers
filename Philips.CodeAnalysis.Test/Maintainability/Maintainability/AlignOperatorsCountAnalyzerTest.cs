@@ -237,7 +237,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			VerifyCSharpDiagnostic(WrongNumberOfPlusMinus, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AlignOperatorsCountAnalyzer();
 		}
 	}

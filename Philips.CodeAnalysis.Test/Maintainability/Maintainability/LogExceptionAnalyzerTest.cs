@@ -124,7 +124,7 @@ public class Program {
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LogExceptionAnalyzer();
 		}

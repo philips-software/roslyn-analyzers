@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsMustBePublicAnalyzer();
 		}

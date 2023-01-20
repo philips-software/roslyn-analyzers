@@ -212,7 +212,7 @@ Assert.IsTrue(foo.Test());
 			return new AssertIsTrueCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertIsTrueAnalyzer();
 		}

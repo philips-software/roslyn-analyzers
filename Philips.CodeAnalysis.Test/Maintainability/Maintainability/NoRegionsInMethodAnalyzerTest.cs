@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class NoRegionsInMethodAnalyzerTest : DiagnosticVerifier
 	{
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 
 			return new NoRegionsInMethodAnalyzer();

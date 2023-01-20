@@ -25,10 +25,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		#region Non-Public Properties/Methods
 
 		/// <summary>
-		/// GetCSharpDiagnosticAnalyzer
+		/// GetDiagnosticAnalyzer
 		/// </summary>
 		/// <returns></returns>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new WinFormsInitializeComponentMustBeCalledOnceAnalyzer();
 		}

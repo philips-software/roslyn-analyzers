@@ -66,7 +66,7 @@ var foo = 4;
 			return new TestHasDescriptionCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestHasDescriptionAnalyzer();
 		}

@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();
 		}

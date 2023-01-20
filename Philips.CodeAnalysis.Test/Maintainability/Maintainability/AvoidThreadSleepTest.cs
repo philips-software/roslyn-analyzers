@@ -61,7 +61,7 @@ class Foo
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidThreadSleepAnalyzer();
 		}

@@ -55,7 +55,7 @@ namespace PathTooLongUnitTest {
 			VerifyCSharpDiagnostic(Correct, filePath, expected);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new NoSpaceInFilenameAnalyzer();
 		}
 	}

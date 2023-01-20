@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		private const string configuredCompanyName = @"Koninklijke Philips N.V.";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new CopyrightPresentAnalyzer();
 		}

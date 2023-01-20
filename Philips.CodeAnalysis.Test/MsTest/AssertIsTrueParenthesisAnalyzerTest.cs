@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new AssertIsTrueParenthesisCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertIsTrueParenthesisAnalyzer();
 		}

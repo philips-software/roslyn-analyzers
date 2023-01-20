@@ -187,7 +187,7 @@ public class TestClass {baseClass}
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PassByRefAnalyzer();
 		}

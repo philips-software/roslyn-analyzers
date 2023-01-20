@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class EveryLinqStatementOnSeparateLineAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EveryLinqStatementOnSeparateLineAnalyzer();
 		}

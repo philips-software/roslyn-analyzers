@@ -19,7 +19,7 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
 		}

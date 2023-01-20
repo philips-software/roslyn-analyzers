@@ -99,7 +99,7 @@ namespace WpfApp1 {
 			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidSuppressMessageAttributeAnalyzer();
 		}

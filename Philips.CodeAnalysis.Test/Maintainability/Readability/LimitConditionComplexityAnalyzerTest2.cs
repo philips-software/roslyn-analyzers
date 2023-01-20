@@ -66,7 +66,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LimitConditionComplexityAnalyzer();
 		}

@@ -28,7 +28,7 @@ AllowedMethodName
 ~M:ANamespace.AType.AllowedMethod() // With comment on same line
 ";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AllowedSymbolsTestAnalyzer();
 		}

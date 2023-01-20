@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <summary>
 		/// Get the CSharp analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
-		protected abstract DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer();
+		protected abstract DiagnosticAnalyzer GetDiagnosticAnalyzer();
 
 		#endregion
 
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		protected void VerifyCSharpDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
 		{
-			var analyzer = GetCSharpDiagnosticAnalyzer();
+			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnostics(new[] { source }, filenamePrefix, analyzer, expected);
 		}
 
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
 		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
 		{
-			var analyzer = GetCSharpDiagnosticAnalyzer();
+			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnostics(sources, null, analyzer, expected);
 		}
 

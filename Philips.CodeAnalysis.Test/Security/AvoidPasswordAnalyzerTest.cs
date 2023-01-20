@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.Test.Security
 	[TestClass]
 	public class AvoidPasswordAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPasswordAnalyzer();
 		}

@@ -106,7 +106,7 @@ static Foo() {{ }}", summaryComment));
 			return new AvoidEmptyTypeInitializerCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidEmptyTypeInitializer();
 		}

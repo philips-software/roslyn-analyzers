@@ -94,7 +94,7 @@ class FooClass
 			VerifyCSharpDiagnostic(code);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceFileVersionIsSameAsPackageVersionAnalyzer();
 		}
