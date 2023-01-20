@@ -187,16 +187,16 @@ namespace Philips.CodeAnalysis.Test
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}
 
-		#endregion
+        #endregion
 
-		#region Set up compilation and documents
-		/// <summary>
-		/// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
-		/// </summary>
-		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source code is in</param>
+        #region Set up compilation and documents
+        /// <summary>
+        /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
+        /// </summary>
+        /// <param name="sources">Classes in the form of strings</param>
+        /// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private Document[] GetDocuments(string[] sources, string filenamePrefix)
+        private Document[] GetDocuments(string[] sources, string filenamePrefix)
 		{
 			var project = CreateProject(sources, filenamePrefix);
 			var documents = project.Documents.ToArray();
@@ -238,12 +238,12 @@ namespace Philips.CodeAnalysis.Test
 		/// Create a project using the inputted strings as sources.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source code is in</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private Project CreateProject(string[] sources, string fileNamePrefix = null)
+		private Project CreateProject(string[] sources, string filenamePrefix = null)
 		{
-			bool isCustomPrefix = fileNamePrefix != null;
-			fileNamePrefix ??= DefaultFilePathPrefix;
+			bool isCustomPrefix = filenamePrefix != null;
+			filenamePrefix ??= DefaultFilePathPrefix;
 			string fileExt = CSharpDefaultFileExt;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
@@ -290,7 +290,7 @@ namespace Philips.CodeAnalysis.Test
 			var additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
-				var newFileName = string.Format("{0}{1}.{2}", fileNamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
+				var newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
 
 				count++;
 
