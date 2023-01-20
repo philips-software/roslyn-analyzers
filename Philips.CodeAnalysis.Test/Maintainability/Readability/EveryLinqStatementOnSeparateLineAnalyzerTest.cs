@@ -71,7 +71,7 @@ public static class Foo
 		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		private const string WhereOnSameLine = $@"
@@ -103,7 +103,7 @@ public static class Foo
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
 		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
 			VerifyFix(input, Correct);
 		}
 

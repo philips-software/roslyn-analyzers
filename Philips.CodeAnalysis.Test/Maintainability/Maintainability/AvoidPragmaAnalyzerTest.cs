@@ -38,7 +38,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -54,7 +54,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(text);
+			VerifyDiagnostic(text);
 		}
 
 		[DataTestMethod]

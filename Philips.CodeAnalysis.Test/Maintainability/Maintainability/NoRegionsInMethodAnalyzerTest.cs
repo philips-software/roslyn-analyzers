@@ -122,12 +122,12 @@ Class C{
 
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file, int line)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = NoRegionsInMethodAnalyzer.Rule.Id,
 				Message = new Regex(".*"),

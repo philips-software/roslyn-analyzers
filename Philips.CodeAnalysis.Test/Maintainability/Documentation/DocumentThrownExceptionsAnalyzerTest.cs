@@ -175,7 +175,7 @@ public class Foo
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		[DataTestMethod]
@@ -187,7 +187,7 @@ public class Foo
 		 DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
 		}
 	}
 }

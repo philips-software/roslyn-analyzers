@@ -47,7 +47,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
 		}
 
 
@@ -80,7 +80,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 	}
 }

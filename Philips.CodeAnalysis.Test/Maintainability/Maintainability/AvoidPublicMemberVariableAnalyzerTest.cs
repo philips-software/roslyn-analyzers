@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 
 		}
 

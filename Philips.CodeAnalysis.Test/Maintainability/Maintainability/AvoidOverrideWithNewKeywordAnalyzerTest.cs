@@ -82,7 +82,7 @@ namespace MultiLineConditionUnitTests
 		public void OverrideVirtualDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[DataTestMethod]
@@ -92,7 +92,7 @@ namespace MultiLineConditionUnitTests
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidOverridingWithNewKeyword,
 				new Regex("Avoid overriding Virtual.* with the new keyword."));
-			VerifyCSharpDiagnostic(input, expected);
+			VerifyDiagnostic(input, expected);
 		}
 
 		/// <summary>

@@ -77,14 +77,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			VerifyDiagnostic(code, expected);
 		}
 
 		[TestMethod]
 		public void DoNotReportANamespacePrefixError()
 		{
 			string code = string.Format(ClassString, configuredPrefix + ".");
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
 		#endregion

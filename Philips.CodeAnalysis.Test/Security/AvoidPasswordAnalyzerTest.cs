@@ -39,7 +39,7 @@ class Foo
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPasswordField);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		[DataTestMethod]
@@ -52,7 +52,7 @@ class Foo
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 	}
 }

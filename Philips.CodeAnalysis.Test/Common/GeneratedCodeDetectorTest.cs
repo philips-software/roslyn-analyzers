@@ -121,7 +121,7 @@ public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, expected);
+			VerifyDiagnostic(input, expected);
 		}
 
 		[TestMethod]
@@ -136,7 +136,7 @@ public class Foo
   public Foo() { }
 }
 ";
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[TestMethod]
@@ -148,7 +148,7 @@ public class Foo
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -173,7 +173,7 @@ public class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 

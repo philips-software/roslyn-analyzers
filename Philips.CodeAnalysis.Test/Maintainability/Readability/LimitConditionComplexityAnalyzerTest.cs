@@ -65,7 +65,7 @@ namespace ComplexConditionUnitTests {
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -76,7 +76,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>

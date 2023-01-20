@@ -40,7 +40,7 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(text, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.OrderPropertyAccessors) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(text, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.OrderPropertyAccessors) : Array.Empty<DiagnosticResult>());
 		}
 
 		#endregion

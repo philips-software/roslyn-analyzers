@@ -189,7 +189,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			VerifyDiagnostic(file);
 		}
 
 		/// <summary>
@@ -200,7 +200,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(11, 16);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -211,7 +211,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -223,7 +223,7 @@ class ContainerControl
 			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(11, 16);
 			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult1, diagnosticResult2 };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -234,7 +234,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(9, 22);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		#endregion

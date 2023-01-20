@@ -41,7 +41,7 @@ class Foo
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			VerifyDiagnostic(string.Format(template, field), result);
 		}
 
 		[DataRow("object foo", false)]
@@ -64,7 +64,7 @@ class Foo
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			VerifyDiagnostic(string.Format(template, field), result);
 		}
 
 		[DataRow("object foo", false)]
@@ -92,7 +92,7 @@ class Foo
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			VerifyDiagnostic(string.Format(template, field), result);
 		}
 
 		[TestMethod]
@@ -111,7 +111,7 @@ class Foo
 ";
 			var result = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			VerifyDiagnostic(string.Format(template), result);
 		}
 
 		[TestMethod]
@@ -130,7 +130,7 @@ class Foo
 ";
 			var result = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			VerifyDiagnostic(string.Format(template), result);
 		}
 
 		[TestMethod]
@@ -155,7 +155,7 @@ class Foo
 				error,
 			};
 
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			VerifyDiagnostic(string.Format(template), result);
 		}
 	}
 }

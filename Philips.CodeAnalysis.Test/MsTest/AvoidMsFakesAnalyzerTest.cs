@@ -61,12 +61,12 @@ class Foo
 
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidMsFakesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),

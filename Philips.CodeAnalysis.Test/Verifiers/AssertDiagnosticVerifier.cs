@@ -27,14 +27,14 @@ namespace Philips.CodeAnalysis.Test
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				}).ToArray();
-			VerifyCSharpDiagnostic(test, expected);
+			VerifyDiagnostic(test, expected);
 		}
 
 		protected void VerifyNoError(string methodBody)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifyCSharpDiagnostic(test);
+			VerifyDiagnostic(test);
 		}
 
 		#endregion

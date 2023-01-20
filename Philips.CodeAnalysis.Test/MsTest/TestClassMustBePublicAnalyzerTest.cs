@@ -52,11 +52,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyCSharpDiagnostic(text);
+					VerifyDiagnostic(text);
 				}
 				else
 				{
-					VerifyCSharpDiagnostic(text, new DiagnosticResult()
+					VerifyDiagnostic(text, new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
@@ -93,11 +93,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyCSharpDiagnostic(text);
+					VerifyDiagnostic(text);
 				}
 				else
 				{
-					VerifyCSharpDiagnostic(text, new DiagnosticResult()
+					VerifyDiagnostic(text, new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },

@@ -75,7 +75,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
@@ -108,7 +108,7 @@ class Foo
 }}
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
-			VerifyCSharpDiagnostic(errorCode);
+			VerifyDiagnostic(errorCode);
 		}
 
 
@@ -166,7 +166,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
@@ -204,7 +204,7 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode);
+			VerifyDiagnostic(errorCode);
 		}
 
 		[TestMethod]
@@ -238,7 +238,7 @@ class Foo
 ";
 			string errorCode = string.Format(template);
 
-			VerifyCSharpDiagnostic(errorCode);
+			VerifyDiagnostic(errorCode);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -279,7 +279,7 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode);
+			VerifyDiagnostic(errorCode);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -322,7 +322,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
@@ -365,7 +365,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
@@ -398,7 +398,7 @@ public void test()
 }}
 ";
 
-			VerifyCSharpDiagnostic(string.Format(template, declaration, countLengthMethod));
+			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -427,7 +427,7 @@ public void test()
 }}
 ";
 
-			VerifyCSharpDiagnostic(string.Format(template, declaration, countLengthMethod), DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod), DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -458,7 +458,7 @@ public void test()
 }}
 ";
 
-			VerifyCSharpDiagnostic(string.Format(template, declaration, countLengthMethod));
+			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
 		}
 
 		#endregion

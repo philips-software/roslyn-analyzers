@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
 		}
 
 		[DataRow(true)]
@@ -62,7 +62,7 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
 		}
 
 		[DataRow(true)]
@@ -85,7 +85,7 @@ public class TestClass : IData
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
 
 		[DataTestMethod]
@@ -106,7 +106,7 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
 
 		[DataRow(true)]
@@ -121,7 +121,7 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
 		}
 
 		[TestMethod]
@@ -144,7 +144,7 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
 		}
 
 		[DataRow(": Foo", false)]
@@ -162,7 +162,7 @@ public class TestClass {baseClass}
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
 		}
 
 		[DataRow(": Foo", "i = 0", false)]
@@ -183,7 +183,7 @@ public class TestClass {baseClass}
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
 		}
 
 

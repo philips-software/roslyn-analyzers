@@ -41,7 +41,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataTestMethod]
@@ -164,7 +164,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 

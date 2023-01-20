@@ -38,7 +38,7 @@ class Foo
 					new DiagnosticResultLocation("Test0.cs", 7, 5)
 				}
 			};
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 

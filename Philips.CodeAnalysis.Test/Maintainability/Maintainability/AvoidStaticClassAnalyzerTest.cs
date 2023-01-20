@@ -129,12 +129,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidStaticClassesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),

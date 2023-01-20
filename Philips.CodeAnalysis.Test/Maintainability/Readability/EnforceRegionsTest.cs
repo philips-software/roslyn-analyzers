@@ -237,7 +237,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
@@ -262,7 +262,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

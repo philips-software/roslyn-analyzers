@@ -46,7 +46,7 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 			}
 
 			var expected = results.ToArray();
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		#endregion

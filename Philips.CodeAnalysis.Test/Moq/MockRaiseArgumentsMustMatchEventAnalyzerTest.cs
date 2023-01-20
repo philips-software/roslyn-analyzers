@@ -80,7 +80,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow(true, "")]
@@ -129,7 +129,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		//[DataRow(true, "", DiagnosticIds.MockRaiseArgumentCountMismatch)]
@@ -180,7 +180,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow(true, "", 1, @"PH2054")]
@@ -236,7 +236,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow(true, "", 1, @"PH2054")]
@@ -291,7 +291,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		#endregion

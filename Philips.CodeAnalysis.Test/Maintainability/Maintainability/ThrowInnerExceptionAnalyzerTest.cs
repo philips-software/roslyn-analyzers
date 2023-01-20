@@ -122,7 +122,7 @@ namespace InnerExceptionUnitTest {
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace InnerExceptionUnitTest {
 		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ThrowInnerException);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>

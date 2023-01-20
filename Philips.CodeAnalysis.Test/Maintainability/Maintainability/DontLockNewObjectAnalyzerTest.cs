@@ -41,7 +41,7 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
 		}
 
 		#endregion

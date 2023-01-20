@@ -59,7 +59,7 @@ class Foo
 			}
 
 			var source = CreateFunction(argument);
-			VerifyCSharpDiagnostic(source, results);
+			VerifyDiagnostic(source, results);
 		}
 
 		#endregion

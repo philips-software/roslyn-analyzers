@@ -48,7 +48,7 @@ class Foo
 		public void NamedTuplesDontCauseErrors(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyCSharpDiagnostic(source);
+			VerifyDiagnostic(source);
 		}
 
 		[DataRow("(int, int)")]
@@ -56,7 +56,7 @@ class Foo
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyCSharpDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
 		}
 
 		[DataRow("(int Foo, int)")]
@@ -64,7 +64,7 @@ class Foo
 		public void ErrorIfTupleElementDoesNotHaveName(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyCSharpDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
 		}
 
 		#endregion

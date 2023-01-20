@@ -46,7 +46,7 @@ public class Tests
 	public void Foo(object o, object y) { }
 }";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult()
+			VerifyDiagnostic(code, new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, null) },

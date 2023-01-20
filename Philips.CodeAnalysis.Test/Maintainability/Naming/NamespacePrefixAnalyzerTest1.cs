@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			VerifyDiagnostic(code, expected);
 		}
 
 		#endregion

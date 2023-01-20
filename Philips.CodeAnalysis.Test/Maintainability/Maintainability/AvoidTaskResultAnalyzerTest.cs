@@ -32,7 +32,7 @@ class FooClass
 			string before = string.Format(template, @"task.Result");
 			string after = string.Format(template, @"await task");
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -52,7 +52,7 @@ class FooClass
 			string before = string.Format(template, @"new Task<int>(() => 4).Result");
 			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -77,7 +77,7 @@ class FooClass
 			string before = string.Format(template, @"Foo(1).Result");
 			string after = string.Format(template, @"await Foo(1)");
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -102,7 +102,7 @@ class FooClass
 			string before = string.Format(template, @"this.Foo(1).Result");
 			string after = string.Format(template, @"await this.Foo(1)");
 
-			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 

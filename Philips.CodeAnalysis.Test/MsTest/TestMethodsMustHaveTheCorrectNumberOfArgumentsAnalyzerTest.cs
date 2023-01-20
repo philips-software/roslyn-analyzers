@@ -67,11 +67,11 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifyCSharpDiagnostic(string.Format(code, testType, parameterListString));
+				VerifyDiagnostic(string.Format(code, testType, parameterListString));
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
+				VerifyDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) },
@@ -103,7 +103,7 @@ public class Tests
 			}
 
 
-			VerifyCSharpDiagnostic(string.Format(code, parameterListString));
+			VerifyDiagnostic(string.Format(code, parameterListString));
 		}
 
 		private static IEnumerable<object[]> DataRowVariants()
@@ -173,11 +173,11 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifyCSharpDiagnostic(code);
+				VerifyDiagnostic(code);
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments));
+				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments));
 			}
 		}
 

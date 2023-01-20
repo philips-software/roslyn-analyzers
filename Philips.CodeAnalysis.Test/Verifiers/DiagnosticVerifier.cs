@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected)
 		{
 			VerifyDiagnostic(source, null, expected);
 		}

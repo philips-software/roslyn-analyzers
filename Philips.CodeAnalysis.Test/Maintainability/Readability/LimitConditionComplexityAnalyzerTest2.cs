@@ -48,7 +48,7 @@ namespace ComplexConditionUnitTests {
 		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses))]
 		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -59,7 +59,7 @@ namespace ComplexConditionUnitTests {
 		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 

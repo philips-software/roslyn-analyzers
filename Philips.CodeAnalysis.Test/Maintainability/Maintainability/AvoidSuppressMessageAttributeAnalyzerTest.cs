@@ -96,7 +96,7 @@ namespace WpfApp1 {
 				}}
 				";
 			string givenText = string.Format(baseline, usingStatement, attribute, functionName);
-			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
+			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
-			VerifyCSharpDiagnostic(test);
+			VerifyDiagnostic(test);
 
 			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
-			VerifyCSharpDiagnostic(test, expected);
+			VerifyDiagnostic(test, expected);
 
 			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.Test
 				expected.Message = new Regex(error);
 			}
 
-			VerifyCSharpDiagnostic(test, expected);
+			VerifyDiagnostic(test, expected);
 		}
 
 		protected void VerifyError(string methodBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
 
-			VerifyCSharpDiagnostic(test);
+			VerifyDiagnostic(test);
 		}
 
 		protected override MetadataReference[] GetMetadataReferences()

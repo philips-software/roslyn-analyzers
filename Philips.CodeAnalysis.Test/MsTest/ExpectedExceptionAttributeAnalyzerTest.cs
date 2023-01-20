@@ -39,7 +39,7 @@ namespace ExpectedAnalyzerAttributeTest
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

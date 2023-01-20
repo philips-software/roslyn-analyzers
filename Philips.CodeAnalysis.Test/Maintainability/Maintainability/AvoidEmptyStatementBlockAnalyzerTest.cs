@@ -39,7 +39,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 
 		}
 
@@ -67,7 +67,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
 			VerifyFix(template, fixedCode);
 		}
 
@@ -88,7 +88,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 		[TestMethod]
@@ -104,7 +104,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 
 
 		}
@@ -123,7 +123,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 
 
 
@@ -141,7 +141,7 @@ class Foo
 	{ }
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -157,7 +157,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 		[TestMethod]
@@ -179,7 +179,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
 		}
 
 
@@ -196,7 +196,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -213,7 +213,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -231,7 +231,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -249,7 +249,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -267,7 +267,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -285,7 +285,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 	}

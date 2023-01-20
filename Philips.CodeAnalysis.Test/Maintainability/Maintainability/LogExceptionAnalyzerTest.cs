@@ -97,7 +97,7 @@ public class Program {
 			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -108,7 +108,7 @@ public class Program {
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException); 
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>

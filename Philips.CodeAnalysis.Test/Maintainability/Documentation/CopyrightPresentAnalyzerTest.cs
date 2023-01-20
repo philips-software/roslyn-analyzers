@@ -116,7 +116,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -134,7 +134,7 @@ class Foo
 
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.CopyrightPresent) };
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow(@"")]
@@ -145,7 +145,7 @@ class Foo
 		{
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(text, expected);
+			VerifyDiagnostic(text, expected);
 		}
 
 

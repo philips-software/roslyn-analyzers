@@ -83,7 +83,7 @@ namespace AvoidArrayListTests {
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace AvoidArrayListTests {
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidArrayList);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 			if (fixedCode != null)
 			{
 				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);

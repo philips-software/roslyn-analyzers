@@ -96,7 +96,7 @@ class Foo
 
 ";
 
-			VerifyCSharpDiagnostic(givenText);
+			VerifyDiagnostic(givenText);
 
 			VerifyFix(givenText, givenText);
 		}

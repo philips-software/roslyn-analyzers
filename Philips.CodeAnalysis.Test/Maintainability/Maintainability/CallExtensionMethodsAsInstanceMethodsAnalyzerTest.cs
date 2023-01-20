@@ -65,7 +65,7 @@ public static class Program
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
@@ -96,7 +96,7 @@ public static class Foo
 
 			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
 			VerifyFix(text, newText);
@@ -129,7 +129,7 @@ public static class Foo
 
 			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 
-			VerifyCSharpDiagnostic(text, result);
+			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
 			VerifyFix(text, newText);
@@ -300,7 +300,7 @@ public class Baz
 				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
-			VerifyCSharpDiagnostic(template, result);
+			VerifyDiagnostic(template, result);
 		}
 	}
 }

@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 			string testCode = string.Format(testCodeTemplate, test);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		[DataTestMethod]
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
 			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticIds.MergeIfStatements);
-			VerifyCSharpDiagnostic(testCode, expectedDiagnostic);
+			VerifyDiagnostic(testCode, expectedDiagnostic);
 			VerifyFix(testCode, fixedCode);
 		}
 	}

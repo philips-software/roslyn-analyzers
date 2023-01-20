@@ -55,7 +55,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
 			VerifyFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
 		}

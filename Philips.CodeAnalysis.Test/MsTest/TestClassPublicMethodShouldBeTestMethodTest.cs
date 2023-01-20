@@ -120,7 +120,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

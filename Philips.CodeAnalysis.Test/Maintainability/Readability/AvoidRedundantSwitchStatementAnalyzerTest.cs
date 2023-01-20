@@ -49,7 +49,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 
@@ -76,7 +76,7 @@ public class Foo
 		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -108,7 +108,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]
@@ -134,7 +134,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -157,7 +157,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]
@@ -180,7 +180,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 	}

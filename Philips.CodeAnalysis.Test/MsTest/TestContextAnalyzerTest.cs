@@ -59,7 +59,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.TestContext));
+			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.TestContext));
 			VerifyFix(givenText, fixedText);
 		}
 

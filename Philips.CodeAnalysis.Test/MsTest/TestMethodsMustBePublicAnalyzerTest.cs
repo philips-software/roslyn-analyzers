@@ -51,11 +51,11 @@ public class Tests
 
 				if (isCorrect)
 				{
-					VerifyCSharpDiagnostic(text);
+					VerifyDiagnostic(text);
 				}
 				else
 				{
-					VerifyCSharpDiagnostic(text, new DiagnosticResult()
+					VerifyDiagnostic(text, new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, modifier.Length + 8) },

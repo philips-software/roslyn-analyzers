@@ -151,7 +151,7 @@ public static class Foo
 		public void FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
 			VerifyFix(input, fixedCode);
 		}
 
@@ -165,7 +165,7 @@ public static class Foo
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
 		public void CorrectDoesNotFlag(string input)
 		{
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[TestMethod]

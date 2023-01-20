@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 		}
 
 		[DataRow("static", "", true)]
@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				results = Array.Empty<DiagnosticResult>();
 			}
 
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 		}
 
 		[DataRow("  /// <summary />")]

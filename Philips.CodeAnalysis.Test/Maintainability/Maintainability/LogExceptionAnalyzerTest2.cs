@@ -41,7 +41,7 @@ public class Program {
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>

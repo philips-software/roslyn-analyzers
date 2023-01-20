@@ -40,7 +40,7 @@ class Foo {{ {0} string _foo; }}
 
 			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template, modifiers), expected);
+			VerifyDiagnostic(string.Format(template, modifiers), expected);
 		}
 
 		#endregion
