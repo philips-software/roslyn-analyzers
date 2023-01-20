@@ -100,18 +100,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (specialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 				{
 					var loc = method.Identifier.GetLocation();
-					bool? withinExceptionClass =
-						(method.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
-					if(specialMethodKind == "constructor" && withinExceptionClass.HasValue && (bool)withinExceptionClass)
-					{
-						Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "constructor of an Exception");
-						context.ReportDiagnostic(diagnostic);
-					}
-					else
-					{
-						Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, specialMethodKind);
-						context.ReportDiagnostic(diagnostic);
-					}
+					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, specialMethodKind);
+					context.ReportDiagnostic(diagnostic);
 				}
 			}
 			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" } operatorDeclaration)
