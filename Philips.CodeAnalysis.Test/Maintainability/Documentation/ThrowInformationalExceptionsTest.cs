@@ -41,6 +41,19 @@ public class Foo
 }
 ";
 
+		private const string CorrectWithMethod = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA()
+    {
+        throw new ArgumentException(Foo.GetExceptionMessage());
+    }
+    private static string GetExceptionMessage() { return ""Error""; }
+}
+";
+
         private const string CorrectWithLocalVar = @"
 public class Foo
 {
@@ -83,7 +96,8 @@ public class Foo
 		[DataRow(CorrectWithLiteral, DisplayName = nameof(CorrectWithLiteral)),
 		 DataRow(CorrectWithLocalVar, DisplayName = nameof(CorrectWithLocalVar)),
 		 DataRow(CorrectWithNameOf, DisplayName = nameof(CorrectWithNameOf)),
-		 DataRow(CorrectWithProperty, DisplayName = nameof(CorrectWithProperty))]
+		 DataRow(CorrectWithProperty, DisplayName = nameof(CorrectWithProperty)),
+		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifyCSharpDiagnostic(testCode);
