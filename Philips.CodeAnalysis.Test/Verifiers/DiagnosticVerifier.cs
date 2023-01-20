@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.Test
 		protected void VerifyCSharpDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnostics(new[] { source }, filenamePrefix, analyzer, expected);
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
 		}
 
 		/// <summary>
@@ -56,18 +56,18 @@ namespace Philips.CodeAnalysis.Test
 		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnostics(sources, null, analyzer, expected);
+			VerifyDiagnosticsInternal(sources, null, analyzer, expected);
 		}
 
-		/// <summary>
-		/// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
-		/// then verifies each of them.
-		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="language">The language of the classes represented by the source strings</param>
+        /// <summary>
+        /// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
+        /// then verifies each of them.
+        /// </summary>
+        /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
+        /// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnostics(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+        /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
+        private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
 			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
