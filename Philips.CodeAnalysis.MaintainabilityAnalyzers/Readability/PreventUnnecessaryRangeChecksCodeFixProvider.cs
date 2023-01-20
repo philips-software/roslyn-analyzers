@@ -61,7 +61,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (ifBlock is BlockSyntax block)
 			{
-				replaceNode = block.Statements[0].WithLeadingTrivia(node.GetLeadingTrivia());
+				var trivia = node.GetLeadingTrivia();
+				replaceNode = block.Statements[0].WithLeadingTrivia(trivia);
 			}
 
 			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
@@ -93,7 +94,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			var newLine = SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, Environment.NewLine);
 
-			replaceNode = replaceNode.WithTrailingTrivia(trailingTrivia.Insert(0, newLine));
+			var trivia = trailingTrivia.Insert(0, newLine);
+			replaceNode = replaceNode.WithTrailingTrivia(trivia);
 
 			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
 

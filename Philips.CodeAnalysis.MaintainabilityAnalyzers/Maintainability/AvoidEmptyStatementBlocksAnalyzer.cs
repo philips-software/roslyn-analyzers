@@ -44,7 +44,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeEmptyStatement(SyntaxNodeAnalysisContext context)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(StatementRule, context.Node.GetLocation());
+			var resultOfGetLocation = context.Node.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(StatementRule, resultOfGetLocation);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -78,7 +79,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Empty catch blocks are a different type of code smell.
 			if (blockSyntax.Parent is CatchClauseSyntax)
 			{
-				Diagnostic emptyCatchDiagnostic = Diagnostic.Create(CatchRule, blockSyntax.GetLocation());
+				var resultOfGetLocation = blockSyntax.GetLocation();
+				Diagnostic emptyCatchDiagnostic = Diagnostic.Create(CatchRule, resultOfGetLocation);
 				context.ReportDiagnostic(emptyCatchDiagnostic);
 				return;
 			}
@@ -95,7 +97,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(BlockRule, blockSyntax.GetLocation());
+			var location = blockSyntax.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(BlockRule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

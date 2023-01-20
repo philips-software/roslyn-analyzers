@@ -28,7 +28,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName
 			};
 			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
-			VerifyNoDiagnostic(CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName));
+			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
+			VerifyNoDiagnostic(file);
 		}
 	}
 
@@ -88,34 +89,41 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		public void AvoidStaticClassesTest()
 		{
-			VerifyDiagnostic(CreateFunction("static"));
+			var file = CreateFunction("static");
+			VerifyDiagnostic(file);
 		}
 
 
 		[TestMethod]
 		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
-			VerifyDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName));
+			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void AvoidStaticClassesShouldWhitelistWildCardClassTest()
 		{
-			VerifyNoDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName));
-			VerifyNoDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName));
+			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName);
+			VerifyNoDiagnostic(file);
+			var file2 = CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName);
+			VerifyNoDiagnostic(file2);
 		}
 
 		[TestMethod]
 		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
-			VerifyNoDiagnostic(CreateFunction("static", isExtension: true, hasNonExtensionMethods: false));
-			VerifyDiagnostic(CreateFunction("static", isExtension: true));
+			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
+			VerifyNoDiagnostic(noDiagnostic);
+			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
+			VerifyDiagnostic(methodHavingDiagnostic);
 		}
 
 		[TestMethod]
 		public void AvoidNoStaticClassesTest()
 		{
-			VerifyNoDiagnostic(CreateFunction(""));
+			var file = CreateFunction("");
+			VerifyNoDiagnostic(file);
 		}
 
 

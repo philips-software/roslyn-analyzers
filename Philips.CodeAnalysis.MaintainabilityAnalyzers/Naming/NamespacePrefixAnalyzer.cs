@@ -34,14 +34,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			string myNamespace = namespaceDeclaration.Name.ToString();
+			var location = namespaceDeclaration.Name.GetLocation();
 			if (string.IsNullOrEmpty(expected_prefix))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(RuleForEmptyPrefix, namespaceDeclaration.Name.GetLocation());
+				Diagnostic diagnostic = Diagnostic.Create(RuleForEmptyPrefix, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (!myNamespace.StartsWith(expected_prefix))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, namespaceDeclaration.Name.GetLocation());
+				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

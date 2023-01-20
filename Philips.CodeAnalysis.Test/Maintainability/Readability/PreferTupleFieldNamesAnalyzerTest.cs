@@ -58,7 +58,8 @@ class Foo
 				results = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferUsingNamedTupleField);
 			}
 
-			VerifyCSharpDiagnostic(CreateFunction(argument), results);
+			var source = CreateFunction(argument);
+			VerifyCSharpDiagnostic(source, results);
 		}
 
 		#endregion

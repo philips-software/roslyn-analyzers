@@ -81,7 +81,8 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("string z = \"hi\"", "int t2 = y.Length")]
 		public void DereferenceNullAsExpressionFindingTest(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
 			VerifyCSharpDiagnostic(testCode, expected);
 		}
@@ -100,7 +101,8 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
 		public void DereferenceNullAsExpressionNoFindingTest(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
 			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 

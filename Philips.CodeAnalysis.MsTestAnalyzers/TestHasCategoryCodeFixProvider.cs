@@ -81,7 +81,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(
 				SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(attribute));
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(method.AttributeLists.Add(attributeList));
+			attributeLists = method.AttributeLists.Add(attributeList);
+			MethodDeclarationSyntax newMethod = method.WithAttributeLists(attributeLists);
 
 			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
 			Document newDocument = document.WithSyntaxRoot(newRoot);

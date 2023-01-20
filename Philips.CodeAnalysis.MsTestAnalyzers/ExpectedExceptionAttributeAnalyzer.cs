@@ -45,7 +45,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (attribute.Name.ToString().Contains(@"ExpectedException"))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, attribute.GetLocation());
+					var location = attribute.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}

@@ -59,7 +59,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(Rule, fieldDeclaration.GetLocation());
+				var location = fieldDeclaration.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

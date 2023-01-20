@@ -116,7 +116,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return false;
 				}
 
-				flow = semanticModel.AnalyzeDataFlow(methodDeclarationSyntax.Body.Statements.First(), methodDeclarationSyntax.Body.Statements.Last());
+				var firstStatement = methodDeclarationSyntax.Body.Statements.First();
+				var lastStatement = methodDeclarationSyntax.Body.Statements.Last();
+				flow = semanticModel.AnalyzeDataFlow(firstStatement, lastStatement);
 			}
 			else if (methodDeclarationSyntax.ExpressionBody != null)
 			{
