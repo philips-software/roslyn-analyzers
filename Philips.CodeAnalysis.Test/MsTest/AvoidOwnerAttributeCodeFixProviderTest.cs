@@ -54,7 +54,7 @@ class Foo
 			};
 
 			VerifyCSharpDiagnostic(givenText, expected);
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyFix(givenText, fixedText);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

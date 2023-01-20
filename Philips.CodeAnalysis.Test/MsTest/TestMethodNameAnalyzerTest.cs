@@ -56,7 +56,7 @@ namespace TestMethodNameAnalyzerTest
 			}};
 
 			VerifyDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyFix(givenText, fixedText);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

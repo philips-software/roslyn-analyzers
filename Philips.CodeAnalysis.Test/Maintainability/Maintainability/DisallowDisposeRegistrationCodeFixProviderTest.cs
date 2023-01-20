@@ -42,7 +42,7 @@ class Foo
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

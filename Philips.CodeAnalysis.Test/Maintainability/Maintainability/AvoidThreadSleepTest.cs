@@ -57,7 +57,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
+			VerifyFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
 		}
 
 

@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test
 
 			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
-			VerifyCSharpFix(test, fixtest);
+			VerifyFix(test, fixtest);
 		}
 
 		protected void VerifyChange(string methodBody, string expectedBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0)
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test
 
 			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
-			VerifyCSharpFix(test, fixtest);
+			VerifyFix(test, fixtest);
 		}
 
 		protected void VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)

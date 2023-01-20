@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestInitializeMethod);
 			VerifyCSharpDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassInitializeMethod);
 			VerifyCSharpDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		[DataTestMethod]
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestCleanupMethod);
 			VerifyCSharpDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		[DataTestMethod]
@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassCleanupMethod);
 			VerifyCSharpDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		private DiagnosticResult GetExpectedDiagnostic(DiagnosticIds id)

@@ -104,7 +104,7 @@ public static class Foo
 		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
-			VerifyCSharpFix(input, Correct);
+			VerifyFix(input, Correct);
 		}
 
 		/// <summary>

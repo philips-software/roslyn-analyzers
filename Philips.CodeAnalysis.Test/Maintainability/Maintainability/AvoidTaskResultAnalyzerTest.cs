@@ -33,7 +33,7 @@ class FooClass
 			string after = string.Format(template, @"await task");
 
 			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
-			VerifyCSharpFix(before, after);
+			VerifyFix(before, after);
 		}
 
 		[TestMethod]
@@ -53,7 +53,7 @@ class FooClass
 			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
 			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
-			VerifyCSharpFix(before, after);
+			VerifyFix(before, after);
 		}
 
 
@@ -78,7 +78,7 @@ class FooClass
 			string after = string.Format(template, @"await Foo(1)");
 
 			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
-			VerifyCSharpFix(before, after);
+			VerifyFix(before, after);
 		}
 
 
@@ -103,7 +103,7 @@ class FooClass
 			string after = string.Format(template, @"await this.Foo(1)");
 
 			VerifyCSharpDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
-			VerifyCSharpFix(before, after);
+			VerifyFix(before, after);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

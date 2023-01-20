@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticIds.MergeIfStatements);
 			VerifyCSharpDiagnostic(testCode, expectedDiagnostic);
-			VerifyCSharpFix(testCode, fixedCode);
+			VerifyFix(testCode, fixedCode);
 		}
 	}
 }

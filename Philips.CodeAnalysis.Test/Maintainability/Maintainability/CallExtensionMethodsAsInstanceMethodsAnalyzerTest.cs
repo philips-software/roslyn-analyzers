@@ -70,7 +70,7 @@ public static class Program
 			if (!string.IsNullOrEmpty(fixedText))
 			{
 				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
-				VerifyCSharpFix(text, newText);
+				VerifyFix(text, newText);
 			}
 		}
 
@@ -99,7 +99,7 @@ public static class Foo
 			VerifyCSharpDiagnostic(text, result);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
-			VerifyCSharpFix(text, newText);
+			VerifyFix(text, newText);
 		}
 
 		[TestMethod]
@@ -132,7 +132,7 @@ public static class Foo
 			VerifyCSharpDiagnostic(text, result);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
-			VerifyCSharpFix(text, newText);
+			VerifyFix(text, newText);
 		}
 
 		[DataRow(@"

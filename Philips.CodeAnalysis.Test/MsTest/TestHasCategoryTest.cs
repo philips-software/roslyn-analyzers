@@ -139,7 +139,7 @@ class Foo
     }
 }
 ";
-			VerifyCSharpFix(baseline, fixedText);
+			VerifyFix(baseline, fixedText);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError)

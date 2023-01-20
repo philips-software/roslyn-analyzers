@@ -136,7 +136,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidStaticMethods));
 
 			string fixedCode = CreateFunction(@"");
-			VerifyCSharpFix(template, fixedCode);
+			VerifyFix(template, fixedCode);
 		}
 	}
 }

@@ -98,7 +98,7 @@ static Foo() {{ }}", summaryComment));
 
 			string expected = string.Format(template, "  \r\n");
 
-			VerifyCSharpFix(classContent, expected);
+			VerifyFix(classContent, expected);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

@@ -77,7 +77,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
-			VerifyCSharpFix(errorCode, string.Format(fixedTemplate, declaration));
+			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -168,7 +168,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
-			VerifyCSharpFix(errorCode, string.Format(fixedTemplate, declaration));
+			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -324,7 +324,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
-			VerifyCSharpFix(errorCode, string.Format(fixedTemplate, declaration));
+			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -367,7 +367,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticIds.PreventUncessaryRangeChecks));
 
-			VerifyCSharpFix(errorCode, string.Format(fixedTemplate, declaration));
+			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]

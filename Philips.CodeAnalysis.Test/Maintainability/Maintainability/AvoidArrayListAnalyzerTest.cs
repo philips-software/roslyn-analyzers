@@ -98,7 +98,7 @@ namespace AvoidArrayListTests {
 			VerifyCSharpDiagnostic(testCode, expected);
 			if (fixedCode != null)
 			{
-				VerifyCSharpFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
 			}
 		}
 

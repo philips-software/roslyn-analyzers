@@ -315,7 +315,7 @@ public class TestClass
 
 			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
 
-			VerifyCSharpFix(errorContent, fixedContent);
+			VerifyFix(errorContent, fixedContent);
 		}
 
 		[DataRow("event System.EventHandler Foo;")]
@@ -342,7 +342,7 @@ public class TestClass
 
 			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
 
-			VerifyCSharpFix(errorContent, fixedContent);
+			VerifyFix(errorContent, fixedContent);
 		}
 
 		[TestMethod]

@@ -68,7 +68,7 @@ class Foo
 ";
 
 			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
-			VerifyCSharpFix(template, fixedCode);
+			VerifyFix(template, fixedCode);
 		}
 
 		[TestMethod]

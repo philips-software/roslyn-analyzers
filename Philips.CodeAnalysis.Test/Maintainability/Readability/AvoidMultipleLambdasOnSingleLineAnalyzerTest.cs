@@ -152,7 +152,7 @@ public static class Foo
 		{
 
 			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
-			VerifyCSharpFix(input, fixedCode);
+			VerifyFix(input, fixedCode);
 		}
 
 

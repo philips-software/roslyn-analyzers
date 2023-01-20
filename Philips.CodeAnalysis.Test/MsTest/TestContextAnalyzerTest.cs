@@ -60,7 +60,7 @@ namespace TestContextAnalyzerTest
 ";
 
 			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.TestContext));
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyFix(givenText, fixedText);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

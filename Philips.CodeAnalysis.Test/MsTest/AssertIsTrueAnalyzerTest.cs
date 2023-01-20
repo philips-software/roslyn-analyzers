@@ -98,7 +98,7 @@ class Foo
 
 			VerifyCSharpDiagnostic(givenText);
 
-			VerifyCSharpFix(givenText, givenText);
+			VerifyFix(givenText, givenText);
 		}
 
 		[TestMethod]
