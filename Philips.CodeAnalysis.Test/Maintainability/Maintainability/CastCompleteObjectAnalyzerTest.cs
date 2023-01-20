@@ -48,7 +48,7 @@ namespace CastCompleteTests {
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -58,7 +58,7 @@ namespace CastCompleteTests {
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.CastCompleteObject);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -68,10 +68,10 @@ namespace CastCompleteTests {
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(WrongMulipleFields, filePath);
+			VerifyDiagnostic(WrongMulipleFields, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new CastCompleteObjectAnalyzer();
 		}
 	}
