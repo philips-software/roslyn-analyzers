@@ -47,18 +47,6 @@ namespace Philips.CodeAnalysis.Test
 			VerifyDiagnostic(source, null, expected);
 		}
 
-		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(sources, null, analyzer, expected);
-		}
-
         /// <summary>
         /// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
         /// then verifies each of them.
