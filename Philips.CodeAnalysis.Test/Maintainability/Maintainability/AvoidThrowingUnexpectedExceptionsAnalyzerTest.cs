@@ -4,16 +4,16 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
+namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class AvoidThrowFromUnexpectedLocationsTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new DocumentThrownExceptionsAnalyzer();
+			return new AvoidThrowingUnexpectedExceptionsAnalyzer();
 		}
 
 		private const string CorrectExplicitCast = @"
