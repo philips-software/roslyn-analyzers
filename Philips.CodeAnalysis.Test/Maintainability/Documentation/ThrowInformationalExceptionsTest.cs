@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class ThrowInformationalExceptionsTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DocumentThrownExceptionsAnalyzer();
 		}
@@ -100,14 +100,14 @@ public class Foo
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		[DataTestMethod]
 		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions));
 		}
 	}
 }
