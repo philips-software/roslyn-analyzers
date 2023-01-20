@@ -45,11 +45,11 @@ class FooClass
 
 			if (hasDiagnostic)
 			{
-				VerifyCSharpDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.EnforceFileVersionIsSameAsPackageVersion));
+				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.EnforceFileVersionIsSameAsPackageVersion));
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(code);
+				VerifyDiagnostic(code);
 			}
 		}
 
@@ -72,7 +72,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
 		[TestMethod]
@@ -91,10 +91,10 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceFileVersionIsSameAsPackageVersionAnalyzer();
 		}

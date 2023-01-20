@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -23,16 +22,7 @@ namespace Philips.CodeAnalysis.Test
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
 		/// </summary>
 		/// <returns>The CodeFixProvider to be used for CSharp code</returns>
-		protected abstract CodeFixProvider GetCSharpCodeFixProvider();
-
-		/// <summary>
-		/// Returns the codefix being tested (VB) - to be implemented in non-abstract class
-		/// </summary>
-		/// <returns>The CodeFixProvider to be used for VisualBasic code</returns>
-		protected virtual CodeFixProvider GetBasicCodeFixProvider()
-		{
-			return null;
-		}
+		protected abstract CodeFixProvider GetCodeFixProvider();
 
 		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
@@ -41,25 +31,11 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyCSharpFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+		protected void VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
 		{
-			var analyzer = GetCSharpDiagnosticAnalyzer();
-			var codeFixProvider = GetCSharpCodeFixProvider();
-			VerifyFix(LanguageNames.CSharp, analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
-		}
-
-		/// <summary>
-		/// Called to test a VB codefix when applied on the inputted string as a source
-		/// </summary>
-		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
-		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
-		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyBasicFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
-		{
-			var analyzer = GetBasicDiagnosticAnalyzer();
-			var codeFixProvider = GetBasicCodeFixProvider();
-			VerifyFix(LanguageNames.VisualBasic, analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			var analyzer = GetDiagnosticAnalyzer();
+			var codeFixProvider = GetCodeFixProvider();
+			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 
 		/// <summary>
@@ -68,16 +44,15 @@ namespace Philips.CodeAnalysis.Test
 		/// Then gets the string after the codefix is applied and compares it with the expected result.
 		/// Note: If any codefix causes new diagnostics to show up, the test fails unless allowNewCompilerDiagnostics is set to true.
 		/// </summary>
-		/// <param name="language">The language the source code is in</param>
 		/// <param name="analyzer">The analyzer to be applied to the source code</param>
 		/// <param name="codeFixProvider">The codefix to be applied to the code wherever the relevant Diagnostic is found</param>
 		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
 		/// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		private void VerifyFix(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
+		private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
 		{
-			var document = CreateDocument(oldSource, language);
+			var document = CreateDocument(oldSource);
 			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 			var compilerDiagnostics = GetCompilerDiagnostics(document);
 

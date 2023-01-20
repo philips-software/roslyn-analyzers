@@ -27,7 +27,7 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyCSharpDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidAsyncVoid) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidAsyncVoid) : Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -56,7 +56,7 @@ public class MyEventArgs : EventArgs
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -74,7 +74,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+			VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
 		}
 
 		[TestMethod]
@@ -92,7 +92,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
 		}
 
 		[DataRow(false, "Action<int> action = x => {{ Task.Yield(); return 4; }}")]
@@ -121,21 +121,21 @@ class FooClass
 ";
 			if (isError)
 			{
-				VerifyCSharpDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+				VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(correctTemplate);
+				VerifyDiagnostic(correctTemplate);
 			}
 		}
 
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			throw new NotImplementedException();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAsyncVoidAnalyzer();
 		}

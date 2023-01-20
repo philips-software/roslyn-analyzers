@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new VariableNamingConventionAnalyzer();
 		}
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", true, 3)]
@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -116,7 +116,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -131,7 +131,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -146,7 +146,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -161,7 +161,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -176,7 +176,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -191,7 +191,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -211,7 +211,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -228,7 +228,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -243,7 +243,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -258,7 +258,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 3)]
@@ -298,7 +298,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("i", true, 5)]
@@ -341,7 +341,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("Foo", "const", true, 5)]
@@ -383,7 +383,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("int i; for(i=0;i<5;i++){}", true, 5, 9)]
@@ -425,7 +425,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("using(var i = new MemoryStream()){}", true, 5)]
@@ -464,7 +464,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foreach(var i in new[] { 1, 2 }){}", true, 5)]
@@ -503,7 +503,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		#endregion

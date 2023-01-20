@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return _mock.Object;
 		}
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidStaticClassesAnalyzer();
 		}
@@ -129,12 +129,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidStaticClassesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),

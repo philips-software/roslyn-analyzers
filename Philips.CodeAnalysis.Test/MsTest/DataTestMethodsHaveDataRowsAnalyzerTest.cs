@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DataTestMethodsHaveDataRowsAnalyzer();
 		}
@@ -57,7 +57,7 @@ public class Tests
 	public void Foo() { }
 }";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult()
+			VerifyDiagnostic(code, new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
 				Message = new Regex(".*"),
@@ -91,7 +91,7 @@ public class Tests
 				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
 			}
 
-			VerifyCSharpDiagnostic(string.Format(code, arg), expected);
+			VerifyDiagnostic(string.Format(code, arg), expected);
 		}
 
 		[DataRow("[DerivedDataSource]", false)]
@@ -117,7 +117,7 @@ public class Tests
 				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
 			}
 
-			VerifyCSharpDiagnostic(string.Format(code, arg), expected);
+			VerifyDiagnostic(string.Format(code, arg), expected);
 		}
 
 		#endregion

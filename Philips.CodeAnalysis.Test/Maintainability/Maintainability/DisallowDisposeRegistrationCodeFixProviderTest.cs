@@ -38,19 +38,19 @@ class Foo
 					new DiagnosticResultLocation("Test0.cs", 7, 5)
 				}
 			};
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new DisallowDisposeRegistrationCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DisallowDisposeRegistrationAnalyzer();
 		}

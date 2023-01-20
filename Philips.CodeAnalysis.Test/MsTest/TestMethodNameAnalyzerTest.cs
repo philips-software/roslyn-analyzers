@@ -55,16 +55,16 @@ namespace TestMethodNameAnalyzerTest
 				}
 			}};
 
-			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
+			VerifyFix(givenText, fixedText);
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodNameAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestMethodNameCodeFixProvider();
 		}

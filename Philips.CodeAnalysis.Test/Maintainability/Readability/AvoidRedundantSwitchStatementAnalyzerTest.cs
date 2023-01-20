@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer();
 		}
@@ -49,7 +49,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 
@@ -76,14 +76,14 @@ public class Foo
 		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
 		[TestMethod]
 		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
-			VerifyCSharpDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
+			VerifyDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
 		}
 
 		[DataRow("byte", "1")]
@@ -108,7 +108,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]
@@ -134,7 +134,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -157,7 +157,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]
@@ -180,7 +180,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 	}

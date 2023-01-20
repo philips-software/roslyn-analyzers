@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidTryParseWithoutCultureAnalyzer();
 		}
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			VerifyDiagnostic(code, expected);
 		}
 
 		[DataTestMethod]
@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void DoNotFlagTryParseWithCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
 		[DataTestMethod]
@@ -122,7 +122,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			VerifyDiagnostic(code, expected);
 		}
 
 		[DataTestMethod]
@@ -133,7 +133,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string editorCode = string.Format(ClassString, s);
 			string code = string.Concat(editorCode, TestParserDefinition);
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
 		#endregion

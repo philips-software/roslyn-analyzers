@@ -59,16 +59,16 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.TestContext));
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.TestContext));
+			VerifyFix(givenText, fixedText);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestContextAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestContextCodeFixProvider();
 		}

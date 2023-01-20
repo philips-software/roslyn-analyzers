@@ -11,11 +11,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidEmptyStatementBlockAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidEmptyStatementBlocksAnalyzer();
 		}
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidEmptyStatementBlocksCodeFixProvider();
 		}
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		public void FixAllProviderTest()
 		{
-			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCSharpCodeFixProvider().GetFixAllProvider());
+			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCodeFixProvider().GetFixAllProvider());
 		}
 
 		[TestMethod]
@@ -39,7 +39,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 
 		}
 
@@ -67,8 +67,8 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
-			VerifyCSharpFix(template, fixedCode);
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatement));
+			VerifyFix(template, fixedCode);
 		}
 
 		[TestMethod]
@@ -88,7 +88,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 		[TestMethod]
@@ -104,7 +104,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 
 
 		}
@@ -123,7 +123,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 
 
 
@@ -141,7 +141,7 @@ class Foo
 	{ }
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -157,7 +157,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 		[TestMethod]
@@ -179,7 +179,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
 		}
 
 
@@ -196,7 +196,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -213,7 +213,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -231,7 +231,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -249,7 +249,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -267,7 +267,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 
@@ -285,7 +285,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
 		}
 
 	}

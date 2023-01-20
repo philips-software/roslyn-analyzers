@@ -123,7 +123,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNullCoalescing, DisplayName = "CorrectNullCoalescing")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -134,7 +134,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssignmentInCondition);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -144,10 +144,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(Violation, filePath);
+			VerifyDiagnostic(Violation, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AvoidAssignmentInConditionAnalyzer();
 		}
 	}

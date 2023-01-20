@@ -208,7 +208,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -224,7 +224,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -234,10 +234,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(WrongNumberOfPlusMinus, filePath);
+			VerifyDiagnostic(WrongNumberOfPlusMinus, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AlignOperatorsCountAnalyzer();
 		}
 	}

@@ -50,7 +50,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -83,7 +83,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataTestMethod]
@@ -113,7 +113,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -144,7 +144,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -175,7 +175,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -206,7 +206,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataTestMethod]
@@ -228,7 +228,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText);
+			VerifyDiagnostic(givenText);
 		}
 
 		[DataTestMethod]
@@ -251,10 +251,10 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText);
+			VerifyDiagnostic(givenText);
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}

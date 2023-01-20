@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsShouldHaveUniqueNamesAnalyzer();
 		}
@@ -46,7 +46,7 @@ public class Tests
 	public void Foo(object o, object y) { }
 }";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult()
+			VerifyDiagnostic(code, new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, null) },

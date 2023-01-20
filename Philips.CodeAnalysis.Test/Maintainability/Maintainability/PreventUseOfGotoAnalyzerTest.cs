@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class PreventUseOfGotoAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreventUseOfGotoAnalyzer();
 		}
@@ -30,7 +30,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
 		}
 
 		[TestMethod]
@@ -49,7 +49,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed), DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed), DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
 		}
 
 		[TestMethod]
@@ -71,7 +71,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
 		}
 
 		[TestMethod]
@@ -93,7 +93,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
 		}
 	}
 }
