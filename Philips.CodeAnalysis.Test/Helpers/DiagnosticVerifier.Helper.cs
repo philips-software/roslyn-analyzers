@@ -35,7 +35,6 @@ namespace Philips.CodeAnalysis.Test
 
 		internal static string DefaultFilePathPrefix = "Test";
 		internal static string CSharpDefaultFileExt = "cs";
-		internal static string VisualBasicDefaultExt = "vb";
 		internal static string TestProjectName = "TestProject";
 
 		#region  Get Diagnostics
@@ -252,13 +251,13 @@ namespace Philips.CodeAnalysis.Test
 		{
 			bool isCustomPrefix = fileNamePrefix != null;
 			fileNamePrefix ??= DefaultFilePathPrefix;
-			string fileExt = language == LanguageNames.CSharp ? CSharpDefaultFileExt : VisualBasicDefaultExt;
+			string fileExt = CSharpDefaultFileExt;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
 			var solution = new AdhocWorkspace()
 				.CurrentSolution
-				.AddProject(projectId, TestProjectName, TestProjectName, language)
+				.AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp)
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
