@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var analyzer = GetCSharpDiagnosticAnalyzer();
 			var codeFixProvider = GetCSharpCodeFixProvider();
-			VerifyFix(LanguageNames.CSharp, analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
 		}
 
 		/// <summary>
@@ -61,9 +61,9 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		private void VerifyFix(string language, DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
+		private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
 		{
-			var document = CreateDocument(oldSource, language);
+			var document = CreateDocument(oldSource);
 			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 			var compilerDiagnostics = GetCompilerDiagnostics(document);
 

@@ -208,9 +208,8 @@ namespace Philips.CodeAnalysis.Test
 		/// Create a Document from a string through creating a project that contains it.
 		/// </summary>
 		/// <param name="source">Classes in the form of a string</param>
-		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Document created from the source string</returns>
-		protected Document CreateDocument(string source, string language = LanguageNames.CSharp)
+		protected Document CreateDocument(string source)
 		{
 			return CreateProject(new[] { source }).Documents.First();
 		}
