@@ -20,13 +20,6 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		protected abstract DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer();
 
-		/// <summary>
-		/// Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
-		/// </summary>
-		protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
-		{
-			return null;
-		}
 		#endregion
 
 		#region Verifier wrappers
