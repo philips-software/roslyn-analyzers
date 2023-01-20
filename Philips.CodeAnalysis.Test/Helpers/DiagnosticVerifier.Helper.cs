@@ -43,12 +43,11 @@ namespace Philips.CodeAnalysis.Test
 		/// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
-		/// <param name="language">The language the source classes are in</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer)
+		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer)
 		{
-			var documents = GetDocuments(sources, filenamePrefix, language);
+			var documents = GetDocuments(sources, filenamePrefix);
 			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
 		}
 
@@ -197,14 +196,9 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private Document[] GetDocuments(string[] sources, string filenamePrefix, string language)
+		private Document[] GetDocuments(string[] sources, string filenamePrefix)
 		{
-			if (language is not LanguageNames.CSharp and not LanguageNames.VisualBasic)
-			{
-				throw new ArgumentException("Unsupported Language");
-			}
-
-			var project = CreateProject(sources, filenamePrefix, language);
+			var project = CreateProject(sources, filenamePrefix);
 			var documents = project.Documents.ToArray();
 
 			return documents;
@@ -218,7 +212,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <returns>A Document created from the source string</returns>
 		protected Document CreateDocument(string source, string language = LanguageNames.CSharp)
 		{
-			return CreateProject(new[] { source }, language).Documents.First();
+			return CreateProject(new[] { source }).Documents.First();
 		}
 
 		protected virtual MetadataReference[] GetMetadataReferences()
@@ -247,7 +241,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="language">The language the source code is in</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private Project CreateProject(string[] sources, string fileNamePrefix = null, string language = LanguageNames.CSharp)
+		private Project CreateProject(string[] sources, string fileNamePrefix = null)
 		{
 			bool isCustomPrefix = fileNamePrefix != null;
 			fileNamePrefix ??= DefaultFilePathPrefix;

@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
 		private void VerifyDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
-			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, language, analyzer);
+			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 
