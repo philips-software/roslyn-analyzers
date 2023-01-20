@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPublicMemberVariableAnalyzer();
 		}
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(classContent, results);
+			VerifyDiagnostic(classContent, results);
 
 		}
 

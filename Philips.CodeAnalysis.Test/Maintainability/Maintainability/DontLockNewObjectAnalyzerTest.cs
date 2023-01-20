@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DontLockNewObjectAnalyzer();
 		}
@@ -41,7 +41,7 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
 		}
 
 		#endregion

@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 	[TestClass]
 	public class DereferenceNullAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DereferenceNullAnalyzer();
 		}
@@ -65,7 +65,7 @@ Instruction i = method.Body.Instructions[0];
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 		
 		/// <summary>
@@ -84,7 +84,7 @@ Instruction i = method.Body.Instructions[0];
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -103,7 +103,7 @@ Instruction i = method.Body.Instructions[0];
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -125,7 +125,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -148,7 +148,7 @@ class Foo
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		[TestMethod]
@@ -169,7 +169,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -190,7 +190,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -209,7 +209,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -230,7 +230,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 		
 		[TestMethod]
@@ -251,7 +251,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -273,7 +273,7 @@ class Foo
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 
@@ -295,7 +295,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 	}

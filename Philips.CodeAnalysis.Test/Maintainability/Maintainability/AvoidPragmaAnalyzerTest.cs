@@ -38,7 +38,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -54,7 +54,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(text);
+			VerifyDiagnostic(text);
 		}
 
 		[DataTestMethod]
@@ -72,11 +72,11 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText, "Test.Designer");
+			VerifyDiagnostic(givenText, "Test.Designer");
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPragmaAnalyzer();
 		}

@@ -38,9 +38,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestInitializeMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 
@@ -51,9 +51,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassInitializeMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		[DataTestMethod]
@@ -63,9 +63,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestCleanupMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		[DataTestMethod]
@@ -75,9 +75,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassCleanupMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 
-			VerifyCSharpFix(givenText, expectedText);
+			VerifyFix(givenText, expectedText);
 		}
 
 		private DiagnosticResult GetExpectedDiagnostic(DiagnosticIds id)
@@ -94,12 +94,12 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidMethodsCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}

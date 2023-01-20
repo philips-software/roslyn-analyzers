@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	{
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceBoolNamingConventionAnalyzer();
 		}
@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("isfoo", false, 3)]
@@ -142,7 +142,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -157,7 +157,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -174,7 +174,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("i", false, 5)]
@@ -235,7 +235,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foreach(bool i in new[] { true, false }){}", false, 5)]
@@ -297,7 +297,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("_foo", false, 4)]
@@ -333,7 +333,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 6)]
@@ -372,7 +372,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 5)]
@@ -410,7 +410,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("Foo", false, 4)]
@@ -457,7 +457,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -485,7 +485,7 @@ class Foo : BaseClass
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -512,7 +512,7 @@ abstract class Foo : BaseClass
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -533,7 +533,7 @@ abstract class Foo : ApplicationContext
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		#endregion

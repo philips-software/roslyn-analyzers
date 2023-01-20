@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			};
 			return options;
 		}
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();
 		}
@@ -77,14 +77,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			VerifyDiagnostic(code, expected);
 		}
 
 		[TestMethod]
 		public void DoNotReportANamespacePrefixError()
 		{
 			string code = string.Format(ClassString, configuredPrefix + ".");
-			VerifyCSharpDiagnostic(code);
+			VerifyDiagnostic(code);
 		}
 
 		#endregion

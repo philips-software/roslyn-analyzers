@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 		#endregion Helper Analyzer
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidWritingCodeAnalyzer();
 		}
@@ -121,7 +121,7 @@ public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, expected);
+			VerifyDiagnostic(input, expected);
 		}
 
 		[TestMethod]
@@ -136,7 +136,7 @@ public class Foo
   public Foo() { }
 }
 ";
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[TestMethod]
@@ -148,7 +148,7 @@ public class Foo
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -173,7 +173,7 @@ public class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 
@@ -191,7 +191,7 @@ public class Foo
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			VerifyDiagnostic(input, fileNamePrefix, expected);
 		}
 
 		[DataRow(@"Foo")]
@@ -203,7 +203,7 @@ public class Foo
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			VerifyDiagnostic(input, fileNamePrefix, expected);
 		}
 	}
 }

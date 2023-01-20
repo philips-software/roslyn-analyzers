@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer();
 		}
@@ -30,11 +30,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new[] { MetadataReference.CreateFromFile(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll") };
 		}
 
-		private void VerifyCSharpDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
+		private void VerifyDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				VerifyCSharpDiagnostic(source, null, expected);
+				VerifyDiagnostic(source, null, expected);
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 public interface IFoo { }
 ";
 
-			VerifyCSharpDiagnosticOnWindows(text);
+			VerifyDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -60,7 +60,7 @@ public interface IFoo { }
 public interface IFoo { }
 ";
 
-			VerifyCSharpDiagnosticOnWindows(text);
+			VerifyDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -75,7 +75,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnosticOnWindows(text);
+			VerifyDiagnosticOnWindows(text);
 		}
 
 		[TestMethod]
@@ -89,7 +89,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnosticOnWindows(text, new[]
+			VerifyDiagnosticOnWindows(text, new[]
 			{
 				new DiagnosticResult()
 				{
@@ -118,7 +118,7 @@ public interface IFoo
 }
 ";
 
-			VerifyCSharpDiagnosticOnWindows(text, new[]
+			VerifyDiagnosticOnWindows(text, new[]
 			{
 				new DiagnosticResult()
 				{

@@ -41,7 +41,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataTestMethod]
@@ -139,7 +139,7 @@ class Foo
     }
 }
 ";
-			VerifyCSharpFix(baseline, fixedText);
+			VerifyFix(baseline, fixedText);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError)
@@ -164,16 +164,16 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestHasCategoryAttributeAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasCategoryCodeFixProvider();
 		}

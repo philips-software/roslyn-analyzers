@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 		}
@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}
 			    }";
 
-			VerifyCSharpDiagnostic(testCode, "Test.Designer");
+			VerifyDiagnostic(testCode, "Test.Designer");
 		}
 	}
 
@@ -44,12 +44,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class MergeIfStatementsAnalyzerTest : CodeFixVerifier
 	{
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new MergeIfStatementsCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MergeIfStatementsAnalyzer();
 		}
@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 			string testCode = string.Format(testCodeTemplate, test);
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		[DataTestMethod]
@@ -100,8 +100,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
 			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticIds.MergeIfStatements);
-			VerifyCSharpDiagnostic(testCode, expectedDiagnostic);
-			VerifyCSharpFix(testCode, fixedCode);
+			VerifyDiagnostic(testCode, expectedDiagnostic);
+			VerifyFix(testCode, fixedCode);
 		}
 	}
 }

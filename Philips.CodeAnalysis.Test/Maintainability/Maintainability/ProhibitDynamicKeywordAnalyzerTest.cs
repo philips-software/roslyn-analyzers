@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ProhibitDynamicKeywordAnalyzer();
 		}
@@ -46,7 +46,7 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 			}
 
 			var expected = results.ToArray();
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		#endregion

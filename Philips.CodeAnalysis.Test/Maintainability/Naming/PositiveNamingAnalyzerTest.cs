@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class PositiveNamingAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PositiveNamingAnalyzer();
 		}
@@ -26,7 +26,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
 		}
 
 		[TestMethod]
@@ -40,7 +40,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -57,7 +57,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
 		}
 
 		[TestMethod]
@@ -71,7 +71,7 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
 		}
 	}
 }

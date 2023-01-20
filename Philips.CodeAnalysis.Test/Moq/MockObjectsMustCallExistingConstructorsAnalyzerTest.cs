@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MockObjectsMustCallExistingConstructorsAnalyzer();
 		}
@@ -72,7 +72,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[TestMethod]
@@ -104,7 +104,7 @@ public static class Bar
 				}
 			};
 
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(string.Format(template), expectedErrors);
 		}
 
 		[TestMethod]
@@ -126,7 +126,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(string.Format(template), expectedErrors);
 		}
 
 		[TestMethod]
@@ -157,7 +157,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(string.Format(template), expectedErrors);
 		}
 
 		[TestMethod]
@@ -187,7 +187,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(string.Format(template), expectedErrors);
 		}
 
 		[TestMethod]
@@ -217,7 +217,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(string.Format(template), expectedErrors);
 		}
 
 		[DataRow("", false)]
@@ -254,7 +254,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("{ TestProperty = string.Empty }", false)]
@@ -294,7 +294,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("-1, false", false)]
@@ -334,7 +334,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("-1, false", false)]
@@ -376,7 +376,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("", false)]
@@ -416,7 +416,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("", false)]
@@ -453,7 +453,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("Mockable m = Mock.Of<")]
@@ -486,7 +486,7 @@ public static class Bar
 ";
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			VerifyCSharpDiagnostic(string.Format(template, statement), expectedErrors);
+			VerifyDiagnostic(string.Format(template, statement), expectedErrors);
 		}
 
 		[DataRow("", false)]
@@ -524,7 +524,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		[DataRow("string.Empty", false)]
@@ -564,7 +564,7 @@ public static class Bar
 				};
 			}
 
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
 		#endregion

@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		private const string configuredCompanyName = @"Koninklijke Philips N.V.";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new CopyrightPresentAnalyzer();
 		}
@@ -116,7 +116,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -134,7 +134,7 @@ class Foo
 
 			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.CopyrightPresent) };
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow(@"")]
@@ -145,7 +145,7 @@ class Foo
 		{
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(text, expected);
+			VerifyDiagnostic(text, expected);
 		}
 
 
@@ -191,7 +191,7 @@ using System.Reflection;
 		{
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(text, filenamePrefix, expected);
+			VerifyDiagnostic(text, filenamePrefix, expected);
 		}
 
 		#endregion

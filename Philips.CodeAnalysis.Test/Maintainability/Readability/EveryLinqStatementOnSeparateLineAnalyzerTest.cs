@@ -12,12 +12,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class EveryLinqStatementOnSeparateLineAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EveryLinqStatementOnSeparateLineAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EveryLinqStatementOnSeparateLineCodeFixProvider();
 		}
@@ -71,7 +71,7 @@ public static class Foo
 		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		private const string WhereOnSameLine = $@"
@@ -103,8 +103,8 @@ public static class Foo
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
 		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
-			VerifyCSharpFix(input, Correct);
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
+			VerifyFix(input, Correct);
 		}
 
 		/// <summary>
@@ -114,7 +114,7 @@ public static class Foo
 		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			VerifyDiagnostic(testCode, filePath);
 		}
 	}
 }

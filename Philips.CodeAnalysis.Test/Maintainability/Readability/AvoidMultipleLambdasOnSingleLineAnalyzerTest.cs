@@ -12,12 +12,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidMultipleLambdasOnSingleLineAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidMultipleLambdasOnSingleLineAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidMultipleLambdasOnSingleLineCodeFixProvider();
 		}
@@ -151,8 +151,8 @@ public static class Foo
 		public void FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
-			VerifyCSharpFix(input, fixedCode);
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
+			VerifyFix(input, fixedCode);
 		}
 
 
@@ -165,13 +165,13 @@ public static class Foo
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
 		public void CorrectDoesNotFlag(string input)
 		{
-			VerifyCSharpDiagnostic(input);
+			VerifyDiagnostic(input);
 		}
 
 		[TestMethod]
 		public void GeneratedFileWrongIsNotFlagged()
 		{
-			VerifyCSharpDiagnostic(WrongMultiple, @"Foo.designer");
+			VerifyDiagnostic(WrongMultiple, @"Foo.designer");
 		}
 	}
 }

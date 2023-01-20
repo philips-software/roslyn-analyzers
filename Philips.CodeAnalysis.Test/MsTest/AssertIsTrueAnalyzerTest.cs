@@ -96,9 +96,9 @@ class Foo
 
 ";
 
-			VerifyCSharpDiagnostic(givenText);
+			VerifyDiagnostic(givenText);
 
-			VerifyCSharpFix(givenText, givenText);
+			VerifyFix(givenText, givenText);
 		}
 
 		[TestMethod]
@@ -207,12 +207,12 @@ Assert.IsTrue(foo.Test());
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AssertIsTrueCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertIsTrueAnalyzer();
 		}

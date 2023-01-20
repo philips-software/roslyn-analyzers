@@ -25,10 +25,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		#region Non-Public Properties/Methods
 
 		/// <summary>
-		/// GetCSharpDiagnosticAnalyzer
+		/// GetDiagnosticAnalyzer
 		/// </summary>
 		/// <returns></returns>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new WinFormsInitializeComponentMustBeCalledOnceAnalyzer();
 		}
@@ -189,7 +189,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyNoDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file);
+			VerifyDiagnostic(file);
 		}
 
 		/// <summary>
@@ -200,7 +200,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(11, 16);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -211,7 +211,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -223,7 +223,7 @@ class ContainerControl
 			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(11, 16);
 			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(15, 3);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult1, diagnosticResult2 };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		/// <summary>
@@ -234,7 +234,7 @@ class ContainerControl
 		{
 			DiagnosticResult diagnosticResult = GetDiagnosticResult(9, 22);
 			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			VerifyDiagnostic(file, expected);
 		}
 
 		#endregion
@@ -313,7 +313,7 @@ class ContainerControl
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
 		{
 			string code = CreateCode(@"", @"");
-			VerifyCSharpDiagnostic(code, @"Test.Designer");
+			VerifyDiagnostic(code, @"Test.Designer");
 		}
 
 		#endregion
