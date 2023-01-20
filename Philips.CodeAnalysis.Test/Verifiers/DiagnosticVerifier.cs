@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test
 		protected void VerifyCSharpDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
 		{
 			var analyzer = GetCSharpDiagnosticAnalyzer();
-			VerifyDiagnostics(new[] { source }, filenamePrefix, LanguageNames.CSharp, analyzer, expected);
+			VerifyDiagnostics(new[] { source }, filenamePrefix, analyzer, expected);
 		}
 
 		/// <summary>
@@ -55,18 +55,6 @@ namespace Philips.CodeAnalysis.Test
 		}
 
 		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected)
-		{
-			var analyzer = GetBasicDiagnosticAnalyzer();
-			VerifyDiagnostics(new[] { source }, null, LanguageNames.VisualBasic, analyzer, expected);
-		}
-
-		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
 		/// Note: input a DiagnosticResult for each Diagnostic expected
 		/// </summary>
@@ -75,19 +63,7 @@ namespace Philips.CodeAnalysis.Test
 		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
 		{
 			var analyzer = GetCSharpDiagnosticAnalyzer();
-			VerifyDiagnostics(sources, null, LanguageNames.CSharp, analyzer, expected);
-		}
-
-		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyBasicDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			var analyzer = GetBasicDiagnosticAnalyzer();
-			VerifyDiagnostics(sources, null, LanguageNames.VisualBasic, analyzer, expected);
+			VerifyDiagnostics(sources, null, analyzer, expected);
 		}
 
 		/// <summary>
@@ -98,7 +74,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="language">The language of the classes represented by the source strings</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		private void VerifyDiagnostics(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
 			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
