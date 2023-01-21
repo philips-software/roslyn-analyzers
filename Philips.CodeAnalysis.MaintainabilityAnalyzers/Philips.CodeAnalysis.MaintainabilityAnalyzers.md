@@ -72,3 +72,4 @@
 | PH2119  | Cast complete object                         | A cast should include all information from the previous type. By casting to a type of one of the fields, the cast is losing information. Use an AsType() or ToType() method instead. |
 | PH2120  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method. |
 | PH2121  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |
+| PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|

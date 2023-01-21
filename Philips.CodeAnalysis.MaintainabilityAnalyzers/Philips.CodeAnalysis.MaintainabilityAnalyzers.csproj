@@ -101,6 +101,7 @@
       * Introduce PH2119: Cast complete object.
       * Introduce PH2120: Document thrown exceptions.
       * Introduce PH2121: Throw informational exceptions.
+      * Introduce PH2123: Pass sender to EventHandler.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
