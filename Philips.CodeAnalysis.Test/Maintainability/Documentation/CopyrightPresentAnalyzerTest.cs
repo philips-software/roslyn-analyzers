@@ -12,12 +12,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class CopyrightPresentAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		private const string configuredCompanyName = @"Koninklijke Philips N.V.";
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -33,10 +27,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			};
 			return options;
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow(@"#region H
 			#endregion", false, 2)]
@@ -83,7 +73,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"/* © Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"", false, 2)]
 		[DataTestMethod]
-		public void HeaderIsDetected(string content, bool isGood, int errorLine)
+		public void HeaderIsDetected(string content, bool isGood, int errorStartLine)
 		{
 			string baseline = @"{0}
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -97,6 +87,7 @@ class Foo
 			string givenText = string.Format(baseline, content);
 
 			DiagnosticResult[] expected;
+			int errorEndLine = errorStartLine;
 
 			if (isGood)
 			{
@@ -111,7 +102,7 @@ class Foo
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test0.cs", errorLine, 1)
+					new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
 				} }
 				};
 			}
@@ -193,7 +184,5 @@ using System.Reflection;
 
 			VerifyDiagnostic(text, filenamePrefix, expected);
 		}
-
-		#endregion
 	}
 }

@@ -184,6 +184,31 @@ namespace Philips.CodeAnalysis.Test
 							expected.Column, actualLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
 				}
 			}
+
+			var actualEndLinePosition = actualSpan.EndLinePosition;
+
+			// Only check line position if there is an actual line in the real diagnostic
+			if (actualEndLinePosition.Line > 0 && expected.EndLine.HasValue)
+			{
+				if (actualEndLinePosition.Line + 1 != expected.EndLine)
+				{
+					Assert.IsTrue(false,
+						string.Format("Expected diagnostic to end on line \"{0}\" but actually ended on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+							expected.EndLine, actualEndLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
+				}
+			}
+
+			// Only check column position if there is an actual column position in the real diagnostic
+			if (actualEndLinePosition.Character > 0 && expected.EndColumn.HasValue)
+			{
+				if (expected.Column != -1 && actualEndLinePosition.Character + 1 != expected.EndColumn)
+				{
+					Assert.IsTrue(false,
+						string.Format("Expected diagnostic to end at column \"{0}\" but actually ended at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+							expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
+				}
+			}
+
 		}
 		#endregion
 

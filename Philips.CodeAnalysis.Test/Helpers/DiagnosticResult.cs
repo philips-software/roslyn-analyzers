@@ -17,6 +17,9 @@ namespace Philips.CodeAnalysis.Test
 		}
 
 		public DiagnosticResultLocation(string path, int? line, int? column)
+			: this(path, line, column, null, null)
+		{ }
+		public DiagnosticResultLocation(string path, int? line, int? column, int? endLine, int? endColumn)
 		{
 			if (line.HasValue && line < -1)
 			{
@@ -31,11 +34,16 @@ namespace Philips.CodeAnalysis.Test
 			Path = path;
 			Line = line;
 			Column = column;
+			EndLine = endLine;
+			EndColumn = endColumn;
 		}
 
 		public string Path { get; }
 		public int? Line { get; }
 		public int? Column { get; }
+
+		public int? EndLine { get; }
+		public int? EndColumn { get; }
 	}
 
 	/// <summary>
