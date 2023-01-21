@@ -66,6 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
+			// Determine our parent.
 			SyntaxNode methodDeclaration = throwStatement.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
 			if (methodDeclaration == null)
 			{
@@ -76,6 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 			}
 
+			// Check if our parent has proper documentation.
 			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
