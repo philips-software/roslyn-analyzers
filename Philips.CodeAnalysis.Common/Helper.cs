@@ -210,6 +210,11 @@ namespace Philips.CodeAnalysis.Common
 			return returnValue;
 		}
 
+		public static bool IsLiteralNull(ExpressionSyntax expression)
+		{
+			return expression is LiteralExpressionSyntax { Token.Text: "null" };
+		}
+
 		public static bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
 		{
 			if (expression is LiteralExpressionSyntax literal)

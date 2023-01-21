@@ -64,13 +64,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (var invocation in invocations)
 			{
 				var arguments = invocation.ArgumentList.Arguments;
-				if (IsLiteralNull(arguments[0]))
+				if (Helper.IsLiteralNull(arguments[0].Expression))
 				{
 					var loc = arguments[0].GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
 				}
 
-				if (IsLiteralNull(arguments[1]))
+				if (Helper.IsLiteralNull(arguments[1].Expression))
 				{
 					var loc = arguments[1].GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
@@ -81,11 +81,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static bool IsOurEvent(InvocationExpressionSyntax invocation, string eventName)
 		{
 			return invocation.Expression is IdentifierNameSyntax name && name.Identifier.Text == eventName;
-		}
-
-		private static bool IsLiteralNull(ArgumentSyntax argument)
-		{
-			return argument.Expression is LiteralExpressionSyntax { Token.Text: "null" };
 		}
 	}
 }
