@@ -20,25 +20,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		public void NoRegionNoMethodTest()
 		{
-			VerifyNoDiagnostic(@"Class C{C(){}}");
+			VerifySuccessfulCompilation(@"Class C{C(){}}");
 		}
 
 		[TestMethod]
 		public void NoRegionTest()
 		{
-			VerifyNoDiagnostic(@"Class C{C(){}public void foo(){}}");
+			VerifySuccessfulCompilation(@"Class C{C(){}public void foo(){}}");
 		}
 
 		[TestMethod]
 		public void EmptyClassWithRegionTest()
 		{
-			VerifyNoDiagnostic(@"Class C{	#region testRegion	#endregion	}");
+			VerifySuccessfulCompilation(@"Class C{	#region testRegion	#endregion	}");
 		}
 
 		[TestMethod]
 		public void RegionOutsideMethodTest()
 		{
-			VerifyNoDiagnostic(@"Class C{#region testRegion	public void foo() {int x = 2; }	#endregion}");
+			VerifySuccessfulCompilation(@"Class C{#region testRegion	public void foo() {int x = 2; }	#endregion}");
 		}
 
 		[TestMethod]
@@ -70,19 +70,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestMethod]
 		public void RegionCoversMultipleMethodsTest()
 		{
-			VerifyNoDiagnostic(@"Class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}");
+			VerifySuccessfulCompilation(@"Class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}");
 		}
 
 		[TestMethod]
 		public void RegionBeforeClassTest()
 		{
-			VerifyNoDiagnostic(@"	#region testRegion	#endregion Class C{	public void foo(){	return; }	public void bar(){	}	}");
+			VerifySuccessfulCompilation(@"	#region testRegion	#endregion Class C{	public void foo(){	return; }	public void bar(){	}	}");
 		}
 
 		[TestMethod]
 		public void UnnamedRegionTest()
 		{
-			VerifyNoDiagnostic(@"Class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}");
+			VerifySuccessfulCompilation(@"Class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}");
 		}
 
 		[TestMethod]
@@ -106,24 +106,17 @@ Class C{
 		[TestMethod]
 		public void MalformedCodeTest()
 		{
-			VerifyNoDiagnostic(@"Class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	");
+			VerifySuccessfulCompilation(@"Class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	");
 		}
 
 		[TestMethod]
 		public void EmptyStringTest()
 		{
-			VerifyNoDiagnostic("");
+			VerifySuccessfulCompilation("");
 		}
 
 
 
-
-		//***********Methods under this line were taken from AvoidInLineNewAnalyzerTest.cs and modified
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyDiagnostic(file);
-		}
 
 		private void VerifyDiagnostic(string file, int line)
 		{
