@@ -68,7 +68,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (blockSyntax == null)
 			{
 				return;
-
 			}
 			int cognitiveLoad = CalcCognitiveLoad(blockSyntax);
 
