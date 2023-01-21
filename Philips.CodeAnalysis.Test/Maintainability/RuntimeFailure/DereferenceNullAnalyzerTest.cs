@@ -173,6 +173,65 @@ class Foo
 		}
 
 		[TestMethod]
+		public void DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return (y != null && y.ToString() == @"");
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (y == null || y.ToString() == @"")
+    {{
+       string t0 = y.ToString();
+    }}
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public bool Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return y == null || y.ToString() == @"";
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+
+		[TestMethod]
 		public void DereferenceNullAsExpressionIfCheckDereference2Test()
 		{
 			string testCode = @"
