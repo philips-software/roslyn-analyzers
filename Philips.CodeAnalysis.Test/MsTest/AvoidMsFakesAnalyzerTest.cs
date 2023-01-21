@@ -55,14 +55,9 @@ class Foo
 		public void AvoidMsFakesNotRelevantTest()
 		{
 			var file = CreateFunction("using (new MemoryStream()) {}");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			base.VerifyDiagnostic(file);
-		}
 
 		private void VerifyDiagnostic(string file)
 		{

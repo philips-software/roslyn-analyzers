@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			};
 			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
 			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 	}
 
@@ -105,16 +105,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AvoidStaticClassesShouldWhitelistWildCardClassTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName);
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 			var file2 = CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName);
-			VerifyNoDiagnostic(file2);
+			VerifySuccessfulCompilation(file2);
 		}
 
 		[TestMethod]
 		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
-			VerifyNoDiagnostic(noDiagnostic);
+			VerifySuccessfulCompilation(noDiagnostic);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
 			VerifyDiagnostic(methodHavingDiagnostic);
 		}
@@ -123,14 +123,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AvoidNoStaticClassesTest()
 		{
 			var file = CreateFunction("");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
-
-		protected void VerifyNoDiagnostic(string file)
-		{
-			base.VerifyDiagnostic(file);
-		}
 
 		private void VerifyDiagnostic(string file)
 		{

@@ -47,15 +47,20 @@ namespace Philips.CodeAnalysis.Test
 			VerifyDiagnostic(source, null, expected);
 		}
 
-        /// <summary>
-        /// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
-        /// then verifies each of them.
-        /// </summary>
-        /// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-        /// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		protected void VerifySuccessfulCompilation(string source)
+		{
+			VerifyDiagnostic(source);
+		}
+
+		/// <summary>
+		/// General method that gets a collection of actual diagnostics found in the source after the analyzer is run, 
+		/// then verifies each of them.
+		/// </summary>
+		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
-        /// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-        private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
+		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
 			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
