@@ -115,5 +115,6 @@ namespace Philips.CodeAnalysis.Common
 		DocumentThrownExceptions = 2120,
 		ThrowInformationalExceptions = 2121,
 		AvoidExceptionsFromUnexpectedLocations = 2122,
+		PassSenderToEventHandler = 2123,
 	}
 }
