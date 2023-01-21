@@ -66,6 +66,7 @@ class Foo
 			VerifyDiagnostic(template);
 		}
 
+
 		[TestMethod]
 		public void CognitiveLoadIf()
 		{
@@ -79,6 +80,18 @@ class Foo
 }
 ";
 			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+		}
+
+		[TestMethod]
+		public void CognitiveLoadExpressionBody()
+		{
+			const string template = @"
+class Foo
+{
+	private string MakeString() => new string(""MyString"");
+}
+";
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]

@@ -184,15 +184,6 @@ class ContainerControl
 		}
 
 		/// <summary>
-		/// VerifyNoDiagnostic
-		/// </summary>
-		/// <param name="file"></param>
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyDiagnostic(file);
-		}
-
-		/// <summary>
 		/// VerifyDiagnosticOnFirst
 		/// </summary>
 		/// <param name="file"></param>
@@ -268,7 +259,7 @@ class ContainerControl
 			}
 			else
 			{
-				VerifyNoDiagnostic(code);
+				VerifySuccessfulCompilation(code);
 			}
 		}
 
@@ -291,7 +282,7 @@ class ContainerControl
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors()
 		{
 			string code = CreateCodeWithDisjointConstructors();
-			VerifyNoDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		/// <summary>

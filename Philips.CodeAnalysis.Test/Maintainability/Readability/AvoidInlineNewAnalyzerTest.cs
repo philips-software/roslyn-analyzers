@@ -56,14 +56,14 @@ class Foo
 		public void NoErrorIfPlacedInLocal()
 		{
 			var file = CreateFunction("object obj = new object(); string str = obj.ToString();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInField()
 		{
 			var file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[DataRow("new Foo()")]
@@ -79,14 +79,14 @@ class Foo
 		public void NoErrorIfPlacedInLocalCustomType()
 		{
 			var file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInFieldCustomType()
 		{
 			var file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 
@@ -94,14 +94,14 @@ class Foo
 		public void NoErrorIfPlacedInContainer()
 		{
 			var file = CreateFunction("var v = new List<object>(); v.Add(new object());");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfReturned()
 		{
 			var file = CreateFunction("return new object();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
@@ -115,7 +115,7 @@ class Foo
 		public void NoErrorIfThrown()
 		{
 			var file = CreateFunction("throw new Exception();");
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
@@ -123,11 +123,6 @@ class Foo
 		{
 			var file = CreateFunction("throw new object().Foo;");
 			VerifyDiagnostic(file);
-		}
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			base.VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)

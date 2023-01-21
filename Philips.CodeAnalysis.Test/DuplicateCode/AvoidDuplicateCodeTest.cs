@@ -277,7 +277,7 @@ Foo.WhitelistedFunction
 		public void AvoidDuplicateCodeNoError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifyNoDiagnostic(file);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[DataTestMethod]
@@ -325,7 +325,7 @@ class Foo
 }}
 ";
 
-			VerifyNoDiagnostic(baseline);
+			VerifySuccessfulCompilation(baseline);
 		}
 
 
@@ -349,11 +349,6 @@ class Foo
 			return string.Format(baseline, content1, content2);
 		}
 
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			base.VerifyDiagnostic(file);
-		}
 
 		private void VerifyDiagnostic(string file)
 		{
