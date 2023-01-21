@@ -55,27 +55,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static void AnalyzeArguments(SyntaxNodeAnalysisContext context, TypeDeclarationSyntax parent, string eventName)
 		{
+			// EventHandlers must have 2 arguments as checked by CA1003, assume this rule is obeyed here.
 			var invocations = parent.DescendantNodes()
 				.OfType<InvocationExpressionSyntax>()
-				.Where(invocation => IsOurEvent(invocation, eventName));
+				.Where(invocation => IsOurEvent(invocation, eventName))
+				.Where(i => i.ArgumentList.Arguments.Count == 2);
 
 			foreach (var invocation in invocations)
 			{
-				// Wrong number of arguments is reported indirectly by CA1003, do not create duplicate diagnostic here.
-				if(invocation.ArgumentList.Arguments.Count == 2)
+				var arguments = invocation.ArgumentList.Arguments;
+				if (IsLiteralNull(arguments[0]))
 				{
-					var arguments = invocation.ArgumentList.Arguments;
-					if (IsLiteralNull(arguments[0]))
-					{
-						var loc = arguments[0].GetLocation();
-						context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
-					}
+					var loc = arguments[0].GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
+				}
 
-					if (IsLiteralNull(arguments[1]))
-					{
-						var loc = arguments[1].GetLocation();
-						context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
-					}
+				if (IsLiteralNull(arguments[1]))
+				{
+					var loc = arguments[1].GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
 				}
 			}
 		}
