@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			foreach (VariableDeclaratorSyntax syntax in variableDeclaration.Variables)
 			{
-				if (!ShouldCheck(variableDeclaration, syntax, context, out Regex validator))
+				if (!ShouldCheck(variableDeclaration, context, out Regex validator))
 				{
 					continue;
 				}
@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 
-		private bool ShouldCheck(VariableDeclarationSyntax variableDeclaration, VariableDeclaratorSyntax syntax, SyntaxNodeAnalysisContext context, out Regex validator)
+		private bool ShouldCheck(VariableDeclarationSyntax variableDeclaration, SyntaxNodeAnalysisContext context, out Regex validator)
 		{
 			validator = null;
 			bool shouldCheck;

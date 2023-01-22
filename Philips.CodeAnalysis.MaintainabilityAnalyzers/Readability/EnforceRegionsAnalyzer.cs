@@ -15,6 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EnforceRegionsAnalyzer : DiagnosticAnalyzer
 	{
+		private const string RegionTag = "#region ";
 
 		private const string EnforceRegionTitle = @"Enforce Regions";
 		public const string EnforceRegionMessageFormat = @"Member doesn't belong to region {0}";
@@ -92,25 +93,30 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		}
 
+		private static string GetRegionName(DirectiveTriviaSyntax region)
+		{
+			string regionName = string.Empty;
+
+			var lines = region.GetText().Lines;
+
+			if (lines.Count > 0)
+			{
+				regionName = lines[0].ToString();
+			}
+
+			if (regionName.StartsWith(RegionTag))
+			{
+				regionName = regionName.Replace(RegionTag, "");
+			}
+			return regionName;
+		}
+
 		private static void PopulateRegionLocation(ref string regionStartName, Dictionary<string, LocationRangeModel> regionLocations, 
-													DirectiveTriviaSyntax region, int i, string regionTag, SyntaxNodeAnalysisContext context)
+													DirectiveTriviaSyntax region, int i, SyntaxNodeAnalysisContext context)
 		{
 			if (i % 2 == 0)
 			{
-				string regionName = string.Empty;
-
-				var lines = region.GetText().Lines;
-
-				if (lines.Count > 0)
-				{
-					regionName = lines[0].ToString();
-				}
-
-				if (regionName.StartsWith(regionTag))
-				{
-					regionName = regionName.Replace(regionTag, "");
-				}
-
+				string regionName = GetRegionName(region);
 				if (regionName.Length <= 0)
 				{
 					return;
@@ -158,13 +164,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static Dictionary<string, LocationRangeModel> PopulateRegionLocations(List<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = new();
-
-			string regionTag = "#region ";
 			string regionStartName = "";
 			for (int i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];
-				PopulateRegionLocation(ref regionStartName, regionLocations, region, i, regionTag, context);
+				PopulateRegionLocation(ref regionStartName, regionLocations, region, i, context);
 			}
 			return regionLocations;
 		}
