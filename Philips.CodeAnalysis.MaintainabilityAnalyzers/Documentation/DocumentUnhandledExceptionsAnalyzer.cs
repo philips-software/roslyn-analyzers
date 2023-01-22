@@ -131,7 +131,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
 				.Where(IsExceptionElement)
-				.Select(cref => GetCrefAttributeValue(context, cref));
+				.Select(cref => GetCrefAttributeValue(cref));
 			var comparer = new NamespaceIgnoringComparer();
 			var remainingExceptions = unhandledExceptions.Where(ex => documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
@@ -149,7 +149,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return element.StartTag.Name.LocalName.Text == "exception";
 		}
 
-		private static string GetCrefAttributeValue(SyntaxNodeAnalysisContext context, XmlElementSyntax element)
+		private static string GetCrefAttributeValue(XmlElementSyntax element)
 		{
 			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString())
 				.FirstOrDefault();
@@ -166,7 +166,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (!ExceptionsMap.TryGetValue(invokedName, out expectedExceptions))
 				{
 					var documentation = invokedSymbol.GetDocumentationCommentXml();
-					expectedExceptions = ParseFromDocumentation(context, invocation, documentation);
+					expectedExceptions = ParseFromDocumentation(documentation);
 				}
 			}
 
@@ -181,7 +181,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return unhandledExceptions;
 		}
 
-		private static string[] ParseFromDocumentation(SyntaxNodeAnalysisContext context, SyntaxNode node, string documentation)
+		private static string[] ParseFromDocumentation(string documentation)
 		{
 			var matches = DocumentationRegex.Matches(documentation);
 			var results = new string[matches.Count];
