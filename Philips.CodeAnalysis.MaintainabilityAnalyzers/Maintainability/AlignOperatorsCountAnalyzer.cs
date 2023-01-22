@@ -19,8 +19,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string TitleFormat = "Align number of {0} and {1} operators.";
 		private const string MessageFormat = "Align number of {0} and {1} operators.";
-		private const string DescriptionFormat = 
-			"A class should have the same number of {0} as {1} operators.";
+		private const string DescriptionFormat =
+			"Overload the {1} operator, when you overload the {0} operator, as they are often used in combination with each other.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor IncrementAndDecrementRule =
