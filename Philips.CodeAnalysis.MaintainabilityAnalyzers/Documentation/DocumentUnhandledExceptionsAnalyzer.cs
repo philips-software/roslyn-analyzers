@@ -131,7 +131,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
 				.Where(IsExceptionElement)
-				.Select(cref => GetCrefAttributeValue(cref));
+				.Select(GetCrefAttributeValue);
 			var comparer = new NamespaceIgnoringComparer();
 			var remainingExceptions = unhandledExceptions.Where(ex => documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
