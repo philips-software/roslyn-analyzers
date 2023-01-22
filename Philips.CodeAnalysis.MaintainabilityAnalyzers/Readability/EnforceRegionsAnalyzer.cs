@@ -92,6 +92,58 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		}
 
+		private static void PopulateRegionLocation(ref string regionStartName, Dictionary<string, LocationRangeModel> regionLocations, 
+													DirectiveTriviaSyntax region, int i, string regionTag, SyntaxNodeAnalysisContext context)
+		{
+			if (i % 2 == 0)
+			{
+				string regionName = string.Empty;
+
+				var lines = region.GetText().Lines;
+
+				if (lines.Count > 0)
+				{
+					regionName = lines[0].ToString();
+				}
+
+				if (regionName.StartsWith(regionTag))
+				{
+					regionName = regionName.Replace(regionTag, "");
+				}
+
+				if (regionName.Length <= 0)
+				{
+					return;
+				}
+
+				if (RegionChecks.ContainsKey(regionName))
+				{
+					if (regionLocations.Remove(regionName))
+					{
+						var memberLocation = region.DirectiveNameToken.GetLocation();
+						CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
+					}
+					else
+					{
+						var location = region.GetLocation();
+						int lineNumber = GetMemberLineNumber(location);
+
+						regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
+						regionStartName = regionName;
+					}
+				}
+			}
+			else
+			{
+				if (regionLocations.TryGetValue(regionStartName, out LocationRangeModel value))
+				{
+					var location = region.GetLocation();
+					value.EndLine = GetMemberLineNumber(location);
+					regionStartName = "";
+				}
+			}
+		}
+
 		/// <summary>
 		/// Populate the dictionary with the region name(if we are performing checks on the concerned region) along with the LocationRangeModel
 		/// DirectiveTriviaSyntax will have both start region and end region
@@ -112,54 +164,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			for (int i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];
-
-				if (i % 2 == 0)
-				{
-					string regionName = string.Empty;
-
-					var lines = region.GetText().Lines;
-
-					if (lines.Count > 0)
-					{
-						regionName = lines[0].ToString();
-					}
-
-					if (regionName.StartsWith(regionTag))
-					{
-						regionName = regionName.Replace(regionTag, "");
-					}
-
-					if (regionName.Length <= 0)
-					{
-						continue;
-					}
-
-					if (RegionChecks.ContainsKey(regionName))
-					{
-						if (regionLocations.Remove(regionName))
-						{
-							var memberLocation = region.DirectiveNameToken.GetLocation();
-							CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
-						}
-						else
-						{
-							var location = region.GetLocation();
-							int lineNumber = GetMemberLineNumber(location);
-
-							regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
-							regionStartName = regionName;
-						}
-					}
-				}
-				else
-				{
-					if (regionLocations.TryGetValue(regionStartName, out LocationRangeModel value))
-					{
-						var location = region.GetLocation();
-						value.EndLine = GetMemberLineNumber(location);
-						regionStartName = "";
-					}
-				}
+				PopulateRegionLocation(ref regionStartName, regionLocations, region, i, regionTag, context);
 			}
 			return regionLocations;
 		}
