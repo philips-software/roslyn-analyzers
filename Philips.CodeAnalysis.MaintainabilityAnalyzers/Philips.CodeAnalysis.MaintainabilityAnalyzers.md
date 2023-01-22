@@ -74,3 +74,4 @@
 | PH2121  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |
 | PH2122  | Avoid Exceptions from unexpected locations   | Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, some operators, and overidden methods of Object. |
 | PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
+| PH2124  | Document unhandled exceptions                | Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.|

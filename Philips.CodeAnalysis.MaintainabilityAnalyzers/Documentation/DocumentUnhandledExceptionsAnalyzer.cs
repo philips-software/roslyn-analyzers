@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const string Title = @"Document unhandled exceptions";
 		private const string MessageFormat = @"Document that this method can throw from {0} the following exceptions: {1}.";
-		private const string Description = @"Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method.";
+		private const string Description = @"Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.";
 		private const string Category = Categories.Documentation;
 
 		private static class WellKnownExceptions
@@ -118,7 +118,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			List<string> unhandledExceptions = new();
 			foreach (var invocation in invocations)
 			{
-				var newExceptions = GetUnhandledExceptions(context, invocation);
+				var newExceptions = GetFromInvocation(context, invocation);
 				if (newExceptions.Any())
 				{
 					unhandledExceptions.AddRange(newExceptions);
@@ -155,7 +155,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.FirstOrDefault();
 		}
 
-		private static IEnumerable<string> GetUnhandledExceptions(SyntaxNodeAnalysisContext context,
+		private static IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
 			InvocationExpressionSyntax invocation)
 		{
 			var expectedExceptions = Array.Empty<string>();
@@ -179,6 +179,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			return unhandledExceptions;
+		}
+
+		private static string[] ParseFromDocumentation(SyntaxNodeAnalysisContext context, SyntaxNode node, string documentation)
+		{
+			var matches = DocumentationRegex.Matches(documentation);
+			var results = new string[matches.Count];
+			for(int i = 0; i < results.Length; i++)
+			{
+				results[i] = matches[i].Captures[0].Value.Trim('!', ':');
+			}
+			return results;
 		}
 
 		private static string GetFullName(TypeSyntax typeSyntax)
@@ -209,17 +220,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 			namespaces.Reverse();
 			return $"{string.Join(".", namespaces)}.{symbol.ContainingType.Name}.{symbol.Name}";
-		}
-
-		private static string[] ParseFromDocumentation(SyntaxNodeAnalysisContext context, SyntaxNode node, string documentation)
-		{
-			var matches = DocumentationRegex.Matches(documentation);
-			var results = new string[matches.Count];
-			for (int i = 0; i < results.Length; i++)
-			{
-				results[i] = matches[i].Captures[0].Value.Trim('!', ':');
-			}
-			return results;
 		}
 	}
 }
