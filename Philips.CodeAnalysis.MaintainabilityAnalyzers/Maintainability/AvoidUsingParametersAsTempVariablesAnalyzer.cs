@@ -56,18 +56,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var parameterName = assigned.Identifier.Text;
 				context.ReportDiagnostic(Diagnostic.Create(Rule, assigned.GetLocation(), parameterName));
 			}
-
-			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.First();
-			if (loopVariable == null)
-			{
-				return;
-			}
-
-			if (loopVariable.Identifier.Text == assigned.Identifier.Text)
-			{
-				var parameterName = assigned.Identifier.Text;
-				context.ReportDiagnostic(Diagnostic.Create(Rule, assigned.GetLocation(), parameterName));
-			}
 		}
 	}
 }

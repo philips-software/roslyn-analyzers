@@ -24,6 +24,25 @@ namespace AvoidUsingParametersTest {
     }
 }";
 
+		private const string CorrectNoParameters = @"
+namespace AvoidUsingParametersTest {
+    public class Number {
+        private void MethodA() {
+            int b = 5;
+        }
+    }
+}";
+
+		private const string CorrectStaticField = @"
+namespace AvoidUsingParametersTest {
+    public class Number {
+        private static int s;
+        private void MethodA(int a) {
+            Number.s = 5;
+        }
+    }
+}";
+
 		private const string Wrong = @"
 namespace AvoidUsingParametersTest {
     public class Number {
@@ -38,7 +57,9 @@ namespace AvoidUsingParametersTest {
 		/// </summary>
 		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
-		 DataRow(Correct, DisplayName = nameof(Correct))]
+		 DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectNoParameters, DisplayName = nameof(CorrectNoParameters)),
+		 DataRow(CorrectStaticField, DisplayName = nameof(CorrectStaticField))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyDiagnostic(testCode);
