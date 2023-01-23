@@ -18,7 +18,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 namespace AvoidUsingParametersTest {
     public class Number {
         private void MethodA(int a) {
-            int b = 5;
+            for(int i = 0; i < list.Count; i++) {
+                int j = i;
+            }
+        }
+    }
+}";
+
+		private const string CorrectNoLoopVariable = @"
+namespace AvoidUsingParametersTest {
+    public class Number {
+        private void MethodA(int a) {
+            int i = 0;
+            for(; i < list.Count; i++) {
+                int j = i;
+            }
         }
     }
 }";
@@ -40,7 +54,8 @@ namespace AvoidUsingParametersTest {
 		/// </summary>
 		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
-		 DataRow(Correct, DisplayName = nameof(Correct))]
+		 DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectNoLoopVariable, DisplayName = nameof(CorrectNoLoopVariable))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyDiagnostic(testCode);
