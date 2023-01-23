@@ -51,25 +51,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
+			var assignedVariableName = assigned.Identifier.Text;
+			// Check: Avoid using parameters as temporary variables.
 			var parameters = assignment.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault()?.ParameterList;
 			if (parameters != null)
 			{
-				if (parameters.Parameters.Any(para => para.Identifier.Text == assigned.Identifier.Text))
+				if (parameters.Parameters.Any(para => para.Identifier.Text == assignedVariableName))
 				{
-					var parameterName = assigned.Identifier.Text;
-					context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), parameterName));
+					context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), assignedVariableName));
 				}
 			}
 
 			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.FirstOrDefault();
 			if (loopVariable != null)
 			{
-				if (loopVariable.Identifier.Text != assigned.Identifier.Text)
+				// Check: Avoid changing loop variables.
+				if (loopVariable.Identifier.Text != assignedVariableName)
 				{
 					return;
 				}
-				var variableName = assigned.Identifier.Text;
-				context.ReportDiagnostic(Diagnostic.Create(LoopRule, assigned.GetLocation(), variableName));
+				context.ReportDiagnostic(Diagnostic.Create(LoopRule, assigned.GetLocation(), assignedVariableName));
 			}
 		}
 	}
