@@ -13,16 +13,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidUsingParametersAsTempVariablesAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Don't use parameters as temporary variables";
-		private const string MessageFormat = @"Don't use parameter {0} as temporary variable, define a local variable instead.";
-		private const string Description = @"Don't use parameters as temporary variables, define a local variable instead.";
+		private const string TempTitle = @"Don't use parameters as temporary variables";
+		private const string TempMessageFormat = @"Don't use parameter {0} as temporary variable, define a local variable instead.";
+		private const string TempDescription = @"Don't use parameters as temporary variables, define a local variable instead.";
+		private const string LoopTitle = @"Don't change loop variables";
+		private const string LoopMessageFormat = @"Don't change loop variable {0}.";
+		private const string LoopDescription = @"Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidUsingParametersAsTempVariables),
-			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
-			description: Description);
+		private static readonly DiagnosticDescriptor TempRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidUsingParametersAsTempVariables),
+			TempTitle, TempMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
+			description: TempDescription);
+		private static readonly DiagnosticDescriptor LoopRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidChangingLoopVariables),
+			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
+			description: LoopDescription);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(TempRule, LoopRule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -46,15 +52,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			var parameters = assignment.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault()?.ParameterList;
-			if (parameters == null)
+			if (parameters != null)
 			{
-				return;
+				if (parameters.Parameters.Any(para => para.Identifier.Text == assigned.Identifier.Text))
+				{
+					var parameterName = assigned.Identifier.Text;
+					context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), parameterName));
+				}
 			}
 
-			if (parameters.Parameters.Any(para => para.Identifier.Text == assigned.Identifier.Text))
+			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.FirstOrDefault();
+			if (loopVariable != null)
 			{
-				var parameterName = assigned.Identifier.Text;
-				context.ReportDiagnostic(Diagnostic.Create(Rule, assigned.GetLocation(), parameterName));
+				if (loopVariable.Identifier.Text != assigned.Identifier.Text)
+				{
+					return;
+				}
+				var variableName = assigned.Identifier.Text;
+				context.ReportDiagnostic(Diagnostic.Create(LoopRule, assigned.GetLocation(), variableName));
 			}
 		}
 	}

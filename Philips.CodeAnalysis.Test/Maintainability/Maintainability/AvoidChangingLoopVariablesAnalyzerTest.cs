@@ -82,7 +82,7 @@ namespace AvoidUsingParametersTest {
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
-			return new AvoidChangingLoopVariablesAnalyzer();
+			return new AvoidUsingParametersAsTempVariablesAnalyzer();
 		}
 	}
 }
