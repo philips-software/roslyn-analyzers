@@ -54,12 +54,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var assignedVariableName = assigned.Identifier.Text;
 			// Check: Avoid using parameters as temporary variables.
 			var parameters = assignment.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault()?.ParameterList;
-			if (parameters != null)
+			if (parameters != null && parameters.Parameters.Any(para => para.Identifier.Text == assignedVariableName))
 			{
-				if (parameters.Parameters.Any(para => para.Identifier.Text == assignedVariableName))
-				{
-					context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), assignedVariableName));
-				}
+				context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), assignedVariableName));
 			}
 
 			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.FirstOrDefault();
