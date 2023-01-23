@@ -75,3 +75,4 @@
 | PH2122  | Avoid Exceptions from unexpected locations   | Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, some operators, and overidden methods of Object. |
 | PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
 | PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
+| PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|

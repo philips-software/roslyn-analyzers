@@ -117,5 +117,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidExceptionsFromUnexpectedLocations = 2122,
 		PassSenderToEventHandler = 2123,
 		AvoidUsingParametersAsTempVariables = 2126,
+		AvoidChangingLoopVariables = 2127,
 	}
 }
