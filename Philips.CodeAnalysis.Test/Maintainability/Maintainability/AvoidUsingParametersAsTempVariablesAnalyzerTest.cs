@@ -50,7 +50,7 @@ namespace AvoidUsingParametersTest {
 		[TestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidArrayList);
+			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidUsingParametersAsTempVariables);
 			VerifyDiagnostic(testCode, expected);
 		}
 

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Don't use parameters as temporary variables, define a local variable instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidUsingParametersAsTempVariables),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 
@@ -52,6 +52,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			if (parameters.Parameters.Any(para => para.Identifier.Text == assigned.Identifier.Text))
+			{
+				var parameterName = assigned.Identifier.Text;
+				context.ReportDiagnostic(Diagnostic.Create(Rule, assigned.GetLocation(), parameterName));
+			}
+
+			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.First();
+			if (loopVariable == null)
+			{
+				return;
+			}
+
+			if (loopVariable.Identifier.Text == assigned.Identifier.Text)
 			{
 				var parameterName = assigned.Identifier.Text;
 				context.ReportDiagnostic(Diagnostic.Create(Rule, assigned.GetLocation(), parameterName));
