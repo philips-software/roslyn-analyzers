@@ -65,8 +65,8 @@ class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(@"UnitTest", false)]
-		[DataRow(@"ManualTest", false)]
+		[DataRow(@"UnitTests", false)]
+		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
@@ -187,7 +187,7 @@ class Foo
 		{
 			var options = new Dictionary<string, string>
 			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTest,TestDefinitions.ManualTest" }
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
 			};
 			return options;
 		}
