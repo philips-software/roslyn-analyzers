@@ -103,6 +103,7 @@
       * Introduce PH2121: Throw informational exceptions.
       * Introduce PH2122: Avoid throwing exceptions from unexpected locations.
       * Introduce PH2123: Pass sender to EventHandler.
+      * Introduce PH2124: Document unhandled exceptions.
       * Introduce PH2125: Align number of + and == operators.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>

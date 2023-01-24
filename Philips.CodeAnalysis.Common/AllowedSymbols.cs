@@ -35,7 +35,10 @@ namespace Philips.CodeAnalysis.Common
 			foreach (var textLine in text.Lines)
 			{
 				string line = StripComments(textLine.ToString());
-				RegisterLine(line, compilation);
+				if (!string.IsNullOrWhiteSpace(line))
+				{
+					RegisterLine(line, compilation);
+				}
 			}
 		}
 
@@ -69,7 +72,7 @@ namespace Philips.CodeAnalysis.Common
 					}
 				}
 			}
-			else if (!line.StartsWith("#") && !line.StartsWith("//"))
+			else
 			{
 				_allowedLines.Add(line);
 			}

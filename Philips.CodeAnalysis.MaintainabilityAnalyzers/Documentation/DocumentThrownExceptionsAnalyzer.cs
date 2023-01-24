@@ -17,15 +17,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzer
 	{
 		private const string DocumentTitle = @"Document thrown exceptions";
-		private const string DocumentMessageFormat = @"Document that this method can potentially throw an {0}.";
+		private const string DocumentMessageFormat = @"Document the fact that this method can potentially throw an exception of type {0}.";
 		private const string DocumentDescription = @"Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method.";
 		private const string InformationalTitle = @"Throw only informational exceptions";
-		private const string InformationalMessageFormat = @"Specify context to the {0} exception, by using a constructor overload that sets the Message property.";
+		private const string InformationalMessageFormat = @"Specify context to the {0}, by using a constructor overload that sets the Message property.";
 		private const string InformationalDescription = @"Specify context to a thrown exception, by using a constructor overload that sets the Message property.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor DocumentRule = new(Helper.ToDiagnosticId(DiagnosticIds.DocumentThrownExceptions), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription);
-		private static readonly DiagnosticDescriptor InformationalRule = new(Helper.ToDiagnosticId(DiagnosticIds.ThrowInformationalExceptions), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription);
+		private static readonly DiagnosticDescriptor DocumentRule = new(Helper.ToDiagnosticId(DiagnosticIds.DocumentThrownExceptions), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DocumentDescription);
+		private static readonly DiagnosticDescriptor InformationalRule = new(Helper.ToDiagnosticId(DiagnosticIds.ThrowInformationalExceptions), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: InformationalDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
@@ -66,6 +66,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
+			var aliases = Helper.GetUsingAliases(throwStatement);
+			if(aliases.TryGetValue(thrownExceptionName, out string aliasedName))
+			{
+				thrownExceptionName = aliasedName;
+			}
+
 			// Determine our parent.
 			SyntaxNode methodDeclaration = throwStatement.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
 			if (methodDeclaration == null)
@@ -84,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
 				.Where(IsExceptionElement)
 				.Select(GetCrefAttributeValue);
-			if (!mentionedExceptions.Contains(thrownExceptionName))
+			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName);
@@ -116,9 +122,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				{
 					node = identifierName;
 				} 
-				else if(a.Expression is InvocationExpressionSyntax invocation)
+				else if (a.Expression is InvocationExpressionSyntax invocation)
 				{
 					node = invocation;
+				}
+				else if (a.Expression is InterpolatedStringExpressionSyntax interpolatedString)
+				{
+					node = interpolatedString;
 				}
 				else
 				{

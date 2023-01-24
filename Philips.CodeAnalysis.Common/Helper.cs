@@ -321,5 +321,41 @@ namespace Philips.CodeAnalysis.Common
 
 			return false;
 		}
+
+		public static string GetFullName(TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		{
+			string name = string.Empty;
+			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
+			{
+				name = simpleNameSyntax.Identifier.Text;
+			}
+			else if(typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
+			{
+				string left = GetFullName(qualifiedNameSyntax.Left, aliases);
+				string right = qualifiedNameSyntax.Right.Identifier.Text;
+				name = $"{left}.{right}";
+			}
+
+			if(aliases.TryGetValue(name, out string aliased))
+			{
+				return aliased;
+			}
+			return name;
+		}
+
+		public static Dictionary<string, string> GetUsingAliases(SyntaxNode node)
+		{
+			var list = new Dictionary<string, string>();
+			var root = node.SyntaxTree.GetRoot();
+			foreach(var child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
+			{
+				if(child.Alias != null)
+				{
+					list.Add(GetFullName(child.Alias.Name, list), GetFullName(child.Name, list));
+				}
+			}
+			return list;
+		}
+
 	}
 }
