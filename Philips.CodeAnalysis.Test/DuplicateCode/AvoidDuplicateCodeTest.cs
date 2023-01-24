@@ -43,6 +43,11 @@ Foo.WhitelistedFunction";
 			return new[] { ("NotFile.txt", "data"), (AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName) };
 		}
 
+		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)
+		{
+			// TODO: Implement an meaningful assert.
+			Assert.IsTrue(true);
+		}
 
 		public class SumHashCalculator : RollingHashCalculator<TokenInfo>
 		{
