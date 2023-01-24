@@ -46,43 +46,16 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				return;
 			}
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			if (root == null)
+			await ProcessGuiltyMethods(context.Document, context.Diagnostics, (name, registeredName, diagnostic) =>
 			{
-				return;
-			}
-
-			foreach (Diagnostic diagnostic in context.Diagnostics)
-			{
-				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					MethodDeclarationSyntax methodDeclarationSyntax =
-						syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-					if (methodDeclarationSyntax != null)
-					{
-						string methodName = methodDeclarationSyntax.Identifier.ValueText;
-						string registeredName = methodName;
-
-						SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
-						{
-							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
-						}
-
-						string title = $@"Exempt {methodName} as duplicate";
-						context.RegisterCodeFix(
-							CodeAction.Create(
-								title: title,
-								createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
-								equivalenceKey: title),
-							diagnostic);
-					}
-				}
-			}
+				string title = $@"Exempt {name} as duplicate";
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: title,
+						createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
+						equivalenceKey: title),
+					diagnostic);
+			}, context.CancellationToken).ConfigureAwait(false);
 		}
 
 		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
@@ -98,6 +71,37 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			var change = new TextChange(new TextSpan(sourceText.Length, 0), newText);
 			SourceText newSourceText = sourceText.WithChanges(change);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
+		}
+
+		public static async Task ProcessGuiltyMethods(Document document, ImmutableArray<Diagnostic> diagnostics, Action<string, string, Diagnostic> action, CancellationToken cancellationToken)
+		{
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (root == null)
+			{
+				return;
+			}
+
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			foreach (Diagnostic diagnostic in diagnostics)
+			{
+				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					MethodDeclarationSyntax methodDeclarationSyntax = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+					if (methodDeclarationSyntax != null)
+					{
+						string methodName = methodDeclarationSyntax.Identifier.ValueText;
+						string registeredName = methodName;
+						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax, cancellationToken);
+						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
+						{
+							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
+						}
+						action(methodName, registeredName, diagnostic);
+					}
+				}
+			}
 		}
 	}
 
@@ -185,9 +189,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					{
 						continue;
 					}
-
-					SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-					List<string> newMethods = GetMethodNames(grouping, root);
+					var newMethods = new List<string>();
+					await AvoidDuplicateCodeFixProvider.ProcessGuiltyMethods(document, grouping.ToImmutableArray(), (_, registeredName, _) => { newMethods.Add(registeredName); }, cancellationToken);
 					newMethodNames.AddRange(newMethods);
 				}
 
@@ -217,29 +220,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				newSolution = newSolution.WithAdditionalDocumentText(pair.Key, pair.Value);
 			}
 			return newSolution;
-		}
-
-		private List<string> GetMethodNames(IGrouping<SyntaxTree, Diagnostic> grouping, SyntaxNode root)
-		{
-			var newMethodNames = new List<string>();
-			foreach (Diagnostic diagnostic in grouping)
-			{
-				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-				if (root != null)
-				{
-					SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-					if (node != null)
-					{
-						MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
-						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
-							newMethodNames.Add(methodName);
-						}
-					}
-				}
-			}
-			return newMethodNames;
 		}
 	}
 }
