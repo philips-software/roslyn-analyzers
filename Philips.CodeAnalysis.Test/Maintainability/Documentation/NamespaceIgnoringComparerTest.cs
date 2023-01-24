@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		 DataRow("System.Exception", null),
 		 DataRow("System.IO.IOException", ""),
 		 DataRow("", "System.IO.IOException")]
-		public void InvalidInpudShouldReturnNonZero(string left, string right)
+		public void InvalidInputShouldReturnNonZero(string left, string right)
 		{
 			// Arrange
 			var comparer = new NamespaceIgnoringComparer();
@@ -40,6 +40,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			bool equalsResult = comparer.Equals(left, right);
 			// Assert
 			Assert.IsFalse(equalsResult);
+		}
+
+		[DataTestMethod]
+		[DataRow("System.Exception"),
+		 DataRow("System.IO.IOException"),
+		 DataRow("")]
+		public void GetHashCodeShouldReturnSameAsInput(string input)
+		{
+			// Arrange
+			var comparer = new NamespaceIgnoringComparer();
+			var expected = input.GetHashCode();
+			// Act
+			int actual = comparer.GetHashCode(input);
+			// Assert
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }
