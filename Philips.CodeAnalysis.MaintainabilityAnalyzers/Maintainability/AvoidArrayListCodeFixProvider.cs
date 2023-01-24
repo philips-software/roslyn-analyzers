@@ -15,7 +15,7 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidArrayListAnalyzer)), Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidArrayListCodeFixProvider)), Shared]
 	public class AvoidArrayListCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Replace ArrayList with List<T>";
@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override FixAllProvider GetFixAllProvider()
 		{
-			return null;
+			return WellKnownFixAllProviders.BatchFixer;
 		}
 
 		/// <summary>
