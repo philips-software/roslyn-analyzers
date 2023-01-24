@@ -69,14 +69,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
-			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" } operatorDeclaration)
+			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
 			{
 				// Check == and != operators.
 				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "equality comparison operator");
 				context.ReportDiagnostic(diagnostic);
 			}
-			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" } conversionDeclaration)
+			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" })
 			{
 				// Check implicit cast operators.
 				var loc = throwStatement.ThrowKeyword.GetLocation();
