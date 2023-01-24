@@ -67,6 +67,20 @@ class Foo
 
 		}
 
+		[TestMethod]
+		public void UnnamedRegionTest()
+		{
+			string baseline = @"
+class Foo
+{{
+	#region
+	private class A {{}}
+	#endregion
+}}";
+			VerifySuccessfulCompilation(baseline);
+
+		}
+
 		[DataTestMethod]
 		[DataRow(@"public static void b() {{}}", true, 6, 21)]
 		[DataRow(@"private static void b() {{}}", false, 6, 2)]

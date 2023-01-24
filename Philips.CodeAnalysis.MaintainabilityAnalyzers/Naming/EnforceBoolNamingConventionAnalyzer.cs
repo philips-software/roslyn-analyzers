@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
@@ -91,51 +91,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			foreach (VariableDeclaratorSyntax syntax in variableDeclaration.Variables)
 			{
-				bool shouldCheck;
-				Regex validator;
-				switch (variableDeclaration.Parent.Kind())
-				{
-					case SyntaxKind.LocalDeclarationStatement:
-						{
-							LocalDeclarationStatementSyntax localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
-							if (!IsTypeBool(localDeclaration.Declaration.Type, context.SemanticModel))
-							{
-								continue;
-							}
-
-							shouldCheck = _checkLocalVariables;
-							validator = _localRegex;
-							break;
-						}
-					case SyntaxKind.FieldDeclaration:
-						{
-							FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
-
-							if (!IsTypeBool(fieldDeclaration.Declaration.Type, context.SemanticModel))
-							{
-								continue;
-							}
-
-							shouldCheck = _checkFieldVariables;
-
-							if (IsFieldPublic(fieldDeclaration) || IsFieldConst(fieldDeclaration))
-							{
-								validator = _publicFieldRegex;
-							}
-							else
-							{
-								validator = _privateFieldRegex;
-							}
-
-							break;
-						}
-					default:
-						shouldCheck = false;
-						validator = _privateFieldRegex;
-						break;
-				}
-
-				if (!shouldCheck)
+				if (!ShouldCheck(variableDeclaration, context, out Regex validator))
 				{
 					continue;
 				}
@@ -149,6 +105,54 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, syntax.Identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
+		}
+
+		private bool ShouldCheck(VariableDeclarationSyntax variableDeclaration, SyntaxNodeAnalysisContext context, out Regex validator)
+		{
+			validator = null;
+			bool shouldCheck;
+			switch (variableDeclaration.Parent.Kind())
+			{
+				case SyntaxKind.LocalDeclarationStatement:
+					{
+						LocalDeclarationStatementSyntax localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
+						if (!IsTypeBool(localDeclaration.Declaration.Type, context.SemanticModel))
+						{
+							return false;
+						}
+
+						shouldCheck = _checkLocalVariables;
+						validator = _localRegex;
+						break;
+					}
+				case SyntaxKind.FieldDeclaration:
+					{
+						FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
+
+						if (!IsTypeBool(fieldDeclaration.Declaration.Type, context.SemanticModel))
+						{
+							return false;
+						}
+
+						shouldCheck = _checkFieldVariables;
+
+						if (IsFieldPublic(fieldDeclaration) || IsFieldConst(fieldDeclaration))
+						{
+							validator = _publicFieldRegex;
+						}
+						else
+						{
+							validator = _privateFieldRegex;
+						}
+
+						break;
+					}
+				default:
+					shouldCheck = false;
+					validator = _privateFieldRegex;
+					break;
+			}
+			return shouldCheck;
 		}
 
 		private void AnalyzeParameter(SyntaxNodeAnalysisContext context)
