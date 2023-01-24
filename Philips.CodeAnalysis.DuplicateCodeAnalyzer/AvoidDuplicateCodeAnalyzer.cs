@@ -71,8 +71,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
 				string fileName = Path.GetFileName(additionalFile.Path);
-				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, AllowedFileName))
+				if (StringComparer.OrdinalIgnoreCase.Equals(fileName, AllowedFileName))
 				{
 					var allowedMethods = additionalFile.GetText();
 					allowedSymbols.LoadAllowedMethods(allowedMethods, compilation);
