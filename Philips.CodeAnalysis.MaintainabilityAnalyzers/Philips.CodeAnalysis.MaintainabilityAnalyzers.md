@@ -51,7 +51,7 @@
 | PH2097  | Avoid Empty Statement Blocks                 | Avoid empty statement blocks |
 | PH2098  | Avoid Empty Catch Block                      | Avoid try-catch-swallow pattern |
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces that the .NET AssemblyFileVersion is equal to the AssemblyInformationalVersion. AssemblyFileVersion is not used at runtime, so it is helpful for it to match the Package Version. Set it with the &lt;FileVersion&gt; tag in the project file. If not set, it will inherit from &lt;AssemblyVersion&gt;, which if not set will inherit from &lt;Version&gt;|
-| PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations |
+| PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations. |
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
 | PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
