@@ -201,9 +201,9 @@ class Foo
     string x = String.Empty;
     object obj = x;
     string y = obj as string;
-    if (y == null || y.ToString() == @"")
+    if (y == null || y.ToString() == @"""")
     {{
-       string t0 = y.ToString();
+       string t0 = ""hi"";
     }}
   }}
 }}
