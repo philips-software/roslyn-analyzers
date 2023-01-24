@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string LocationsDescription = @"Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, etc...";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor LocationsRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidExceptionsFromUnexpectedLocations), LocationsTitle, LocationsMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: LocationsDescription);
+		private static readonly DiagnosticDescriptor LocationsRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidExceptionsFromUnexpectedLocations), LocationsTitle, LocationsMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: LocationsDescription);
 
 		[SuppressMessage("", "IDE0090", Justification = "When type is removed the literal type cannot be deduced")]
 		private static readonly Dictionary<string, string> specialMethods = new Dictionary<string, string>
