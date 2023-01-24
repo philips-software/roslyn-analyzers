@@ -172,8 +172,24 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					}
 
 					SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-					List<string> newMethods = GetMethodNames(grouping, root);
-					newMethodNames.AddRange(newMethods);
+
+					foreach (Diagnostic diagnostic in grouping)
+					{
+						TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+						if (root != null)
+						{
+							SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
+							if (node != null)
+							{
+								MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+								if (methodDeclarationSyntax != null)
+								{
+									string methodName = methodDeclarationSyntax.Identifier.ValueText;
+									newMethodNames.Add(methodName);
+								}
+							}
+						}
+					}
 				}
 
 				StringBuilder appending = new();
@@ -202,29 +218,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				newSolution = newSolution.WithAdditionalDocumentText(pair.Key, pair.Value);
 			}
 			return newSolution;
-		}
-
-		private List<string> GetMethodNames(IGrouping<SyntaxTree, Diagnostic> grouping, SyntaxNode root)
-		{
-			var newMethodNames = new List<string>();
-			foreach (Diagnostic diagnostic in grouping)
-			{
-				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-				if (root != null)
-				{
-					SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-					if (node != null)
-					{
-						MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
-						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
-							newMethodNames.Add(methodName);
-						}
-					}
-				}
-			}
-			return newMethodNames;
 		}
 	}
 }
