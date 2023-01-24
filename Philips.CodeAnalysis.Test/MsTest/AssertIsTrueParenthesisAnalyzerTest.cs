@@ -45,11 +45,18 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue((1 == 2))", "Assert.IsTrue(1 == 2)")]
 		[DataRow("Assert.IsFalse((1 == 2))", "Assert.IsFalse(1 == 2)")]
-		[DataRow("Assert.IsTrue(((1 == 2)))", "Assert.IsTrue((1 == 2))")]
-		[DataRow("Assert.IsFalse(((1 == 2)))", "Assert.IsFalse((1 == 2))")]
 		public void ParenthesisAreRemoved(string given, string expected)
 		{
 			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1);
+		}
+
+		[DataTestMethod]
+		[DataRow("Assert.IsTrue(((1 == 2)))", "Assert.IsTrue((1 == 2))")]
+		[DataRow("Assert.IsFalse(((1 == 2)))", "Assert.IsFalse((1 == 2))")]
+		public void NestedParenthesisAreRemoved(string given, string expected)
+		{
+			// This will fix one set of paranetheses, but will re-trip on the next layer
+			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1, allowNewCompilerDiagnostics: true);
 		}
 	}
 }
