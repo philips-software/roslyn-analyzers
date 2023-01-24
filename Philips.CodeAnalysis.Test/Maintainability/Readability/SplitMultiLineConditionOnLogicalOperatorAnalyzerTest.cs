@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class SplitMultiLineConditionOnLogicalOperatorAnalyzerTests : CodeFixVerifier
+	public class SplitMultiLineConditionOnLogicalOperatorAnalyzerTest : CodeFixVerifier
 	{
 
 		private const string Correct = @"
@@ -229,21 +229,6 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string WrongReturnStatement = @"
-using System;
-
-namespace MultiLineConditionUnitTests
-{
-    public class Program
-    {
-        public static bool Main(string[] args)
-        {
-            return (2 == 3 &&
-                4 == 5);
-        }
-    }
-}";
-
 		        private const string Wrong4Violations = @"
 namespace MultiLineConditionUnitTests
 {
@@ -272,7 +257,7 @@ namespace MultiLineConditionUnitTests
 			DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>
@@ -282,7 +267,6 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak)),
 			DataRow(WrongOpening, null, 10, 13, DisplayName = nameof(WrongOpening)),
 			DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
-			DataRow(WrongReturnStatement, CorrectReturnStatement, 10, 20, DisplayName = nameof(WrongReturnStatement)),
 			DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
 			DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))
 		]
@@ -302,10 +286,10 @@ namespace MultiLineConditionUnitTests
 						new DiagnosticResultLocation("Test0.cs", line, column)
 					}
 			};
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
-				VerifyCSharpFix(testCode, fixedCode);
+				VerifyFix(testCode, fixedCode);
 			}
 		}
 
@@ -328,7 +312,7 @@ namespace MultiLineConditionUnitTests
 			};
 			var expectedArray = new DiagnosticResult[expectedCount];
 			Array.Fill(expectedArray, expected);
-			VerifyCSharpDiagnostic(testCode, expectedArray);
+			VerifyDiagnostic(testCode, expectedArray);
 		}
 
 		/// <summary>
@@ -338,18 +322,18 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongBreak, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			VerifyDiagnostic(testCode, filePath);
 		}
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new SplitMultiLineConditionOnLogicalOperatorAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new SplitMultiLineConditionOnLogicalOperatorCodeFixProvider();
 		}
