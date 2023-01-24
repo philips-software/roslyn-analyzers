@@ -60,13 +60,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.FirstOrDefault();
-			if (loopVariable != null)
+			// Check: Avoid changing loop variables.
+			if (loopVariable != null && loopVariable.Identifier.Text == assignedVariableName)
 			{
-				// Check: Avoid changing loop variables.
-				if (loopVariable.Identifier.Text != assignedVariableName)
-				{
-					return;
-				}
 				context.ReportDiagnostic(Diagnostic.Create(LoopRule, assigned.GetLocation(), assignedVariableName));
 			}
 		}
