@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string LocationsDescription = @"Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, etc...";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor LocationsRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidExceptionsFromUnexpectedLocations), LocationsTitle, LocationsMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: LocationsDescription);
+		private static readonly DiagnosticDescriptor LocationsRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidExceptionsFromUnexpectedLocations), LocationsTitle, LocationsMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: LocationsDescription);
 
 		[SuppressMessage("", "IDE0090", Justification = "When type is removed the literal type cannot be deduced")]
 		private static readonly Dictionary<string, string> specialMethods = new Dictionary<string, string>
@@ -64,22 +64,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				// Check overriden methods of Object.
 				if (specialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 				{
-					var loc = method.Identifier.GetLocation();
+					var loc = throwStatement.ThrowKeyword.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, specialMethodKind);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
-			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" } operatorDeclaration)
+			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
 			{
 				// Check == and != operators.
-				var loc = operatorDeclaration.OperatorKeyword.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "equality comparison operator");
 				context.ReportDiagnostic(diagnostic);
 			}
-			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" } conversionDeclaration)
+			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" })
 			{
 				// Check implicit cast operators.
-				var loc = conversionDeclaration.OperatorKeyword.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
 				context.ReportDiagnostic(diagnostic);
 			}
@@ -90,15 +90,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					(methodDeclaration.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
 				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
-					var loc = constructorDeclaration.Identifier.GetLocation();
+					var loc = throwStatement.ThrowKeyword.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
-			else if (methodDeclaration is DestructorDeclarationSyntax destructorDeclaration)
+			else if (methodDeclaration is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
-				var loc = destructorDeclaration.Identifier.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "finalizer");
 				context.ReportDiagnostic(diagnostic);
 			}
