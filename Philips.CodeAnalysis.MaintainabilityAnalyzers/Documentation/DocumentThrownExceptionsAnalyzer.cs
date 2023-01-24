@@ -66,6 +66,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
+			var aliases = Helper.GetUsingAliases(throwStatement);
+			if(aliases.TryGetValue(thrownExceptionName, out string aliasedName))
+			{
+				thrownExceptionName = aliasedName;
+			}
+
 			// Determine our parent.
 			SyntaxNode methodDeclaration = throwStatement.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
 			if (methodDeclaration == null)
@@ -84,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
 				.Where(IsExceptionElement)
 				.Select(GetCrefAttributeValue);
-			if (!mentionedExceptions.Contains(thrownExceptionName))
+			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName);

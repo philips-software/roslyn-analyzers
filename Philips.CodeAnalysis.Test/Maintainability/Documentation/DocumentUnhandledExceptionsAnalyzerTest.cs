@@ -30,6 +30,22 @@ public class Foo
 }
 ";
 
+		private const string CorrectCatchAllAlias = @"
+using System;
+using MyException = System.Exception;
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    public void MethodA()
+    {
+        try {
+            System.IO.Directory.CreateDirectory(""abc"");
+        } catch (MyException ex) {
+        }
+    }
+}
+";
+
 		private const string CorrectEnumerateFiles = @"
 public class Foo
 {
@@ -125,6 +141,7 @@ public class Foo
 
 		[DataTestMethod]
 		[DataRow(CorrectCatchAll, DisplayName = nameof(CorrectCatchAll)),
+		 DataRow(CorrectCatchAllAlias, DisplayName = nameof(CorrectCatchAllAlias)),
 		 DataRow(CorrectEnumerateFiles, DisplayName = nameof(CorrectEnumerateFiles)),
 		 DataRow(CorrectEnumerateDirectories, DisplayName = nameof(CorrectEnumerateDirectories))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)

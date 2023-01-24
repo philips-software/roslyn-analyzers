@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow("System.Exception", "System.Exception"),
 		 DataRow("System.Exception", "Exception"),
 		 DataRow("System.IO.IOException", "IOException"),
-		 DataRow("IO.IOException", "System.IO.IOException"),]
+		 DataRow("IO.IOException", "System.IO.IOException")]
 		public void ComparingEquivalentShouldReturnZero(string left, string right)
 		{
 			// Arrange
@@ -25,6 +25,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			// Assert
 			Assert.AreEqual(0, compareResult);
 			Assert.IsTrue(equalsResult);
+		}
+
+		[DataTestMethod]
+		[DataRow(null, "System.Exception"),
+		 DataRow("System.Exception", null),
+		 DataRow("System.IO.IOException", ""),
+		 DataRow("", "System.IO.IOException")]
+		public void InvalidInpudShouldReturnNonZero(string left, string right)
+		{
+			// Arrange
+			var comparer = new NamespaceIgnoringComparer();
+			// Act
+			bool equalsResult = comparer.Equals(left, right);
+			// Assert
+			Assert.IsFalse(equalsResult);
 		}
 	}
 }

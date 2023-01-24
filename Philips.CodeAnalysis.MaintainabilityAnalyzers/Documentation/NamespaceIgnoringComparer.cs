@@ -16,6 +16,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public bool Equals(string x, string y)
 		{
+			if (x == null)
+			{
+				return y == null;
+			}
+			if (y == null)
+			{
+				return false;
+			}
 			return Compare(x, y) == 0;
 		}
 

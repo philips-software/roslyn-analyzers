@@ -111,20 +111,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var method = (MethodDeclarationSyntax)context.Node;
-			
+
 			// TODO: Read PDB as done in: https://github.com/microsoft/peeker
+
+			var aliases = Helper.GetUsingAliases(method);
 
 			var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			List<string> unhandledExceptions = new();
 			foreach (var invocation in invocations)
 			{
-				var newExceptions = GetFromInvocation(context, invocation);
+				var newExceptions = GetFromInvocation(context, invocation, aliases);
 				if (newExceptions.Any())
 				{
 					unhandledExceptions.AddRange(newExceptions);
 				}
 			}
 
+			
 			// List the documented exception types.
 			var documentedExceptions = method.GetLeadingTrivia()
 				.Select(i => i.GetStructure())
@@ -156,7 +159,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		}
 
 		private static IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
-			InvocationExpressionSyntax invocation)
+			InvocationExpressionSyntax invocation, Dictionary<string, string> aliases)
 		{
 			var expectedExceptions = Array.Empty<string>();
 			var invokedSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
@@ -174,7 +177,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
 			foreach (var tryStatement in tryStatements)
 			{
-				var handledExceptionTypes = tryStatement.Catches.Select(cat => GetFullName(cat.Declaration?.Type));
+				var handledExceptionTypes = tryStatement.Catches.Select(cat => Helper.GetFullName(cat.Declaration?.Type, aliases));
 				unhandledExceptions = handledExceptionTypes.Any(ex => ex == WellKnownExceptions.Exception) ? Array.Empty<string>() : unhandledExceptions.Except(handledExceptionTypes);
 			}
 
@@ -190,23 +193,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				results[i] = matches[i].Captures[0].Value.Trim('!', ':');
 			}
 			return results;
-		}
-
-		private static string GetFullName(TypeSyntax typeSyntax)
-		{
-			if (typeSyntax is SimpleNameSyntax simpleNameSyntax)
-			{
-				return simpleNameSyntax.Identifier.Text;
-			}
-
-			if (typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
-			{
-				string left = GetFullName(qualifiedNameSyntax.Left);
-				string right = qualifiedNameSyntax.Right.Identifier.Text;
-				return $"{left}.{right}";
-			}
-
-			return string.Empty;
 		}
 
 		private static string GetFullName(ISymbol symbol)
