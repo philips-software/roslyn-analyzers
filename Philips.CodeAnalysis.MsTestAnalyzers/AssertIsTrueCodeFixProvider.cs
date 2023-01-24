@@ -219,14 +219,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 				return isNullArgument ? IsNull : AreEqual;
 			}
-			else
+			if (isNotEquals)
 			{
-				if (isNotEquals)
-				{
-					return isNullArgument ? IsNull : AreEqual;
-				}
-				return isNullArgument ? IsNotNull : AreNotEqual;
+				return isNullArgument ? IsNull : AreEqual;
 			}
+			return isNullArgument ? IsNotNull : AreNotEqual;
 		}
 
 		private ArgumentListSyntax DecomposeEqualsFunction(ArgumentListSyntax argumentList, out bool isNotEquals)

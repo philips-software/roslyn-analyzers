@@ -199,22 +199,34 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			ImmutableArray<IMethodSymbol> bestFitConstructors = constructors.Where(x => x.Parameters.Length == arguments.Length).ToImmutableArray();
 
-			if (bestFitConstructors.IsEmpty)
+			if (BestFitConstructorsEmpty(bestFitConstructors, argumentList, context, out Location location))
 			{
-				Location location;
-				if (argumentList != null)
-				{
-					location = argumentList.GetLocation();
-				}
-				else
-				{
-					location = context.Node.GetLocation();
-				}
-
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, argumentList));
 				return;
 			}
 
+			if (!AllConstructorsFound(bestFitConstructors, arguments, context))
+			{
+				context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList?.GetLocation(), argumentList));
+			}
+		}
+
+		private bool BestFitConstructorsEmpty(ImmutableArray<IMethodSymbol> bestFitConstructors, ArgumentListSyntax argumentList, SyntaxNodeAnalysisContext context, out Location location)
+		{
+			if (argumentList != null)
+			{
+				location = argumentList.GetLocation();
+			}
+			else
+			{
+				location = context.Node.GetLocation();
+			}
+
+			return bestFitConstructors.IsEmpty;
+		}
+
+		private bool AllConstructorsFound(ImmutableArray<IMethodSymbol> bestFitConstructors, ImmutableArray<ArgumentSyntax> arguments, SyntaxNodeAnalysisContext context)
+		{
 			foreach (IMethodSymbol constructor in bestFitConstructors)
 			{
 				bool didFindAll = true;
@@ -244,11 +256,10 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (didFindAll)
 				{
-					return;
+					return true;
 				}
 			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, argumentList?.GetLocation(), argumentList));
+			return false;
 		}
 	}
 }

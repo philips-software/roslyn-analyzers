@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -18,7 +19,7 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 {
-	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidDuplicateCodeAnalyzer)), Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidDuplicateCodeFixProvider)), Shared]
 	public class AvoidDuplicateCodeFixProvider : CodeFixProvider
 	{
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
@@ -39,48 +40,62 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			Project project = context.Document.Project;
-
 			TextDocument exceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.AllowedFileName, StringComparison.Ordinal));
-
 			if (exceptionsDocument == null)
 			{
 				return;
 			}
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			if (root == null)
+			{
+				return;
+			}
 
 			foreach (Diagnostic diagnostic in context.Diagnostics)
 			{
 				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-				if (root != null)
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
 				{
-					SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-					if (syntaxNode != null)
+					MethodDeclarationSyntax methodDeclarationSyntax =
+						syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+					if (methodDeclarationSyntax != null)
 					{
-						MethodDeclarationSyntax methodDeclarationSyntax =
-							syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
-						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
+						string methodName = methodDeclarationSyntax.Identifier.ValueText;
+						string registeredName = methodName;
 
-							string title = $@"Add {methodName} to duplicate code exceptions list";
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: title,
-									createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
-									equivalenceKey: title),
-								diagnostic);
+						SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
+						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
+						{
+							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
 						}
+
+						string title = $@"Exempt {methodName} as duplicate";
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: title,
+								createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
+								equivalenceKey: title),
+							diagnostic);
 					}
 				}
 			}
 		}
 
-		private async Task<Solution> GetFix(TextDocument document, string methodName, CancellationToken cancellationToken)
+		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
 		{
 			SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-			var change = new TextChange(new TextSpan(sourceText.Length, 0), Environment.NewLine + methodName);
+
+			string newText = string.Empty;
+			if (!string.IsNullOrWhiteSpace(sourceText.Lines[sourceText.Lines.Count - 1].ToString()))
+			{
+				newText = Environment.NewLine;
+			}
+			newText += registeredName;
+			var change = new TextChange(new TextSpan(sourceText.Length, 0), newText);
 			SourceText newSourceText = sourceText.WithChanges(change);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
 		}
