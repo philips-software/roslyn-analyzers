@@ -61,15 +61,15 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 		[DataTestMethod]
-		[DataRow("Assert.IsTrue(1 != 2 && 2 == 3)", "Assert.IsTrue(1 != 2);\n      Assert.IsTrue(2 == 3)")]
+		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\n      Assert.IsTrue(true)")]
 		public void CanBreakDownCompoundStatements(string given, string expected)
 		{
 			VerifyChange(given, expected);
 		}
 
 		[DataTestMethod]
-		[DataRow("Assert.IsTrue(1 != 2 && 2 == 3, \"blah\")", "Assert.IsTrue(1 != 2, \"blah\");\n      Assert.IsTrue(2 == 3, \"blah\")")]
-		[DataRow("Assert.IsTrue(1 != 2 && 2 == 3, \"blah{0}\", 1)", "Assert.IsTrue(1 != 2, \"blah{0}\", 1);\n      Assert.IsTrue(2 == 3, \"blah{0}\", 1)")]
+		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\n      Assert.IsTrue(true, \"blah\")")]
+		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
 		public void PreserveCompoundMessages(string given, string expected)
 		{
 			VerifyChange(given, expected);
@@ -107,13 +107,13 @@ class Foo
 			string given = @"
 int i = 50;
       //test comment
-      Assert.IsTrue(1 != 2 && 2 == 3)";
+      Assert.IsTrue(true && true)";
 
 			string expected = @"
 int i = 50;
       //test comment
-      Assert.IsTrue(1 != 2);
-      Assert.IsTrue(2 == 3)";
+      Assert.IsTrue(true);
+      Assert.IsTrue(true)";
 
 			VerifyChange(given, expected, 3);
 		}
@@ -124,7 +124,7 @@ int i = 50;
 			string given = @"
 int i = 50;
       //test comment
-      Assert.IsTrue(1 != 2 && 2 == 3);
+      Assert.IsTrue(true && true);
 
       i.ToString();
       int k = 4";
@@ -132,8 +132,8 @@ int i = 50;
 			string expected = @"
 int i = 50;
       //test comment
-      Assert.IsTrue(1 != 2);
-      Assert.IsTrue(2 == 3);
+      Assert.IsTrue(true);
+      Assert.IsTrue(true);
 
       i.ToString();
       int k = 4";

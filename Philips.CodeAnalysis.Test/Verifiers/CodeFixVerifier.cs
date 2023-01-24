@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Philips.CodeAnalysis.Test
@@ -112,6 +114,9 @@ namespace Philips.CodeAnalysis.Test
 					break;
 				}
 			}
+
+			//after applying all of the code fixes, there shouldn't be any problems remaining
+			Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s): {CodeAnalysis.Common.Helper.ToPrettyList(analyzerDiagnostics)}");
 
 			//after applying all of the code fixes, compare the resulting string to the inputted one
 			string actualSource = GetStringFromDocument(document);

@@ -17,6 +17,11 @@ namespace Philips.CodeAnalysis.Common
 			return @"PH" + ((int)id).ToString();
 		}
 
+		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
+		{
+			return string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id));
+		}
+
 		public static bool IsInTestClass(SyntaxNodeAnalysisContext context)
 		{
 			return IsInTestClass(context, out _);
