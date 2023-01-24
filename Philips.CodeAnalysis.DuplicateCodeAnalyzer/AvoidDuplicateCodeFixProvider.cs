@@ -47,38 +47,39 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			}
 
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			if (root == null)
+			{
+				return;
+			}
 
 			foreach (Diagnostic diagnostic in context.Diagnostics)
 			{
 				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-				if (root != null)
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
 				{
-					SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-					if (syntaxNode != null)
+					MethodDeclarationSyntax methodDeclarationSyntax =
+						syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+					if (methodDeclarationSyntax != null)
 					{
-						MethodDeclarationSyntax methodDeclarationSyntax =
-							syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-						if (methodDeclarationSyntax != null)
+						string methodName = methodDeclarationSyntax.Identifier.ValueText;
+						string registeredName = methodName;
+
+						SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
+						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
 						{
-							string methodName = methodDeclarationSyntax.Identifier.ValueText;
-							string registeredName = methodName;
-
-							SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-							var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-							if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
-							{
-								registeredName = string.Format($"~M:{methodSymbol.ContainingNamespace.Name}.{methodSymbol.ContainingType.Name}.{methodName}()");
-							}
-
-							string title = $@"Exempt {methodName} as duplicate";
-							context.RegisterCodeFix(
-								CodeAction.Create(
-									title: title,
-									createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
-									equivalenceKey: title),
-								diagnostic);
+							registeredName = string.Format($"~M:{methodSymbol.ContainingNamespace.Name}.{methodSymbol.ContainingType.Name}.{methodName}()");
 						}
+
+						string title = $@"Exempt {methodName} as duplicate";
+						context.RegisterCodeFix(
+							CodeAction.Create(
+								title: title,
+								createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
+								equivalenceKey: title),
+							diagnostic);
 					}
 				}
 			}
