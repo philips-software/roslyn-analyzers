@@ -82,7 +82,7 @@ namespace AvoidUsingParametersTest {
 		 DataRow(CorrectStaticField, DisplayName = nameof(CorrectStaticField))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>
