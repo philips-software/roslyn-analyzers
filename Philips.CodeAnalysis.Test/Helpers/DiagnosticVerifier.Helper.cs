@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test
 {
@@ -139,9 +140,10 @@ namespace Philips.CodeAnalysis.Test
 				var modified = compilation.WithOptions(options);
 
 				List<AdditionalText> additionalTextsBuilder = new();
-				foreach (var (name, content) in GetAdditionalTexts())
+				foreach (TextDocument textDocument in project.AdditionalDocuments)
 				{
-					additionalTextsBuilder.Add(new TestAdditionalText(name, SourceText.From(content)));
+					SourceText contents = textDocument.GetTextAsync().Result;
+					additionalTextsBuilder.Add(new TestAdditionalText(textDocument.Name, contents));
 				}
 
 				var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
@@ -224,6 +226,22 @@ namespace Philips.CodeAnalysis.Test
 			return Array.Empty<(string name, string content)>();
 		}
 
+
+		protected virtual ImmutableArray<DocumentInfo> GetAdditionalDocumentInfos(ProjectId projectId)
+		{
+			List<DocumentInfo> list = new();
+			var details = GetAdditionalTexts();
+			TestTextLoader textLoader = new();
+			foreach ((string name, string content) in details)
+			{
+				var docId = DocumentId.CreateNewId(projectId);
+				textLoader.Register(docId, content);
+				var docInfo = DocumentInfo.Create(docId, name, null, SourceCodeKind.Regular, textLoader);
+				list.Add(docInfo);
+			}
+			return ImmutableArray.Create(list.ToArray());
+		}
+
 		protected virtual (string name, string content)[] GetAdditionalSourceCode()
 		{
 			return Array.Empty<(string name, string content)>();
@@ -248,9 +266,12 @@ namespace Philips.CodeAnalysis.Test
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 
+			var documentIdtemp = DocumentId.CreateNewId(projectId, debugName: "hi");
+
 			var solution = new AdhocWorkspace()
 				.CurrentSolution
 				.AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp)
+				.AddAdditionalDocuments(GetAdditionalDocumentInfos(projectId))
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)
@@ -303,6 +324,7 @@ namespace Philips.CodeAnalysis.Test
 				var documentId = DocumentId.CreateNewId(projectId, debugName: name);
 				solution = solution.AddDocument(documentId, name, SourceText.From(content));
 			}
+
 			return solution.GetProject(projectId);
 		}
 		#endregion
