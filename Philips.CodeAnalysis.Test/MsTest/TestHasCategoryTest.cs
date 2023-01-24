@@ -65,8 +65,8 @@ class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(@"UnitTest", false)]
-		[DataRow(@"ManualTest", false)]
+		[DataRow(@"UnitTests", false)]
+		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
