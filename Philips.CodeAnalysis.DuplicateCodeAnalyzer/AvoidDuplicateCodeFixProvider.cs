@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
 						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
 						{
-							registeredName = string.Format($"~M:{methodSymbol.ContainingNamespace.Name}.{methodSymbol.ContainingType.Name}.{methodName}()");
+							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
 						}
 
 						string title = $@"Exempt {methodName} as duplicate";
