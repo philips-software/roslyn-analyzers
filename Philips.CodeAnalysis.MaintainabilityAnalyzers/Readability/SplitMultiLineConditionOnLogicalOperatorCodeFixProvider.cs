@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
 using Philips.CodeAnalysis.Common;
@@ -42,6 +43,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (root != null)
 			{
 				var node = root.FindNode(diagnosticSpan);
+				if (node.Ancestors().OfType<ReturnStatementSyntax>().Any())
+				{
+					// Disabled code fixer for return statements, see issue #261.
+					return;
+				}
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
