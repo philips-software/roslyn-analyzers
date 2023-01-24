@@ -76,3 +76,5 @@
 | PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
 | PH2124  | Document unhandled exceptions                | Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.|
 | PH2125  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
+| PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
+| PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|

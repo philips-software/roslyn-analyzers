@@ -17,8 +17,7 @@ namespace Philips.CodeAnalysis.Test.DuplicateCode
 	{
 		private const string allowedMethodName = @"Foo.AllowedInitializer()
 Foo.AllowedInitializer(Bar)
-Foo.WhitelistedFunction
-";
+Foo.WhitelistedFunction";
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
