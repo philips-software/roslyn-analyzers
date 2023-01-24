@@ -35,12 +35,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var conversion = (ConversionOperatorDeclarationSyntax)context.Node;
 			var container = conversion.ParameterList.Parameters.FirstOrDefault()?.Type;
-			if (container == null)
-			{
-				return;
-			}
 			// TODO: Consider banning explicitly casting to string, in favor of overriding ToString().
 			if (
+				container == null ||
 				context.SemanticModel.GetSymbolInfo(conversion.Type).Symbol is not INamedTypeSymbol convertTo ||
 				context.SemanticModel.GetSymbolInfo(container).Symbol is not INamedTypeSymbol containingType)
 			{

@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.VariableDeclaration);
 		}
-
+		
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var variable = (VariableDeclarationSyntax)context.Node;
