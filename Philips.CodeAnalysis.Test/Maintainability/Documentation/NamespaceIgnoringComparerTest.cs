@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			int compareResult = comparer.Compare(left, right);
 			bool equalsResult = comparer.Equals(left, right);
 			// Assert
-			Assert.AreEqual(compareResult, 0);
+			Assert.AreEqual(0, compareResult);
 			Assert.IsTrue(equalsResult);
 		}
 	}
