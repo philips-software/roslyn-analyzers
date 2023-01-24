@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.Test
 {
@@ -45,7 +46,18 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
-			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics);
+			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, FixAllScope.Custom);
+		}
+
+		protected void VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+		{
+			var analyzer = GetDiagnosticAnalyzer();
+			var codeFixProvider = GetCodeFixProvider();
+
+			foreach (FixAllScope scope in new FixAllScope[] { FixAllScope.Solution, FixAllScope.Project, FixAllScope.Document})
+			{
+				VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, scope);
+			}
 		}
 
 		/// <summary>
@@ -60,23 +72,22 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics)
+		private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, FixAllScope scope)
 		{
 			var document = CreateDocument(oldSource);
 			var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 			var compilerDiagnostics = GetCompilerDiagnostics(document);
 
 			// Check if the found analyzer diagnostics are to be fixed by the given CodeFixProvider.
+			var analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
 			if (analyzerDiagnostics.Any())
 			{
-				var analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
 				var notFixableDiagnostics = codeFixProvider.FixableDiagnosticIds.Intersect(analyzerDiagnosticIds);
 				Assert.IsTrue(notFixableDiagnostics.Any(),
 					$"CodeFixProvider {codeFixProvider.GetType().Name} is not registered to fix the reported diagnostics: {string.Join(',', analyzerDiagnosticIds)}.");
 			}
-			
-			var attempts = analyzerDiagnostics.Length;
 
+			var attempts = analyzerDiagnostics.Length;
 			for (int i = 0; i < attempts; ++i)
 			{
 				var actions = new List<CodeAction>();
@@ -88,15 +99,28 @@ namespace Philips.CodeAnalysis.Test
 					break;
 				}
 
-				if (codeFixIndex != null)
+
+				if (scope == FixAllScope.Custom)
 				{
-					var codeAction1 = actions.ElementAt((int)codeFixIndex);
-					document = ApplyFix(document, codeAction1);
-					break;
+					if (codeFixIndex != null)
+					{
+						var codeAction1 = actions.ElementAt((int)codeFixIndex);
+						document = ApplyFix(document, codeAction1);
+						break;
+					}
+
+					var codeAction2 = actions.ElementAt(0);
+					document = ApplyFix(document, codeAction2);
+				}
+				else
+				{
+					FixAllContext.DiagnosticProvider diagnosticProvider = new TestDiagnosticProvider(analyzerDiagnostics, document);
+					FixAllProvider fixAllProvider = codeFixProvider.GetFixAllProvider();
+					FixAllContext fixAllContext = new(document, codeFixProvider, scope, actions[0].EquivalenceKey, analyzerDiagnosticIds, diagnosticProvider, CancellationToken.None);
+					CodeAction fixAllAction = fixAllProvider.GetFixAsync(fixAllContext).Result;
+					document = ApplyFix(document, fixAllAction);
 				}
 
-				var codeAction2 = actions.ElementAt(0);
-				document = ApplyFix(document, codeAction2);
 				analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
 
 				var newDiagnostics = GetCompilerDiagnostics(document);
