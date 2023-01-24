@@ -23,4 +23,3 @@ jobs:
           name: Test-Reporter
           path: "**/test-results.trx"
           reporter: dotnet-trx
-          fail-on-error: false
