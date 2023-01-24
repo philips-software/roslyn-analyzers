@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			context.RegisterCompilationAction(Analyze);
 		}
 
-		private static void Analyze(CompilationAnalysisContext context)
+		private void Analyze(CompilationAnalysisContext context)
 		{
 			Version expectedVersion = new(@"1.0.0.0");
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
@@ -53,12 +53,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				expectedVersion = parsedVersion;
 			}
 
-			Version actualVersion = context.Compilation.Assembly.Identity.Version;
+			Version actualVersion = GetCompilationAssemblyVersion(context.Compilation);
 			if (actualVersion.CompareTo(expectedVersion) != 0)
 			{
 				Diagnostic diagnostic = Diagnostic.Create(Rule, null, actualVersion.ToString(), expectedVersion.ToString());
 				context.ReportDiagnostic(diagnostic);
 			}
+		}
+
+		/// <summary>
+		/// To be overridden in test code only.
+		/// </summary>
+		protected virtual Version GetCompilationAssemblyVersion(Compilation compilation)
+		{
+			return compilation.Assembly.Identity.Version;
 		}
 	}
 }
