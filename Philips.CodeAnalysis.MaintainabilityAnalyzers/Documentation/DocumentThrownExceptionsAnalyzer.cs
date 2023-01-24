@@ -116,9 +116,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				{
 					node = identifierName;
 				} 
-				else if(a.Expression is InvocationExpressionSyntax invocation)
+				else if (a.Expression is InvocationExpressionSyntax invocation)
 				{
 					node = invocation;
+				}
+				else if (a.Expression is InterpolatedStringExpressionSyntax interpolatedString)
+				{
+					node = interpolatedString;
 				}
 				else
 				{
