@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,6 +15,11 @@ namespace Philips.CodeAnalysis.Common
 		public static string ToDiagnosticId(DiagnosticIds id)
 		{
 			return @"PH" + ((int)id).ToString();
+		}
+
+		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
+		{
+			return string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id));
 		}
 
 		public static bool IsInTestClass(SyntaxNodeAnalysisContext context)

@@ -116,7 +116,7 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			//after applying all of the code fixes, there shouldn't be any problems remaining
-			Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s), including {analyzerDiagnostics.FirstOrDefault()?.Id}");
+			Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s): {CodeAnalysis.Common.Helper.ToPrettyList(analyzerDiagnostics)}");
 
 			//after applying all of the code fixes, compare the resulting string to the inputted one
 			string actualSource = GetStringFromDocument(document);
