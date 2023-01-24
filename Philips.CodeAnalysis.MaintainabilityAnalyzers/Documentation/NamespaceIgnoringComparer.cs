@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
-	internal sealed class NamespaceIgnoringComparer : IEqualityComparer<string>
+	public sealed class NamespaceIgnoringComparer : IEqualityComparer<string>
 	{
 		public int Compare(string x, string y)
 		{
