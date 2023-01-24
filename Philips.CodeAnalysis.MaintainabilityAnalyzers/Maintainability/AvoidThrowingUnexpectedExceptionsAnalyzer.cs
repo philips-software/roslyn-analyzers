@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				// Check overriden methods of Object.
 				if (specialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 				{
-					var loc = method.Identifier.GetLocation();
+					var loc = throwStatement.ThrowKeyword.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, specialMethodKind);
 					context.ReportDiagnostic(diagnostic);
 				}
@@ -72,14 +72,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" } operatorDeclaration)
 			{
 				// Check == and != operators.
-				var loc = operatorDeclaration.OperatorKeyword.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "equality comparison operator");
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" } conversionDeclaration)
 			{
 				// Check implicit cast operators.
-				var loc = conversionDeclaration.OperatorKeyword.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
 				context.ReportDiagnostic(diagnostic);
 			}
@@ -90,15 +90,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					(methodDeclaration.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
 				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
-					var loc = constructorDeclaration.Identifier.GetLocation();
+					var loc = throwStatement.ThrowKeyword.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
-			else if (methodDeclaration is DestructorDeclarationSyntax destructorDeclaration)
+			else if (methodDeclaration is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
-				var loc = destructorDeclaration.Identifier.GetLocation();
+				var loc = throwStatement.ThrowKeyword.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "finalizer");
 				context.ReportDiagnostic(diagnostic);
 			}
