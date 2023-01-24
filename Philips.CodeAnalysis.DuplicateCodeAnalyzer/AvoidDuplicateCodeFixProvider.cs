@@ -87,7 +87,14 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
 		{
 			SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-			var change = new TextChange(new TextSpan(sourceText.Length, 0), Environment.NewLine + registeredName);
+
+			string newText = string.Empty;
+			if (!string.IsNullOrWhiteSpace(sourceText.Lines[sourceText.Lines.Count - 1].ToString()))
+			{
+				newText = Environment.NewLine;
+			}
+			newText += registeredName;
+			var change = new TextChange(new TextSpan(sourceText.Length, 0), newText);
 			SourceText newSourceText = sourceText.WithChanges(change);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
 		}
