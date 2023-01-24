@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,6 +15,11 @@ namespace Philips.CodeAnalysis.Common
 		public static string ToDiagnosticId(DiagnosticIds id)
 		{
 			return @"PH" + ((int)id).ToString();
+		}
+
+		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
+		{
+			return string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id));
 		}
 
 		public static bool IsInTestClass(SyntaxNodeAnalysisContext context)
@@ -315,5 +321,41 @@ namespace Philips.CodeAnalysis.Common
 
 			return false;
 		}
+
+		public static string GetFullName(TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		{
+			string name = string.Empty;
+			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
+			{
+				name = simpleNameSyntax.Identifier.Text;
+			}
+			else if(typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
+			{
+				string left = GetFullName(qualifiedNameSyntax.Left, aliases);
+				string right = qualifiedNameSyntax.Right.Identifier.Text;
+				name = $"{left}.{right}";
+			}
+
+			if(aliases.TryGetValue(name, out string aliased))
+			{
+				return aliased;
+			}
+			return name;
+		}
+
+		public static Dictionary<string, string> GetUsingAliases(SyntaxNode node)
+		{
+			var list = new Dictionary<string, string>();
+			var root = node.SyntaxTree.GetRoot();
+			foreach(var child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
+			{
+				if(child.Alias != null)
+				{
+					list.Add(GetFullName(child.Alias.Name, list), GetFullName(child.Name, list));
+				}
+			}
+			return list;
+		}
+
 	}
 }

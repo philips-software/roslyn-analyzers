@@ -79,7 +79,19 @@ public class Foo
 }
 ";
 
-        private const string WrongNoArguments = @"
+        private const string CorrectInterpolatedString = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA(int num)
+    {
+        throw new ArgumentException($""The paths '{fromDirectory} and '{toPath}' have different path roots."");
+    }
+}
+";
+
+		private const string WrongNoArguments = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -97,7 +109,8 @@ public class Foo
 		 DataRow(CorrectWithLocalVar, DisplayName = nameof(CorrectWithLocalVar)),
 		 DataRow(CorrectWithNameOf, DisplayName = nameof(CorrectWithNameOf)),
 		 DataRow(CorrectWithProperty, DisplayName = nameof(CorrectWithProperty)),
-		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod))]
+		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
+		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifyDiagnostic(testCode);
