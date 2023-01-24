@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -12,7 +13,7 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 namespace Philips.CodeAnalysis.Test.DuplicateCode
 {
 	[TestClass]
-	public class AvoidDuplicateCodeAnalyzerTest : DiagnosticVerifier
+	public class AvoidDuplicateCodeAnalyzerTest : CodeFixVerifier
 	{
 		private const string allowedMethodName = @"Foo.AllowedInitializer()
 Foo.AllowedInitializer(Bar)
@@ -22,6 +23,11 @@ Foo.WhitelistedFunction
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidDuplicateCodeFixProvider();
 		}
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
@@ -287,7 +293,7 @@ Foo.WhitelistedFunction
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifyDiagnostic(file);
+			VerifyFix(file, file);
 		}
 
 
@@ -333,15 +339,18 @@ class Foo
 		private string CreateFunctions(string content1, string content2)
 		{
 			string baseline = @"
-class Foo 
+namespace MyNamespace
 {{
-  public void Foo()
+  class FooClass
   {{
-	{0};
-  }}
-  public void Bar()
-  {{
-	{1};
+    public void Foo()
+    {{
+	  {0};
+    }}
+    public void Bar()
+    {{
+	  {1};
+    }}
   }}
 }}
 ";
