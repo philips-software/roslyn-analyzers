@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -18,7 +19,7 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 {
-	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidDuplicateCodeAnalyzer)), Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidDuplicateCodeFixProvider)), Shared]
 	public class AvoidDuplicateCodeFixProvider : CodeFixProvider
 	{
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
@@ -39,9 +40,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			Project project = context.Document.Project;
-
 			TextDocument exceptionsDocument = project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(AvoidDuplicateCodeAnalyzer.AllowedFileName, StringComparison.Ordinal));
-
 			if (exceptionsDocument == null)
 			{
 				return;
@@ -63,12 +62,20 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						if (methodDeclarationSyntax != null)
 						{
 							string methodName = methodDeclarationSyntax.Identifier.ValueText;
+							string registeredName = methodName;
 
-							string title = $@"Add {methodName} to duplicate code exceptions list";
+							SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
+							var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
+							if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
+							{
+								registeredName = string.Format($"~M:{methodSymbol.ContainingNamespace.Name}.{methodSymbol.ContainingType.Name}.{methodName}()");
+							}
+
+							string title = $@"Exempt {methodName} as duplicate";
 							context.RegisterCodeFix(
 								CodeAction.Create(
 									title: title,
-									createChangedSolution: c => GetFix(exceptionsDocument, methodName, c),
+									createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
 									equivalenceKey: title),
 								diagnostic);
 						}
@@ -77,10 +84,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			}
 		}
 
-		private async Task<Solution> GetFix(TextDocument document, string methodName, CancellationToken cancellationToken)
+		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
 		{
 			SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-			var change = new TextChange(new TextSpan(sourceText.Length, 0), Environment.NewLine + methodName);
+			var change = new TextChange(new TextSpan(sourceText.Length, 0), Environment.NewLine + registeredName);
 			SourceText newSourceText = sourceText.WithChanges(change);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
 		}
