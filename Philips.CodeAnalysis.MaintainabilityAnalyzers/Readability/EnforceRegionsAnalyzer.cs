@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EnforceRegionsAnalyzer : DiagnosticAnalyzer
 	{
-		private const string RegionTag = "#region ";
+		private const string RegionTag = "#region";
 
 		private const string EnforceRegionTitle = @"Enforce Regions";
 		public const string EnforceRegionMessageFormat = @"Member doesn't belong to region {0}";
@@ -106,7 +106,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (regionName.StartsWith(RegionTag))
 			{
-				regionName = regionName.Replace(RegionTag, "");
+				regionName = regionName.Replace(RegionTag + " ", "");
 			}
 			return regionName;
 		}
