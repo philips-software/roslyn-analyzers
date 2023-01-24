@@ -8,7 +8,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidAsyncVoidAnalyzerTest : AssertCodeFixVerifier
+	public class AvoidAsyncVoidAnalyzerTest : AssertDiagnosticVerifier
 	{
 
 		[TestMethod]
@@ -130,19 +130,9 @@ class FooClass
 		}
 
 
-		protected override CodeFixProvider GetCodeFixProvider()
-		{
-			throw new NotImplementedException();
-		}
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAsyncVoidAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

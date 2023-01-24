@@ -2,14 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 
@@ -26,6 +25,15 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <returns>The CodeFixProvider to be used for CSharp code</returns>
 		protected abstract CodeFixProvider GetCodeFixProvider();
+
+		/// <summary>
+		/// Checks if the specified <see cref="FixAllProvider"/> is as expected.
+		/// </summary>
+		/// <param name="fixAllProvider">The <see cref="FixAllProvider"/> instance returned by the code fixer.</param>
+		protected virtual void AssertFixAllProvider(FixAllProvider fixAllProvider)
+		{
+			Assert.AreSame(WellKnownFixAllProviders.BatchFixer, fixAllProvider);
+		}
 
 		/// <summary>
 		/// Called to test a C# codefix when applied on the inputted string as a source
@@ -152,6 +160,15 @@ namespace Philips.CodeAnalysis.Test
 				// Trimming the lines, to ignore indentation differences.
 				Assert.AreEqual(expectedSourceLines[i].Trim(), actualSourceLines[i].Trim(), $"Source line {i}");
 			}
+		}
+
+		[TestMethod]
+		public void CheckFixAllProvider()
+		{
+			// Arrange
+			var fixAllProvider = GetCodeFixProvider().GetFixAllProvider();
+			// Assert
+			AssertFixAllProvider(fixAllProvider);
 		}
 	}
 }
