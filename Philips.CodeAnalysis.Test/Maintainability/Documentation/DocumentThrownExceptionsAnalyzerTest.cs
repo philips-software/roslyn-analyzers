@@ -38,6 +38,19 @@ public class Foo
 }
 ";
 
+		private const string CorrectWithAlias = @"
+using MyException = System.ArgumentException;
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA()
+    {
+        throw new MyException(""Error"");
+    }
+}
+";
+
 		private const string CorrectInProperty = @"
 public class Foo
 {
@@ -166,6 +179,7 @@ public class Foo
         [DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
+		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
 		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]

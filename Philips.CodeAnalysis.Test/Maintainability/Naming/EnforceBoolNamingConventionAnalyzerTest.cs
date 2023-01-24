@@ -14,16 +14,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class EnforceBoolNamingConventionAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceBoolNamingConventionAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("_isFoo", true, 3)]
 		[DataRow("_areFoo", true, 3)]
@@ -83,6 +77,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			VerifyDiagnostic(givenText, expected);
 		}
+
+		[TestMethod]
+		public void VariableNameIsNotBool()
+		{
+			string givenText = @"class Foo 
+{{
+	private int i = 5;
+	private void Foo() { int x = 10; }
+}}
+";
+
+			VerifySuccessfulCompilation(givenText);
+		}
+
 
 		[DataRow("isfoo", false, 3)]
 		[DataRow("arefoo", false, 3)]
@@ -264,6 +272,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(bool hasFoo in new[] { true, false }){}", true, 5)]
 		[DataRow("foreach(bool doesFoo in new[] { true, false }){}", true, 5)]
 		[DataRow("foreach(bool wasFoo in new[] { true, false }){}", true, 5)]
+		[DataRow("foreach(int i in new[] { 55, 22 }){}", true, 5)]
 		[DataTestMethod]
 		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
 		{
@@ -535,7 +544,5 @@ abstract class Foo : ApplicationContext
 
 			VerifyDiagnostic(givenText, expected);
 		}
-
-		#endregion
 	}
 }

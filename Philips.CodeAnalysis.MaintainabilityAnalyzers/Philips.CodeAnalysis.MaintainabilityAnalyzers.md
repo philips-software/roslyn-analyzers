@@ -55,12 +55,12 @@
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
 | PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
-| PH2105  | Align number of + and - operators            | Align the number of operators + and -, as these are often used in combination with each other. |
-| PH2106  | Align number of * and / operators            | Align the number of operators * and /, as these are often used in combination with each other. |
-| PH2107  | Align number of > and < operators            | Align the number of operators > and <, as these are often used in combination with each other. |
-| PH2108  | Align number of >= and <= operators          | Align the number of operators >= and <=, as these are often used in combination with each other. |
-| PH2109  | Align number of >> and << operators          | Align the number of operators >> and <<, as these are often used in combination with each other. |
-| PH2110  | Align number of ++ and -- operators          | Align the number of operators ++ and --, as these are often used in combination with each other. |
+| PH2105  | Align number of + and - operators            | Overload the minus (-) operator, when you overload the plus (+) operator, as these are often used in combination with each other. |
+| PH2106  | Align number of * and / operators            | Overload the divide (/) operator, when you overload the multiple (*) operator, as these are often used in combination with each other. |
+| PH2107  | Align number of > and < operators            | Overload the smaller than (<) operator, when you overload the greater than (>) operator, as these are often used in combination with each other. |
+| PH2108  | Align number of >= and <= operators          | Overload the smaller or equal (<=) operator, when you overload the greater or equal (>=) operator, as these are often used in combination with each other. |
+| PH2109  | Align number of >> and << operators          | Overload the left shift (<<) operator, when you overload the right shift (>>) operator, as these are often used in combination with each other. |
+| PH2110  | Align number of ++ and -- operators          | Overload the increment (--) operator, when you overload the increment (++) operator, as these are often used in combination with each other. |
 | PH2111  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
 | PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
@@ -74,5 +74,7 @@
 | PH2121  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |
 | PH2122  | Avoid Exceptions from unexpected locations   | Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, some operators, and overidden methods of Object. |
 | PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
+| PH2124  | Document unhandled exceptions                | Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.|
+| PH2125  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
 | PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
 | PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|
