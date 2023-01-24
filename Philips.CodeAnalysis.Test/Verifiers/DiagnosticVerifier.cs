@@ -16,17 +16,10 @@ namespace Philips.CodeAnalysis.Test
 	{
 		#region To be implemented by Test classes
 		/// <summary>
-		/// Get the CSharp analyzer being tested - to be implemented in non-abstract class
+		/// Get the Analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
-		protected abstract DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer();
+		protected abstract DiagnosticAnalyzer GetDiagnosticAnalyzer();
 
-		/// <summary>
-		/// Get the Visual Basic analyzer being tested (C#) - to be implemented in non-abstract class
-		/// </summary>
-		protected virtual DiagnosticAnalyzer GetBasicDiagnosticAnalyzer()
-		{
-			return null;
-		}
 		#endregion
 
 		#region Verifier wrappers
@@ -37,9 +30,10 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyCSharpDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
 		{
-			VerifyDiagnostics(new[] { source }, filenamePrefix, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
 		}
 
 		/// <summary>
@@ -48,42 +42,14 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyCSharpDiagnostic(string source, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected)
 		{
-			VerifyCSharpDiagnostic(source, null, expected);
+			VerifyDiagnostic(source, null, expected);
 		}
 
-		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyBasicDiagnostic(string source, params DiagnosticResult[] expected)
+		protected void VerifySuccessfulCompilation(string source)
 		{
-			VerifyDiagnostics(new[] { source }, null, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
-		}
-
-		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyCSharpDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnostics(sources, null, LanguageNames.CSharp, GetCSharpDiagnosticAnalyzer(), expected);
-		}
-
-		/// <summary>
-		/// Called to test a VB DiagnosticAnalyzer when applied on the inputted strings as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		protected void VerifyBasicDiagnostic(string[] sources, params DiagnosticResult[] expected)
-		{
-			VerifyDiagnostics(sources, null, LanguageNames.VisualBasic, GetBasicDiagnosticAnalyzer(), expected);
+			VerifyDiagnostic(source);
 		}
 
 		/// <summary>
@@ -91,12 +57,12 @@ namespace Philips.CodeAnalysis.Test
 		/// then verifies each of them.
 		/// </summary>
 		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
-		/// <param name="language">The language of the classes represented by the source strings</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnostics(string[] sources, string filenamePrefix, string language, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
-			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, language, analyzer);
+			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 
@@ -117,7 +83,8 @@ namespace Philips.CodeAnalysis.Test
 
 			if (expectedCount != actualCount)
 			{
-				string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
+				var diagnostics = actualResults.ToArray();
+				string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, diagnostics) : "    NONE.";
 
 				Assert.IsTrue(false,
 					string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" actual \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput));
@@ -139,7 +106,8 @@ namespace Philips.CodeAnalysis.Test
 				}
 				else
 				{
-					VerifyDiagnosticLocation(analyzer, actual, actual.Location, expected.Locations.First());
+					var first = expected.Locations.First();
+					VerifyDiagnosticLocation(analyzer, actual, actual.Location, first);
 					var additionalLocations = actual.AdditionalLocations.ToArray();
 
 					if (additionalLocations.Length != expected.Locations.Length - 1)
@@ -170,7 +138,8 @@ namespace Philips.CodeAnalysis.Test
 							expected.Severity, actual.Severity, FormatDiagnostics(analyzer, actual)));
 				}
 
-				if (expected.Message != null && !expected.Message.IsMatch(actual.GetMessage()))
+				var input = actual.GetMessage();
+				if (expected.Message != null && !expected.Message.IsMatch(input))
 				{
 					Assert.IsTrue(false,
 						string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
@@ -220,6 +189,31 @@ namespace Philips.CodeAnalysis.Test
 							expected.Column, actualLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
 				}
 			}
+
+			var actualEndLinePosition = actualSpan.EndLinePosition;
+
+			// Only check line position if there is an actual line in the real diagnostic
+			if (actualEndLinePosition.Line > 0 && expected.EndLine.HasValue)
+			{
+				if (actualEndLinePosition.Line + 1 != expected.EndLine)
+				{
+					Assert.IsTrue(false,
+						string.Format("Expected diagnostic to end on line \"{0}\" but actually ended on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+							expected.EndLine, actualEndLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
+				}
+			}
+
+			// Only check column position if there is an actual column position in the real diagnostic
+			if (actualEndLinePosition.Character > 0 && expected.EndColumn.HasValue)
+			{
+				if (expected.Column != -1 && actualEndLinePosition.Character + 1 != expected.EndColumn)
+				{
+					Assert.IsTrue(false,
+						string.Format("Expected diagnostic to end at column \"{0}\" but actually ended at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+							expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
+				}
+			}
+
 		}
 		#endregion
 
@@ -254,7 +248,7 @@ namespace Philips.CodeAnalysis.Test
 							Assert.IsTrue(location.IsInSource,
 								$"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostics[i]}\r\n");
 
-							string resultMethodName = diagnostics[i].Location.SourceTree.FilePath.EndsWith(".cs") ? "GetCSharpResultAt" : "GetBasicResultAt";
+							string resultMethodName = "GetCSharpResultAt";
 							var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
 
 							builder.AppendFormat("{0}({1}, {2}, {3}.{4})",

@@ -85,7 +85,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// if not, report a diagnostic error
-			Diagnostic diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
+			var location = context.Node.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 			return;
 		}

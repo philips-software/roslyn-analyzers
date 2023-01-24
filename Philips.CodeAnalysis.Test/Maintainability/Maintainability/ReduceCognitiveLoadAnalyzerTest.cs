@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new Regex($"Load of {expectedLoad} ");
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
@@ -48,7 +48,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, "Test.Designer");
+			VerifyDiagnostic(template, "Test.Designer");
 		}
 
 
@@ -63,8 +63,9 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
+
 
 		[TestMethod]
 		public void CognitiveLoadIf()
@@ -78,7 +79,19 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+		}
+
+		[TestMethod]
+		public void CognitiveLoadExpressionBody()
+		{
+			const string template = @"
+class Foo
+{
+	private string MakeString() => new string(""MyString"");
+}
+";
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -93,7 +106,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -108,7 +121,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
 		}
 
 		[TestMethod]
@@ -123,7 +136,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -138,7 +151,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -153,7 +166,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -168,7 +181,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -187,7 +200,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(4)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(4)));
 		}
 
 		[TestMethod]
@@ -208,7 +221,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(6)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(6)));
 		}
 
 		[TestMethod]
@@ -231,7 +244,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(8)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(8)));
 		}
 
 
@@ -253,7 +266,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(5)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(5)));
 		}
 
 		[TestMethod]
@@ -318,7 +331,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(34)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(34)));
 		}
 
 
@@ -380,7 +393,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(26)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(26)));
 		}
 
 		[TestMethod]
@@ -428,14 +441,14 @@ class Foo
 		return document;
 	}
 }";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(40)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(40)));
 		}
 	}
 
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			const string InvalidMaxLoad = @"1000";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
@@ -466,7 +479,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -493,7 +506,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}
@@ -501,7 +514,7 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest2 : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			const string InvalidMaxLoad = @"0";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
@@ -532,7 +545,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -559,7 +572,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}
@@ -567,7 +580,7 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerDefaultInitializationTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ReduceCognitiveLoadAnalyzer();
 		}
@@ -595,7 +608,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -622,7 +635,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}

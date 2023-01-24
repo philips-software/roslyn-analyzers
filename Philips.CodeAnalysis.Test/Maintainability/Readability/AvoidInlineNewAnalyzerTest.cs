@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidInlineNewAnalyzer();
 		}
@@ -48,19 +48,22 @@ class Foo
 		[TestMethod]
 		public void DontInlineNewCall()
 		{
-			VerifyDiagnostic(CreateFunction("string str = new object().ToString()"));
+			var file = CreateFunction("string str = new object().ToString()");
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInLocal()
 		{
-			VerifyNoDiagnostic(CreateFunction("object obj = new object(); string str = obj.ToString();"));
+			var file = CreateFunction("object obj = new object(); string str = obj.ToString();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInField()
 		{
-			VerifyNoDiagnostic(CreateFunction("_obj = new object(); string str = _obj.ToString();"));
+			var file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[DataRow("new Foo()")]
@@ -68,60 +71,63 @@ class Foo
 		[DataTestMethod]
 		public void DontInlineNewCallCustomType(string newVarient)
 		{
-			VerifyDiagnostic(CreateFunction($"string str = {newVarient}.ToString()"));
+			var file = CreateFunction($"string str = {newVarient}.ToString()");
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInLocalCustomType()
 		{
-			VerifyNoDiagnostic(CreateFunction("object obj = new Foo(); string str = obj.ToString();"));
+			var file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfPlacedInFieldCustomType()
 		{
-			VerifyNoDiagnostic(CreateFunction("_obj = new Foo(); string str = _obj.ToString();"));
+			var file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
+			VerifySuccessfulCompilation(file);
 		}
 
 
 		[TestMethod]
 		public void NoErrorIfPlacedInContainer()
 		{
-			VerifyNoDiagnostic(CreateFunction("var v = new List<object>(); v.Add(new object());"));
+			var file = CreateFunction("var v = new List<object>(); v.Add(new object());");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfReturned()
 		{
-			VerifyNoDiagnostic(CreateFunction("return new object();"));
+			var file = CreateFunction("return new object();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void ErrorIfReturned()
 		{
-			VerifyDiagnostic(CreateFunction("return new object().ToString();"));
+			var file = CreateFunction("return new object().ToString();");
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
 		public void NoErrorIfThrown()
 		{
-			VerifyNoDiagnostic(CreateFunction("throw new Exception();"));
+			var file = CreateFunction("throw new Exception();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
 		public void ErrorIfThrown()
 		{
-			VerifyDiagnostic(CreateFunction("throw new object().Foo;"));
-		}
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file);
+			var file = CreateFunction("throw new object().Foo;");
+			VerifyDiagnostic(file);
 		}
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidInlineNewAnalyzer.Rule.Id,
 				Message = new Regex(".+"),

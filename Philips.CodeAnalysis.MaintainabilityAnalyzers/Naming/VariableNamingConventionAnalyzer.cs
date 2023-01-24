@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
 		};
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rules.ToArray()); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { var items = Rules.ToArray(); return ImmutableArray.Create(items); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -68,7 +68,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			CSharpSyntaxNode violation = foreachStatement;
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation(), foreachStatement.Identifier.ValueText);
+			var location = violation.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -135,7 +136,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 
 				CSharpSyntaxNode violation = variableDeclaration;
-				Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation(), syntax.Identifier.ValueText);
+				var location = violation.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, syntax.Identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

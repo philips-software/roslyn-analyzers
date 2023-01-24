@@ -83,7 +83,7 @@ namespace AvoidArrayListTests {
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -95,10 +95,10 @@ namespace AvoidArrayListTests {
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidArrayList);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 			if (fixedCode != null)
 			{
-				VerifyCSharpFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
 			}
 		}
 
@@ -109,14 +109,14 @@ namespace AvoidArrayListTests {
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(WrongLocal, filePath);
+			VerifyDiagnostic(WrongLocal, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AvoidArrayListAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidArrayListCodeFixProvider();
 		}

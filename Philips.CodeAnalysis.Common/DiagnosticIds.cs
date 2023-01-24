@@ -111,7 +111,15 @@ namespace Philips.CodeAnalysis.Common
 		AvoidArrayList = 2116,
 		AvoidUnnecessaryWhere = 2117,
 		AvoidMagicNumbers = 2118,
+		CastCompleteObject = 2119,
 		DocumentThrownExceptions = 2120,
-		SplitMultiLineConditionOnLogicalOperator = 2121,
+		ThrowInformationalExceptions = 2121,
+		AvoidExceptionsFromUnexpectedLocations = 2122,
+		PassSenderToEventHandler = 2123,
+		DocumentUnhandledExceptions = 2124,
+		AlignNumberOfPlusAndEqualOperators = 2125,
+		AvoidUsingParametersAsTempVariables = 2126,
+		AvoidChangingLoopVariables = 2127,
+		SplitMultiLineConditionOnLogicalOperator = 2128,
 	}
 }

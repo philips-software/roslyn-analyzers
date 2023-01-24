@@ -1,9 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class DocumentThrownExceptionsAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DocumentThrownExceptionsAnalyzer();
 		}
@@ -38,6 +34,19 @@ public class Foo
     public void MethodA()
     {
         throw new ArgumentException(""Error"");
+    }
+}
+";
+
+		private const string CorrectWithAlias = @"
+using MyException = System.ArgumentException;
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""ArgumentException"">
+    public void MethodA()
+    {
+        throw new MyException(""Error"");
     }
 }
 ";
@@ -170,12 +179,13 @@ public class Foo
         [DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
+		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
 		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		[DataTestMethod]
@@ -187,7 +197,7 @@ public class Foo
 		 DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
 		}
 	}
 }

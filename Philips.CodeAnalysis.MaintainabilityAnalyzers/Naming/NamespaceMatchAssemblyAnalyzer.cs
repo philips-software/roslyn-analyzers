@@ -78,7 +78,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			// TODO: Check assembly name, see issue #174
 
-			Diagnostic diagnostic = Diagnostic.Create(Rule, namespaceDeclaration.Name.GetLocation());
+			var location = namespaceDeclaration.Name.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 

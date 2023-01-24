@@ -28,7 +28,7 @@ AllowedMethodName
 ~M:ANamespace.AType.AllowedMethod() // With comment on same line
 ";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AllowedSymbolsTestAnalyzer();
 		}
@@ -102,7 +102,7 @@ AllowedMethodName
 		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			VerifyCSharpDiagnostic(file, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(file, Array.Empty<DiagnosticResult>());
 		}
 
 		private string GenerateCodeFile(string nsName, string typeName, string methodName)
@@ -113,7 +113,7 @@ AllowedMethodName
 
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file,
+			VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AllowedSymbolsTestAnalyzer.Rule.Id,

@@ -41,6 +41,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             {
                 return num1.n - num2.n;
             }
+            public static Number operator ==(Number num1, Number num2)
+            {
+                return num1.n == num2.n;
+            }
         }
     }";
 
@@ -55,6 +59,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             public static Number operator -(Number num1, Number num2)
             {
                 return num1.n - num2.n;
+            }
+            public static Number operator ==(Number num1, Number num2)
+            {
+                return num1.n == num2.n;
             }
         }
     }";
@@ -116,6 +124,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
+		private const string CorrectNumberOfPlusEqual = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator +(Number num1, Number num2)
+            {
+                return num1.n + num2.n;
+            }
+            public static Number operator -(Number num1, Number num2)
+            {
+                return num1.n - num2.n;
+            }
+            public static Number operator ==(Number num1, Number num2)
+            {
+                return num1.n == num2.n;
+            }
+        }
+    }";
+
 		private const string WrongNumberOfIncrementDecrement = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -135,6 +162,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             {
                 return num1.n + num2.n;
             }
+            public static Number operator ==(Number num1, Number num2)
+            {
+                return num1.n == num2.n;
+            }
         }
     }";
 		
@@ -146,7 +177,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             {
                 return num1.n + num2.n;
             }
-        }
+             public static Number operator ==(Number num1, Number num2)
+            {
+                return num1.n == num2.n;
+            }
+       }
     }";
 
 		private const string WrongNumberOfMultiplyDivide = @"
@@ -193,6 +228,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
+		private const string WrongNumberOfPlusEqual = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Number {
+			private int n;
+            public static Number operator +(Number num1, Number num2)
+            {
+                return num1.n + num2.n;
+            }
+            public static Number operator -(Number num1, Number num2)
+            {
+                return num1.n - num2.n;
+            }
+        }
+    }";
 
 		/// <summary>
 		/// No diagnostics expected to show up
@@ -205,10 +254,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfMultiplyDivide, DisplayName = nameof(CorrectNumberOfMultiplyDivide)),
 		 DataRow(CorrectNumberOfGreaterLessThan, DisplayName = nameof(CorrectNumberOfGreaterLessThan)),
 		 DataRow(CorrectNumberOfGreaterLessThanOrEqual, DisplayName = nameof(CorrectNumberOfGreaterLessThanOrEqual)),
-		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift))]
+		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift)),
+		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -221,10 +271,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
 		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
 		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
-		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift))]
+		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
+		 DataRow(WrongNumberOfPlusEqual, DiagnosticIds.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -234,10 +285,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyCSharpDiagnostic(WrongNumberOfPlusMinus, filePath);
+			VerifyDiagnostic(WrongNumberOfPlusMinus, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new AlignOperatorsCountAnalyzer();
 		}
 	}

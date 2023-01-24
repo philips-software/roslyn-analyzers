@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -34,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.CompilationUnit);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			CompilationUnitSyntax node = (CompilationUnitSyntax)context.Node;
 
@@ -58,39 +59,48 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (!first.Any())
 			{
-				CreateDiagnostic(context, node.GetLocation());
+				var location = GetSquiggleLocation(node.SyntaxTree);
+				CreateDiagnostic(context, location);
 				return;
 			}
 
-			SyntaxTrivia copyrightSyntax = first[0];
+			SyntaxTrivia firstLeadingTrivia = first[0];
 
 			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia))
 			{
 				bool regionHeaderHasCopyright = CheckCopyrightStatement(context, first[0]);
 				if (!regionHeaderHasCopyright && first.Count >= 2 && first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
 				{
-					copyrightSyntax = first[1];
+					firstLeadingTrivia = first[1];
 				}
 			}
 
-			bool isCorrectStatement = CheckCopyrightStatement(context, copyrightSyntax);
+			bool isCorrectStatement = CheckCopyrightStatement(context, firstLeadingTrivia);
 			if (!isCorrectStatement)
 			{
-				CreateDiagnostic(context, copyrightSyntax.GetLocation());
+				var location = GetSquiggleLocation(node.SyntaxTree);
+				CreateDiagnostic(context, location);
 				return;
 			}
-
 		}
 
-		private static void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		private Location GetSquiggleLocation(SyntaxTree tree)
+		{
+			TextSpan span = tree.GetText().Lines[0].Span;
+			var location = Location.Create(tree, span);
+			return location;
+		}
+			
+
+		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
-		private static bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
+		private bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
 			var comment = trivia.ToFullString();
-			// Check the copyright mar itself
+			// Check the copyright mark itself
 			bool hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
 			
 			// Check the year

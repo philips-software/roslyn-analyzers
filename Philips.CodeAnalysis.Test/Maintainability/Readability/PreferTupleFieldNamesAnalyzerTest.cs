@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreferTupleFieldNamesAnalyzer();
 		}
@@ -58,7 +58,8 @@ class Foo
 				results = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferUsingNamedTupleField);
 			}
 
-			VerifyCSharpDiagnostic(CreateFunction(argument), results);
+			var source = CreateFunction(argument);
+			VerifyDiagnostic(source, results);
 		}
 
 		#endregion

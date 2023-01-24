@@ -14,16 +14,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class EnforceBoolNamingConventionAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceBoolNamingConventionAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("_isFoo", true, 3)]
 		[DataRow("_areFoo", true, 3)]
@@ -81,8 +75,22 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
+
+		[TestMethod]
+		public void VariableNameIsNotBool()
+		{
+			string givenText = @"class Foo 
+{{
+	private int i = 5;
+	private void Foo() { int x = 10; }
+}}
+";
+
+			VerifySuccessfulCompilation(givenText);
+		}
+
 
 		[DataRow("isfoo", false, 3)]
 		[DataRow("arefoo", false, 3)]
@@ -142,7 +150,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -157,7 +165,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -174,7 +182,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("i", false, 5)]
@@ -235,7 +243,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foreach(bool i in new[] { true, false }){}", false, 5)]
@@ -264,6 +272,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(bool hasFoo in new[] { true, false }){}", true, 5)]
 		[DataRow("foreach(bool doesFoo in new[] { true, false }){}", true, 5)]
 		[DataRow("foreach(bool wasFoo in new[] { true, false }){}", true, 5)]
+		[DataRow("foreach(int i in new[] { 55, 22 }){}", true, 5)]
 		[DataTestMethod]
 		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
 		{
@@ -297,7 +306,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("_foo", false, 4)]
@@ -333,7 +342,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 6)]
@@ -372,7 +381,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 5)]
@@ -410,7 +419,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("Foo", false, 4)]
@@ -457,7 +466,7 @@ class Foo
 				};
 			}
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -485,7 +494,7 @@ class Foo : BaseClass
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -512,7 +521,7 @@ abstract class Foo : BaseClass
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -533,9 +542,7 @@ abstract class Foo : ApplicationContext
 
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
-
-		#endregion
 	}
 }

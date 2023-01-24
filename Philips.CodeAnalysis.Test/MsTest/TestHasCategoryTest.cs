@@ -41,7 +41,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataTestMethod]
@@ -65,8 +65,8 @@ class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(@"UnitTest", false)]
-		[DataRow(@"ManualTest", false)]
+		[DataRow(@"UnitTests", false)]
+		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
@@ -139,7 +139,7 @@ class Foo
     }
 }
 ";
-			VerifyCSharpFix(baseline, fixedText);
+			VerifyFix(baseline, fixedText);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError)
@@ -164,16 +164,16 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestHasCategoryAttributeAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasCategoryCodeFixProvider();
 		}
@@ -187,7 +187,7 @@ class Foo
 		{
 			var options = new Dictionary<string, string>
 			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTest,TestDefinitions.ManualTest" }
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
 			};
 			return options;
 		}

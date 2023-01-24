@@ -67,6 +67,20 @@ class Foo
 
 		}
 
+		[TestMethod]
+		public void UnnamedRegionTest()
+		{
+			string baseline = @"
+class Foo
+{{
+	#region
+	private class A {{}}
+	#endregion
+}}";
+			VerifySuccessfulCompilation(baseline);
+
+		}
+
 		[DataTestMethod]
 		[DataRow(@"public static void b() {{}}", true, 6, 21)]
 		[DataRow(@"private static void b() {{}}", false, 6, 2)]
@@ -237,7 +251,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
@@ -262,10 +276,10 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
-			VerifyCSharpDiagnostic(givenText, results);
+			VerifyDiagnostic(givenText, results);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceRegionsAnalyzer();
 		}

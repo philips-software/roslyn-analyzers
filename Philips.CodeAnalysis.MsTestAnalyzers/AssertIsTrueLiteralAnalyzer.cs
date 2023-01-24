@@ -24,7 +24,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue)
 		{
-			return !Helper.IsLiteralTrueFalse(test) ? null : Diagnostic.Create(IsTrueRule, test.GetLocation());
+			var location = test.GetLocation();
+			return !Helper.IsLiteralTrueFalse(test) ? null : Diagnostic.Create(IsTrueRule, location);
 		}
 	}
 }

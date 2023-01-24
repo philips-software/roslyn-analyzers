@@ -53,16 +53,16 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
-			VerifyCSharpFix(givenText, fixedText);
+			VerifyDiagnostic(givenText, expected);
+			VerifyFix(givenText, fixedText);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidOwnerAttributeCodeFixProvider();
 		}

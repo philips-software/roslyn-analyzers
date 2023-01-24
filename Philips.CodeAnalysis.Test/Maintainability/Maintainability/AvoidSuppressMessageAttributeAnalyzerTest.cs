@@ -72,7 +72,7 @@ namespace WpfApp1 {
 }
 			";
 
-			VerifyCSharpDiagnostic(baseline, "BedPosOverlayWindow.g.i");
+			VerifyDiagnostic(baseline, "BedPosOverlayWindow.g.i");
 		}
 
 		[DataRow("NotWhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
@@ -96,10 +96,10 @@ namespace WpfApp1 {
 				}}
 				";
 			string givenText = string.Format(baseline, usingStatement, attribute, functionName);
-			VerifyCSharpDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
+			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSuppressMessage));
 		}
 		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidSuppressMessageAttributeAnalyzer();
 		}

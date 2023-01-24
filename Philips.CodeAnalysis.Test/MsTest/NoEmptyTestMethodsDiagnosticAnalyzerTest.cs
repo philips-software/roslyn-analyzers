@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoEmptyTestMethodsDiagnosticAnalyzer();
 		}
@@ -60,7 +60,7 @@ public class DerivedTestMethod : TestMethodAttribute
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass] public class Foo {{ [{0}] public void Method() {{ }} }}";
 
-			VerifyCSharpDiagnostic(string.Format(template, attribute), DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustNotBeEmpty));
+			VerifyDiagnostic(string.Format(template, attribute), DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustNotBeEmpty));
 		}
 
 		#endregion

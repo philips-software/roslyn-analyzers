@@ -59,7 +59,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			SyntaxToken lastToken = clause.GetLastToken();
 			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine("\r\n"));
 
-			root = root.ReplaceNode(clause, clause.WithTrailingTrivia(newTrivia)).WithAdditionalAnnotations(Formatter.Annotation);
+			var clauseWithTrivia = clause.WithTrailingTrivia(newTrivia);
+			root = root.ReplaceNode(clause, clauseWithTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 
 			return document.WithSyntaxRoot(root);
 		}

@@ -64,7 +64,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			MethodDeclarationSyntax methodDeclarationSyntax = (MethodDeclarationSyntax)context.Node;
-			BlockSyntax blockSyntax = methodDeclarationSyntax.DescendantNodes().OfType<BlockSyntax>().First();
+			BlockSyntax blockSyntax = methodDeclarationSyntax.DescendantNodes().OfType<BlockSyntax>().FirstOrDefault();
+			if (blockSyntax == null)
+			{
+				return;
+			}
 			int cognitiveLoad = CalcCognitiveLoad(blockSyntax);
 
 			cognitiveLoad += blockSyntax.DescendantTokens().Count((token) =>

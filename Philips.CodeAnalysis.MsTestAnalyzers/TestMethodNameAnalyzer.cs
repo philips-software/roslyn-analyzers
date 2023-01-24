@@ -74,7 +74,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
-						Diagnostic diagnostic = Diagnostic.Create(Rule, token.GetLocation(), invalidPrefix);
+						var location = token.GetLocation();
+						Diagnostic diagnostic = Diagnostic.Create(Rule, location, invalidPrefix);
 						context.ReportDiagnostic(diagnostic);
 						return;
 					}

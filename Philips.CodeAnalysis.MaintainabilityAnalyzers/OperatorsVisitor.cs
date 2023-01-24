@@ -56,6 +56,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 				case SyntaxKind.LessThanLessThanToken:
 					ShiftLeftCount += 1;
 					break;
+				case SyntaxKind.EqualsEqualsToken:
+					EqualCount += 1;
+					break;
 			}
 		}
 
@@ -82,5 +85,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public int ShiftRightCount { get; private set; }
 
 		public int ShiftLeftCount { get; private set; }
+
+		public int EqualCount { get; private set; }
 	}
 }

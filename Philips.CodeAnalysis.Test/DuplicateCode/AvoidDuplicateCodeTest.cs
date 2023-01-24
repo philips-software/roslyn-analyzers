@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -12,16 +13,20 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 namespace Philips.CodeAnalysis.Test.DuplicateCode
 {
 	[TestClass]
-	public class AvoidDuplicateCodeAnalyzerTest : DiagnosticVerifier
+	public class AvoidDuplicateCodeAnalyzerTest : CodeFixVerifier
 	{
 		private const string allowedMethodName = @"Foo.AllowedInitializer()
 Foo.AllowedInitializer(Bar)
-Foo.WhitelistedFunction
-";
+Foo.WhitelistedFunction";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidDuplicateCodeFixProvider();
 		}
 
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
@@ -276,7 +281,8 @@ Foo.WhitelistedFunction
 		[DataRow("object obj = new object();", "Foo()")]
 		public void AvoidDuplicateCodeNoError(string method1, string method2)
 		{
-			VerifyNoDiagnostic(CreateFunctions(method1, method2));
+			var file = CreateFunctions(method1, method2);
+			VerifySuccessfulCompilation(file);
 		}
 
 		[DataTestMethod]
@@ -285,7 +291,8 @@ Foo.WhitelistedFunction
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
-			VerifyDiagnostic(CreateFunctions(method1, method2));
+			var file = CreateFunctions(method1, method2);
+			VerifyFix(file, file);
 		}
 
 
@@ -323,7 +330,7 @@ class Foo
 }}
 ";
 
-			VerifyNoDiagnostic(baseline);
+			VerifySuccessfulCompilation(baseline);
 		}
 
 
@@ -331,15 +338,18 @@ class Foo
 		private string CreateFunctions(string content1, string content2)
 		{
 			string baseline = @"
-class Foo 
+namespace MyNamespace
 {{
-  public void Foo()
+  class FooClass
   {{
-	{0};
-  }}
-  public void Bar()
-  {{
-	{1};
+    public void Foo()
+    {{
+	  {0};
+    }}
+    public void Bar()
+    {{
+	  {1};
+    }}
   }}
 }}
 ";
@@ -348,14 +358,9 @@ class Foo
 		}
 
 
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file);
-		}
-
 		private void VerifyDiagnostic(string file)
 		{
-			VerifyCSharpDiagnostic(file,
+			VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,

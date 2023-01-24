@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 	[TestClass]
 	public class DereferenceNullAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DereferenceNullAnalyzer();
 		}
@@ -65,7 +65,7 @@ Instruction i = method.Body.Instructions[0];
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 		
 		/// <summary>
@@ -81,9 +81,10 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("string z = \"hi\"", "int t2 = y.Length")]
 		public void DereferenceNullAsExpressionFindingTest(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -100,8 +101,9 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
 		public void DereferenceNullAsExpressionNoFindingTest(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -123,7 +125,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -146,7 +148,7 @@ class Foo
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		[TestMethod]
@@ -167,8 +169,67 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return (y != null && y.ToString() == @"");
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (y == null || y.ToString() == @"""")
+    {{
+       string t0 = ""hi"";
+    }}
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
+
+		[TestMethod]
+		public void DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTest()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public bool Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return y == null || y.ToString() == @"";
+  }}
+}}
+";
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+		}
+
 
 		[TestMethod]
 		public void DereferenceNullAsExpressionIfCheckDereference2Test()
@@ -188,7 +249,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 
@@ -207,7 +268,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -228,7 +289,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 		
 		[TestMethod]
@@ -249,7 +310,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 		[TestMethod]
@@ -271,7 +332,7 @@ class Foo
 }}
 ";
 			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 
@@ -293,7 +354,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
 		}
 
 	}

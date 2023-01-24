@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				if (!IsPositiveName(variable.Identifier.Text))
 				{
-					CreateDiagnostic(context, node.GetLocation());
+					var location = node.GetLocation();
+					CreateDiagnostic(context, location);
 				}
 			}
 		}
@@ -64,7 +65,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			if (!IsPositiveName(node.Identifier.Text))
 			{
-				CreateDiagnostic(context, node.GetLocation());
+				var location = node.GetLocation();
+				CreateDiagnostic(context, location);
 			}
 		}
 

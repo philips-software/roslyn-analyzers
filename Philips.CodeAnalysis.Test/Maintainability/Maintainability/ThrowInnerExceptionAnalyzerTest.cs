@@ -122,7 +122,7 @@ namespace InnerExceptionUnitTest {
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -133,7 +133,7 @@ namespace InnerExceptionUnitTest {
 		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ThrowInnerException);
-			VerifyCSharpDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, expected);
 		}
 
 		/// <summary>
@@ -143,13 +143,13 @@ namespace InnerExceptionUnitTest {
 		[DataRow(ThrowOther, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			VerifyDiagnostic(testCode, filePath);
 		}
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ThrowInnerExceptionAnalyzer();
 		}

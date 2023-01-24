@@ -46,7 +46,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (syntax.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, syntax.GetLocation());
+					var location = syntax.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					yield return diagnostic;
 				}
 			}

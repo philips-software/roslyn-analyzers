@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreferNamedTuplesAnalyzer();
 		}
@@ -47,21 +47,24 @@ class Foo
 		[DataTestMethod]
 		public void NamedTuplesDontCauseErrors(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument));
+			var source = CreateFunction(argument);
+			VerifyDiagnostic(source);
 		}
 
 		[DataRow("(int, int)")]
 		[DataTestMethod]
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			var source = CreateFunction(argument);
+			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
 		}
 
 		[DataRow("(int Foo, int)")]
 		[DataTestMethod]
 		public void ErrorIfTupleElementDoesNotHaveName(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			var source = CreateFunction(argument);
+			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
 		}
 
 		#endregion

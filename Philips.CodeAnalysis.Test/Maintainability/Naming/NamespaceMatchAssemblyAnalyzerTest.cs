@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return new DiagnosticResultLocation(path + ".cs", 4 + rowOffset, 14 + columnOffset);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("true");
@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, path, expected);
 		}
 
 		[DataTestMethod]
@@ -74,14 +74,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			path = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
-			VerifyCSharpDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
 		}
 	}
 
 	[TestClass]
 	public class NamespaceMatchAssemblyAnalyzerNoFolderTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
@@ -110,7 +110,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, path, expected);
 		}
 
 		[DataTestMethod]
@@ -120,7 +120,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			path = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
-			VerifyCSharpDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
 		}
 	}
 
