@@ -54,9 +54,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					returnTypeName = baseName;
 				}
 			}
-
+			
 			NamespaceIgnoringComparer comparer = new();
-			if (MutableCollections.Any(m => comparer.Compare(m, returnTypeName) == 0))
+			if (method.ReturnType is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, returnTypeName) == 0))
 			{
 				var loc = method.ReturnType.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, returnTypeName));

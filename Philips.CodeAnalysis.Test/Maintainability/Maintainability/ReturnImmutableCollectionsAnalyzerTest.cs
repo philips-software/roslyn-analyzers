@@ -134,6 +134,16 @@ namespace ReturnImmutableTests {
     }
 }";
 
+		private const string WrongArray = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        public int[] MethodA() {
+            return null;
+        }
+    }
+}";
+
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
@@ -160,7 +170,7 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongICollection, DisplayName = nameof(WrongICollection)),
 		 DataRow(WrongDictionary, DisplayName = nameof(WrongDictionary)),
 		 DataRow(WrongIDictionary, DisplayName = nameof(WrongIDictionary)),
-		]
+		 DataRow(WrongArray, DisplayName = nameof(WrongArray))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ReturnImmutableCollections);
 			VerifyDiagnostic(testCode, expected);
