@@ -46,58 +46,69 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				return;
 			}
 
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			if (root == null)
+			await ProcessGuiltyMethods(context.Document, context.Diagnostics, (name, registeredName, diagnostic) =>
 			{
-				return;
-			}
-
-			foreach (Diagnostic diagnostic in context.Diagnostics)
-			{
-				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					MethodDeclarationSyntax methodDeclarationSyntax =
-						syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-					if (methodDeclarationSyntax != null)
-					{
-						string methodName = methodDeclarationSyntax.Identifier.ValueText;
-						string registeredName = methodName;
-
-						SemanticModel semanticModel = await context.Document.GetSemanticModelAsync(context.CancellationToken).ConfigureAwait(false);
-						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
-						{
-							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
-						}
-
-						string title = $@"Exempt {methodName} as duplicate";
-						context.RegisterCodeFix(
-							CodeAction.Create(
-								title: title,
-								createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
-								equivalenceKey: title),
-							diagnostic);
-					}
-				}
-			}
+				string title = $@"Exempt {name} as duplicate";
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: title,
+						createChangedSolution: c => GetFix(exceptionsDocument, registeredName, c),
+						equivalenceKey: title),
+					diagnostic);
+			}, context.CancellationToken).ConfigureAwait(false);
 		}
 
 		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
 		{
 			SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-
-			string newText = string.Empty;
-			if (!string.IsNullOrWhiteSpace(sourceText.Lines[sourceText.Lines.Count - 1].ToString()))
-			{
-				newText = Environment.NewLine;
-			}
-			newText += registeredName;
-			var change = new TextChange(new TextSpan(sourceText.Length, 0), newText);
-			SourceText newSourceText = sourceText.WithChanges(change);
+			SourceText newSourceText = MakeNewSourceText(sourceText, registeredName);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
+		}
+
+		public static SourceText MakeNewSourceText(SourceText original, string appending)
+		{
+			string newText = appending;
+
+			// Add a Newline if necessary
+			int rangeStart = original.Length;
+			if (!original.ToString().EndsWith(Environment.NewLine))
+			{
+				newText = Environment.NewLine + newText;
+			}
+
+			var change = new TextChange(new TextSpan(rangeStart, 0), newText);
+			return original.WithChanges(change);
+		}
+
+		public static async Task ProcessGuiltyMethods(Document document, ImmutableArray<Diagnostic> diagnostics, Action<string, string, Diagnostic> action, CancellationToken cancellationToken)
+		{
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (root == null)
+			{
+				return;
+			}
+
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			foreach (Diagnostic diagnostic in diagnostics)
+			{
+				TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
+				if (syntaxNode != null)
+				{
+					MethodDeclarationSyntax methodDeclarationSyntax = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
+					if (methodDeclarationSyntax != null)
+					{
+						string methodName = methodDeclarationSyntax.Identifier.ValueText;
+						string registeredName = methodName;
+						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax, cancellationToken);
+						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
+						{
+							registeredName = '~' + methodSymbol.GetDocumentationCommentId();
+						}
+						action(methodName, registeredName, diagnostic);
+					}
+				}
+			}
 		}
 	}
 
@@ -185,45 +196,19 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					{
 						continue;
 					}
-
-					SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-					foreach (Diagnostic diagnostic in grouping)
-					{
-						TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-						if (root != null)
-						{
-							SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-							if (node != null)
-							{
-								MethodDeclarationSyntax methodDeclarationSyntax = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-								if (methodDeclarationSyntax != null)
-								{
-									string methodName = methodDeclarationSyntax.Identifier.ValueText;
-									newMethodNames.Add(methodName);
-								}
-							}
-						}
-					}
+					var newMethods = new List<string>();
+					await AvoidDuplicateCodeFixProvider.ProcessGuiltyMethods(document, grouping.ToImmutableArray(), (_, registeredName, _) => { newMethods.Add(registeredName); }, cancellationToken);
+					newMethodNames.AddRange(newMethods);
 				}
 
 				StringBuilder appending = new();
 				foreach (string methodName in newMethodNames)
 				{
-					appending.Append(Environment.NewLine);
 					appending.Append(methodName);
+					appending.Append(Environment.NewLine);
 				}
 
-				// Strip last NewLine if it's there
-				int rangeStart = sourceText.Length;
-				if (sourceText.ToString().EndsWith(Environment.NewLine))
-				{
-					rangeStart -= Environment.NewLine.Length;
-				}
-
-				var change = new TextChange(new TextSpan(rangeStart, 0), appending.ToString());
-				SourceText newSourceText = sourceText.WithChanges(change);
-
+				SourceText newSourceText = AvoidDuplicateCodeFixProvider.MakeNewSourceText(sourceText, appending.ToString());
 				duplicateExceptionsList.Add(new KeyValuePair<DocumentId, SourceText>(duplicateExceptionsDocument.Id, newSourceText));
 			}
 
