@@ -9,10 +9,10 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
 namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 {
 	/// <summary>
-	/// Test class for <see cref="AvoidImplementingDestructorsAnalyzer"/>.
+	/// Test class for <see cref="AvoidImplementingFinalizersAnalyzer"/>.
 	/// </summary>
 	[TestClass]
-	public class AvoidImplementingDestructorsAnalyzerTest : DiagnosticVerifier
+	public class AvoidImplementingFinalizersAnalyzerTest : DiagnosticVerifier
 	{
 		private const string Correct =
 @"// Copyright Koninklijke Philips N.V. 2020
@@ -26,16 +26,16 @@ namespace PathTooLongUnitTest {
     }
 }";
 		/// <summary>
-		/// No diagnostics expected to show up
+		/// Diagnostics expected to show up
 		/// </summary>
 		[TestMethod]
-		public void WhenTestCodeHasDestructorDiagnosticIsTriggered()
+		public void WhenTestCodeHasFinalizerDiagnosticIsTriggered()
 		{
-			VerifyDiagnostic(Correct, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingDestructors));
+			VerifyDiagnostic(Correct, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingFinalizers));
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
-			return new AvoidImplementingDestructorsAnalyzer();
+			return new AvoidImplementingFinalizersAnalyzer();
 		}
 	}
 }

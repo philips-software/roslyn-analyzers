@@ -10,14 +10,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidImplementingDestructorsAnalyzer : DiagnosticAnalyzer
+	public class AvoidImplementingFinalizersAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Don't implement a destructor";
-		private const string MessageFormat = @"Don't implement a destructor, use Dispose instead.";
-		private const string Description = @"Don't implement a destructor, use Dispose instead.";
+		private const string Title = @"Don't implement a finalizer";
+		private const string MessageFormat = @"Don't implement a finalizer, use Dispose instead.";
+		private const string Description = @"Don't implement a finalizer, use Dispose instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidImplementingDestructors),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidImplementingFinalizers),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 
@@ -32,8 +32,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var destructor = (DestructorDeclarationSyntax)context.Node;
-			var loc = destructor.GetLocation();
+			var finalizer = (DestructorDeclarationSyntax)context.Node;
+			var loc = finalizer.GetLocation();
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 		}
 	}

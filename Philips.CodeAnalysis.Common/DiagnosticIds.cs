@@ -120,6 +120,6 @@ namespace Philips.CodeAnalysis.Common
 		AlignNumberOfPlusAndEqualOperators = 2125,
 		AvoidUsingParametersAsTempVariables = 2126,
 		AvoidChangingLoopVariables = 2127,
-		AvoidImplementingDestructors = 2130,
+		AvoidImplementingFinalizers = 2130,
 	}
 }
