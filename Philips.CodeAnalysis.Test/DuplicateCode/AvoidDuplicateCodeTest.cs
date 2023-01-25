@@ -45,8 +45,9 @@ Foo.WhitelistedFunction";
 
 		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)
 		{
-			// TODO: Implement an meaningful assert.
-			Assert.IsTrue(true);
+			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Project));
+			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Document));
+			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Solution));
 		}
 
 		public class SumHashCalculator : RollingHashCalculator<TokenInfo>
@@ -297,6 +298,7 @@ Foo.WhitelistedFunction";
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
+			VerifyFix(file, file);
 			VerifyFixAll(file, file);
 		}
 
