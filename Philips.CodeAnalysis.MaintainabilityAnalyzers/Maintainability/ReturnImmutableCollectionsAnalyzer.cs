@@ -31,41 +31,59 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.ReportDiagnostics);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
 		
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			var method = (MethodDeclarationSyntax)context.Node;
+			AssertType(context, method.ReturnType, method);
+		}
 
-			if (!IsCallableFromOutsideClass(method))
+		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
+		{
+			var prop = (PropertyDeclarationSyntax)context.Node;
+			AssertType(context, prop.Type, prop);
+		}
+
+		private static void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
+		{
+			if(!IsCallableFromOutsideClass(parent))
 			{
-				// Private methods are allowed to return mutable collections.
+				// Private members are allowed to return mutable collections.
 				return;
 			}
 
-			var aliases = Helper.GetUsingAliases(method);
-			var returnTypeName = Helper.GetFullName(method.ReturnType, aliases);
-			if (method.ReturnType is GenericNameSyntax genericName)
-			{
-				var baseName = genericName.Identifier.Text;
-				if (!aliases.TryGetValue(baseName, out returnTypeName))
-				{
-					returnTypeName = baseName;
-				}
-			}
-			
+			var typeName = GetTypeName(type);
+
 			NamespaceIgnoringComparer comparer = new();
-			if (method.ReturnType is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, returnTypeName) == 0))
+			if(type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
 			{
-				var loc = method.ReturnType.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, returnTypeName));
+				var loc = type.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, typeName));
 			}
 		}
 
-		private static bool IsCallableFromOutsideClass(MethodDeclarationSyntax method)
+		private static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
 		{
 			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
+		}
+
+		private static string GetTypeName(TypeSyntax type)
+		{
+			var aliases = Helper.GetUsingAliases(type);
+			var typeName = Helper.GetFullName(type, aliases);
+			if(type is GenericNameSyntax genericName)
+			{
+				var baseName = genericName.Identifier.Text;
+				if(!aliases.TryGetValue(baseName, out typeName))
+				{
+					typeName = baseName;
+				}
+			}
+
+			return typeName;
 		}
 	}
 }

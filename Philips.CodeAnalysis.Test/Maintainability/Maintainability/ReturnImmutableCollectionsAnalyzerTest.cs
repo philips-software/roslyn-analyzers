@@ -74,6 +74,14 @@ namespace ReturnImmutableTests {
     }
 }";
 
+		private const string CorrectProperty = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        private ImmutableArray<int> PropertyA() { get; }
+    }
+}";
+
 		private const string WrongList = @"
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
@@ -144,6 +152,14 @@ namespace ReturnImmutableTests {
     }
 }";
 
+		private const string WrongProperty = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        public int[] PropertyA() { get; }
+    }
+}";
+
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
@@ -154,7 +170,8 @@ namespace ReturnImmutableTests {
 		 DataRow(CorrectReadOnlyDictionary, DisplayName = nameof(CorrectReadOnlyDictionary)),
 		 DataRow(CorrectEnumerable, DisplayName = nameof(CorrectEnumerable)),
 		 DataRow(CorrectImmutableArray, DisplayName = nameof(CorrectImmutableArray)),
-		 DataRow(CorrectPrivate, DisplayName = nameof(CorrectPrivate))]
+		 DataRow(CorrectPrivate, DisplayName = nameof(CorrectPrivate)),
+		 DataRow(CorrectProperty, DisplayName = nameof(CorrectProperty))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -170,7 +187,8 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongICollection, DisplayName = nameof(WrongICollection)),
 		 DataRow(WrongDictionary, DisplayName = nameof(WrongDictionary)),
 		 DataRow(WrongIDictionary, DisplayName = nameof(WrongIDictionary)),
-		 DataRow(WrongArray, DisplayName = nameof(WrongArray))]
+		 DataRow(WrongArray, DisplayName = nameof(WrongArray)),
+		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ReturnImmutableCollections);
 			VerifyDiagnostic(testCode, expected);
