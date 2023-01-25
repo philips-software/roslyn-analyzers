@@ -61,16 +61,23 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private async Task<Solution> GetFix(TextDocument document, string registeredName, CancellationToken cancellationToken)
 		{
 			SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-
-			string newText = string.Empty;
-			if (!string.IsNullOrWhiteSpace(sourceText.Lines[sourceText.Lines.Count - 1].ToString()))
-			{
-				newText = Environment.NewLine;
-			}
-			newText += registeredName;
-			var change = new TextChange(new TextSpan(sourceText.Length, 0), newText);
-			SourceText newSourceText = sourceText.WithChanges(change);
+			SourceText newSourceText = MakeNewSourceText(sourceText, registeredName);
 			return document.Project.Solution.WithAdditionalDocumentText(document.Id, newSourceText);
+		}
+
+		public static SourceText MakeNewSourceText(SourceText original, string appending)
+		{
+			string newText = appending;
+
+			// Add a Newline if necessary
+			int rangeStart = original.Length;
+			if (!original.ToString().EndsWith(Environment.NewLine))
+			{
+				newText = Environment.NewLine + newText;
+			}
+
+			var change = new TextChange(new TextSpan(rangeStart, 0), newText);
+			return original.WithChanges(change);
 		}
 
 		public static async Task ProcessGuiltyMethods(Document document, ImmutableArray<Diagnostic> diagnostics, Action<string, string, Diagnostic> action, CancellationToken cancellationToken)
@@ -197,20 +204,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				StringBuilder appending = new();
 				foreach (string methodName in newMethodNames)
 				{
-					appending.Append(Environment.NewLine);
 					appending.Append(methodName);
+					appending.Append(Environment.NewLine);
 				}
 
-				// Strip last NewLine if it's there
-				int rangeStart = sourceText.Length;
-				if (sourceText.ToString().EndsWith(Environment.NewLine))
-				{
-					rangeStart -= Environment.NewLine.Length;
-				}
-
-				var change = new TextChange(new TextSpan(rangeStart, 0), appending.ToString());
-				SourceText newSourceText = sourceText.WithChanges(change);
-
+				SourceText newSourceText = AvoidDuplicateCodeFixProvider.MakeNewSourceText(sourceText, appending.ToString());
 				duplicateExceptionsList.Add(new KeyValuePair<DocumentId, SourceText>(duplicateExceptionsDocument.Id, newSourceText));
 			}
 
