@@ -78,7 +78,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        private ImmutableArray<int> PropertyA() { get; }
+        private ImmutableArray<int> PropertyA { get; }
     }
 }";
 
@@ -156,7 +156,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public int[] PropertyA() { get; }
+        public int[] PropertyA { get; }
     }
 }";
 
