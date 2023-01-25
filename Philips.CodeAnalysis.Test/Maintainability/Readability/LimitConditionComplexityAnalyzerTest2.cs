@@ -48,7 +48,7 @@ namespace ComplexConditionUnitTests {
 		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses))]
 		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

@@ -76,28 +76,28 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AllowExternalCode()
 		{
 			string template = CreateFunction("static", externKeyword: "extern");
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
 		public void IgnoreIfInStaticClass()
 		{
 			string template = CreateFunction("static", classStaticModifier: "static");
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
 		public void OnlyCatchStaticMethods()
 		{
 			string template = CreateFunction("");
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
 		public void AllowStaticMainMethod()
 		{
 			string template = CreateFunction("static", methodName: "Main");
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -119,14 +119,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AllowStaticFactoryMethod()
 		{
 			string template = CreateFunction("static", factoryMethod: true);
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
 		public void AllowStaticDynamicDataMethod()
 		{
 			string template = CreateFunction("static", returnType: "IEnumerable<object[]>");
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]

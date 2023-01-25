@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
-			VerifyDiagnostic(test);
+			VerifySuccessfulCompilation(test);
 
 			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 

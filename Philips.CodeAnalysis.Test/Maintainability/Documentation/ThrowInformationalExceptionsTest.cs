@@ -113,7 +113,7 @@ public class Foo
 		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[DataTestMethod]

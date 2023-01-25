@@ -80,7 +80,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 	}
 }

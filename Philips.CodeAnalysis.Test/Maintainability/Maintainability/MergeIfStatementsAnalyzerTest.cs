@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 			string testCode = string.Format(testCodeTemplate, test);
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[DataTestMethod]

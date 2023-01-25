@@ -85,7 +85,7 @@ public class TestClass : IData
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[DataTestMethod]
@@ -106,7 +106,7 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[DataRow(true)]
@@ -144,7 +144,7 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[DataRow(": Foo", false)]

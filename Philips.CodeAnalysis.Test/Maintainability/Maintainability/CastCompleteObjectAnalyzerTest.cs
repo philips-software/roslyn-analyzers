@@ -48,7 +48,7 @@ namespace CastCompleteTests {
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

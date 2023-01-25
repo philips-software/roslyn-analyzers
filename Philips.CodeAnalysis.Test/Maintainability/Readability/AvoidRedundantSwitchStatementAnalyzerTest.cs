@@ -76,7 +76,7 @@ public class Foo
 		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 
@@ -134,7 +134,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 
@@ -180,7 +180,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 	}

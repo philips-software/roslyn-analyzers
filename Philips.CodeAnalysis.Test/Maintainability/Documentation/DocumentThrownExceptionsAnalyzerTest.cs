@@ -185,7 +185,7 @@ public class Foo
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[DataTestMethod]
