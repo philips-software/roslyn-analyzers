@@ -97,7 +97,7 @@ public class Program {
 			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

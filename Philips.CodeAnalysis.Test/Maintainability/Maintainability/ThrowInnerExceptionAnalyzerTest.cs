@@ -122,7 +122,7 @@ namespace InnerExceptionUnitTest {
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

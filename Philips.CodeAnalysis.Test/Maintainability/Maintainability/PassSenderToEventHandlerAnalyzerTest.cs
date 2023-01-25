@@ -56,7 +56,7 @@ namespace PassSenderTests {
 		 DataRow(Correct, DisplayName = nameof(Correct))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

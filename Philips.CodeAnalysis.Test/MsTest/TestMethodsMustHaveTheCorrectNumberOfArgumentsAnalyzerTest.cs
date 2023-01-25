@@ -173,7 +173,7 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifyDiagnostic(code);
+				VerifySuccessfulCompilation(code);
 			}
 			else
 			{

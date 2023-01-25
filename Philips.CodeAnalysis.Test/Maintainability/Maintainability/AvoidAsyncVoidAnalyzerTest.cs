@@ -56,7 +56,7 @@ public class MyEventArgs : EventArgs
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(correctTemplate);
 		}
 
 		[TestMethod]
@@ -92,7 +92,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(correctTemplate);
 		}
 
 		[DataRow(false, "Action<int> action = x => {{ Task.Yield(); return 4; }}")]
@@ -125,7 +125,7 @@ class FooClass
 			}
 			else
 			{
-				VerifyDiagnostic(correctTemplate);
+				VerifySuccessfulCompilation(correctTemplate);
 			}
 		}
 

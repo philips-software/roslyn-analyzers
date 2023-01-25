@@ -52,7 +52,7 @@ class Foo
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 	}
 }

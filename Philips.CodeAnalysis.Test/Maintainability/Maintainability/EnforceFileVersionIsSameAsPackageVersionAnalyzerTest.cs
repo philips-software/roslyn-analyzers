@@ -49,7 +49,7 @@ class FooClass
 			}
 			else
 			{
-				VerifyDiagnostic(code);
+				VerifySuccessfulCompilation(code);
 			}
 		}
 
@@ -72,7 +72,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		[TestMethod]
@@ -91,7 +91,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

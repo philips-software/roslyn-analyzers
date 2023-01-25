@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyDiagnostic(text);
+					VerifySuccessfulCompilation(text);
 				}
 				else
 				{
@@ -93,7 +93,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyDiagnostic(text);
+					VerifySuccessfulCompilation(text);
 				}
 				else
 				{

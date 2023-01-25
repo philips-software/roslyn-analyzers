@@ -136,7 +136,7 @@ public class Foo
   public Foo() { }
 }
 ";
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 		[TestMethod]
@@ -148,7 +148,7 @@ public class Foo
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 
@@ -173,7 +173,7 @@ public class Foo
 }
 ";
 
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 

@@ -63,7 +63,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 
@@ -479,7 +479,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -545,7 +545,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -608,7 +608,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
