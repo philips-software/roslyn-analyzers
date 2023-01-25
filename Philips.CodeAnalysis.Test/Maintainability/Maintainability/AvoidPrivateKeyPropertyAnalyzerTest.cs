@@ -13,12 +13,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidPrivateKeyPropertyAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
-			using System.Globalization;
-			class Foo 
+			using System.Security.Cryptography.X509Certificates;
+            class Foo 
 			{{
 				public void Foo()
 				{{
@@ -26,10 +24,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				}}
 			}}
 			";
-
-
-		#endregion
-		#region Non-Public Properties/Methods
 
 		protected override MetadataReference[] GetMetadataReferences()
 		{
@@ -50,9 +44,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new DiagnosticResultLocation("Test.cs", 8 + rowOffset, 8 + columnOffset);
 		}
 
-		#endregion
-
-		#region Test Methods
 		[DataTestMethod]
 		[DataRow(@"_ = new X509Certificate2().PrivateKey", 0, 2)]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
@@ -74,8 +65,5 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			VerifyDiagnostic(code, expected);
 		}
-		#endregion
-
-
 	}
 }
