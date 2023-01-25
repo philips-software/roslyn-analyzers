@@ -78,3 +78,4 @@
 | PH2125  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
 | PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
 | PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|
+| PH2129  | Return immutable collections                 | Return only immutable or readonly collections from a public method, otherwise these collections can be changed by the caller without the callee noticing.|

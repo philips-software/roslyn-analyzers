@@ -3,16 +3,18 @@
 using System;
 using System.Collections.Generic;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
+namespace Philips.CodeAnalysis.Common
 {
 	public sealed class NamespaceIgnoringComparer : IEqualityComparer<string>
 	{
 		public int Compare(string x, string y)
 		{
-			int dotX = Math.Max(x.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
-			string comparableX = x.Substring(dotX);
-			int dotY = Math.Max(y.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
-			string comparableY = y.Substring( dotY);
+			var dotX = Math.Max(x.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
+			var comparableX = x.Substring(dotX);
+			
+			var dotY = Math.Max(y.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
+			var comparableY = y.Substring( dotY);
+			
 			return StringComparer.Ordinal.Compare(comparableX, comparableY);
 		}
 
