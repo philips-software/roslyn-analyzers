@@ -33,6 +33,7 @@ jobs:
             </PropertyGroup>
           </Project>
           EOF
+          cat ./Directory.Build.props
 
       - name: Build the Dogfood
         run: dotnet build --configuration Release
