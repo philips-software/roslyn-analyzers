@@ -64,11 +64,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private Version SetRevisionToZeroIfMissing(Version version)
 		{
+			Version sanitizedVersion = version;
 			if (version.Revision < 0)
 			{
-				version = new Version(version.Major, version.Minor, version.Build, 0);
+				sanitizedVersion = new Version(version.Major, version.Minor, version.Build, 0);
 			}
-			return version;
+			return sanitizedVersion;
 		}
 
 		private string RemoveVersionSuffix(string version)
@@ -83,12 +84,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private string RemoveSuffix(string version, char suffixSymbol)
 		{
+			string sanitizedVersion = version;
 			int index = version.IndexOf(suffixSymbol);
 			if (index >= 0)
 			{
-				version = version.Substring(0, index);
+				sanitizedVersion = version.Substring(0, index);
 			}
-			return version;
+			return sanitizedVersion;
 		}
 	}
 }

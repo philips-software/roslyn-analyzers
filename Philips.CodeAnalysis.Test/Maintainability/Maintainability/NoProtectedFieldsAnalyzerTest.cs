@@ -11,16 +11,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class NoProtectedFieldsAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoProtectedFieldsAnalyzer();
@@ -42,7 +32,5 @@ class Foo {{ {0} string _foo; }}
 
 			VerifyDiagnostic(string.Format(template, modifiers), expected);
 		}
-
-		#endregion
 	}
 }

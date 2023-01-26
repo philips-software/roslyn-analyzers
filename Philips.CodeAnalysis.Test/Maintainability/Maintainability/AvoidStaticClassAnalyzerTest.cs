@@ -44,12 +44,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public const string KnownWildcardClassName = "AssemblyInitialize";
 		public const string AnotherKnownWildcardClassName = "Program";
 
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidStaticClassesAnalyzer();
@@ -82,9 +76,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}}";
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
 		public void AvoidStaticClassesTest()
@@ -140,7 +131,5 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				}
 			});
 		}
-
-		#endregion
 	}
 }

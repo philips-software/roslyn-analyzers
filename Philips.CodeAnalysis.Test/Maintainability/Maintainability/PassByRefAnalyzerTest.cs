@@ -11,16 +11,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class PassByRefAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
@@ -191,7 +181,5 @@ public class TestClass {baseClass}
 		{
 			return new PassByRefAnalyzer();
 		}
-
-		#endregion
 	}
 }

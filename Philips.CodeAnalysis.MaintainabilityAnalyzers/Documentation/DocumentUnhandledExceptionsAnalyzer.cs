@@ -47,8 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static readonly Regex DocumentationRegex = new("exception\\scref=\\\"(.*)\\\"", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-		[SuppressMessage("", "IDE0090", Justification = "When type is removed the literal type cannot be deduced")]
-		private static readonly Dictionary<string, string[]> ExceptionsMap = new Dictionary<string, string[]>
+		private static readonly Dictionary<string, string[]> ExceptionsMap = new()
 		{
 			{
 				"System.IO.Directory.CreateDirectory",

@@ -1,6 +1,7 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -56,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 						startContext.Options,
 						startContext.Compilation);
 					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
-					if (int.TryParse(maxStr, out int parsedMax))
+					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsedMax))
 					{
 						_maxOperators = parsedMax;
 					}

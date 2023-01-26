@@ -109,9 +109,7 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(string.Format(template), result);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -128,9 +126,7 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(string.Format(template), result);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -155,7 +151,7 @@ class Foo
 				error,
 			};
 
-			VerifyDiagnostic(string.Format(template), result);
+			VerifyDiagnostic(template, result);
 		}
 	}
 }

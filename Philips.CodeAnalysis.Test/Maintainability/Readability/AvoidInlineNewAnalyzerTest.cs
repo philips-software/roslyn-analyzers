@@ -15,12 +15,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidInlineNewAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidInlineNewAnalyzer();
@@ -41,9 +35,6 @@ class Foo
 			return string.Format(baseline, content);
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
 		public void DontInlineNewCall()
@@ -138,7 +129,5 @@ class Foo
 				}
 			});
 		}
-
-		#endregion
 	}
 }

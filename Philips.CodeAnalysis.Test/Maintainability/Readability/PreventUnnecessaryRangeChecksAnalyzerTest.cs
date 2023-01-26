@@ -236,9 +236,8 @@ class Foo
   }}
 }}
 ";
-			string errorCode = string.Format(template);
 
-			VerifySuccessfulCompilation(errorCode);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
