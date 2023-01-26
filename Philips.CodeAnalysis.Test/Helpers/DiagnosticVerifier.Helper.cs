@@ -16,7 +16,6 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test
 {
@@ -268,10 +267,12 @@ namespace Philips.CodeAnalysis.Test
 
 			var documentIdtemp = DocumentId.CreateNewId(projectId, debugName: "hi");
 
-			var solution = new AdhocWorkspace()
+			var documentInfos = GetAdditionalDocumentInfos(projectId);
+			var adhocWorkspace = new AdhocWorkspace();
+			var solution = adhocWorkspace
 				.CurrentSolution
 				.AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp)
-				.AddAdditionalDocuments(GetAdditionalDocumentInfos(projectId))
+				.AddAdditionalDocuments(documentInfos)
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
 				.AddMetadataReference(projectId, CSharpSymbolsReference)

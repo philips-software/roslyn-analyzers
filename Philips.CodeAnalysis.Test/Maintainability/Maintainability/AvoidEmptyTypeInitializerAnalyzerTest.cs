@@ -14,16 +14,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidEmptyTypeInitializerAnalyzerTest : CodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
 		[TestMethod]
 		public void AvoidEmptyTypeInitializerPartialDoesntCrash()
 		{
@@ -110,7 +100,5 @@ static Foo() {{ }}", summaryComment));
 		{
 			return new AvoidEmptyTypeInitializer();
 		}
-
-		#endregion
 	}
 }

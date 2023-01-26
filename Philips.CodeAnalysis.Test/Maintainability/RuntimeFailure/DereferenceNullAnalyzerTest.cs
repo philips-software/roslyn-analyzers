@@ -103,7 +103,7 @@ Instruction i = method.Body.Instructions[0];
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 
@@ -125,7 +125,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 
@@ -169,7 +169,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[TestMethod]
@@ -187,7 +187,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[TestMethod]
@@ -208,7 +208,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 
@@ -227,7 +227,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 
@@ -249,7 +249,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 
@@ -268,7 +268,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[TestMethod]
@@ -289,7 +289,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 		
 		[TestMethod]
@@ -310,7 +310,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[TestMethod]
@@ -354,7 +354,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 
 	}

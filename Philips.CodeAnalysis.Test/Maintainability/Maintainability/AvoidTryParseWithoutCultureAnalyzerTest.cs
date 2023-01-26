@@ -1,3 +1,4 @@
+// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -101,7 +102,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void DoNotFlagTryParseWithCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		[DataTestMethod]
@@ -133,7 +134,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string editorCode = string.Format(ClassString, s);
 			string code = string.Concat(editorCode, TestParserDefinition);
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		#endregion

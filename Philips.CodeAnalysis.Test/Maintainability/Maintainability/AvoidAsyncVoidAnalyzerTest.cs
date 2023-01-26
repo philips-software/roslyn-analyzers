@@ -1,4 +1,5 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,7 +57,7 @@ public class MyEventArgs : EventArgs
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(correctTemplate);
 		}
 
 		[TestMethod]
@@ -92,7 +93,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(correctTemplate);
 		}
 
 		[DataRow(false, "Action<int> action = x => {{ Task.Yield(); return 4; }}")]
@@ -125,7 +126,7 @@ class FooClass
 			}
 			else
 			{
-				VerifyDiagnostic(correctTemplate);
+				VerifySuccessfulCompilation(correctTemplate);
 			}
 		}
 

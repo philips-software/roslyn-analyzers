@@ -104,7 +104,7 @@ public static class Bar
 				}
 			};
 
-			VerifyDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(template, expectedErrors);
 		}
 
 		[TestMethod]
@@ -124,9 +124,8 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyDiagnostic(string.Format(template), expectedErrors);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -157,7 +156,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(template, expectedErrors);
 		}
 
 		[TestMethod]
@@ -187,7 +186,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(template, expectedErrors);
 		}
 
 		[TestMethod]
@@ -217,7 +216,7 @@ public static class Bar
 
 			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
 
-			VerifyDiagnostic(string.Format(template), expectedErrors);
+			VerifyDiagnostic(template, expectedErrors);
 		}
 
 		[DataRow("", false)]

@@ -165,7 +165,7 @@ public class FooException
 		 DataRow(CorrectOperatorPlus, DisplayName = nameof(CorrectOperatorPlus))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[DataTestMethod]

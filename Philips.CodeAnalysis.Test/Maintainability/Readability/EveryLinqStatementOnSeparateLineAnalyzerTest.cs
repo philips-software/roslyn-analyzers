@@ -71,7 +71,7 @@ public static class Foo
 		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 		private const string WhereOnSameLine = $@"

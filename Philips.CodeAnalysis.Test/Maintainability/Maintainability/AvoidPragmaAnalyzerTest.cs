@@ -54,7 +54,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(text);
+			VerifySuccessfulCompilation(text);
 		}
 
 		[DataTestMethod]

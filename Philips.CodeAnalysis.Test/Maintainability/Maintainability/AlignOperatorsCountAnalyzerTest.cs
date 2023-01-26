@@ -258,7 +258,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

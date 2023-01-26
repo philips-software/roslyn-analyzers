@@ -108,7 +108,7 @@ class Foo
 }}
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
-			VerifyDiagnostic(errorCode);
+			VerifySuccessfulCompilation(errorCode);
 		}
 
 
@@ -204,7 +204,7 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			VerifySuccessfulCompilation(errorCode);
 		}
 
 		[TestMethod]
@@ -236,9 +236,8 @@ class Foo
   }}
 }}
 ";
-			string errorCode = string.Format(template);
 
-			VerifyDiagnostic(errorCode);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -279,7 +278,7 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			VerifySuccessfulCompilation(errorCode);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]

@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString(), $\"error{name1?.ToString()}\")")]
 		public void AvoidAssertConditionalAccessAnalyzerSuccessTest(string test)
 		{
-			VerifyDiagnostic(test, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(test);
 		}
 		#endregion
 	}

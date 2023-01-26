@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -52,7 +54,7 @@ class Foo
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			VerifyDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(testCode);
 		}
 	}
 }

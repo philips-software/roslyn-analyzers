@@ -1,4 +1,5 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System;
 using System.Collections.Generic;
 
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -359,7 +360,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[TestMethod]
@@ -378,7 +379,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[TestMethod]

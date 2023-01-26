@@ -109,6 +109,7 @@
       * Introduce PH2127: Avoid changing loop variables.
       * Introduce PH2128: Split multi-line conditions on logical operators.
       * Increased the test coverage.
+      * Introduce PH2130: Avoid implementing finalizers.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

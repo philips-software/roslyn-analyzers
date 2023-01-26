@@ -40,7 +40,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]

@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// <summary>
 		/// Return the Statement containing node, offset by the specified amount
 		/// </summary>
-		private (StatementSyntax, int) GetStatement(BlockSyntax blockOfInterest, SyntaxNode node, int offset)
+		private (StatementSyntax statementSyntax, int index) GetStatement(BlockSyntax blockOfInterest, SyntaxNode node, int offset)
 		{
 			StatementSyntax ourStatement = node.Ancestors().OfType<StatementSyntax>().First();
 			int statementOfInterestIndex;

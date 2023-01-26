@@ -65,7 +65,7 @@ namespace ComplexConditionUnitTests {
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

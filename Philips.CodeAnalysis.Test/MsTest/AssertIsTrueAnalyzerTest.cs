@@ -96,7 +96,7 @@ class Foo
 
 ";
 
-			VerifyDiagnostic(givenText);
+			VerifySuccessfulCompilation(givenText);
 
 			VerifyFix(givenText, givenText);
 		}
