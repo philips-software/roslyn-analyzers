@@ -25,9 +25,9 @@ jobs:
           cat > ./Directory.Build.props << EOF
           <Project>
             <PropertyGroup>
-              <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+              <PackageId>${{ '$(MSBuildProjectName)' }}.Dogfood</PackageId>
               <PackageVersion>1.0.0</PackageVersion>
-              <OutputPath>..\Dogfood</OutputPath>
+              <OutputPath>../Dogfood</OutputPath>
             </PropertyGroup>
           </Project>
           EOF
