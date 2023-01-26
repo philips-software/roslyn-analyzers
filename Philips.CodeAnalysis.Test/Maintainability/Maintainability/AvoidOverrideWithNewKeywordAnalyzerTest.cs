@@ -82,7 +82,7 @@ namespace MultiLineConditionUnitTests
 		public void OverrideVirtualDoesNotTriggersDiagnostics(string input)
 		{
 
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 		[DataTestMethod]

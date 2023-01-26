@@ -64,7 +64,7 @@ public {2} class Tests : {3}
 	public void Foo() {{ }}
 }}";
 
-			VerifyDiagnostic(string.Format(code, "[TestClass]", testType, classQualifier, baseClass));
+			VerifySuccessfulCompilation(string.Format(code, "[TestClass]", testType, classQualifier, baseClass));
 
 			DiagnosticResult[] expectedResult = Array.Empty<DiagnosticResult>();
 

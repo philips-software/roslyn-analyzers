@@ -165,7 +165,7 @@ public static class Foo
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
 		public void CorrectDoesNotFlag(string input)
 		{
-			VerifyDiagnostic(input);
+			VerifySuccessfulCompilation(input);
 		}
 
 		[TestMethod]
