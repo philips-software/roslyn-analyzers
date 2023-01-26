@@ -322,7 +322,7 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static string GetFullName(TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		public static string GetFullName(this TypeSyntax typeSyntax, Dictionary<string, string> aliases)
 		{
 			string name = string.Empty;
 			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
