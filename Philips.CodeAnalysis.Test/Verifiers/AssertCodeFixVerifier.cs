@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
 
-			VerifyDiagnostic(test);
+			VerifySuccessfulCompilation(test);
 		}
 
 		protected override MetadataReference[] GetMetadataReferences()

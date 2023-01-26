@@ -49,7 +49,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed), DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			VerifyDiagnostic(template, DiagnosticResultHelper.CreateArray(DiagnosticIds.GotoNotAllowed).Append(DiagnosticIds.GotoNotAllowed));
 		}
 
 		[TestMethod]
