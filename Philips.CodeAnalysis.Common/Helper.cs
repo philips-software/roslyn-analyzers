@@ -325,7 +325,7 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static string GetFullName(TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		public static string GetFullName(this TypeSyntax typeSyntax, Dictionary<string, string> aliases)
 		{
 			string name = string.Empty;
 			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
@@ -362,5 +362,9 @@ namespace Philips.CodeAnalysis.Common
 			return list;
 		}
 
+		public static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
+		{
+			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
+		}
 	}
 }
