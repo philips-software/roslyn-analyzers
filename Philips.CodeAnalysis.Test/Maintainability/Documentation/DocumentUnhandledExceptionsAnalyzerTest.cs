@@ -146,7 +146,7 @@ public class Foo
 		 DataRow(CorrectEnumerateDirectories, DisplayName = nameof(CorrectEnumerateDirectories))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		[DataTestMethod]
