@@ -23,30 +23,30 @@ jobs:
       - name: Prepare the Dogfood
         run: |
           cat > ./Directory.Build.props << EOF
-Project>
- <PropertyGroup>
-   <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
-   <PackageVersion>1.0.0</PackageVersion>
-   <OutputPath>..\Dogfood</OutputPath>
- </PropertyGroup>
-</Project>
-EOF
+          <Project>
+            <PropertyGroup>
+              <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+              <PackageVersion>1.0.0</PackageVersion>
+              <OutputPath>..\Dogfood</OutputPath>
+            </PropertyGroup>
+          </Project>
+          EOF
 
       - name: Build the Dogfood
         run: dotnet build --configuration Release
 
       - name: Restore the Dogfood
         run: |
-cat > ./dogfood.config << EOF
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
+          cat > ./dogfood.config << EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
 		<packageSources>
 			<add key="DogfoodSource" value="./Dogfood" />
 		</packageSources>
-</configuration>
-EOF
+          </configuration>
+          EOF
 
-dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
+        dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
 
       - name: Prepare to eat Dogfood
         run: |
