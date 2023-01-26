@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -41,11 +42,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			if(throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
+			Dictionary<string, string> aliases;
+			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.
-				thrownExceptionName = (exceptionCreation.Type as IdentifierNameSyntax)?.Identifier.Text;
-				if(!HasStringArgument(context, exceptionCreation.ArgumentList))
+				aliases = Helper.GetUsingAliases(throwStatement);
+				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
+				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
 					var loc = exceptionCreation.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(InformationalRule, loc, thrownExceptionName);
@@ -55,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			else
 			{
 				// Rethrowing an existing Exception instance.
-				if(throwStatement.Expression is IdentifierNameSyntax localVar)
+				if (throwStatement.Expression is IdentifierNameSyntax localVar)
 				{
 					thrownExceptionName = context.SemanticModel.GetTypeInfo(localVar).Type?.Name;
 				}
@@ -66,8 +69,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var aliases = Helper.GetUsingAliases(throwStatement);
-			if(aliases.TryGetValue(thrownExceptionName, out string aliasedName))
+			aliases = Helper.GetUsingAliases(throwStatement);
+			if (aliases.TryGetValue(thrownExceptionName, out string aliasedName))
 			{
 				thrownExceptionName = aliasedName;
 			}
