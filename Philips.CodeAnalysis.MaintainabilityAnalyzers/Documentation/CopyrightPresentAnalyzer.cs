@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using Microsoft.CodeAnalysis;
@@ -70,19 +71,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			foreach (SyntaxTrivia syntaxTrivia in leadingTrivia)
+			SyntaxTrivia syntaxTrivia = leadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			if (!CheckCopyrightStatement(context, syntaxTrivia))
 			{
-				if (syntaxTrivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
-				{
-					if (!CheckCopyrightStatement(context, syntaxTrivia))
-					{
-						CreateDiagnostic(context, location);
-					}
-					return;
-				}
+				CreateDiagnostic(context, location);
 			}
-
-			CreateDiagnostic(context, location);
 		}
 
 		private Location GetSquiggleLocation(SyntaxTree tree)
