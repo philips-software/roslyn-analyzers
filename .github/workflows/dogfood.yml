@@ -25,12 +25,11 @@ jobs:
           cat > ./Directory.Build.props << 'EOF'
           <Project>
             <PropertyGroup>
-              <PackageId>$(MSBuildProjectName)$(DOGFOOD)</PackageId>
+              <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
               <PackageVersion>1.0.0</PackageVersion>
             </PropertyGroup>
           </Project>
           EOF
-          export DOGFOOD=.Dogfood
           dotnet build --configuration Release
 
       - name: Prepare to eat Dogfood
