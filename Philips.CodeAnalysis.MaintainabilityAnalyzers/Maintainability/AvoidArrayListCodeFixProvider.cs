@@ -69,16 +69,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private SyntaxNode ReplaceTypeWithList(SyntaxNode root, TypeSyntax existingType)
 		{
+			SyntaxNode newRoot = root;
 			if (root != null && existingType != null)
 			{
 				var parameterType = SyntaxFactory.ParseTypeName("int")
 					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
 				var list = CreateGenericTypeSyntax("List", parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
 
-				root = root.ReplaceNode(existingType, list);
+				newRoot = root.ReplaceNode(existingType, list);
 			}
 
-			return root;
+			return newRoot;
 		}
 
 		public override FixAllProvider GetFixAllProvider()

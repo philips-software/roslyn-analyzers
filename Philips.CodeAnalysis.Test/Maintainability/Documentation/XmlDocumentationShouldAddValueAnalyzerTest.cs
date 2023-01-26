@@ -1,4 +1,5 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System;
 using System.Collections.Generic;
 
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -55,7 +56,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -68,7 +69,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -84,7 +85,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -98,7 +99,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -112,7 +113,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -126,7 +127,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -140,7 +141,7 @@ public enum TestEnumeration
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[DataRow("foo", true)]

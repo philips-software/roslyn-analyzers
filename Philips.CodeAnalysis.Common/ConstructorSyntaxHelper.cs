@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public static class ConstructorSyntaxHelper
+	public class ConstructorSyntaxHelper
 	{
 		/// <summary>
 		/// CreateMapping
@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="context"></param>
 		/// <param name="constructors"></param>
 		/// <returns></returns>
-		public static Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
+		public Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();
 			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new();
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="mapping"></param>
 		/// <param name="ctor"></param>
 		/// <returns></returns>
-		public static List<ConstructorDeclarationSyntax> GetCtorChain(Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
+		public List<ConstructorDeclarationSyntax> GetCtorChain(Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
 		{
 			List<ConstructorDeclarationSyntax> chain = new() { ctor };
 

@@ -25,8 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static readonly DiagnosticDescriptor LocationsRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidExceptionsFromUnexpectedLocations), LocationsTitle, LocationsMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: LocationsDescription);
 
-		[SuppressMessage("", "IDE0090", Justification = "When type is removed the literal type cannot be deduced")]
-		private static readonly Dictionary<string, string> specialMethods = new Dictionary<string, string>
+		private static readonly Dictionary<string, string> specialMethods = new()
 		{
 			{ "Equals", "Equals method" },
 			{ "GetHashCode", "GetHashCode method" },

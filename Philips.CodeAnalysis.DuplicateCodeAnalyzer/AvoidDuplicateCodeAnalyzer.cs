@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,6 +42,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
 		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+
+		private const int MaxTokenCount = 200;
+		private const int MinTokenCount = 20;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
@@ -94,7 +98,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
-				bool isParseSuccessful = int.TryParse(strTokenCount, out int duplicateTokenThreshold);
+				bool isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture,  out int duplicateTokenThreshold);
 
 				if (!isParseSuccessful)
 				{
@@ -102,13 +106,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					diagnosticError = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
 				}
 
-				const int MaxTokenCount = 200;
 				if (duplicateTokenThreshold > MaxTokenCount)
 				{
 					diagnosticError = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
 					duplicateTokenThreshold = MaxTokenCount;
 				}
-				const int MinTokenCount = 20;
 				if (duplicateTokenThreshold < MinTokenCount)
 				{
 					diagnosticError = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
@@ -534,8 +536,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
+		private const int DefaultBaseModulus = 227;
+		private const int DefaultModulus = 1000005;
 
-		public RollingHashCalculator(int maxItems, int baseModulus = 227, int modulus = 1000005)
+		public RollingHashCalculator(int maxItems, int baseModulus = DefaultBaseModulus, int modulus = DefaultModulus)
 		{
 			MaxItems = maxItems;
 			_base = baseModulus;
@@ -647,7 +651,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			};
 		}
 
-		public (int, Evidence) Add(TokenInfo token)
+		public (int hashCode, Evidence evidence) Add(TokenInfo token)
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 

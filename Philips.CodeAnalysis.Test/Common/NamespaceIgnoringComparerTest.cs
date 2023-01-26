@@ -2,9 +2,9 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
+using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
+namespace Philips.CodeAnalysis.Test.Common
 {
 	[TestClass]
 	public class NamespaceIgnoringComparerTest

@@ -40,11 +40,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = ConstructorSyntaxHelper.CreateMapping(context, constructors);
+			ConstructorSyntaxHelper constructorSyntaxHelper = new();
+			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
-				var chain = ConstructorSyntaxHelper.GetCtorChain(mapping, ctor);
+				var chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
 
 				if (!IsInitializeComponentInConstructorChainOnce(chain, out int count))
 				{

@@ -19,7 +19,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
 		{
-			return string.Join(", ", diagnostics.Select(diagnostic => diagnostic.Id));
+			var values = diagnostics.Select(diagnostic => diagnostic.Id);
+			return string.Join(", ", values);
 		}
 
 		public static bool IsInTestClass(SyntaxNodeAnalysisContext context)
@@ -277,8 +278,9 @@ namespace Philips.CodeAnalysis.Common
 			return fileName.EndsWith("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase);
 		}
 
-		public static bool IsInheritingFromClass(INamedTypeSymbol type, string classTypeName)
+		public static bool IsInheritingFromClass(INamedTypeSymbol inputType, string classTypeName)
 		{
+			INamedTypeSymbol type = inputType;
 			while (type != null)
 			{
 				if (type.Name == classTypeName)
@@ -307,8 +309,9 @@ namespace Philips.CodeAnalysis.Common
 			};
 		}
 
-		public static bool IsDerivedFrom(this INamedTypeSymbol symbol, INamedTypeSymbol other)
+		public static bool IsDerivedFrom(this INamedTypeSymbol inputSymbol, INamedTypeSymbol other)
 		{
+			INamedTypeSymbol symbol = inputSymbol;
 			while (symbol != null)
 			{
 				if (SymbolEqualityComparer.Default.Equals(symbol, other))
@@ -322,7 +325,7 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static string GetFullName(TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		public static string GetFullName(this TypeSyntax typeSyntax, Dictionary<string, string> aliases)
 		{
 			string name = string.Empty;
 			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
@@ -351,11 +354,17 @@ namespace Philips.CodeAnalysis.Common
 			{
 				if(child.Alias != null)
 				{
-					list.Add(GetFullName(child.Alias.Name, list), GetFullName(child.Name, list));
+					var alias = GetFullName(child.Alias.Name, list);
+					var name = GetFullName(child.Name, list);
+					list.Add(alias, name);
 				}
 			}
 			return list;
 		}
 
+		public static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
+		{
+			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
+		}
 	}
 }

@@ -116,10 +116,18 @@ namespace Philips.CodeAnalysis.Test
 
 		public static DiagnosticResult[] CreateArray(DiagnosticIds diagnosticId, Regex message = null)
 		{
-			return new DiagnosticResult[]
+			return new []
 			{
 				Create(diagnosticId, message),
 			};
+		}
+
+		public static DiagnosticResult[] Append(this DiagnosticResult[] array, DiagnosticIds diagnosticId, Regex message = null)
+		{
+			DiagnosticResult[] larger = new DiagnosticResult[array.Length + 1];
+			array.AsSpan().CopyTo(larger);
+			larger[array.Length] = Create(diagnosticId, message);
+			return larger;
 		}
 	}
 }

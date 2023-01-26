@@ -13,11 +13,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer();
@@ -40,9 +35,6 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 			return new[] { ("DerivedDataSourceAttribute.cs", code) };
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("[TestMethod]", 0, true)]
 		[DataRow("[TestMethod]", 1, false)]
@@ -67,7 +59,7 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifyDiagnostic(string.Format(code, testType, parameterListString));
+				VerifySuccessfulCompilation(string.Format(code, testType, parameterListString));
 			}
 			else
 			{
@@ -103,7 +95,7 @@ public class Tests
 			}
 
 
-			VerifyDiagnostic(string.Format(code, parameterListString));
+			VerifySuccessfulCompilation(string.Format(code, parameterListString));
 		}
 
 		private static IEnumerable<object[]> DataRowVariants()
@@ -164,7 +156,7 @@ public class Tests
 					dataRowParametersStrings.Add("DisplayName = \"blah\"");
 				}
 
-				string dataRowText = string.Format($"[DataRow({string.Join(',', dataRowParametersStrings)})]");
+				string dataRowText = $"[DataRow({string.Join(',', dataRowParametersStrings)})]";
 
 				dataRow = dataRowText;
 			}
@@ -180,7 +172,5 @@ public class Tests
 				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments));
 			}
 		}
-
-		#endregion
 	}
 }

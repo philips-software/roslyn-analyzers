@@ -1,7 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -42,14 +44,25 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, DiagnosticResult expected)
+		{
+			VerifyDiagnostic(source, null, new[] { expected });
+		}
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
+		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on</param>
+		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
+		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected)
 		{
 			VerifyDiagnostic(source, null, expected);
 		}
 
 		protected void VerifySuccessfulCompilation(string source)
 		{
-			VerifyDiagnostic(source);
+			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
@@ -169,49 +182,43 @@ namespace Philips.CodeAnalysis.Test
 			var actualLinePosition = actualSpan.StartLinePosition;
 
 			// Only check line position if there is an actual line in the real diagnostic
-			if (actualLinePosition.Line > 0 && expected.Line.HasValue)
+			if (actualLinePosition.Line > 0 && expected.Line.HasValue && actualLinePosition.Line + 1 != expected.Line)
 			{
-				if (actualLinePosition.Line + 1 != expected.Line)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic to be on line \"{0}\" was actually on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.Line, actualLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
-				}
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic to be on line \"{0}\" was actually on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Line, actualLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
 			}
 
 			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualLinePosition.Character > 0 && expected.Column.HasValue)
+			if (actualLinePosition.Character > 0 && 
+				expected.Column.HasValue && 
+				expected.Column != -1 && 
+				actualLinePosition.Character + 1 != expected.Column)
 			{
-				if (expected.Column != -1 && actualLinePosition.Character + 1 != expected.Column)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic to start at column \"{0}\" was actually at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.Column, actualLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
-				}
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic to start at column \"{0}\" was actually at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Column, actualLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
 			}
 
 			var actualEndLinePosition = actualSpan.EndLinePosition;
 
 			// Only check line position if there is an actual line in the real diagnostic
-			if (actualEndLinePosition.Line > 0 && expected.EndLine.HasValue)
+			if (actualEndLinePosition.Line > 0 && expected.EndLine.HasValue && actualEndLinePosition.Line + 1 != expected.EndLine)
 			{
-				if (actualEndLinePosition.Line + 1 != expected.EndLine)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic to end on line \"{0}\" but actually ended on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.EndLine, actualEndLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
-				}
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic to end on line \"{0}\" but actually ended on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.EndLine, actualEndLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
 			}
 
 			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualEndLinePosition.Character > 0 && expected.EndColumn.HasValue)
+			if (actualEndLinePosition.Character > 0 && 
+				expected.EndColumn.HasValue && 
+				expected.Column != -1 && 
+				actualEndLinePosition.Character + 1 != expected.EndColumn)
 			{
-				if (expected.Column != -1 && actualEndLinePosition.Character + 1 != expected.EndColumn)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic to end at column \"{0}\" but actually ended at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
-				}
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic to end at column \"{0}\" but actually ended at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
 			}
 
 		}

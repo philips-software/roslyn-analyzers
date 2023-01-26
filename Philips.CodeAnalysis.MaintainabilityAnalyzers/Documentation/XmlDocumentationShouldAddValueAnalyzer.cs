@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -119,7 +120,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			name = name.ToLowerInvariant();
+			string lowercaseName = name.ToLowerInvariant();
 			var xmlElements = context.Node.GetLeadingTrivia()
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
@@ -149,7 +150,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				IEnumerable<string> words =
 					SplitInWords(content)
 						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
-						.Where(s => !name.Contains(s));
+						.Where(s => !lowercaseName.Contains(s));
 
 				// We assume here that every remaining word adds value to the documentation text.
 				if (!words.Any())
