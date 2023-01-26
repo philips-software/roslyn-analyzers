@@ -27,7 +27,7 @@ jobs:
             <PropertyGroup>
               <PackageId>"$(MSBuildProjectName)".Dogfood</PackageId>
               <PackageVersion>1.0.0</PackageVersion>
-              <OutputPath>../.nuget/NuGet/Dogfood</OutputPath>
+              <OutputPath>/home/runner/.nuget/NuGet/Dogfood</OutputPath>
             </PropertyGroup>
           </Project>
           EOF
