@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if(!IsCallableFromOutsideClass(parent))
+			if(!Helper.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
@@ -73,16 +73,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
-		{
-			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
-		}
-
 		private static string GetTypeName(TypeSyntax type)
 		{
 			var aliases = Helper.GetUsingAliases(type);
 			var typeName = Helper.GetFullName(type, aliases);
-			if(type is GenericNameSyntax genericName)
+			if (type is GenericNameSyntax genericName)
 			{
 				var baseName = genericName.Identifier.Text;
 				if(!aliases.TryGetValue(baseName, out typeName))

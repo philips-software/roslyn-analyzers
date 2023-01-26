@@ -357,5 +357,9 @@ namespace Philips.CodeAnalysis.Common
 			return list;
 		}
 
+		public static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
+		{
+			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
+		}
 	}
 }
