@@ -14,8 +14,9 @@ namespace Philips.CodeAnalysis.Common
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
-		private bool HasGeneratedCodeAttribute(SyntaxNode node, Func<SemanticModel> getSemanticModel)
+		private bool HasGeneratedCodeAttribute(SyntaxNode inputNode, Func<SemanticModel> getSemanticModel)
 		{
+			SyntaxNode node = inputNode;
 			while (node != null)
 			{
 				SyntaxList<AttributeListSyntax> attributes;
@@ -69,10 +70,14 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsGeneratedCode(string filePath)
 		{
 			string fileName = Helper.GetFileName(filePath);
+			// Various Microsoft tools generate files with this postfix.
 			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			// WinForms generate files with this postfix.
 			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
-			return isDesignerFile || isGeneratedFile;
-		}
+			// Visual Studio generates SuppressMessage attributes in this file.
+			bool isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
+			return isDesignerFile || isGeneratedFile || isSuppressionsFile;
+	}
 
 	}
 }

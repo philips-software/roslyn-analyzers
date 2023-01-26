@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Philips.CodeAnalysis.Test.Helpers
+namespace Philips.CodeAnalysis.Test
 {
 	public class TestTextLoader : TextLoader
 	{
