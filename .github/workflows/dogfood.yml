@@ -22,8 +22,8 @@ jobs:
 
       - name: Prepare the Dogfood
         run: |
-cat > ./Directory.Build.props << EOF
-<Project>
+          cat > ./Directory.Build.props << EOF
+Project>
  <PropertyGroup>
    <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
    <PackageVersion>1.0.0</PackageVersion>
