@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 using Microsoft.CodeAnalysis;
@@ -55,32 +56,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var first = node.GetLeadingTrivia();
+			var location = GetSquiggleLocation(node.SyntaxTree);
+			var leadingTrivia = node.GetLeadingTrivia();
 
-			if (!first.Any())
+			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
-				var location = GetSquiggleLocation(node.SyntaxTree);
 				CreateDiagnostic(context, location);
 				return;
 			}
 
-			SyntaxTrivia firstLeadingTrivia = first[0];
-
-			if (first[0].IsKind(SyntaxKind.RegionDirectiveTrivia))
+			// Special case: there's a #region, and the Copyright is in the name of the region
+			if (leadingTrivia[0].IsKind(SyntaxKind.RegionDirectiveTrivia) && CheckCopyrightStatement(context, leadingTrivia[0]))
 			{
-				bool regionHeaderHasCopyright = CheckCopyrightStatement(context, first[0]);
-				if (!regionHeaderHasCopyright && first.Count >= 2 && first[1].IsKind(SyntaxKind.SingleLineCommentTrivia))
-				{
-					firstLeadingTrivia = first[1];
-				}
+				return;
 			}
 
-			bool isCorrectStatement = CheckCopyrightStatement(context, firstLeadingTrivia);
-			if (!isCorrectStatement)
+			SyntaxTrivia syntaxTrivia = leadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			if (!CheckCopyrightStatement(context, syntaxTrivia))
 			{
-				var location = GetSquiggleLocation(node.SyntaxTree);
 				CreateDiagnostic(context, location);
-				return;
 			}
 		}
 
