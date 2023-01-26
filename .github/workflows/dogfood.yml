@@ -1,0 +1,62 @@
+name: Dogfood
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Dogfood our Analyzers
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
+        with:
+          dotnet-version: |
+            7.0.x
+
+      - name: Prepare the Dogfood
+        run: |
+cat > ./Directory.Build.props << EOF
+<Project>
+ <PropertyGroup>
+   <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+   <PackageVersion>1.0.0</PackageVersion>
+   <OutputPath>..\Dogfood</OutputPath>
+ </PropertyGroup>
+</Project>
+EOF
+
+      - name: Build the Dogfood
+        run: dotnet build --configuration Release
+
+      - name: Restore the Dogfood
+        run: |
+cat > ./dogfood.config << EOF
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+		<packageSources>
+			<add key="DogfoodSource" value="./Dogfood" />
+		</packageSources>
+</configuration>
+EOF
+
+dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
+
+      - name: Prepare to eat Dogfood
+        run: |
+rm -f ./Directory.Build.props
+cat > ./Directory.Build.props << EOF
+<Project>
+  <ItemGroup>
+    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
+EOF
+
+      - name: Eat the Dogfood
+        run: dotnet build --configuration Release
