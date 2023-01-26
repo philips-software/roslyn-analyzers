@@ -38,16 +38,7 @@ jobs:
 
       - name: Restore the Dogfood
         run: |
-          cat > ./dogfood.config << EOF
-          <?xml version="1.0" encoding="utf-8"?>
-          <configuration>
-            <packageSources>
-              <add key="DogfoodSource" value="./Dogfood" />
-            </packageSources>
-          </configuration>
-          EOF
-
-          dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
+          dotnet nuget add source ./Dogfood
 
       - name: Prepare to eat Dogfood
         run: |
