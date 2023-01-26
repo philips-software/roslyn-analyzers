@@ -40,27 +40,27 @@ jobs:
           cat > ./dogfood.config << EOF
           <?xml version="1.0" encoding="utf-8"?>
           <configuration>
-		<packageSources>
-			<add key="DogfoodSource" value="./Dogfood" />
-		</packageSources>
+            <packageSources>
+              <add key="DogfoodSource" value="./Dogfood" />
+            </packageSources>
           </configuration>
           EOF
 
-        dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
+          dotnet restore Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood --configfile ./dogfood.config
 
       - name: Prepare to eat Dogfood
         run: |
-rm -f ./Directory.Build.props
-cat > ./Directory.Build.props << EOF
-<Project>
-  <ItemGroup>
-    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-</Project>
-EOF
+          rm -f ./Directory.Build.props
+          cat > ./Directory.Build.props << EOF
+          <Project>
+            <ItemGroup>
+              <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+            </ItemGroup>
+          </Project>
+          EOF
 
       - name: Eat the Dogfood
         run: dotnet build --configuration Release
