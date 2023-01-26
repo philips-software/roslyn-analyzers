@@ -102,11 +102,31 @@ namespace ReturnImmutableTests {
     }
 }";
 
-		private const string WrongCollection = @"
+		private const string WrongQueue = @"
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public Collection<int> MethodA() {
+        public Queue<int> MethodA() {
+            return null;
+        }
+    }
+}";
+
+		private const string WrongSortedList = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        public SortedList<string, int> MethodA() {
+            return null;
+        }
+    }
+}";
+
+		private const string WrongStack = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        public Stack<string> MethodA() {
             return null;
         }
     }
@@ -126,7 +146,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public Dictionary<string,int> MethodA() {
+        public Dictionary<string, int> MethodA() {
             return null;
         }
     }
@@ -136,7 +156,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public IDictionary<string,int> MethodA() {
+        public IDictionary<string, int> MethodA() {
             return null;
         }
     }
@@ -183,7 +203,9 @@ namespace ReturnImmutableTests {
 		[TestMethod]
 		[DataRow(WrongList, DisplayName = nameof(WrongList)),
 		 DataRow(WrongIList, DisplayName = nameof(WrongIList)),
-		 DataRow(WrongCollection, DisplayName = nameof(WrongCollection)),
+		 DataRow(WrongQueue, DisplayName = nameof(WrongQueue)),
+		 DataRow(WrongSortedList, DisplayName = nameof(WrongSortedList)),
+		 DataRow(WrongStack, DisplayName = nameof(WrongStack)),
 		 DataRow(WrongICollection, DisplayName = nameof(WrongICollection)),
 		 DataRow(WrongDictionary, DisplayName = nameof(WrongDictionary)),
 		 DataRow(WrongIDictionary, DisplayName = nameof(WrongIDictionary)),

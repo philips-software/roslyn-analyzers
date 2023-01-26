@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 
-		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", "Collection", "Dictionary", "IList", "ICollection", "IDictionary" };
+		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", "Queue", "SortedList", "Stack", "Dictionary", "IList", "ICollection", "IDictionary" };
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -60,8 +61,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			NamespaceIgnoringComparer comparer = new();
 			if(type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
 			{
-				var loc = type.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, typeName));
+				// Double check the type's namespace.
+				var symbolType = context.SemanticModel.GetTypeInfo(type).Type;
+				bool isArray = symbolType is IArrayTypeSymbol;
+				var ns = symbolType?.ContainingNamespace?.ToString();
+				if (symbolType != null && (isArray || ns is "System.Collections.Generic" or "<global namespace>"))
+				{
+					var loc = type.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, typeName));
+				}
 			}
 		}
 
