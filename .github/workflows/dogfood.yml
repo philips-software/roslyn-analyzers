@@ -22,7 +22,7 @@ jobs:
 
       - name: Prepare the Dogfood
         run: |
-          cat > ./Directory.Build.props << EOF
+          cat > ./Directory.Build.props << 'EOF'
           <Project>
             <PropertyGroup>
               <PackageId>"$(MSBuildProjectName)".Dogfood</PackageId>
