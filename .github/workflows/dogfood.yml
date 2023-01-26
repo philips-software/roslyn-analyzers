@@ -34,7 +34,7 @@ jobs:
 
       - name: Prepare to eat Dogfood
         run: |
-          dotnet nuget add source ~/Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Release
+          dotnet nuget add source ${{ vars.GITHUB_WORKSPACE }}/Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Release
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
