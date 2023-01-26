@@ -11,7 +11,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageId>Philips.CodeAnalysis.MaintainabilityAnalyzers$(DOGFOOD)</PackageId>
-    <PackageOutputPath>Packages</PackageOutputPath>
+    <PackageOutputPath>../Packages</PackageOutputPath>
     <Authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</Authors>
     <Company>Philips</Company>
     <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
