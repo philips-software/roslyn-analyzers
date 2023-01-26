@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		public void ReportIncorrectNamespaceMatch(string ns, string path)
 		{
-			path = path.Replace('\\', Path.DirectorySeparatorChar);
+			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
 			DiagnosticResult expected = new()
 			{
@@ -59,11 +59,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
-					GetBaseDiagnosticLocation(path, 0,0)
+					GetBaseDiagnosticLocation(sanitizedPath, 0,0)
 				}
 			};
 
-			VerifyDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, sanitizedPath, expected);
 		}
 
 		[DataTestMethod]
@@ -72,9 +72,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
-			path = path.Replace('\\', Path.DirectorySeparatorChar);
+			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
-			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, sanitizedPath, Array.Empty<DiagnosticResult>());
 		}
 	}
 
@@ -97,7 +97,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
 		public void ReportIncorrectNamespaceMatch(string ns, string path)
 		{
-			path = path.Replace('\\', Path.DirectorySeparatorChar);
+			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
 			DiagnosticResult expected = new()
 			{
@@ -106,11 +106,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
-					NamespaceMatchAssemblyAnalyzerUseFolderTest.GetBaseDiagnosticLocation(path, 0,0)
+					NamespaceMatchAssemblyAnalyzerUseFolderTest.GetBaseDiagnosticLocation(sanitizedPath, 0,0)
 				}
 			};
 
-			VerifyDiagnostic(code, path, expected);
+			VerifyDiagnostic(code, sanitizedPath, expected);
 		}
 
 		[DataTestMethod]
@@ -118,9 +118,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
-			path = path.Replace('\\', Path.DirectorySeparatorChar);
+			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
-			VerifyDiagnostic(code, path, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, sanitizedPath, Array.Empty<DiagnosticResult>());
 		}
 	}
 

@@ -284,7 +284,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void ExtractEqualsEquals(ArgumentSyntax equalsEquals, out ArgumentSyntax areEqualsExpected, out ArgumentSyntax areEqualsActual)
 		{
-			var a = equalsEquals.Expression as BinaryExpressionSyntax;
+			var a = (BinaryExpressionSyntax) equalsEquals.Expression;
 
 			areEqualsExpected = SyntaxFactory.Argument(a.Left);
 			areEqualsActual = SyntaxFactory.Argument(a.Right);

@@ -1,5 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using System.Composition;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			defaultTimeout ??= "1000";
 
 			ExpressionSyntax expression;
-			if (int.TryParse(defaultTimeout, out int integerTimeout))
+			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integerTimeout))
 			{
 				expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(integerTimeout));
 			}
@@ -95,9 +98,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(newAttribute));
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(method.AttributeLists.Add(attributeList));
+			var newAttributeLists = method.AttributeLists.Add(attributeList);
+			MethodDeclarationSyntax newMethod = method.WithAttributeLists(newAttributeLists);
 
-			Document newDocument = document.WithSyntaxRoot(rootNode.ReplaceNode(method, newMethod));
+			var root = rootNode.ReplaceNode(method, newMethod);
+			Document newDocument = document.WithSyntaxRoot(root);
 			return newDocument;
 		}
 	}

@@ -14,8 +14,9 @@ namespace Philips.CodeAnalysis.Common
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
-		private bool HasGeneratedCodeAttribute(SyntaxNode node, Func<SemanticModel> getSemanticModel)
+		private bool HasGeneratedCodeAttribute(SyntaxNode inputNode, Func<SemanticModel> getSemanticModel)
 		{
+			SyntaxNode node = inputNode;
 			while (node != null)
 			{
 				SyntaxList<AttributeListSyntax> attributes;

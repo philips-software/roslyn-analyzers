@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
@@ -16,6 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
 		private AdditionalFilesHelper _additionalFilesHelper;
+		private const int DefaultMaxCognitiveLoad = 25;
 
 		public ReduceCognitiveLoadAnalyzer()
 			: this(GeneratedCodeAnalysisFlags.None, null)
@@ -98,12 +100,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				_additionalFilesHelper ??= new AdditionalFilesHelper(context.Options, context.Compilation);
 				string configuredMaxCognitiveLoad = _additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
-				if (int.TryParse(configuredMaxCognitiveLoad, out int maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
+				if (int.TryParse(configuredMaxCognitiveLoad, NumberStyles.Integer, CultureInfo.InvariantCulture, out int maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
 				{
 					MaxCognitiveLoad = maxAllowedCognitiveLoad;
 					return;
 				}
-				MaxCognitiveLoad = 25;
+				MaxCognitiveLoad = DefaultMaxCognitiveLoad;
 			}
 		}
 	}

@@ -92,8 +92,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			document = document.WithSyntaxRoot(rootNode);
-			return document;
+			var newDocument = document.WithSyntaxRoot(rootNode);
+			return newDocument;
 		}
 	}
 }

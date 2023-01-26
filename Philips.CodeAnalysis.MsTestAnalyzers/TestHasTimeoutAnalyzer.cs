@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -81,10 +83,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
 					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
 					{
-						additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+						var firstAllowedTimeout = allowed.First();
+						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
 					}
 
-					Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation(), additionalData, string.Empty);
+					var location = methodDeclaration.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location, additionalData, string.Empty);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}
@@ -110,7 +114,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (TryGetAllowedTimeouts(category, out var allowed) && allowed.Any())
 					{
-						additionalData = additionalData.Add(DefaultTimeoutKey, allowed.First());
+						var firstAllowed = allowed.First();
+						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowed);
 					}
 
 					Diagnostic diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
