@@ -108,6 +108,7 @@
       * Introduce PH2126: Avoid using Parameters as temporary variables.
       * Introduce PH2127: Avoid changing loop variables.
       * Introduce PH2128: Split multi-line conditions on logical operators.
+      * Introduce PH2129: Return immutable collections.
       * Increased the test coverage.
       * Introduce PH2130: Avoid implementing finalizers.
     </PackageReleaseNotes>
