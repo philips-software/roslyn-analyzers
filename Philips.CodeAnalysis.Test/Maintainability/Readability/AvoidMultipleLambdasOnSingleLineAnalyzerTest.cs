@@ -139,7 +139,7 @@ public static class Foo
 {
   public static void Method(List<int> data)
   {
-    data.Where((i) => i == 0).Select((d) => { return d.ToString();});
+    data.Where((i) => i == 0).Select((d) => { return d.ToString(); });
   }
 }
 ";
