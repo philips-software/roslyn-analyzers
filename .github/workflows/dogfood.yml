@@ -20,9 +20,8 @@ jobs:
           dotnet-version: |
             7.0.x
 
-      - name: Prepare the Dogfood
+      - name: Build the Dogfood
         run: |
-          export DOGFOOD=.Dogfood
           cat > ./Directory.Build.props << 'EOF'
           <Project>
             <PropertyGroup>
@@ -30,14 +29,11 @@ jobs:
             </PropertyGroup>
           </Project>
           EOF
-          cat ./Directory.Build.props
-
-      - name: Build the Dogfood
-        run: dotnet build --configuration Release
+          export DOGFOOD=.Dogfood
+          dotnet build --configuration Release
 
       - name: Prepare to eat Dogfood
         run: |
-          export DOGFOOD=
           cd /home/runner/work/roslyn-analyzers/roslyn-analyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Release
           ls
           cd ~/
