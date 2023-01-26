@@ -59,7 +59,7 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifyDiagnostic(string.Format(code, testType, parameterListString));
+				VerifySuccessfulCompilation(string.Format(code, testType, parameterListString));
 			}
 			else
 			{
@@ -95,7 +95,7 @@ public class Tests
 			}
 
 
-			VerifyDiagnostic(string.Format(code, parameterListString));
+			VerifySuccessfulCompilation(string.Format(code, parameterListString));
 		}
 
 		private static IEnumerable<object[]> DataRowVariants()

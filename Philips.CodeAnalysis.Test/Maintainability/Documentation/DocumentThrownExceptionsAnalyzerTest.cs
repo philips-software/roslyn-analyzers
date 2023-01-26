@@ -176,7 +176,7 @@ public class Foo
 }
 ";
 
-        [DataTestMethod]
+		[DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
 		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),

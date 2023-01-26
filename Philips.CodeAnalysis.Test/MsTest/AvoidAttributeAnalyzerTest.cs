@@ -228,7 +228,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyDiagnostic(givenText);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[DataTestMethod]
@@ -251,7 +251,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyDiagnostic(givenText);
+			VerifySuccessfulCompilation(givenText);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -490,7 +490,7 @@ class Foo
 	}}
 }}
 ";
-			VerifyDiagnostic(string.Format(template, format));
+			VerifySuccessfulCompilation(string.Format(template, format));
 		}
 
 		[TestMethod]
