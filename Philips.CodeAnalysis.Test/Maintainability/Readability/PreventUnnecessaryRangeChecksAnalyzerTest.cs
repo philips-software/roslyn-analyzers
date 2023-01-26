@@ -397,7 +397,7 @@ public void test()
 }}
 ";
 
-			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
+			VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -457,7 +457,7 @@ public void test()
 }}
 ";
 
-			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
+			VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod));
 		}
 
 		#endregion

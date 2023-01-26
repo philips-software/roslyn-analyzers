@@ -1,7 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -42,14 +44,25 @@ namespace Philips.CodeAnalysis.Test
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, DiagnosticResult expected)
+		{
+			VerifyDiagnostic(source, null, new[] { expected });
+		}
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
+		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on</param>
+		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
+		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected)
 		{
 			VerifyDiagnostic(source, null, expected);
 		}
 
 		protected void VerifySuccessfulCompilation(string source)
 		{
-			VerifyDiagnostic(source);
+			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
