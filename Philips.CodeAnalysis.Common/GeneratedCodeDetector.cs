@@ -70,10 +70,14 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsGeneratedCode(string filePath)
 		{
 			string fileName = Helper.GetFileName(filePath);
+			// Various Microsoft tools generate files with this postfix.
 			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			// WinForms generate files with this postfix.
 			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
-			return isDesignerFile || isGeneratedFile;
-		}
+			// Visual Studio generates SuppressMessage attributes in this file.
+			bool isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
+			return isDesignerFile || isGeneratedFile || isSuppressionsFile;
+	}
 
 	}
 }

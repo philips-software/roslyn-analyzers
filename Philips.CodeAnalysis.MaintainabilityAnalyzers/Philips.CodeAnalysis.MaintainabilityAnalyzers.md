@@ -78,4 +78,5 @@
 | PH2125  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
 | PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
 | PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|
+| PH2128  | Split multi-line condition on logical operator | In case that the condition of an "if" or "?" statement covers more then one line, its line endings should be right after the logical operators (&& and ||). This is aligns with the mental split when reading the code. |
 | PH2130  | Avoid implementing finalizers                | Don't implement a finalizer, use Dispose instead.|
