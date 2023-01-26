@@ -92,6 +92,18 @@ public class Foo
 }
 ";
 
+		private const string CorrectAddStatement = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""InvalidDataException"">
+    public void MethodA(int num)
+    {
+        throw new InvalidDataException(""Invalid symbol type found: "" + ""MyType"");
+    }
+}
+";
+
 		private const string WrongNoArguments = @"
 public class Foo
 {
@@ -123,7 +135,8 @@ public class Foo
 		 DataRow(CorrectWithNameOf, DisplayName = nameof(CorrectWithNameOf)),
 		 DataRow(CorrectWithProperty, DisplayName = nameof(CorrectWithProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
-		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString))]
+		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString)),
+		 DataRow(CorrectAddStatement, DisplayName = nameof(CorrectAddStatement))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);

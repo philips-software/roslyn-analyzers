@@ -132,6 +132,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				else if (a.Expression is InterpolatedStringExpressionSyntax interpolatedString)
 				{
 					node = interpolatedString;
+				} else if (a.Expression is BinaryExpressionSyntax binaryExpression)
+				{
+					// Assume the returning type is the same as the left type.
+					node = binaryExpression.Left;
 				}
 				else
 				{
