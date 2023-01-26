@@ -37,6 +37,9 @@ jobs:
 
       - name: Prepare to eat Dogfood
         run: |
+          cd /home/runner/work/roslyn-analyzers/roslyn-analyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Release
+          ls
+          cd ~/
           dotnet nuget add source /home/runner/work/roslyn-analyzers/roslyn-analyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Release
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
