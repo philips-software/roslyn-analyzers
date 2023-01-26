@@ -2,6 +2,7 @@
 
 using System;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
@@ -28,6 +29,44 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.AreEqual("PH1000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1 }));
 			Assert.AreEqual("PH1000, PH2000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2 }));
 			Assert.AreEqual("PH1000, PH2000, PH3000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2, diagnostic3 }));
+		}
+
+		[DataTestMethod]
+		[DataRow("private static readonly", false),
+		 DataRow("private static", false),
+		 DataRow("private const", false),
+		 DataRow("private", false),
+		 DataRow("public static readonly", true),
+		 DataRow("public const", true),
+		 DataRow("public static", true),
+		 DataRow("public readonly", true),
+		 DataRow("public", true),
+		 DataRow("internal static readonly", true),
+		 DataRow("internal static", true),
+		 DataRow("internal const", true),
+		 DataRow("internal readonly", true),
+		 DataRow("internal", true),
+		 DataRow("protected static readonly", true),
+		 DataRow("protected static", true),
+		 DataRow("protected const", true),
+		 DataRow("protected readonly", true),
+		 DataRow("protected", true),
+		 DataRow("protected internal static readonly", true),
+		 DataRow("protected internal static", true),
+		 DataRow("protected internal const", true),
+		 DataRow("protected internal readonly", true),
+		 DataRow("protected internal", true)]
+		public void IsCallableFromOutsideClassTest(string modifiers, bool expected)
+		{
+			// Arrange
+			var testCode = $"{modifiers} int I;";
+			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
+
+			// Act
+			var actual = Helper.IsCallableFromOutsideClass(memberDeclaration);
+
+			// Assert
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }
