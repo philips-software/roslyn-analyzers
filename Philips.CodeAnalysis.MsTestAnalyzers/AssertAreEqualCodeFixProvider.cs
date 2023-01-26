@@ -62,6 +62,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private async Task<Document> AssertAreEqualFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
 		{
+			Document newDocument = document;
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
 			bool isFirstArgumentNull = false;
@@ -103,10 +104,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				SyntaxNode oldRoot = await document.GetSyntaxRootAsync(cancellationToken);
 				SyntaxNode newRoot = oldRoot.ReplaceNode(argumentList, newArgumentList);
-				document = document.WithSyntaxRoot(newRoot);
+				newDocument = document.WithSyntaxRoot(newRoot);
 			}
 
-			return document;
+			return newDocument;
 		}
 
 		private async Task<Document> ReplaceWithIsNull(Document document, ArgumentListSyntax argumentList, InvocationExpressionSyntax invocationExpressionSyntax, bool isFirstArgumentNull, CancellationToken cancellationToken)

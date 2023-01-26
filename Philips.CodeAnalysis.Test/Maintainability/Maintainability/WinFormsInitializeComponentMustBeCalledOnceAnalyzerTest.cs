@@ -1,4 +1,6 @@
-﻿#region Header
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+#region Header
 // © 2019 Koninklijke Philips N.V.  All rights reserved.
 // Reproduction or transmission in whole or in part, in any form or by any means, 
 // electronic, mechanical or otherwise, is prohibited without the prior  written consent of 

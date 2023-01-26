@@ -197,7 +197,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						continue;
 					}
 					var newMethods = new List<string>();
-					await AvoidDuplicateCodeFixProvider.ProcessGuiltyMethods(document, grouping.ToImmutableArray(), (_, registeredName, _) => { newMethods.Add(registeredName); }, cancellationToken);
+					var groupDiagnostics = grouping.ToImmutableArray();
+					await AvoidDuplicateCodeFixProvider.ProcessGuiltyMethods(document, groupDiagnostics, (_, registeredName, _) => { newMethods.Add(registeredName); }, cancellationToken);
 					newMethodNames.AddRange(newMethods);
 				}
 

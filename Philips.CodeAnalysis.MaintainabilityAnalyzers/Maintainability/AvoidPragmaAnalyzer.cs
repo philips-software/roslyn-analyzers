@@ -41,7 +41,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			string myOwnId = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma);
-			if (pragma.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName)).Any(i => i.ToString().Contains(myOwnId)))
+			if (pragma.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName))
+									.Any(i => i.ToString().Contains(myOwnId)))
 			{
 				return;
 			}

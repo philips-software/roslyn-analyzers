@@ -15,6 +15,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public const string MessageFormat = @"Test Description Attribute must not have a literal string and length of the reference value should be less than 25 characters.";
 		private const string Description = @"Test Description Attribute must not have a literal string and length of the reference value should be less than 25 characters.";
 		private const string Category = Categories.Maintainability;
+		private const int MaxDescriptionLength = 25;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDescriptionAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -39,7 +40,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				string descriptionName = argument.ToString();
 				string value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
-				if (descriptionName.Contains("\"") || value.Length > 25)
+				if (descriptionName.Contains("\"") || value.Length > MaxDescriptionLength)
 				{
 					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);

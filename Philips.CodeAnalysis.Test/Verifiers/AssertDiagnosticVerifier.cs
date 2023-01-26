@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -8,13 +7,7 @@ namespace Philips.CodeAnalysis.Test
 {
 	public abstract class AssertDiagnosticVerifier : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
 		private readonly AssertCodeHelper _helper = new();
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		protected void VerifyError(string methodBody, params string[] expectedDiagnosticIds)
 		{
@@ -37,16 +30,11 @@ namespace Philips.CodeAnalysis.Test
 			VerifySuccessfulCompilation(test);
 		}
 
-		#endregion
-
-		#region Public Interface
 
 
 		protected override MetadataReference[] GetMetadataReferences()
 		{
 			return _helper.GetMetaDataReferences();
 		}
-
-		#endregion
 	}
 }

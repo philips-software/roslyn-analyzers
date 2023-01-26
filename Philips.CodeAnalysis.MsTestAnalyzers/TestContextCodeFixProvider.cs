@@ -56,6 +56,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private async Task<Document> TestContextFix(Document document, SyntaxNode declaration, CancellationToken cancellationToken)
 		{
+			var newDocument = document;
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			if (rootNode == null)
 			{
@@ -92,8 +93,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			document = document.WithSyntaxRoot(rootNode);
-			return document;
+			newDocument = document.WithSyntaxRoot(rootNode);
+			return newDocument;
 		}
 	}
 }
