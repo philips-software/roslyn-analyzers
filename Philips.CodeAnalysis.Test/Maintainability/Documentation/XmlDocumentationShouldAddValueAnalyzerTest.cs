@@ -56,7 +56,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -69,7 +69,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -85,7 +85,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -99,7 +99,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -113,7 +113,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -127,7 +127,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -141,7 +141,7 @@ public enum TestEnumeration
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
 		}
 
 		[DataRow("foo", true)]
