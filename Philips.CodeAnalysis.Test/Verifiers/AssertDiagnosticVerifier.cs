@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.Test
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifyDiagnostic(test);
+			VerifySuccessfulCompilation(test);
 		}
 
 		#endregion

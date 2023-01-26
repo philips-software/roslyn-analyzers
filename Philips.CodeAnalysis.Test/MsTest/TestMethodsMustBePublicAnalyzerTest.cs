@@ -51,7 +51,7 @@ public class Tests
 
 				if (isCorrect)
 				{
-					VerifyDiagnostic(text);
+					VerifySuccessfulCompilation(text);
 				}
 				else
 				{

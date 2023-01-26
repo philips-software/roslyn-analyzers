@@ -48,7 +48,7 @@ class Foo
 		public void NamedTuplesDontCauseErrors(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyDiagnostic(source);
+			VerifySuccessfulCompilation(source);
 		}
 
 		[DataRow("(int, int)")]

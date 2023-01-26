@@ -83,7 +83,7 @@ namespace AvoidArrayListTests {
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

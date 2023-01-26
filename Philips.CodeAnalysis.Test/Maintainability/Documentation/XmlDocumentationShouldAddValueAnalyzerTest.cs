@@ -359,7 +359,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[TestMethod]
@@ -378,7 +378,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(content);
 		}
 
 		[TestMethod]

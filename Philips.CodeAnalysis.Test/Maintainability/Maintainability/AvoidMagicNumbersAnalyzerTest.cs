@@ -150,7 +150,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>

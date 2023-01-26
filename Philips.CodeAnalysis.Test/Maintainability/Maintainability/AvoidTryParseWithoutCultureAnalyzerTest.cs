@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void DoNotFlagTryParseWithCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		[DataTestMethod]
@@ -133,7 +133,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string editorCode = string.Format(ClassString, s);
 			string code = string.Concat(editorCode, TestParserDefinition);
-			VerifyDiagnostic(code);
+			VerifySuccessfulCompilation(code);
 		}
 
 		#endregion

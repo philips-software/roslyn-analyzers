@@ -121,5 +121,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidUsingParametersAsTempVariables = 2126,
 		AvoidChangingLoopVariables = 2127,
 		ReturnImmutableCollections = 2129,
+		AvoidImplementingFinalizers = 2130,
 	}
 }

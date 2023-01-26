@@ -102,7 +102,7 @@ AllowedMethodName
 		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			VerifyDiagnostic(file, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(file);
 		}
 
 		private string GenerateCodeFile(string nsName, string typeName, string methodName)
