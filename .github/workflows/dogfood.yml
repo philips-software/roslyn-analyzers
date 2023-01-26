@@ -27,7 +27,6 @@ jobs:
             <PropertyGroup>
               <PackageId>"$(MSBuildProjectName)".Dogfood</PackageId>
               <PackageVersion>1.0.0</PackageVersion>
-              <OutputPath>/home/runner/.nuget/NuGet/Dogfood</OutputPath>
             </PropertyGroup>
           </Project>
           EOF
@@ -38,7 +37,7 @@ jobs:
 
       - name: Prepare to eat Dogfood
         run: |
-          dotnet nuget add source ./Dogfood
+          dotnet nuget add source ./Philips.CodeAnalysis.MaintainabilityAnalyzers/bin/Debug
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
