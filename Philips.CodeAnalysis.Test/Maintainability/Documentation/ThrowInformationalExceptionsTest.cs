@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -115,8 +116,20 @@ public class Foo
 }
 ";
 
+		private const string WrongIssue273 = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""NotImplementedException"">
+    protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+";
 
-        [DataTestMethod]
+
+		[DataTestMethod]
 		[DataRow(CorrectWithLiteral, DisplayName = nameof(CorrectWithLiteral)),
 		 DataRow(CorrectWithLocalVar, DisplayName = nameof(CorrectWithLocalVar)),
 		 DataRow(CorrectWithNameOf, DisplayName = nameof(CorrectWithNameOf)),
@@ -130,10 +143,11 @@ public class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments))]
+		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments)),
+		DataRow(WrongIssue273, DisplayName = nameof(WrongIssue273))]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions, new Regex("Specify context to the .+, by using a constructor overload that sets the Message property.")));
 		}
 	}
 }
