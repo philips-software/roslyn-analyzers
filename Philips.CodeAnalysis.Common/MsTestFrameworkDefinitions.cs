@@ -4,19 +4,19 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class MsTestFrameworkDefinitions
 	{
-		public static AttributeDefinition TestClassAttribute => new MsTestAttributeDefinition("TestClass");
-		public static AttributeDefinition TestInitializeAttribute => new MsTestAttributeDefinition("TestInitialize");
-		public static AttributeDefinition TestCleanupAttribute => new MsTestAttributeDefinition("TestCleanup");
-		public static AttributeDefinition TestMethodAttribute => new MsTestAttributeDefinition("TestMethod");
-		public static AttributeDefinition DataTestMethodAttribute => new MsTestAttributeDefinition("DataTestMethod");
-		public static AttributeDefinition ClassInitializeAttribute => new MsTestAttributeDefinition("ClassInitialize");
-		public static AttributeDefinition ClassCleanupAttribute => new MsTestAttributeDefinition("ClassCleanup");
-		public static AttributeDefinition AssemblyInitializeAttribute => new MsTestAttributeDefinition("AssemblyInitialize");
-		public static AttributeDefinition AssemblyCleanupAttribute => new MsTestAttributeDefinition("AssemblyCleanup");
-		public static AttributeDefinition DataRowAttribute => new MsTestAttributeDefinition("DataRow");
-		public static AttributeDefinition TestCategoryAttribute => new MsTestAttributeDefinition("TestCategory");
-		public static AttributeDefinition TimeoutAttribute => new MsTestAttributeDefinition("Timeout");
-		public static AttributeDefinition DescriptionAttribute => new MsTestAttributeDefinition("Description");
-		public static AttributeDefinition DynamicDataAttribute => new MsTestAttributeDefinition("DynamicData");
+		public static readonly AttributeDefinition TestClassAttribute = new MsTestAttributeDefinition("TestClass");
+		public static readonly AttributeDefinition TestInitializeAttribute = new MsTestAttributeDefinition("TestInitialize");
+		public static readonly AttributeDefinition TestCleanupAttribute = new MsTestAttributeDefinition("TestCleanup");
+		public static readonly AttributeDefinition TestMethodAttribute = new MsTestAttributeDefinition("TestMethod");
+		public static readonly AttributeDefinition DataTestMethodAttribute = new MsTestAttributeDefinition("DataTestMethod");
+		public static readonly AttributeDefinition ClassInitializeAttribute = new MsTestAttributeDefinition("ClassInitialize");
+		public static readonly AttributeDefinition ClassCleanupAttribute = new MsTestAttributeDefinition("ClassCleanup");
+		public static readonly AttributeDefinition AssemblyInitializeAttribute = new MsTestAttributeDefinition("AssemblyInitialize");
+		public static readonly AttributeDefinition AssemblyCleanupAttribute = new MsTestAttributeDefinition("AssemblyCleanup");
+		public static readonly AttributeDefinition DataRowAttribute = new MsTestAttributeDefinition("DataRow");
+		public static readonly AttributeDefinition TestCategoryAttribute = new MsTestAttributeDefinition("TestCategory");
+		public static readonly AttributeDefinition TimeoutAttribute = new MsTestAttributeDefinition("Timeout");
+		public static readonly AttributeDefinition DescriptionAttribute = new MsTestAttributeDefinition("Description");
+		public static readonly AttributeDefinition DynamicDataAttribute = new MsTestAttributeDefinition("DynamicData");
 	}
 }

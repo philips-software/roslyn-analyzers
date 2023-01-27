@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
+			var mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private bool IsInitializeComponentInConstructorChainOnce(List<ConstructorDeclarationSyntax> chain, out int count)
+		private bool IsInitializeComponentInConstructorChainOnce(IReadOnlyList<ConstructorDeclarationSyntax> chain, out int count)
 		{
 			count = 0;
 			foreach (var ctor in chain)

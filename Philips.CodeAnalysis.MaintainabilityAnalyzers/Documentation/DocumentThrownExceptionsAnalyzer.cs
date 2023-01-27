@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			Dictionary<string, string> aliases;
+			IReadOnlyDictionary<string, string> aliases;
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.

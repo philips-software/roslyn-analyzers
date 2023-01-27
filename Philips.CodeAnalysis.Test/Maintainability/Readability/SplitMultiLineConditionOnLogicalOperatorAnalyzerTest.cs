@@ -86,6 +86,20 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
+		private const string CorrectFromCommon = @"
+public class Foo {
+	public static bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
+	{
+		return 
+			declaredSymbol is { MightContainExtensionMethods: true } &&
+				!declaredSymbol.GetMembers().Any(m =>
+					m.Kind == SymbolKind.Method &&
+					m.DeclaredAccessibility == Accessibility.Public &&
+					!((IMethodSymbol)m).IsExtensionMethod);
+	}
+}
+";
+
 		private const string WrongBreak = @"
 using System;
 
@@ -254,7 +268,8 @@ namespace MultiLineConditionUnitTests
 			DataRow(SingleLineWithCondition, DisplayName = nameof(SingleLineWithCondition)),
 			DataRow(CorrectAssignmentToBool, DisplayName = nameof(CorrectAssignmentToBool)),
 			DataRow(CorrectReturnStatement, DisplayName = nameof(CorrectReturnStatement)),
-			DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine))]
+			DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine)),
+			DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
