@@ -80,4 +80,4 @@
 | PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|
 | PH2128  | Split multi-line condition on logical operator | In case that the condition of an "if" or "?" statement covers more then one line, its line endings should be right after the logical operators (&& and ||). This is aligns with the mental split when reading the code. |
 | PH2129  | Return immutable collections                 | Return only immutable or readonly collections from a public method, otherwise these collections can be changed by the caller without the callee noticing.|
-| PH2130  | Avoid implementing finalizers                | Don't implement a finalizer, use Dispose instead.|
+| PH2130  | Avoid implementing finalizers                | Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.|
