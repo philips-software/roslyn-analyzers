@@ -21,6 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			";
 
 		[DataTestMethod]
+		[DataRow(@"")]
 		[DataRow(@"// Some comment")]
 		[DataRow(@"// Some comment ending with a dot.")]
 		[DataRow(@"// For example: int i = 0.")]
