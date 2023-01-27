@@ -46,11 +46,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
+			int previousViolationLine = -20;
 			foreach (var location in comments.Where(comment => comment.ToString().EndsWith(";")).Select(node => node.GetLocation()))
 			{
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, lineNumber);
-				context.ReportDiagnostic(diagnostic);
+				if (lineNumber - previousViolationLine > 1)
+				{
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location, lineNumber);
+					context.ReportDiagnostic(diagnostic);
+				}
+				previousViolationLine = lineNumber;
 			}
 		}
 	}

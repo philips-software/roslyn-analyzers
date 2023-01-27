@@ -20,6 +20,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			int j = 1;
 			";
 
+		private const string WrongCommentedChunk = @"
+			// int i = 0;
+            // int k = 9;
+			int j = 1;
+			";
+
 		[DataTestMethod]
 		[DataRow(@"")]
 		[DataRow(@"// Some comment")]
@@ -31,7 +37,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongCommentedLine, DisplayName = nameof(WrongCommentedLine))]
+		[DataRow(WrongCommentedLine, DisplayName = nameof(WrongCommentedLine)),
+		 DataRow(WrongCommentedChunk, DisplayName = nameof(WrongCommentedChunk))]
 		public void CodeCommentsShouldTriggerDiagnostic(string content)
 		{
 			DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticIds.RemoveCommentedCode);
