@@ -20,7 +20,7 @@ namespace FinalizerTest {
         ~Program() {
             Dispose(false);
         }
-        protected Dispose(bool isDisposing) {
+        protected void Dispose(bool isDisposing) {
         }
     }
 }";
@@ -43,7 +43,31 @@ namespace FinalizerTest {
             Foo.Mo();
             Dispose(false);
         }
-        protected Dispose(bool isDisposing) {
+        protected void Dispose(bool isDisposing) {
+        }
+    }
+}";
+
+		private const string WrongFieldAssignment = @"
+namespace FinalizerTest {
+    class Program {
+        int i;
+        ~Program() {
+            i = 0;
+            Dispose(false);
+        }
+        protected void Dispose(bool isDisposing) {
+        }
+    }
+}";
+
+		private const string WrongOtherMethod = @"
+namespace FinalizerTest {
+    class Program {
+        ~Program() {
+            Cleanup();
+        }
+        protected void Cleanmup() {
         }
     }
 }";
@@ -56,7 +80,9 @@ namespace FinalizerTest {
 
 		[DataTestMethod]
 		[DataRow(WrongNoDispose, DisplayName = nameof(WrongNoDispose)),
-		 DataRow(WrongReferenceCall, DisplayName = nameof(WrongReferenceCall))]
+		 DataRow(WrongReferenceCall, DisplayName = nameof(WrongReferenceCall)),
+		 DataRow(WrongFieldAssignment, DisplayName = nameof(WrongFieldAssignment)),
+		 DataRow(WrongOtherMethod, DisplayName = nameof(WrongOtherMethod))]
 		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingFinalizers));
