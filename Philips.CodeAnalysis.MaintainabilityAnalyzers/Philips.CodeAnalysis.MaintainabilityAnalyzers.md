@@ -82,3 +82,4 @@
 | PH2129  | Return immutable collections                 | Return only immutable or readonly collections from a public method, otherwise these collections can be changed by the caller without the callee noticing.|
 | PH2130  | Avoid implementing finalizers                | Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.|
 | PH2131  | Align filename and class name                | Name the file after the class, struct or enum it contains. |
+| PH2132  | Remove commented code                        | Remove commented code.|
