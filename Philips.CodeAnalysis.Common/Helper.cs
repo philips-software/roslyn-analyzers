@@ -258,11 +258,12 @@ namespace Philips.CodeAnalysis.Common
 
 		public static bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
 		{
-			return declaredSymbol is { MightContainExtensionMethods: true } &&
-				!declaredSymbol.GetMembers().Any(m =>
-					m.Kind == SymbolKind.Method &&
-					m.DeclaredAccessibility == Accessibility.Public &&
-					!((IMethodSymbol)m).IsExtensionMethod);
+			return 
+				declaredSymbol is { MightContainExtensionMethods: true } &&
+					!declaredSymbol.GetMembers().Any(m =>
+						m.Kind == SymbolKind.Method &&
+						m.DeclaredAccessibility == Accessibility.Public &&
+						!((IMethodSymbol)m).IsExtensionMethod);
 		}
 
 
