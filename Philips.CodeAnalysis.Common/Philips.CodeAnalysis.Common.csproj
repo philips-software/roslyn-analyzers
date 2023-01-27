@@ -9,5 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" />
   </ItemGroup>
-
+	<ItemGroup>
+        <AdditionalFile Include="StaticClasses.Allowed.txt" />
+	</ItemGroup>
 </Project>
