@@ -36,12 +36,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			TypeDeclarationSyntax typeDeclaration = (TypeDeclarationSyntax)context.Node;
 			string typeKind = null;
 			if(typeDeclaration is ClassDeclarationSyntax)
@@ -62,18 +56,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeEnum(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if(generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			EnumDeclarationSyntax enumDeclaration = (EnumDeclarationSyntax)context.Node;
 			Check(context, enumDeclaration.Identifier, "enum");
 		}
 
 		private static void Check(SyntaxNodeAnalysisContext context, SyntaxToken identifier, string typeKind)
 		{
+			GeneratedCodeDetector generatedCodeDetector = new();
+			if(generatedCodeDetector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			var filename = Path.GetFileNameWithoutExtension(context.Node.SyntaxTree.FilePath);
 			int indexOfDot = filename.LastIndexOf('.');
 			if (indexOfDot != -1)
