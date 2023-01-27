@@ -257,7 +257,7 @@ class Foo
 class Foo
 {
   public static string Do() { return ""hi"";}
-  public static void Moo(string x) { }
+  public static void Moo(string value) { }
   public void MyTest()
   {
      Foo.Moo(Do());
@@ -268,11 +268,11 @@ class Foo
 class Foo
 {
   public static string Do() { return ""hi"";}
-  public static void Moo(string x) { }
+  public static void Moo(string value) { }
   public void MyTest()
   {
-     var x = Do();
-     Foo.Moo(x);
+     var resultOfDo = Do();
+     Foo.Moo(resultOfDo);
   }
 }
 ";
