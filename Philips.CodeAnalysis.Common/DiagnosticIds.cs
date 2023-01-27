@@ -123,6 +123,7 @@ namespace Philips.CodeAnalysis.Common
 		SplitMultiLineConditionOnLogicalOperator = 2128,
 		ReturnImmutableCollections = 2129,
 		AvoidImplementingFinalizers = 2130,
+		AlignFilenameAndClassName = 2131,
 		RemoveCommentedCode = 2132,
 	}
 }
