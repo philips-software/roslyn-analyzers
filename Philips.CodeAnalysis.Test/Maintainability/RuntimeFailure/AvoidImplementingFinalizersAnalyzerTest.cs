@@ -55,8 +55,8 @@ namespace FinalizerTest {
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongNoDispose, nameof(WrongNoDispose)),
-		 DataRow(WrongReferenceCall, nameof(WrongReferenceCall))]
+		[DataRow(WrongNoDispose, DisplayName = nameof(WrongNoDispose)),
+		 DataRow(WrongReferenceCall, DisplayName = nameof(WrongReferenceCall))]
 		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingFinalizers));

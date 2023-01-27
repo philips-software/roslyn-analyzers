@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,8 +34,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var finalizer = (DestructorDeclarationSyntax)context.Node;
+			var body = finalizer.Body;
+			if (body == null)
+			{
+				var finalizerLoc = finalizer.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, finalizerLoc));
+				return;
+			}
+
+			var children = body.ChildNodes();
+			if (children.Any() && body.ChildNodes().All(IsDisposeCall))
+			{
+				return;
+			}
 			var loc = finalizer.GetLocation();
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
+		}
+
+		private static bool IsDisposeCall(SyntaxNode node)
+		{
+			if (node is ExpressionStatementSyntax { Expression: InvocationExpressionSyntax invocation })
+			{
+				return invocation.Expression.ToString() == "Dispose";
+			}
+
+			return false;
 		}
 	}
 }
