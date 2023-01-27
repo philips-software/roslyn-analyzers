@@ -27,7 +27,7 @@ namespace AlignFilenameAndClassName {{
 		[DataRow("class", "Program"),
 		 DataRow("class", "Program.Part"),
 		 DataRow("struct", "Program"),
-		 DataRow("enum", "Program")]
+		 DataRow("enum", "Program.Part.Of.Many.Things")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string typeKind, string filePath)
 		{
 			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), filePath);
@@ -40,7 +40,7 @@ namespace AlignFilenameAndClassName {{
 		[DataRow("class", "Program2"),
 		 DataRow("struct", "SomethingElse"),
 		 DataRow("enum", "Prog")]
-		public void WhenPathIsTooLongDiagnosticIsRaised(string typeKind, string filePath)
+		public void WhenNamesDontAlignDiagnosticIsRaised(string typeKind, string filePath)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AlignFilenameAndClassName);
 			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), filePath, expected);

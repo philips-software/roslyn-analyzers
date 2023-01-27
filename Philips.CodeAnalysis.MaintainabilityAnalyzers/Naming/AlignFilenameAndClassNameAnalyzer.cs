@@ -69,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var filename = Path.GetFileNameWithoutExtension(context.Node.SyntaxTree.FilePath);
-			int indexOfDot = filename.LastIndexOf('.');
+			int indexOfDot = filename.IndexOf('.');
 			if (indexOfDot != -1)
 			{
 				filename = filename.Substring(0,indexOfDot);
