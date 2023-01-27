@@ -111,6 +111,7 @@
       * Introduce PH2129: Return immutable collections.
       * Increased the test coverage.
       * Introduce PH2130: Avoid implementing finalizers.
+      * Introduce PH2131: Remvoe commented code.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
