@@ -71,28 +71,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
 
-			string newName = @"renameMe";
+			string newName;
 			SyntaxToken identifier;
 			var operation = semanticModel.GetOperation(argumentSyntax, c);
 			if (operation?.Parent is IArgumentOperation argumentOperation)
 			{
 				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
 				newName = parameterSymbol.Name;
-				identifier = SyntaxFactory.Identifier(newName);
+				identifier = SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create());
+				if (identifier.Text == "value")
+				{
+					newName = NiceVariableName(argumentSyntax);
+					identifier = SyntaxFactory.Identifier(newName);
+				}
 			}
 			else
 			{
-				if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
-				{
-					string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
-					int indexOfDot = newNameSuffix.LastIndexOf('.');
-					if (indexOfDot != -1)
-					{
-						newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
-					}
-					newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() + newNameSuffix.Substring(1, newNameSuffix.Length - 1);
-					newName = @"resultOf" + newNameSuffix;
-				}
+				newName = NiceVariableName(argumentSyntax);
 				identifier = SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create());
 			}
 
@@ -138,6 +133,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			return document.WithSyntaxRoot(rootNode);
+		}
+
+		private static string NiceVariableName(ExpressionSyntax argumentSyntax)
+		{
+			string niceName = @"renameMe";
+			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
+			{
+				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+				int indexOfDot = newNameSuffix.LastIndexOf('.');
+				if (indexOfDot != -1)
+				{
+					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+				}
+
+				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() +
+				                newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+				niceName = @"resultOf" + newNameSuffix;
+			}
+
+			return niceName;
 		}
 	}
 }
