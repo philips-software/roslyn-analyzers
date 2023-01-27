@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string MessageFormat = @"Remove commented code on line {0}.";
 		private const string Description = @"Remove commented code";
 		private const string Category = Categories.Documentation;
+		private const int InitialCodeLine = -20;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.RemoveCommentedCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -46,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			int previousViolationLine = -20;
+			int previousViolationLine = InitialCodeLine;
 			foreach (var location in comments.Where(comment => comment.ToString().EndsWith(";")).Select(node => node.GetLocation()))
 			{
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
