@@ -258,10 +258,11 @@ namespace Philips.CodeAnalysis.Common
 
 		public static bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
 		{
-			return declaredSymbol is { MightContainExtensionMethods: true } && !declaredSymbol.GetMembers().Any(m =>
-											m.Kind == SymbolKind.Method &&
-											m.DeclaredAccessibility == Accessibility.Public &&
-											!((IMethodSymbol)m).IsExtensionMethod);
+			return declaredSymbol is { MightContainExtensionMethods: true } &&
+				!declaredSymbol.GetMembers().Any(m =>
+					m.Kind == SymbolKind.Method &&
+					m.DeclaredAccessibility == Accessibility.Public &&
+					!((IMethodSymbol)m).IsExtensionMethod);
 		}
 
 
@@ -325,7 +326,7 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public static string GetFullName(this TypeSyntax typeSyntax, Dictionary<string, string> aliases)
+		public static string GetFullName(this TypeSyntax typeSyntax, IReadOnlyDictionary<string, string> aliases)
 		{
 			string name = string.Empty;
 			if(typeSyntax is SimpleNameSyntax simpleNameSyntax)
@@ -334,7 +335,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 			else if(typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
 			{
-				string left = GetFullName(qualifiedNameSyntax.Left, aliases);
+				string left = qualifiedNameSyntax.Left.GetFullName(aliases);
 				string right = qualifiedNameSyntax.Right.Identifier.Text;
 				name = $"{left}.{right}";
 			}
@@ -346,7 +347,7 @@ namespace Philips.CodeAnalysis.Common
 			return name;
 		}
 
-		public static Dictionary<string, string> GetUsingAliases(SyntaxNode node)
+		public static IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)
 		{
 			var list = new Dictionary<string, string>();
 			var root = node.SyntaxTree.GetRoot();
@@ -354,8 +355,8 @@ namespace Philips.CodeAnalysis.Common
 			{
 				if(child.Alias != null)
 				{
-					var alias = GetFullName(child.Alias.Name, list);
-					var name = GetFullName(child.Name, list);
+					var alias = child.Alias.Name.GetFullName(list);
+					var name = child.Name.GetFullName(list);
 					list.Add(alias, name);
 				}
 			}

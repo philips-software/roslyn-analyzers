@@ -158,7 +158,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		}
 
 		private static IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
-			InvocationExpressionSyntax invocation, Dictionary<string, string> aliases)
+			InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases)
 		{
 			var expectedExceptions = Array.Empty<string>();
 			var invokedSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
@@ -176,7 +176,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
 			foreach (var tryStatement in tryStatements)
 			{
-				var handledExceptionTypes = tryStatement.Catches.Select(cat => Helper.GetFullName(cat.Declaration?.Type, aliases));
+				var handledExceptionTypes = tryStatement.Catches.Select(cat => cat.Declaration?.Type.GetFullName(aliases));
 				unhandledExceptions = handledExceptionTypes.Any(ex => ex == WellKnownExceptions.Exception) ? Array.Empty<string>() : unhandledExceptions.Except(handledExceptionTypes);
 			}
 

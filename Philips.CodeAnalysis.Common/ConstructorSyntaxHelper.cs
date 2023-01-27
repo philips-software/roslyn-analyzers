@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="context"></param>
 		/// <param name="constructors"></param>
 		/// <returns></returns>
-		public Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
+		public IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();
 			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new();
@@ -31,8 +31,8 @@ namespace Philips.CodeAnalysis.Common
 
 				if (ctor.Initializer != null && ctor.Initializer.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword))
 				{
-					var otherCostructor = context.SemanticModel.GetSymbolInfo(ctor.Initializer).Symbol;
-					deferredCtor[ctor] = otherCostructor;
+					var otherConstructor = context.SemanticModel.GetSymbolInfo(ctor.Initializer).Symbol;
+					deferredCtor[ctor] = otherConstructor;
 				}
 			}
 
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="mapping"></param>
 		/// <param name="ctor"></param>
 		/// <returns></returns>
-		public List<ConstructorDeclarationSyntax> GetCtorChain(Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
+		public IReadOnlyList<ConstructorDeclarationSyntax> GetCtorChain(IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
 		{
 			List<ConstructorDeclarationSyntax> chain = new() { ctor };
 

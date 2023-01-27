@@ -42,6 +42,10 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
+		/// <summary>
+		/// Register a new line.
+		/// </summary>
+		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
 		private void RegisterLine(string line, Compilation compilation)
 		{
 			if (line.StartsWith("~"))
@@ -52,23 +56,7 @@ namespace Philips.CodeAnalysis.Common
 				{
 					foreach (var symbol in symbols)
 					{
-						if (symbol is IMethodSymbol methodSymbol)
-						{
-							_allowedMethods.Add(methodSymbol);
-						}
-						else if (symbol is ITypeSymbol typeSymbol)
-						{
-							_allowedTypes.Add(typeSymbol);
-						}
-						else if (symbol is INamespaceSymbol namespaceSymbol)
-						{
-							_allowedNamespaces.Add(namespaceSymbol);
-						}
-						else
-						{
-							throw new InvalidDataException(
-								"Invalid symbol type found: " + symbol.MetadataName);
-						}
+						RegisterSymbol(symbol);
 					}
 				}
 			}
@@ -82,10 +70,36 @@ namespace Philips.CodeAnalysis.Common
 		{
 			var requestedType = requested.ContainingType;
 			var requestedNamespace = requestedType.ContainingNamespace;
-			return _allowedLines.Contains(requested.Name) ||
-			       _allowedMethods.Contains(requested) ||
-			       _allowedTypes.Contains(requestedType) ||
-			       _allowedNamespaces.Contains(requestedNamespace);
+			return 
+				_allowedLines.Contains(requested.Name) ||
+			    _allowedMethods.Contains(requested) ||
+			    _allowedTypes.Contains(requestedType) ||
+			    _allowedNamespaces.Contains(requestedNamespace);
+		}
+
+		/// <summary>
+		/// Register a new symbol.
+		/// </summary>
+		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
+		private void RegisterSymbol(ISymbol symbol)
+		{
+			if(symbol is IMethodSymbol methodSymbol)
+			{
+				_allowedMethods.Add(methodSymbol);
+			}
+			else if(symbol is ITypeSymbol typeSymbol)
+			{
+				_allowedTypes.Add(typeSymbol);
+			}
+			else if(symbol is INamespaceSymbol namespaceSymbol)
+			{
+				_allowedNamespaces.Add(namespaceSymbol);
+			}
+			else
+			{
+				throw new InvalidDataException(
+					"Invalid symbol type found: " + symbol.MetadataName);
+			}
 		}
 
 		private string StripComments(string input)

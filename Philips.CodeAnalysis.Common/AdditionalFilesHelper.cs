@@ -34,6 +34,7 @@ namespace Philips.CodeAnalysis.Common
 			{
 				exceptions = LoadExceptions(exceptionsFile);
 			}
+
 			return exceptions;
 		}
 
@@ -49,6 +50,7 @@ namespace Philips.CodeAnalysis.Common
 					return Convert(text);
 				}
 			}
+
 			return new HashSet<string>();
 		}
 
@@ -59,6 +61,7 @@ namespace Philips.CodeAnalysis.Common
 			{
 				result.Add(line.ToString());
 			}
+
 			return result;
 		}
 
@@ -84,6 +87,7 @@ namespace Philips.CodeAnalysis.Common
 			{
 				return value == null ? string.Empty : value.ToString();
 			}
+
 			return string.Empty;
 #nullable disable
 		}
@@ -97,7 +101,7 @@ namespace Philips.CodeAnalysis.Common
 		/// Get a list of values (comma separated) for the given setting in editorconfig
 		/// </summary>
 		/// <returns></returns>
-		public virtual List<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
+		public virtual IReadOnlyList<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
 			List<string> values = new();
 			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
@@ -109,14 +113,8 @@ namespace Philips.CodeAnalysis.Common
 					values.Add(v);
 				}
 			}
+
 			return values;
 		}
-	}
-
-
-	public class ExceptionsOptions
-	{
-		public bool IgnoreExceptionsFile { get; set; } = false;
-		public bool GenerateExceptionsFile { get; set; } = false;
 	}
 }

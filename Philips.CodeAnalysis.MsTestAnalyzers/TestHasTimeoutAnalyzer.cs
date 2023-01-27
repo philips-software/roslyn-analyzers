@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 				}
 
-				List<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
+				var allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
 
 				lock (_lock1)
 				{
