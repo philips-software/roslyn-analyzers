@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -13,9 +14,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidImplementingFinalizersAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"Don't implement a finalizer";
-		private const string MessageFormat = @"Don't implement a finalizer, use Dispose instead.";
-		private const string Description = @"Don't implement a finalizer, use Dispose instead.";
+		private const string Title = @"Avoid implementing a finalizer";
+		private const string MessageFormat = @"Avoid implement a finalizer, use Dispose instead.";
+		private const string Description = @"Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidImplementingFinalizers),
@@ -35,15 +36,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			var finalizer = (DestructorDeclarationSyntax)context.Node;
 			var body = finalizer.Body;
-			if (body == null)
-			{
-				var finalizerLoc = finalizer.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, finalizerLoc));
-				return;
-			}
-
-			var children = body.ChildNodes();
-			if (children.Any() && body.ChildNodes().All(IsDisposeCall))
+			var children = body != null ? body.ChildNodes() : Array.Empty<SyntaxNode>();
+			if (children.Any() && children.All(IsDisposeCall))
 			{
 				return;
 			}
