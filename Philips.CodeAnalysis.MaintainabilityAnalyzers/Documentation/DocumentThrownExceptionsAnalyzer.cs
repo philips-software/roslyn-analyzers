@@ -98,8 +98,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			// Check if our parent has proper documentation.
-			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
-				.Select(i => i.GetStructure());
+			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
+//				.Select(i => i.GetStructure());
 //				.OfType<DocumentationCommentTriviaSyntax>()
 //				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
 //				.Where(IsExceptionElement);
@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 //			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				var msg = string.Join(", ", mentionedExceptions.Select(e => e?.ToFullString()));
+				var msg = string.Join(", ", mentionedExceptions.Select(e => e.ToFullString()));
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName, msg);
 				context.ReportDiagnostic(diagnostic);
 			}
