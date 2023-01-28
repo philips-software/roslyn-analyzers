@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
@@ -49,6 +50,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidStaticClassesAnalyzer();
 		}
 
+		private string CreateField(string modifiers, string name)
+		{
+			return $@"
+				public {modifiers} string {name} = ""{name}"";
+";
+		}
+
 		protected string CreateFunction(string staticModifier, string nameSpace = "Sweet", string className = "Caroline", bool isExtension = false, bool hasNonExtensionMethods = true)
 		{
 			string extensionMethod = isExtension ? $@"public {staticModifier} IServiceCollection BaBaBummmm(this IServiceCollection services)
@@ -74,6 +82,78 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}}
 				}}
 			}}";
+		}
+
+		[TestMethod]
+		public void AvoidStaticClassesOnlyConstFieldTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{ CreateField("const", "F1")}
+			}}}}";
+
+			VerifySuccessfulCompilation(testClass);
+		}
+
+		[TestMethod]
+		public void AvoidStaticClassesViolatingFieldTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("", "ViolatingField")}
+			}}}}";
+
+			VerifyDiagnostic(testClass);
+		}
+
+		[TestMethod]
+		public void AvoidStaticClassesMixFieldTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("static readonly", "F2")}
+				{CreateField("const", "F3")}
+				{CreateField("static readonly", "F4")}
+				{CreateField("const", "F5")}
+			}}}}";
+
+			VerifySuccessfulCompilation(testClass);
+		}
+
+		[TestMethod]
+		public void AvoidStaticClassesMixViolationTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("static readonly", "F2")}
+				{CreateField("const", "F3")}
+				{CreateField("static", "ViolatingField")}
+				{CreateField("const", "F5")}
+			}}}}";
+
+			VerifyDiagnostic(testClass);
+		}
+
+		[TestMethod]
+		public void AvoidStaticClassesRogueMethodTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("const", "F2")}
+				{CreateField("const", "F3")}
+				public static void Foo();
+			}}}}";
+
+			VerifyDiagnostic(testClass);
 		}
 
 

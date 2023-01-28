@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				AllowedSymbols allowedSymbols = new();
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				if (!options.IgnoreExceptionsFile)
+				if (options.UseExceptionsFile)
 				{
 					allowedSymbols = InitializeAllowed(compilationContext.Options.AdditionalFiles, compilationContext.Compilation);
 				}
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
 			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
-			options.IgnoreExceptionsFile = exceptionsOptions.IgnoreExceptionsFile;
+			options.UseExceptionsFile = exceptionsOptions.UseExceptionsFile;
 			options.GenerateExceptionsFile = exceptionsOptions.GenerateExceptionsFile;
 
 			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
@@ -421,7 +421,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		}
 
 		public int TokenCount { get; set; }
-		public bool IgnoreExceptionsFile { get; set; }
+		public bool UseExceptionsFile { get; set; }
 		public bool GenerateExceptionsFile { get; set; }
 	}
 
