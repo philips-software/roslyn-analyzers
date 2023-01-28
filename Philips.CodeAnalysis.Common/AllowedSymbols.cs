@@ -78,9 +78,10 @@ namespace Philips.CodeAnalysis.Common
 		}
 
 		/// <summary>
-		/// Register a new symbol.
+		/// 
 		/// </summary>
-		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
+		/// <param name="symbol"></param>
+		/// <exception cref="InvalidDataException"></exception>
 		private void RegisterSymbol(ISymbol symbol)
 		{
 			if(symbol is IMethodSymbol methodSymbol)
@@ -102,6 +103,11 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		private string StripComments(string input)
 		{
 			string stripped = input;
