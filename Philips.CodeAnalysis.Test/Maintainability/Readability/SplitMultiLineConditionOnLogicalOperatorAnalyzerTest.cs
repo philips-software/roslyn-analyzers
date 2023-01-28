@@ -310,35 +310,6 @@ namespace MultiLineConditionUnitTests
 		}
 
 
-
-		/// <summary>
-		/// Diagnostics expected to show up.
-		/// </summary>
-		[DataTestMethod]
-		[DataRow(WrongReturnStatement, CorrectReturnStatement, 11, 22, DisplayName = nameof(WrongReturnStatement))]
-		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered2(
-			string testCode,
-			string fixedCode,
-			int line,
-			int column
-		)
-		{
-			var expected = new DiagnosticResult
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
-				Severity = DiagnosticSeverity.Warning,
-				Locations =
-					new[] {
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-			};
-			VerifyDiagnostic(testCode, expected);
-			if (!string.IsNullOrEmpty(fixedCode))
-			{
-				VerifyFix(testCode, fixedCode);
-			}
-		}
-
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
