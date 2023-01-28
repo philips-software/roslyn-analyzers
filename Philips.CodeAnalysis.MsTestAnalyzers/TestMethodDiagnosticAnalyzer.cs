@@ -162,10 +162,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected MsTestAttributeDefinitions Definitions { get; }
 
-			public TestMethodImplementation(MsTestAttributeDefinitions definitions)
+			protected TestMethodImplementation(MsTestAttributeDefinitions definitions)
 				: this(definitions, new AttributeHelper())
 			{ }
-			public TestMethodImplementation(MsTestAttributeDefinitions definitions, AttributeHelper attributeHelper)
+			protected TestMethodImplementation(MsTestAttributeDefinitions definitions, AttributeHelper attributeHelper)
 			{
 				Definitions = definitions;
 				AttributeHelper = attributeHelper;

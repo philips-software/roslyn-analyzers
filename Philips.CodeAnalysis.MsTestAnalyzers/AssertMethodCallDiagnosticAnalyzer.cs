@@ -14,10 +14,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		protected Helper Helper { get; set; }
 
-		public AssertMethodCallDiagnosticAnalyzer()
+		protected AssertMethodCallDiagnosticAnalyzer()
 			: this(new Helper())
 		{ }
-		public AssertMethodCallDiagnosticAnalyzer(Helper helper)
+		protected AssertMethodCallDiagnosticAnalyzer(Helper helper)
 		{
 			Helper = helper;
 		}

@@ -12,10 +12,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected TestHelper TestHelper { get; private set;}
 		protected AttributeHelper AttributeHelper { get; private set; }
 
-		public TestClassDiagnosticAnalyzer()
+		protected TestClassDiagnosticAnalyzer()
 			: this(new TestHelper(), new AttributeHelper())
 		{ }
-		public TestClassDiagnosticAnalyzer(TestHelper testHelper, AttributeHelper attributeHelper)
+		protected TestClassDiagnosticAnalyzer(TestHelper testHelper, AttributeHelper attributeHelper)
 		{
 			TestHelper = testHelper;
 			AttributeHelper = attributeHelper;
