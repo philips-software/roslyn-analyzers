@@ -14,6 +14,8 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
 using Philips.CodeAnalysis.Common;
+using Microsoft.CodeAnalysis.Text;
+using Microsoft.CodeAnalysis.Editing;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
@@ -43,11 +45,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (root != null)
 			{
 				var node = root.FindNode(diagnosticSpan);
-				if (node.Ancestors().OfType<ReturnStatementSyntax>().Any())
-				{
-					// Disabled code fixer for return statements, see issue #261.
-					return;
-				}
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
@@ -56,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					diagnostic);
 			}
 		}
-
+	
 		private async Task<Document> ApplyCodeFix(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -64,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				return document;
 			}
-
+			
 			// First remove the EOL from the violating token.
 			var oldTrivia = node.GetTrailingTrivia();
 			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
@@ -75,7 +72,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					.WithAdditionalAnnotations(Formatter.Annotation, annotation);
 				root = root.ReplaceNode(node, newNode);
 			}
-			
+
 			// Next add EOL to the || or && token immediately following.
 			node = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
 			var logicalToken = node.GetLastToken().GetNextToken();
@@ -87,7 +84,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
 						.WithAdditionalAnnotations(Formatter.Annotation));
 			}
-
 			return document.WithSyntaxRoot(root);
 		}
 	}
