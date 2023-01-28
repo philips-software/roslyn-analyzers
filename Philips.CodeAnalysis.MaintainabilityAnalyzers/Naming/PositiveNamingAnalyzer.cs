@@ -22,6 +22,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
+		private readonly TestHelper _testHelper;
+
+		public PositiveNamingAnalyzer()
+			: this(new TestHelper())
+		{ }
+
+		public PositiveNamingAnalyzer(TestHelper testHelper)
+		{
+			_testHelper = testHelper;
+		}
+
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -30,11 +42,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
 
-		private static void AnalyzeVariable(SyntaxNodeAnalysisContext context)
+		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
 		{
 			VariableDeclarationSyntax node = (VariableDeclarationSyntax)context.Node;
 
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
@@ -54,11 +66,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 
-		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
+		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
 
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
@@ -70,13 +82,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 
-		private static void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
-		private static bool IsPositiveName(string name) {
+		private bool IsPositiveName(string name) {
 			var lower = name.ToLowerInvariant();
 			foreach (var word in negativeWords)
 			{

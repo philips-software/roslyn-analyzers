@@ -74,9 +74,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-				bool hasCategory = Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
+				AttributeHelper attributeHelper = new();
+				bool hasCategory = attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
 
-				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 

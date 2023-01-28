@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
 
-					if (!Helper.IsLiteralTrueFalse(arg.Expression))
+					Helper helper = new();
+					if (!helper.IsLiteralTrueFalse(arg.Expression))
 					{
 						return;
 					}

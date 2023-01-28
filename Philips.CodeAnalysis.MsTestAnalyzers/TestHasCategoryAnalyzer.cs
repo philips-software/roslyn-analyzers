@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				if (!Helper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!AttributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					var location = methodDeclaration.Identifier.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
