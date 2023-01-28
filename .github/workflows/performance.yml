@@ -11,7 +11,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Analyzer Performance
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a
+        with:
+          dotnet-version: |
+            7.0.x
+
+      - name: Build Dogfood
         run: |
           cat > ./Directory.Build.props << 'EOF'
           <Project>
