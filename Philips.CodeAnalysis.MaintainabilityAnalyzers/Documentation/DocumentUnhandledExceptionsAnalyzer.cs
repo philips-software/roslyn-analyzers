@@ -45,6 +45,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
+		private readonly Helper _helper;
+
+		public DocumentUnhandledExceptionsAnalyzer()
+			: this(new Helper())
+		{ }
+		public DocumentUnhandledExceptionsAnalyzer(Helper helper)
+		{
+			_helper = helper;
+		}
+
 		private static readonly Regex DocumentationRegex = new("exception\\scref=\\\"(.*)\\\"", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private static readonly Dictionary<string, string[]> ExceptionsMap = new()
@@ -107,13 +117,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var method = (MethodDeclarationSyntax)context.Node;
 
 			// TODO: Read PDB as done in: https://github.com/microsoft/peeker
 
-			var aliases = Helper.GetUsingAliases(method);
+			var aliases = _helper.GetUsingAliases(method);
 
 			var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			List<string> unhandledExceptions = new();
@@ -146,19 +156,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 		}
 
-		private static bool IsExceptionElement(XmlElementSyntax element)
+		private bool IsExceptionElement(XmlElementSyntax element)
 		{
 			return element.StartTag.Name.LocalName.Text == "exception";
 		}
 
-		private static string GetCrefAttributeValue(XmlElementSyntax element)
+		private string GetCrefAttributeValue(XmlElementSyntax element)
 		{
 			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString())
 				.FirstOrDefault();
 		}
 
-		private static IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
-			InvocationExpressionSyntax invocation, Dictionary<string, string> aliases)
+		private IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
+			InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases)
 		{
 			var expectedExceptions = Array.Empty<string>();
 			var invokedSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
@@ -176,14 +186,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
 			foreach (var tryStatement in tryStatements)
 			{
-				var handledExceptionTypes = tryStatement.Catches.Select(cat => Helper.GetFullName(cat.Declaration?.Type, aliases));
+				var handledExceptionTypes = tryStatement.Catches.Select(cat => cat.Declaration?.Type.GetFullName(aliases));
 				unhandledExceptions = handledExceptionTypes.Any(ex => ex == WellKnownExceptions.Exception) ? Array.Empty<string>() : unhandledExceptions.Except(handledExceptionTypes);
 			}
 
 			return unhandledExceptions;
 		}
 
-		private static string[] ParseFromDocumentation(string documentation)
+		private string[] ParseFromDocumentation(string documentation)
 		{
 			var matches = DocumentationRegex.Matches(documentation);
 			var results = new string[matches.Count];
@@ -194,7 +204,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return results;
 		}
 
-		private static string GetFullName(ISymbol symbol)
+		private string GetFullName(ISymbol symbol)
 		{
 			List<string> namespaces = new();
 			var ns = symbol.ContainingNamespace;

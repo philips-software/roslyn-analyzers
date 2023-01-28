@@ -9,9 +9,8 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
-
   <PropertyGroup>
-    <PackageId>Philips.CodeAnalysis.MaintainabilityAnalyzers</PackageId>
+    <PackageOutputPath>../Packages</PackageOutputPath>
     <Authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</Authors>
     <Company>Philips</Company>
     <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
@@ -111,6 +110,8 @@
       * Introduce PH2129: Return immutable collections.
       * Increased the test coverage.
       * Introduce PH2130: Avoid implementing finalizers.
+      * Introduce PH2131: Align filename and class name.
+      * Introduce PH2131: Remvoe commented code.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>

@@ -13,10 +13,4 @@ namespace Philips.CodeAnalysis.Common
 		public string Name { get; }
 		public string FullName { get; }
 	}
-
-	public class MsTestAttributeDefinition : AttributeDefinition
-	{
-		public MsTestAttributeDefinition(string name) : base(name, $"Microsoft.VisualStudio.TestTools.UnitTesting.{name}Attribute")
-		{ }
-	}
 }

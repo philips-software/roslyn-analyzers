@@ -6,16 +6,21 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class AssertMethodCallDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
+		protected Helper Helper { get; set; }
 
-		#endregion
-
-		#region Non-Public Properties/Methods
+		protected AssertMethodCallDiagnosticAnalyzer()
+			: this(new Helper())
+		{ }
+		protected AssertMethodCallDiagnosticAnalyzer(Helper helper)
+		{
+			Helper = helper;
+		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
@@ -38,12 +43,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 		}
-
 		protected abstract IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression);
 
-		#endregion
-
-		#region Public Interface
 
 		public sealed override void Initialize(AnalysisContext context)
 		{
@@ -60,8 +61,5 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 			});
 		}
-
-
-		#endregion
 	}
 }

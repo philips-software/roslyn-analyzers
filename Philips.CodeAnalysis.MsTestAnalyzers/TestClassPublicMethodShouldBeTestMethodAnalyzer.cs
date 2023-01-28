@@ -21,6 +21,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		private readonly TestHelper _testHelper;
+		public TestClassPublicMethodShouldBeTestMethodAnalyzer()
+			: this(new TestHelper())
+		{ }
+		public TestClassPublicMethodShouldBeTestMethodAnalyzer(TestHelper testHelper)
+		{
+			_testHelper = testHelper;
+		}
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -53,7 +62,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (!Helper.IsTestClass(classDeclaration, context))
+			if (!_testHelper.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}

@@ -11,6 +11,8 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class GeneratedCodeDetector
 	{
+		private readonly AttributeHelper _attributeHelper = new();
+
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
@@ -36,7 +38,7 @@ namespace Philips.CodeAnalysis.Common
 						continue;
 				}
 
-				if (Helper.HasAttribute(attributes, getSemanticModel, AttributeName, FullAttributeName, out _, out _))
+				if (_attributeHelper.HasAttribute(attributes, getSemanticModel, AttributeName, FullAttributeName, out _, out _))
 				{
 					return true;
 				}
@@ -69,7 +71,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsGeneratedCode(string filePath)
 		{
-			string fileName = Helper.GetFileName(filePath);
+			Helper helper = new();
+			string fileName = helper.GetFileName(filePath);
 			// Various Microsoft tools generate files with this postfix.
 			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
 			// WinForms generate files with this postfix.

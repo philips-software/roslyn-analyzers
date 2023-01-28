@@ -22,6 +22,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
 
+		private readonly AttributeHelper _attributeHelper;
+
+		public AvoidAttributeAnalyzer()
+			: this(new AttributeHelper())
+		{ }
+
+		public AvoidAttributeAnalyzer(AttributeHelper attributeHelper)
+		{
+			_attributeHelper = attributeHelper;
+		}
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
@@ -72,7 +83,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return ImmutableHashSet<string>.Empty;
 		}
 
-		private static void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
+		private void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
 			if (generatedCodeDetector.IsGeneratedCode(context))
@@ -84,7 +95,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeModel attribute in attributes)
 			{
-				if (!Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
+				if (!_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
 				{
 					continue;
 				}
@@ -100,7 +111,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 		}
 
-		private static bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
+		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
 		{
 			var symbol = semanticModel.GetDeclaredSymbol(node);
 

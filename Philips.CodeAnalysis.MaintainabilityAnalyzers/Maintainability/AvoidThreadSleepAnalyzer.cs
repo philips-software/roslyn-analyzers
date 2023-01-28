@@ -21,6 +21,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		private readonly AttributeHelper _attributeHelper;
+
+		public AvoidThreadSleepAnalyzer()
+			: this(new AttributeHelper())
+		{ }
+
+		public AvoidThreadSleepAnalyzer(AttributeHelper attributeHelper)
+		{
+			_attributeHelper = attributeHelper;
+		}
+
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
@@ -29,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
 
@@ -46,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node.Parent.Parent.Parent.Parent;
 				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (Helper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
+				if (_attributeHelper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
 					var location = invocationExpression.GetLocation();

@@ -97,6 +97,34 @@ public class Foo
     private ArgumentException DangerousMethod() { return new ArgumentException(""FromFactory"");}
 }
 ";
+    private const string CorrectFromCommon = @"
+public class Foo {
+	/// <summary>
+	/// Register a new symbol.
+	/// </summary>
+	/// <exception cref=""InvalidDataException"">When an invalid type is supplied.</exception>
+	private void RegisterSymbol(ISymbol symbol)
+	{
+		if(symbol is IMethodSymbol methodSymbol)
+		{
+			_allowedMethods.Add(methodSymbol);
+		}
+		else if(symbol is ITypeSymbol typeSymbol)
+		{
+			_allowedTypes.Add(typeSymbol);
+		}
+		else if(symbol is INamespaceSymbol namespaceSymbol)
+		{
+			_allowedNamespaces.Add(namespaceSymbol);
+		}
+		else
+		{
+			throw new InvalidDataException(
+				""Invalid symbol type found: "" + symbol.MetadataName);
+		}
+	}
+}
+";
 
         private const string WrongNoDoc = @"
 public class Foo
@@ -182,7 +210,8 @@ public class Foo
 		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
 		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
-		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
+		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow)),
+		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);

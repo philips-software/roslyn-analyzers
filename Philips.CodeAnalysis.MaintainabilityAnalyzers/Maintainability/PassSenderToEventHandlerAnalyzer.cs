@@ -24,6 +24,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
+		private readonly Helper _helper;
+
+		public PassSenderToEventHandlerAnalyzer()
+			: this(new Helper())
+		{ }
+		public PassSenderToEventHandlerAnalyzer(Helper helper)
+		{
+			_helper = helper;
+		}
+
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -31,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.EventFieldDeclaration);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var eventField = (EventFieldDeclarationSyntax)context.Node;
 
@@ -53,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			AnalyzeArguments(context, parent, eventName);
 		}
 
-		private static void AnalyzeArguments(SyntaxNodeAnalysisContext context, TypeDeclarationSyntax parent, string eventName)
+		private void AnalyzeArguments(SyntaxNodeAnalysisContext context, TypeDeclarationSyntax parent, string eventName)
 		{
 			// EventHandlers must have 2 arguments as checked by CA1003, assume this rule is obeyed here.
 			var invocations = parent.DescendantNodes()
@@ -64,13 +75,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (var invocation in invocations)
 			{
 				var arguments = invocation.ArgumentList.Arguments;
-				if (Helper.IsLiteralNull(arguments[0].Expression))
+				if (_helper.IsLiteralNull(arguments[0].Expression))
 				{
 					var loc = arguments[0].GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
 				}
 
-				if (Helper.IsLiteralNull(arguments[1].Expression))
+				if (_helper.IsLiteralNull(arguments[1].Expression))
 				{
 					var loc = arguments[1].GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, eventName));
@@ -78,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private static bool IsOurEvent(InvocationExpressionSyntax invocation, string eventName)
+		private bool IsOurEvent(InvocationExpressionSyntax invocation, string eventName)
 		{
 			return invocation.Expression is IdentifierNameSyntax name && name.Identifier.Text == eventName;
 		}

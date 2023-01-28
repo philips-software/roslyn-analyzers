@@ -22,6 +22,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
+		private readonly TestHelper _testHelper;
+		private readonly Helper _helper;
+
+		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer()
+			:this(new TestHelper(), new Helper())
+		{ }
+
+		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer(TestHelper testHelper, Helper helper)
+		{
+			_testHelper = testHelper;
+			_helper = helper;
+		}
 
 		/// <summary>
 		/// IsInitializeComponentInConstructors
@@ -41,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
+			var mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
@@ -63,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private bool IsInitializeComponentInConstructorChainOnce(List<ConstructorDeclarationSyntax> chain, out int count)
+		private bool IsInitializeComponentInConstructorChainOnce(IReadOnlyList<ConstructorDeclarationSyntax> chain, out int count)
 		{
 			count = 0;
 			foreach (var ctor in chain)
@@ -111,14 +123,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If we're in a TestClass, let it go.
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
 
 			// If we're not within a Control/Form, let it go.
 			INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
-			if (!Helper.IsUserControl(type))
+			if (!_helper.IsUserControl(type))
 			{
 				return;
 			}

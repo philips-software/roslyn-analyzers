@@ -19,7 +19,10 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
     secrets:
       sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
-
+      
   docupdate:
     if: ${{ github.event_name == 'pull_request' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
+
+  dogfood:
+    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master

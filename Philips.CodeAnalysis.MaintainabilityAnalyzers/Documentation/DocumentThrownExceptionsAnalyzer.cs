@@ -30,6 +30,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
+		private readonly Helper _helper;
+
+		public DocumentThrownExceptionsAnalyzer()
+			: this(new Helper())
+		{ }
+
+		public DocumentThrownExceptionsAnalyzer(Helper helper)
+		{
+			_helper = helper;
+		}
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -37,16 +48,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			Dictionary<string, string> aliases;
+			IReadOnlyDictionary<string, string> aliases;
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.
-				aliases = Helper.GetUsingAliases(throwStatement);
+				aliases = _helper.GetUsingAliases(throwStatement);
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
 				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
@@ -69,7 +80,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			aliases = Helper.GetUsingAliases(throwStatement);
+			aliases = _helper.GetUsingAliases(throwStatement);
 			if (aliases.TryGetValue(thrownExceptionName, out string aliasedName))
 			{
 				thrownExceptionName = aliasedName;
@@ -101,17 +112,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 		}
 
-		private static bool IsExceptionElement(XmlElementSyntax element)
+		private bool IsExceptionElement(XmlElementSyntax element)
 		{
 			return element.StartTag.Name.LocalName.Text == "exception";
 		}
 
-		private static string GetCrefAttributeValue(XmlElementSyntax element)
+		private string GetCrefAttributeValue(XmlElementSyntax element)
 		{
 			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString()).FirstOrDefault();
 		}
 
-		private static bool HasStringArgument(SyntaxNodeAnalysisContext context, ArgumentListSyntax attributeList)
+		private bool HasStringArgument(SyntaxNodeAnalysisContext context, ArgumentListSyntax attributeList)
 		{
 			const string stringTypeName = "String";
 			return attributeList.Arguments.Any(a =>
