@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 
-		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", "Queue", "SortedList", "Stack", "Dictionary", "IList", "ICollection", "IDictionary" };
+		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", "Queue", "SortedList", "Stack", "Dictionary", "IList", "IDictionary" };
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -73,10 +73,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private static string GetTypeName(TypeSyntax type)
+		internal static string GetTypeName(TypeSyntax type)
 		{
 			var aliases = Helper.GetUsingAliases(type);
-			var typeName = Helper.GetFullName(type, aliases);
+			var typeName = type.GetFullName(aliases);
 			if (type is GenericNameSyntax genericName)
 			{
 				var baseName = genericName.Identifier.Text;

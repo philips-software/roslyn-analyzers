@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -12,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	/// Test class for <see cref="ReturnImmutableCollectionsAnalyzer"/>.
 	/// </summary>
 	[TestClass]
-	public class ReturnImmutableCollectionsAnalyzerTest : DiagnosticVerifier
+	public class ReturnImmutableCollectionsAnalyzerTest : CodeFixVerifier
 	{
 		private const string CorrectReadOnlyList = @"
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public IReadOnlyDictionary<string,int> MethodA() {
+        public IReadOnlyDictionary<string, int> MethodA() {
             return null;
         }
     }
@@ -126,17 +127,7 @@ namespace ReturnImmutableTests {
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
     public class Number {
-        public Stack<string> MethodA() {
-            return null;
-        }
-    }
-}";
-
-		private const string WrongICollection = @"
-using System.Collections.Generic;
-namespace ReturnImmutableTests {
-    public class Number {
-        public ICollection<int> MethodA() {
+        public Stack<int> MethodA() {
             return null;
         }
     }
@@ -201,19 +192,22 @@ namespace ReturnImmutableTests {
 		/// Diagnostics expected to show up
 		/// </summary>
 		[TestMethod]
-		[DataRow(WrongList, DisplayName = nameof(WrongList)),
-		 DataRow(WrongIList, DisplayName = nameof(WrongIList)),
-		 DataRow(WrongQueue, DisplayName = nameof(WrongQueue)),
-		 DataRow(WrongSortedList, DisplayName = nameof(WrongSortedList)),
-		 DataRow(WrongStack, DisplayName = nameof(WrongStack)),
-		 DataRow(WrongICollection, DisplayName = nameof(WrongICollection)),
-		 DataRow(WrongDictionary, DisplayName = nameof(WrongDictionary)),
-		 DataRow(WrongIDictionary, DisplayName = nameof(WrongIDictionary)),
-		 DataRow(WrongArray, DisplayName = nameof(WrongArray)),
-		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
+		[DataRow(WrongList, CorrectReadOnlyList, DisplayName = nameof(WrongList)),
+		 DataRow(WrongIList, CorrectReadOnlyList, DisplayName = nameof(WrongIList)),
+		 DataRow(WrongQueue, CorrectReadOnlyCollection, DisplayName = nameof(WrongQueue)),
+		 DataRow(WrongSortedList, CorrectReadOnlyDictionary, DisplayName = nameof(WrongSortedList)),
+		 DataRow(WrongStack, CorrectReadOnlyCollection, DisplayName = nameof(WrongStack)),
+		 DataRow(WrongDictionary, CorrectReadOnlyDictionary, DisplayName = nameof(WrongDictionary)),
+		 DataRow(WrongIDictionary, CorrectReadOnlyDictionary, DisplayName = nameof(WrongIDictionary)),
+		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
+		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
+		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ReturnImmutableCollections);
 			VerifyDiagnostic(testCode, expected);
+			if (!string.IsNullOrEmpty(fixedCode))
+			{
+				VerifyFix(testCode, fixedCode);
+			}
 		}
 
 		/// <summary>
@@ -228,6 +222,11 @@ namespace ReturnImmutableTests {
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
 			return new ReturnImmutableCollectionsAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new ReturnImmutableCollectionsCodeFixProvider();
 		}
 	}
 }
