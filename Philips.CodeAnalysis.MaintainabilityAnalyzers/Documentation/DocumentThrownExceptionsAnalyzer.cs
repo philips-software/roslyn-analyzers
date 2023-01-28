@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzer
 	{
 		private const string DocumentTitle = @"Document thrown exceptions";
-		private const string DocumentMessageFormat = @"Document the fact that this method can potentially throw an exception of type {0}.";
+		private const string DocumentMessageFormat = @"Document the fact that this method can potentially throw an exception of type {0}. Debug info: {1}";
 		private const string DocumentDescription = @"Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method.";
 		private const string InformationalTitle = @"Throw only informational exceptions";
 		private const string InformationalMessageFormat = @"Specify context to the {0}, by using a constructor overload that sets the Message property.";
@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName);
+				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName, string.Join(", ", mentionedExceptions));
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -98,6 +98,14 @@ public class Foo
 }
 ";
     private const string CorrectFromCommon = @"
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+
+namespace Philips.CodeAnalysis.Common
+{
 public class Foo {
 	/// <summary>
 	/// Register a new symbol.
@@ -123,6 +131,7 @@ public class Foo {
 				""Invalid symbol type found: "" + symbol.MetadataName);
 		}
 	}
+}
 }
 ";
 
@@ -205,17 +214,24 @@ public class Foo
 ";
 
 		[DataTestMethod]
+		[DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
+		public void CorrectFromCommonShouldNotTriggerAnyDiagnostics(string testCode)
+		{
+			VerifySuccessfulCompilation(testCode);
+		}
+
+		[DataTestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
 		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
 		 DataRow(CorrectInProperty, DisplayName = nameof(CorrectInProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
-		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow)),
-		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
+		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow))]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
 		}
+
 
 		[DataTestMethod]
 		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc)),
