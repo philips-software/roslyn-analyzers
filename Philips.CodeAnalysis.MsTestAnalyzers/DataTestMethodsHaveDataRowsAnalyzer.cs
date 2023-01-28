@@ -48,13 +48,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					if (Helper.IsDataRowAttribute(attribute, context))
+					if (AttributeHelper.IsDataRowAttribute(attribute, context))
 					{
 						dataRowCount++;
 						continue;
 					}
 
-					if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
 						dynamicDataCount++;
 						continue;

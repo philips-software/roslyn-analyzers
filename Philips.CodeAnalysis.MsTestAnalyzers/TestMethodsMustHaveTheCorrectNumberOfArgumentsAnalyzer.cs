@@ -65,14 +65,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				dataRowParameters = new();
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					if (Helper.IsDataRowAttribute(attribute, context))
+					if (AttributeHelper.IsDataRowAttribute(attribute, context))
 					{
 						int argumentCount = attribute.ArgumentList.Arguments.Count((arg) => { return arg.NameEquals?.Name.Identifier.ValueText != @"DisplayName"; });
 						dataRowParameters.Add(argumentCount);
 						continue;
 					}
 
-					if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
 						anyDynamicData = true;
 						continue;

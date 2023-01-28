@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				if (!Helper.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
+				if (!AttributeHelper.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
 				{
 					return;
 				}

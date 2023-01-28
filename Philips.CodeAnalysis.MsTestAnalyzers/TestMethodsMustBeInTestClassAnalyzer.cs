@@ -35,7 +35,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				if (Helper.IsInTestClass(context))
+				TestHelper testHelper = new();
+				if (testHelper.IsInTestClass(context))
 				{
 					return;
 				}
