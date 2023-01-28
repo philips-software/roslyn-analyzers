@@ -227,7 +227,23 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string CorrectReturnStatement = @"
+		private const string WrongReturnStatement = @"
+using System;
+
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static bool Main(string[] args)
+        {
+            return (
+                2 == 3
+                && 4 == 5);
+        }
+    }
+}";
+
+		private const string CorrectReturnStatement = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -279,12 +295,12 @@ namespace MultiLineConditionUnitTests
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak)),
-			DataRow(WrongOpening, null, 10, 13, DisplayName = nameof(WrongOpening)),
-			DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine)),
-			DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool)),
-			DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))
-		]
+		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak))]
+		[DataRow(WrongOpening, null, 10, 13, DisplayName = nameof(WrongOpening))]
+		[DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine))]
+		[DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool))]
+		[DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))]
+		[DataRow(WrongReturnStatement, CorrectReturnStatement, 11, 22, DisplayName = nameof(WrongReturnStatement))]
 		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
 			string testCode,
 			string fixedCode,
@@ -307,6 +323,7 @@ namespace MultiLineConditionUnitTests
 				VerifyFix(testCode, fixedCode);
 			}
 		}
+
 
 		/// <summary>
 		/// Diagnostics expected to show up.

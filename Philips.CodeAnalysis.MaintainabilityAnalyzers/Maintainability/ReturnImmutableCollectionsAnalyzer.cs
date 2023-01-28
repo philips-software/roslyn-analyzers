@@ -28,6 +28,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
+		private static readonly Helper _helper = new();
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.ReportDiagnostics);
@@ -36,21 +38,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
 		
-		private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
+		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			var method = (MethodDeclarationSyntax)context.Node;
 			AssertType(context, method.ReturnType, method);
 		}
 
-		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
+		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			var prop = (PropertyDeclarationSyntax)context.Node;
 			AssertType(context, prop.Type, prop);
 		}
 
-		private static void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
+		private void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if(!Helper.IsCallableFromOutsideClass(parent))
+			if(!_helper.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
@@ -75,7 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		internal static string GetTypeName(TypeSyntax type)
 		{
-			var aliases = Helper.GetUsingAliases(type);
+			var aliases = _helper.GetUsingAliases(type);
 			var typeName = type.GetFullName(aliases);
 			if (type is GenericNameSyntax genericName)
 			{

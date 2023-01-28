@@ -88,6 +88,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
+			// If the class only contains const and static readonly fields, let it go
+			if (!classDeclarationSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>().Any() &&
+				classDeclarationSyntax.DescendantNodes()
+					.OfType<FieldDeclarationSyntax>()
+					.Select(f => f.Modifiers)
+					.All(m => 
+						m.Any(SyntaxKind.ConstKeyword) || 
+						(m.Any(SyntaxKind.StaticKeyword) && m.Any(SyntaxKind.ReadOnlyKeyword))))
+			{
+				return;
+			}
+
 			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
@@ -98,7 +110,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (Helper.IsExtensionClass(declaredSymbol))
+			Helper helper = new();
+			if (helper.IsExtensionClass(declaredSymbol))
 			{
 				return;
 			}
