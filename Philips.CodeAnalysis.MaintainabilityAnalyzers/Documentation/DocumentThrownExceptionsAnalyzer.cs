@@ -99,10 +99,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// Check if our parent has proper documentation.
 			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
-				.Select(i => i.GetStructure())
-				.OfType<DocumentationCommentTriviaSyntax>()
-				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
-				.Where(IsExceptionElement);
+				.Select(i => i.GetStructure());
+//				.OfType<DocumentationCommentTriviaSyntax>()
+//				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
+//				.Where(IsExceptionElement);
 //				.Select(GetCrefAttributeValue);
 //			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
@@ -113,10 +113,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 		}
 
-		private bool IsExceptionElement(XmlElementSyntax element)
-		{
-			return element.StartTag.Name.LocalName.Text == "exception";
-		}
+		//private bool IsExceptionElement(XmlElementSyntax element)
+		//{
+		//	return element.StartTag.Name.LocalName.Text == "exception";
+		//}
 
 		//private string GetCrefAttributeValue(XmlElementSyntax element)
 		//{
