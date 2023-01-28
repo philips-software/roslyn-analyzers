@@ -97,8 +97,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 			}
 
+			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
+					.Where(n => n.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+					.Select(t => t.GetStructure())
+					.OfType<DocumentationCommentTriviaSyntax>()
+					.ToList();
+
 			// Check if our parent has proper documentation.
-			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
+//			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
 //				.Select(i => i.GetStructure());
 //				.OfType<DocumentationCommentTriviaSyntax>()
 //				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
