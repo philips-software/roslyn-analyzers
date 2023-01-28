@@ -9,6 +9,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class TestClassDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		protected TestHelper TestHelper { get; private set;}
+		protected AttributeHelper AttributeHelper { get; private set; }
+
+		public TestClassDiagnosticAnalyzer()
+			: this(new TestHelper(), new AttributeHelper())
+		{ }
+		public TestClassDiagnosticAnalyzer(TestHelper testHelper, AttributeHelper attributeHelper)
+		{
+			TestHelper = testHelper;
+			AttributeHelper = attributeHelper;
+		}
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -22,7 +34,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
 
-			if (!Helper.IsTestClass(classDeclaration, context))
+			if (!TestHelper.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}

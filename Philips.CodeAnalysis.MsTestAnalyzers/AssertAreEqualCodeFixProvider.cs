@@ -21,6 +21,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AssertAreEqualCodeFixProvider)), Shared]
 	public class AssertAreEqualCodeFixProvider : CodeFixProvider
 	{
+		private readonly Helper _helper;
+
+		public AssertAreEqualCodeFixProvider()
+			: this(new Helper())
+		{ }
+		public AssertAreEqualCodeFixProvider(Helper helper)
+		{
+			_helper = helper;
+		}
+
+
 		private const string Title = "Refactor equality assertion";
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
@@ -76,7 +87,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isFirstArgumentConstant = Helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
+				isFirstArgumentConstant = _helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
 			bool isSecondArgumentNull = false;
@@ -89,7 +100,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isSecondArgumentConstant = Helper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
+				isSecondArgumentConstant = _helper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
 			}
 
 			if (isFirstArgumentNull || isSecondArgumentNull)

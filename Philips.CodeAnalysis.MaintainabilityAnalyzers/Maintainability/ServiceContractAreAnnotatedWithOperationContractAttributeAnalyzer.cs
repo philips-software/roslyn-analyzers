@@ -22,6 +22,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
+		private readonly AttributeHelper _attributeHelper;
+
+		public ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer()
+			: this(new AttributeHelper())
+		{ }
+
+		public ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer(AttributeHelper attributeHelper)
+		{
+			_attributeHelper = attributeHelper;
+		}
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
@@ -42,14 +52,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			InterfaceDeclarationSyntax interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
 
-			if (!Helper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", "System.ServiceModel.ServiceContractAttribute", out _))
+			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", "System.ServiceModel.ServiceContractAttribute", out _))
 			{
 				return;
 			}
 
 			foreach (MethodDeclarationSyntax method in interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>())
 			{
-				if (!Helper.HasAttribute(method.AttributeLists, context, "OperationContract", "System.ServiceModel.OperationContractAttribute", out _))
+				if (!_attributeHelper.HasAttribute(method.AttributeLists, context, "OperationContract", "System.ServiceModel.OperationContractAttribute", out _))
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
 				}

@@ -98,7 +98,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (Helper.IsExtensionClass(declaredSymbol))
+			Helper helper = new();
+			if (helper.IsExtensionClass(declaredSymbol))
 			{
 				return;
 			}
