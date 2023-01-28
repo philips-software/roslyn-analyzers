@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -29,46 +30,43 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.StructDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
+			context.RegisterSyntaxTreeAction(Analyze);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxTreeAnalysisContext context)
 		{
-			TypeDeclarationSyntax typeDeclaration = (TypeDeclarationSyntax)context.Node;
+			var tree = context.Tree;
+			var firstType = tree.GetRoot().DescendantNodes()
+				.FirstOrDefault(node => node is TypeDeclarationSyntax or EnumDeclarationSyntax);
 			string typeKind = null;
-			if(typeDeclaration is ClassDeclarationSyntax)
+			SyntaxToken identifier = default;
+			if (firstType is ClassDeclarationSyntax cls)
 			{
 				typeKind = "class";
+				identifier = cls.Identifier;
 			}
-			else if(typeDeclaration is StructDeclarationSyntax)
+			else if(firstType is StructDeclarationSyntax value)
 			{
 				typeKind = "struct";
+				identifier = value.Identifier;
+			}
+			else if(firstType is EnumDeclarationSyntax enumeration)
+			{
+				typeKind = "enum";
+				identifier = enumeration.Identifier;
 			}
 
-			if (string.IsNullOrEmpty(typeKind))
+			if(string.IsNullOrEmpty(typeKind) || identifier == default)
 			{
 				return;
 			}
-			Check(context, typeDeclaration.Identifier, typeKind);
-		}
-
-		private void AnalyzeEnum(SyntaxNodeAnalysisContext context)
-		{
-			EnumDeclarationSyntax enumDeclaration = (EnumDeclarationSyntax)context.Node;
-			Check(context, enumDeclaration.Identifier, "enum");
-		}
-
-		private static void Check(SyntaxNodeAnalysisContext context, SyntaxToken identifier, string typeKind)
-		{
 			GeneratedCodeDetector generatedCodeDetector = new();
 			if(generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
 
-			var filename = Path.GetFileNameWithoutExtension(context.Node.SyntaxTree.FilePath);
+			var filename = Path.GetFileNameWithoutExtension(tree.FilePath);
 			int indexOfDot = filename.IndexOf('.');
 			if (indexOfDot != -1)
 			{
