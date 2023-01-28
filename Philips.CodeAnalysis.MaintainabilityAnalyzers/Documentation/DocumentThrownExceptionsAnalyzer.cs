@@ -97,27 +97,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 			}
 
-			/*
-			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
-					.Where(n => n.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
-					.Select(t => t.GetStructure())
-					.OfType<DocumentationCommentTriviaSyntax>()
-					.ToList();
-*/
+			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
+					//.Where(n => n.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
+					//.Select(t => t.GetStructure())
+					//.OfType<DocumentationCommentTriviaSyntax>()
+					//.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
+					//	.Where(IsExceptionElement)
+					//	.Select(GetCrefAttributeValue);
+
 			// Check if our parent has proper documentation.
-//			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
-//				.Select(i => i.GetStructure());
-//				.OfType<DocumentationCommentTriviaSyntax>()
-//				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
-//				.Where(IsExceptionElement);
-//				.Select(GetCrefAttributeValue);
-//			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
+			//			var mentionedExceptions = methodDeclaration.GetLeadingTrivia();
+			//				.Select(i => i.GetStructure());
+			//				.OfType<DocumentationCommentTriviaSyntax>()
+			//			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				var mentionedExceptions = new List<string>() { "hello?" };
-				var msg = string.Join(", ", mentionedExceptions);
-
-//				var msg = string.Join(", ", mentionedExceptions.Select(e => e.ToFullString()));
+				var msg = string.Join(", ", mentionedExceptions.Select( x => x.ToFullString()));
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName, msg);
 				context.ReportDiagnostic(diagnostic);
 			}
