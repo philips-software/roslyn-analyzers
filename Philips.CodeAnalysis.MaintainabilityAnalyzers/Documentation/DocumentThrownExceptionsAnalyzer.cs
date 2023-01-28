@@ -91,12 +91,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
-				.Where(IsExceptionElement)
-				.Select(GetCrefAttributeValue);
-			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
+				.Where(IsExceptionElement);
+//				.Select(GetCrefAttributeValue);
+//			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName, string.Join(", ", mentionedExceptions));
+				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName, string.Join(", ", mentionedExceptions.ToString()));
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -106,10 +106,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return element.StartTag.Name.LocalName.Text == "exception";
 		}
 
-		private static string GetCrefAttributeValue(XmlElementSyntax element)
-		{
-			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString()).FirstOrDefault();
-		}
+		//private static string GetCrefAttributeValue(XmlElementSyntax element)
+		//{
+		//	return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString()).FirstOrDefault();
+		//}
 
 		private static bool HasStringArgument(SyntaxNodeAnalysisContext context, ArgumentListSyntax attributeList)
 		{
