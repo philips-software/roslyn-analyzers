@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -9,11 +10,16 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 {
 	[TestClass]
-	public class DocumentThrownExceptionsAnalyzerTest : DiagnosticVerifier
+	public class DocumentThrownExceptionsAnalyzerTest : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DocumentThrownExceptionsAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new DocumentThrownExceptionsCodeFixProvider();
 		}
 
 		private const string CorrectNoThrow = @"
@@ -30,7 +36,7 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""ArgumentException"">
+    /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
         throw new ArgumentException(""Error"");
@@ -43,7 +49,7 @@ using MyException = System.ArgumentException;
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""ArgumentException"">
+    /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
         throw new MyException(""Error"");
@@ -55,7 +61,7 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""ArgumentOutOfRangeException"">
+    /// <exception cref=""ArgumentOutOfRangeException""></exception>
     public int Index
     {
         get
@@ -70,7 +76,7 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""ArgumentException"">
+    /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
         throw CreateException();
@@ -84,7 +90,7 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""ArgumentException"">
+    /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
         try {
@@ -149,11 +155,24 @@ public class Foo
 }
 ";
 
+		private const string FixedNoCref = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception>
+    /// <exception cref=""ArgumentException""></exception>
+    public void MethodA()
+    {
+        throw new ArgumentException(""Error"");
+    }
+}
+";
+
 		private const string WrongEmptyCref = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref="""">
+    /// <exception cref=""""></exception>
     public void MethodA()
     {
         throw new ArgumentException(""Error"");
@@ -161,11 +180,12 @@ public class Foo
 }
 ";
 
-        private const string WrongType = @"
+		private const string FixedEmptyCref = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""InvalidOperationException"">
+    /// <exception cref=""""></exception>
+    /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
         throw new ArgumentException(""Error"");
@@ -173,7 +193,32 @@ public class Foo
 }
 ";
 
-        private const string WrongInProperty = @"
+		private const string WrongType = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""InvalidOperationException""></exception>
+    public void MethodA()
+    {
+        throw new ArgumentException(""Error"");
+    }
+}
+";
+
+		private const string FixedWrongType = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""InvalidOperationException""></exception>
+	/// <exception cref=""ArgumentException""></exception>
+    public void MethodA()
+    {
+        throw new ArgumentException(""Error"");
+    }
+}
+";
+
+		private const string WrongInProperty = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -195,7 +240,7 @@ public class Foo
     {
         try {
             DangerousMethod();
-        } catch (Exception ex) {
+        } catch (ArgumentException ex) {
             throw ex;
         }
     }
@@ -218,15 +263,16 @@ public class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc)),
-		 DataRow(WrongNoCref, DisplayName = nameof(WrongNoCref)),
-		 DataRow(WrongEmptyCref, DisplayName = nameof(WrongEmptyCref)),
-         DataRow(WrongType, DisplayName = nameof(WrongType)),
-		 DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty)),
-		 DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]
-		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
+		[DataRow(WrongNoDoc, CorrectWithThrow, DisplayName = nameof(WrongNoDoc)),
+		 DataRow(WrongNoCref, FixedNoCref, DisplayName = nameof(WrongNoCref)),
+		 DataRow(WrongEmptyCref, FixedEmptyCref, DisplayName = nameof(WrongEmptyCref)),
+         DataRow(WrongType, FixedWrongType, DisplayName = nameof(WrongType)),
+		 DataRow(WrongInProperty, CorrectInProperty, DisplayName = nameof(WrongInProperty)),
+		 DataRow(WrongRethrow, CorrectRethrow, DisplayName = nameof(WrongRethrow))]
+		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
+			VerifyFix(testCode, fixedCode);
 		}
 	}
 }

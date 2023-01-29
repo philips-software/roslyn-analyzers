@@ -87,39 +87,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			// Determine our parent.
-			SyntaxNode methodDeclaration = throwStatement.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
-			if (methodDeclaration == null)
-			{
-				methodDeclaration = throwStatement.Ancestors().OfType<BasePropertyDeclarationSyntax>().FirstOrDefault();
-				if (methodDeclaration == null)
-				{
-					return;
-				}
-			}
+			var nodeWithDoc = DocumentationHelper.FindAncestorThatCanHaveDocumentation(throwStatement);
 
 			// Check if our parent has proper documentation.
-			var mentionedExceptions = methodDeclaration.GetLeadingTrivia()
-				.Select(i => i.GetStructure())
-				.OfType<DocumentationCommentTriviaSyntax>()
-				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
-				.Where(IsExceptionElement)
-				.Select(GetCrefAttributeValue);
+			var docHelper = new DocumentationHelper(nodeWithDoc);
+			var mentionedExceptions = docHelper.GetExceptionCrefs();
 			if (!mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, thrownExceptionName);
+				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", thrownExceptionName);
+				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, properties, thrownExceptionName);
 				context.ReportDiagnostic(diagnostic);
 			}
-		}
-
-		private bool IsExceptionElement(XmlElementSyntax element)
-		{
-			return element.StartTag.Name.LocalName.Text == "exception";
-		}
-
-		private string GetCrefAttributeValue(XmlElementSyntax element)
-		{
-			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString()).FirstOrDefault();
 		}
 
 		private bool HasStringArgument(SyntaxNodeAnalysisContext context, ArgumentListSyntax attributeList)
