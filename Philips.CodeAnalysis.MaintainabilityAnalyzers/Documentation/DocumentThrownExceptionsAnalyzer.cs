@@ -91,8 +91,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// Check if our parent has proper documentation.
 			var docHelper = new DocumentationHelper(nodeWithDoc);
-			_ = docHelper.GetExceptionCrefs();
-//			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
+			var mentionedExceptions = docHelper.GetExceptionCrefs();
+			if (mentionedExceptions.Any()/* && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer())*/)
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
 				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", thrownExceptionName);
