@@ -47,7 +47,8 @@ namespace Philips.CodeAnalysis.Common
 				var stl = node.GetLeadingTrivia();
 				D += stl.Count;
 
-				D += string.Join(", ", stl.Select(s => s.Kind().ToString()));
+				var dd = stl.Select(s => s.Kind().ToString());
+				D += string.Join(", ", dd);
 
 				xmlElements = new List<XmlElementSyntax>();
 				ExistingDocumentation = null;
@@ -57,12 +58,6 @@ namespace Philips.CodeAnalysis.Common
 				ExistingDocumentation = doc.GetStructure() as DocumentationCommentTriviaSyntax;
 				xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
 			}
-		}
-
-		public string GetNodeTypes()
-		{
-			var s = ExistingDocumentation == null ? "null" : string.Join(", ", ExistingDocumentation.ChildNodes().Select(sn => sn.GetType().ToString()));
-			return s;
 		}
 
 		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
@@ -110,7 +105,7 @@ namespace Philips.CodeAnalysis.Common
 
 		private static bool IsCommentTrivia(SyntaxTrivia trivia)
 		{
-			return trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia);
+			return trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || trivia.IsKind(SyntaxKind.SingleLineCommentTrivia);
 		}
 		private static bool IsExceptionElement(XmlElementSyntax element)
 		{
