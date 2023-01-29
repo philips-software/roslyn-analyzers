@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
 				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", thrownExceptionName);
-				int x = docHelper.GetXmlCount();
+				string x = docHelper.GetNodeTypes();
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, properties, thrownExceptionName, x);
 				context.ReportDiagnostic(diagnostic);
 			}

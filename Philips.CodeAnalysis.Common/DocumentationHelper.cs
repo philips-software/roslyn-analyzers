@@ -47,6 +47,12 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
+		public string GetNodeTypes()
+		{
+			var s = ExistingDocumentation.ChildNodes().Select(sn => sn.GetType().ToString());
+			return string.Join(", ", s);
+		}
+
 		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
 
 		public void AddException(string exceptionTypeName, string description)
