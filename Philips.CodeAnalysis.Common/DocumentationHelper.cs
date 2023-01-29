@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class DocumentationHelper
 	{
-		private readonly List<XmlElementSyntax> xmlElements;
+		private readonly List<XmlElementSyntax> xmlElements = new();
 	
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
@@ -35,12 +35,7 @@ namespace Philips.CodeAnalysis.Common
 					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
 			}
-			if (doc == default)
-			{
-				xmlElements = new List<XmlElementSyntax>();
-				ExistingDocumentation = null;
-			}
-			else
+			if (doc != default)
 			{
 				ExistingDocumentation = doc.GetStructure() as DocumentationCommentTriviaSyntax;
 				if (ExistingDocumentation != null)
@@ -50,7 +45,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
-		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
+		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; } = null;
 
 		public void AddException(string exceptionTypeName, string description)
 		{
