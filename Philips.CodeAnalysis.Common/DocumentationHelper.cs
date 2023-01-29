@@ -47,6 +47,8 @@ namespace Philips.CodeAnalysis.Common
 				var stl = node.GetLeadingTrivia();
 				D += stl.Count;
 
+				D += string.Join(", ", stl.Select(s => s.Kind().ToString()));
+
 				xmlElements = new List<XmlElementSyntax>();
 				ExistingDocumentation = null;
 			}
