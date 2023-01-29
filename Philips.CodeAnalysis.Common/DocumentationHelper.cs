@@ -11,6 +11,7 @@ namespace Philips.CodeAnalysis.Common
 	public class DocumentationHelper
 	{
 		private readonly List<XmlElementSyntax> xmlElements;
+		public string D { get; set; } = string.Empty;
 	
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
@@ -22,21 +23,30 @@ namespace Philips.CodeAnalysis.Common
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if(doc == default)
 			{
+				D += "L26 ";
 				if (node is MethodDeclarationSyntax method)
 				{
+					D += "L29 ";
 					doc = method.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
 				else if (node is PropertyDeclarationSyntax prop)
 				{
+					D += "L34 ";
 					doc = prop.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
 				else if(node is TypeDeclarationSyntax type)
 				{
+					D += "L39 ";
 					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
 			}
 			if (doc == default)
 			{
+				D += "L45 ";
+				D += node.GetType().ToString();
+				var stl = node.GetLeadingTrivia();
+				D += stl.Count;
+
 				xmlElements = new List<XmlElementSyntax>();
 				ExistingDocumentation = null;
 			}
