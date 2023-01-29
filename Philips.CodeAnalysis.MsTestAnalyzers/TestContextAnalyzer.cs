@@ -67,17 +67,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// find out if the property or its underlying variable is actually used
 			foreach (IdentifierNameSyntax identifier in context.Node.Parent.DescendantNodes().OfType<IdentifierNameSyntax>())
 			{
-				if ((identifier.Identifier.ToString() == propName) && (identifier.Parent != property) &&
+				if ((identifier.Identifier.ToString() == propName) &&
+					(identifier.Parent != property) &&
 					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the propery and it's not a type or the original instance, it's used
 					return;
 				}
 
-				if ((identifier.Identifier.ToString() == varName)
-					&& identifier.Parent is not VariableDeclarationSyntax
-					&& !propNodes.Contains(identifier)
-					&& context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
+				if ((identifier.Identifier.ToString() == varName) &&
+					identifier.Parent is not VariableDeclarationSyntax &&
+					!propNodes.Contains(identifier) && 
+					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the variable and it's not a type, the original declaration, or part of the property, it's used
 					return;

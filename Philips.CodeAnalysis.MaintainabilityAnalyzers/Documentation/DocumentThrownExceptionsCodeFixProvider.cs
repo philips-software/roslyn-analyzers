@@ -64,7 +64,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			
 			if (docHelper.ExistingDocumentation != null)
 			{
-				newRoot = root.ReplaceNode(docHelper.ExistingDocumentation, newComment.WithAdditionalAnnotations(Formatter.Annotation));
+				newComment = newComment.WithAdditionalAnnotations(Formatter.Annotation);
+				newRoot = root.ReplaceNode(docHelper.ExistingDocumentation, newComment);
 			} 
 			
 			return document.WithSyntaxRoot(newRoot);

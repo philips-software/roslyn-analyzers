@@ -126,14 +126,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 						{
 							if (arrayCreation.Initializer.ElementValues.Length == 0)
 							{
-								//string format ala string.format("{0}");
+								//string format ala string.format("{0}")
 								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
 								return;
 							}
 
 							if (ArrayContainsString(0, arrayCreation))
 							{
-								//string format ala string.format("{0}", 3);
+								//string format ala string.format("{0}", 3)
 								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
 								return;
 							}

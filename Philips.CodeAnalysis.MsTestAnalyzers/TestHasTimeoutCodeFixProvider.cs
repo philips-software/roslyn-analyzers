@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					context.RegisterCodeFix(
 						CodeAction.Create(
 							title: Title,
-							createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAttributeAnalyzer.DefaultTimeoutKey), attributeList, c),
+							createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAnalyzer.DefaultTimeoutKey), attributeList, c),
 							equivalenceKey: Title),
 						diagnostic);
 				}

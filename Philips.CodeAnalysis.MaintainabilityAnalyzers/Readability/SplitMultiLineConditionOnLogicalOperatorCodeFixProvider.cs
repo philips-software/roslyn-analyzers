@@ -68,21 +68,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (index >= 0)
 			{
 				SyntaxTriviaList newTrivia = oldTrivia.RemoveAt(index);
-				var newNode = node.WithTrailingTrivia(newTrivia)
+				var replacementNode = node.WithTrailingTrivia(newTrivia)
 					.WithAdditionalAnnotations(Formatter.Annotation, annotation);
-				root = root.ReplaceNode(node, newNode);
+				root = root.ReplaceNode(node, replacementNode);
 			}
 
 			// Next add EOL to the || or && token immediately following.
-			node = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
-			var logicalToken = node.GetLastToken().GetNextToken();
+			var newNode = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
+			var logicalToken = newNode.GetLastToken().GetNextToken();
 			if (logicalToken.Text is "||" or "&&")
 			{
 				var newLineTrivia = SyntaxFactory.CarriageReturnLineFeed;
 
-				root = root.ReplaceToken(logicalToken,
-					logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
-						.WithAdditionalAnnotations(Formatter.Annotation));
+				var newToken = logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
+						.WithAdditionalAnnotations(Formatter.Annotation);
+				root = root.ReplaceToken(logicalToken, newToken);
 			}
 			return document.WithSyntaxRoot(root);
 		}
