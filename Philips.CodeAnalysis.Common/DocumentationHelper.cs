@@ -49,8 +49,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public string GetNodeTypes()
 		{
-			var s = ExistingDocumentation.ChildNodes().Select(sn => sn.GetType().ToString());
-			return string.Join(", ", s);
+			var s = ExistingDocumentation == null ? "null" : string.Join(", ", ExistingDocumentation.ChildNodes().Select(sn => sn.GetType().ToString()));
+			return s;
 		}
 
 		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
