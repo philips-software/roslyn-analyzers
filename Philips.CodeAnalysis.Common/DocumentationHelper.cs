@@ -63,6 +63,11 @@ namespace Philips.CodeAnalysis.Common
 			xmlElements.Add(xmlException);
 		}
 
+		public int GetXmlCount()
+		{
+			return xmlElements.Count;
+		}
+
 		public IEnumerable<string> GetExceptionCrefs()
 		{
 			return xmlElements.Where(IsExceptionElement).Select(GetCrefAttributeValue);
