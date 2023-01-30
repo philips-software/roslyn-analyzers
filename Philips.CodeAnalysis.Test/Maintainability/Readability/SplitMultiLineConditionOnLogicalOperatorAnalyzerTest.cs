@@ -33,6 +33,24 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
+		private const string CorrectStartOnSameLine = @"
+using System;
+
+namespace MultiLineConditionUnitTests
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            if (2 == 3 &&
+                4 == 5)
+			{
+                Console.WriteLine('Hello world!');
+            }
+        }
+    }
+}";
+
 		private const string CorrectClose = @"
 using System;
 
@@ -177,25 +195,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string WrongOpening = @"
-using System;
-
-namespace MultiLineConditionUnitTests
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            if (2 == 3 &&
-                4 == 5)
-            {
-                Console.WriteLine('Hello world!');
-            }
-        }
-    }
-}";
-
-		        private const string CorrectAssignmentToBool = @"
+        private const string CorrectAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -211,7 +211,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string WrongAssignmentToBool = @"
+        private const string WrongAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -279,13 +279,14 @@ namespace MultiLineConditionUnitTests
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
-			DataRow(CorrectClose, DisplayName = nameof(CorrectClose)),
-			DataRow(SingleLine, DisplayName = nameof(SingleLine)),
-			DataRow(SingleLineWithCondition, DisplayName = nameof(SingleLineWithCondition)),
-			DataRow(CorrectAssignmentToBool, DisplayName = nameof(CorrectAssignmentToBool)),
-			DataRow(CorrectReturnStatement, DisplayName = nameof(CorrectReturnStatement)),
-			DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine)),
-			DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
+		 DataRow(CorrectStartOnSameLine, DisplayName = nameof(CorrectStartOnSameLine)),
+		 DataRow(CorrectClose, DisplayName = nameof(CorrectClose)),
+		 DataRow(SingleLine, DisplayName = nameof(SingleLine)),
+		 DataRow(SingleLineWithCondition, DisplayName = nameof(SingleLineWithCondition)),
+		 DataRow(CorrectAssignmentToBool, DisplayName = nameof(CorrectAssignmentToBool)),
+		 DataRow(CorrectReturnStatement, DisplayName = nameof(CorrectReturnStatement)),
+		 DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine)),
+		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -296,7 +297,6 @@ namespace MultiLineConditionUnitTests
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak))]
-		[DataRow(WrongOpening, null, 10, 13, DisplayName = nameof(WrongOpening))]
 		[DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine))]
 		[DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool))]
 		[DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))]
@@ -329,7 +329,7 @@ namespace MultiLineConditionUnitTests
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(Wrong4Violations, 4, DisplayName = nameof(Wrong4Violations))
+		[DataRow(Wrong4Violations, 3, DisplayName = nameof(Wrong4Violations))
 		]
 		public void WhenMultiLineConditionIsIncorrectInMorePlacesCorrectNumberOfDiagnosticIsTriggered(
 			string testCode,
