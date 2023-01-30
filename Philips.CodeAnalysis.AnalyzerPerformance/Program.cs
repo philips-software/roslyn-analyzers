@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
-				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Philips.CodeAnalysis"))
+				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Microsoft.CodeAnalysis"))
 				{
 					AnalyzerItems(namedAnalyzerPackageFolder);
 				}
@@ -42,7 +42,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 				{
 					string[] analyzerAndId = item.Name.Split(" ");
 					string id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
-					Console.WriteLine($"| {id} | {analyzerAndId[0]} | {item.Text} |");
+
+					string[] analyzerParts = analyzerAndId[0].Split(".");
+
+					Console.WriteLine($"| {id} | {analyzerParts[2]} | {analyzerParts[analyzerParts.Length-1]} | {item.Text} |");
 				}
 			}
 		}
