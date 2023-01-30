@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 			foreach (var record in _records)
 			{
-				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.Time} |");
+				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.DisplayTime} |");
 			}
 		}
 
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 						Id = id,
 						Package = analyzerParts[2],
 						Analyzer = analyzerParts[analyzerParts.Length - 1],
-						DisplayTime = item.Text
+						DisplayTime = item.Text,
 					};
 					_records.Add(record);
 				}
