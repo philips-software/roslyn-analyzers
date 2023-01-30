@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestHasCategoryAttributeAnalyzer : TestMethodDiagnosticAnalyzer
+	public class TestHasCategoryAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		public const string FileName = @"TestsWithUnsupportedCategory.Allowed.txt";
 		private const string Title = @"Test must have an appropriate TestCategory";

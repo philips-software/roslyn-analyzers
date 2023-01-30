@@ -107,47 +107,60 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (returnType.SpecialType is SpecialType.System_String or SpecialType.System_Void)
 			{
-				var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
+				CheckParameters(operationContext, invocation, formatStringParameterIndex, returnType, argument);
+			}
+		}
 
-				if (paramsArguments is IArrayCreationOperation arrayCreation)
+		private void CheckParameters(OperationAnalysisContext operationContext, IInvocationOperation invocation,
+			int formatStringParameterIndex, ITypeSymbol returnType, IOperation argument)
+		{
+			var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
+
+			if (paramsArguments is IArrayCreationOperation arrayCreation)
+			{
+				if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
 				{
-					if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
+					//string format with no arguments
+					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+					return;
+				}
+
+				CheckStringLiteral(operationContext, argument, arrayCreation);
+			}
+			else if (
+				paramsArguments is IConversionOperation conversion &&
+				argument.Kind == OperationKind.Literal &&
+				argument.Type.SpecialType == SpecialType.System_String &&
+				((string)argument.ConstantValue.Value) == "{0}" &&
+				conversion.Operand.Type.SpecialType == SpecialType.System_String)
+			{
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+			}
+		}
+
+		private void CheckStringLiteral(OperationAnalysisContext operationContext, IOperation argument,
+			IArrayCreationOperation arrayCreation)
+		{
+			if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
+			{
+				string formatValue = (string)argument.ConstantValue.Value;
+
+				if (_formatRegex.IsMatch(formatValue))
+				{
+					if (arrayCreation.Initializer.ElementValues.Length == 0)
 					{
-						//string format with no arguments
-						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+						//string format ala string.format("{0}")
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
+							argument.Syntax.GetLocation()));
 						return;
 					}
 
-					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
+					if (ArrayContainsString(0, arrayCreation))
 					{
-						string formatValue = (string)argument.ConstantValue.Value;
-
-						if (_formatRegex.IsMatch(formatValue))
-						{
-							if (arrayCreation.Initializer.ElementValues.Length == 0)
-							{
-								//string format ala string.format("{0}");
-								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-								return;
-							}
-
-							if (ArrayContainsString(0, arrayCreation))
-							{
-								//string format ala string.format("{0}", 3);
-								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-								return;
-							}
-						}
+						//string format ala string.format("{0}", 3)
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
+							argument.Syntax.GetLocation()));
 					}
-				}
-				else if (paramsArguments is IConversionOperation conversion && 
-					argument.Kind == OperationKind.Literal && 
-					argument.Type.SpecialType == SpecialType.System_String && 
-					((string)argument.ConstantValue.Value) == "{0}" && 
-					conversion.Operand.Type.SpecialType == SpecialType.System_String)
-				{
-					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-					return;
 				}
 			}
 		}

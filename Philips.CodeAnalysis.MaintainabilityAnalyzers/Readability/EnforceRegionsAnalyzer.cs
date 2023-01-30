@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -36,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
 
-		private static readonly Dictionary<string, Func<List<MemberDeclarationSyntax>, LocationRangeModel, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
+		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
 			{ NonPublicDataMembersRegion, CheckMembersOfNonPublicDataMembersRegion },
 			{ NonPublicPropertiesAndMethodsRegion, CheckMembersOfNonPublicPropertiesAndMethodsRegion },
@@ -71,9 +70,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			visitor.Visit(classDeclaration);
 
-			List<DirectiveTriviaSyntax> regions = visitor.Regions;
+			var regions = visitor.Regions;
 
-			Dictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
+			var regionLocations = PopulateRegionLocations(regions, context);
 
 			if (regionLocations.Count == 0)
 			{
@@ -87,7 +86,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (RegionChecks.TryGetValue(pair.Key, out var functionToCall))
 				{
 					var membersOfRegion = GetMembersOfRegion(members, pair.Value);
-					functionToCall(membersOfRegion, pair.Value, context);
+					functionToCall(membersOfRegion, context);
 				}
 			}
 
@@ -161,7 +160,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// </summary>
 		/// <param name="regions">Regions found in the file</param>
 		/// <returns>Dictionary of region name and LocationRangeModel object</returns>
-		private static Dictionary<string, LocationRangeModel> PopulateRegionLocations(List<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
+		private static IReadOnlyDictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = new();
 			string regionStartName = "";
@@ -179,7 +178,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="members">List of members</param>
 		/// <param name="locationRange">LocationRangeModel object</param>
 		/// <returns>List of members belonging to the given region</returns>
-		private static List<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
+		private static IReadOnlyList<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
 		{
 			List<MemberDeclarationSyntax> filteredMembers = new();
 			foreach (MemberDeclarationSyntax member in members)
@@ -218,11 +217,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Checks whether the members inside the Public Interface region belong there.
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
-		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfPublicInterfaceRegion(List<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+		private static bool CheckMembersOfPublicInterfaceRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
@@ -240,7 +235,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="context"></param>
 		private static void VerifyMemberForPublicInterfaceRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTokenList modifiers = default;
+			if (TryGetModifiers(member, true, out SyntaxTokenList modifiers))
+			{
+				var memberLocation = member.GetLocation();
+				if (!HasAccessModifier(modifiers))
+				{
+					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
+				}
+				else if (!MemberIsPublic(modifiers))
+				{
+					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
+				}
+				return;
+			}
+
+			if (member.Kind() == SyntaxKind.StructDeclaration)
+			{
+				return;
+			}
+			else
+			{
+				var memberLocation = member.GetLocation();
+				CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, NonCheckedMember);
+			}
+		}
+
+		private static bool TryGetModifiers(MemberDeclarationSyntax member, bool detailed, out SyntaxTokenList modifiers)
+		{
+			// Field
+			// Delegate
+			// Enum
+			modifiers = default;
 			bool shouldCheck = false;
 			switch (member.Kind())
 			{
@@ -254,7 +279,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 				case SyntaxKind.FieldDeclaration:
 					modifiers = ((FieldDeclarationSyntax)member).Modifiers;
-					shouldCheck = true;
+					shouldCheck = detailed;
 					break;
 				case SyntaxKind.MethodDeclaration:
 					modifiers = ((MethodDeclarationSyntax)member).Modifiers;
@@ -262,7 +287,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 				case SyntaxKind.DelegateDeclaration:
 					modifiers = ((DelegateDeclarationSyntax)member).Modifiers;
-					shouldCheck = true;
+					shouldCheck = detailed;
 					break;
 				case SyntaxKind.PropertyDeclaration:
 					modifiers = ((PropertyDeclarationSyntax)member).Modifiers;
@@ -290,33 +315,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 				case SyntaxKind.EnumDeclaration:
 					modifiers = ((EnumDeclarationSyntax)member).Modifiers;
-					shouldCheck = true;
+					shouldCheck = detailed;
 					break;
 			}
 
-			if (shouldCheck)
-			{
-				var memberLocation = member.GetLocation();
-				if (!HasAccessModifier(modifiers))
-				{
-					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
-				}
-				else if (!MemberIsPublic(modifiers))
-				{
-					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
-				}
-				return;
-			}
-
-			if (member.Kind() == SyntaxKind.StructDeclaration)
-			{
-				return;
-			}
-			else
-			{
-				var memberLocation = member.GetLocation();
-				CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, NonCheckedMember);
-			}
+			return shouldCheck;
 		}
 
 		/// <summary>
@@ -333,11 +336,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Check whether the members inside Non-Public Properties/Methods region belong there
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
-		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfNonPublicPropertiesAndMethodsRegion(List<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+ 		/// <returns>Dummy return</returns>
+		private static bool CheckMembersOfNonPublicPropertiesAndMethodsRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
@@ -355,50 +355,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="context"></param>
 		private static void VerifyMemberForNonPublicPropertiesAndMethods(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			SyntaxTokenList modifiers = default;
-			bool shouldProcess = false;
-			switch (member.Kind())
-			{
-				case SyntaxKind.ConstructorDeclaration:
-					modifiers = ((ConstructorDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.MethodDeclaration:
-					modifiers = ((MethodDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.PropertyDeclaration:
-					modifiers = ((PropertyDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.EventDeclaration:
-					modifiers = ((EventDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.EventFieldDeclaration:
-					modifiers = ((EventFieldDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.OperatorDeclaration:
-					modifiers = ((OperatorDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.ClassDeclaration:
-					modifiers = ((ClassDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.IndexerDeclaration:
-					modifiers = ((IndexerDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-				case SyntaxKind.DestructorDeclaration:
-					modifiers = ((DestructorDeclarationSyntax)member).Modifiers;
-					shouldProcess = true;
-					break;
-			}
-
 			var memberLocation = member.GetLocation();
-			if (shouldProcess)
+			if (TryGetModifiers(member, false, out SyntaxTokenList modifiers))
 			{
 				if (!HasAccessModifier(modifiers))
 				{
@@ -432,11 +390,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Check whether the members of Non-Public Data Members Region belong there
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
 		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfNonPublicDataMembersRegion(List<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+		private static bool CheckMembersOfNonPublicDataMembersRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
@@ -512,7 +467,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public static bool HasAccessModifier(SyntaxTokenList memberTokens)
 		{
-			return memberTokens.Any(SyntaxKind.PublicKeyword) ||
+			return 
+				memberTokens.Any(SyntaxKind.PublicKeyword) ||
 				memberTokens.Any(SyntaxKind.PrivateKeyword) ||
 				memberTokens.Any(SyntaxKind.ProtectedKeyword) ||
 				memberTokens.Any(SyntaxKind.InternalKeyword);

@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			int previousViolationLine = InitialCodeLine;
-			foreach (var location in comments.Where(comment => comment.ToString().EndsWith(";")).Select(node => node.GetLocation()))
+			foreach (var location in comments.Where(comment => comment.ToString().EndsWith(";"))
+											 .Select(node => node.GetLocation()))
 			{
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)

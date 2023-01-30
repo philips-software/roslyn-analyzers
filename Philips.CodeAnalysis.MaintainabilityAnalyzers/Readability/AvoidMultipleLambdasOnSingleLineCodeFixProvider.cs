@@ -82,18 +82,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private async Task<Document> AddNewLineAfter(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-			SyntaxToken lastToken = node.GetLastToken();
+			var oldNode = node;
+			SyntaxToken lastToken = oldNode.GetLastToken();
 			// If the 2 lambdas are distinct statements, put the new line after the semicolon.
 			if (lastToken.GetNextToken().IsKind(SyntaxKind.SemicolonToken))
 			{
 				lastToken = lastToken.GetNextToken();
-				node = lastToken.Parent;
+				oldNode = lastToken.Parent;
 			}
 			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine("\r\n"));
 
-			var newNode = node.WithTrailingTrivia(newTrivia);
-			root = root.ReplaceNode(node, newNode.WithAdditionalAnnotations(Formatter.Annotation));
+			var newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			root = root.ReplaceNode(oldNode, newNode);
 
 			return document.WithSyntaxRoot(root);
 		}

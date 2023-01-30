@@ -37,9 +37,9 @@ class TestDefinitions
 		{
 			return new()
 			{
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
+				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
+				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
+				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
 			};
 		}
 
@@ -128,7 +128,7 @@ var foo = 4;
 			return new DiagnosticResult
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute),
-				Message = new Regex(TestHasTimeoutAttributeAnalyzer.MessageFormat),
+				Message = new Regex(TestHasTimeoutAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
@@ -144,7 +144,7 @@ var foo = 4;
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new TestHasTimeoutAttributeAnalyzer();
+			return new TestHasTimeoutAnalyzer();
 		}
 	}
 }

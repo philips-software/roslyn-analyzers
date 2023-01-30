@@ -12,15 +12,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 	/// </summary>
 	public class RegionVisitor : CSharpSyntaxWalker
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
+		private readonly List<DirectiveTriviaSyntax> _regions = new();
 
 		public RegionVisitor() : base(SyntaxWalkerDepth.StructuredTrivia)
 		{ }
@@ -29,18 +21,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		{
 			base.VisitRegionDirectiveTrivia(node);
 
-			Regions.Add(node);
+			_regions.Add(node);
 		}
 
 		public override void VisitEndRegionDirectiveTrivia(EndRegionDirectiveTriviaSyntax node)
 		{
 			base.VisitEndRegionDirectiveTrivia(node);
 
-			Regions.Add(node);
+			_regions.Add(node);
 		}
 
-		public List<DirectiveTriviaSyntax> Regions { get; } = new List<DirectiveTriviaSyntax>();
-
-		#endregion
+		public IReadOnlyList<DirectiveTriviaSyntax> Regions => _regions;
 	}
 }

@@ -52,13 +52,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
 				{
-					// It's not mandatory to end with Test
-					//if (!token.ValueText.EndsWith(@"Test"))
-					//{
-					//	Diagnostic diagnostic = Diagnostic.Create(Rule, token.GetLocation(), @"end");
-					//	context.ReportDiagnostic(diagnostic);
-					//	return;
-					//}
 					if (token.ValueText.StartsWith(@"Test"))
 					{
 						invalidPrefix = @"Test";

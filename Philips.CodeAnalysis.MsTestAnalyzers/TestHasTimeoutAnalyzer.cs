@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestHasTimeoutAttributeAnalyzer : TestMethodDiagnosticAnalyzer
+	public class TestHasTimeoutAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"Test must have an appropriate Timeout";
 		public const string MessageFormat = @"Test must have an appropriate Timeout attribute.{0}";

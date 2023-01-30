@@ -35,7 +35,7 @@ class Foo
 			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
-				Message = new Regex(TestHasCategoryAttributeAnalyzer.MessageFormat),
+				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
@@ -153,7 +153,7 @@ class Foo
 				results = new[] { new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
-						Message = new System.Text.RegularExpressions.Regex(TestHasCategoryAttributeAnalyzer.MessageFormat),
+						Message = new System.Text.RegularExpressions.Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
 						{
@@ -172,7 +172,7 @@ class Foo
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new TestHasCategoryAttributeAnalyzer();
+			return new TestHasCategoryAnalyzer();
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

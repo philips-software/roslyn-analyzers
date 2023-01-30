@@ -136,35 +136,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 			}
 
-			
+
 			// List the documented exception types.
-			var documentedExceptions = method.GetLeadingTrivia()
-				.Select(i => i.GetStructure())
-				.OfType<DocumentationCommentTriviaSyntax>()
-				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>())
-				.Where(IsExceptionElement)
-				.Select(GetCrefAttributeValue);
+			var docHelper = new DocumentationHelper(method);
+			var documentedExceptions = docHelper.GetExceptionCrefs();
 			var comparer = new NamespaceIgnoringComparer();
-			var remainingExceptions = unhandledExceptions.Where(ex => documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
+			var remainingExceptions = 
+				unhandledExceptions.Where(ex => 
+					documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
 			{
 				var loc = method.Identifier.GetLocation();
 				var methodName = method.Identifier.Text;
 				string unhandledStr = string.Join(",", remainingExceptions);
-				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, methodName, unhandledStr);
+				var remainingExceptionsString = string.Join(",", remainingExceptions);
+				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", remainingExceptionsString);
+				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, unhandledStr);
 				context.ReportDiagnostic(diagnostic);
 			}
-		}
-
-		private bool IsExceptionElement(XmlElementSyntax element)
-		{
-			return element.StartTag.Name.LocalName.Text == "exception";
-		}
-
-		private string GetCrefAttributeValue(XmlElementSyntax element)
-		{
-			return element.StartTag.Attributes.OfType<XmlCrefAttributeSyntax>().Select(cref => cref.Cref.ToString())
-				.FirstOrDefault();
 		}
 
 		private IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
@@ -199,7 +188,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var results = new string[matches.Count];
 			for(int i = 0; i < results.Length; i++)
 			{
-				results[i] = matches[i].Captures[0].Value.Trim('!', ':');
+				results[i] = matches[i].Groups[1].Captures[0].Value.Trim('!', ':', 'T');
 			}
 			return results;
 		}
