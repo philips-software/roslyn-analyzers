@@ -72,16 +72,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 			
-			// Checked in parts:
-			// 1) first line should only have open parentheses.
-			// 2) if newline is on operator or open parentheses.
-			var tokenBefore = logicalNode.GetFirstToken().GetPreviousToken();
-			var check1Pass = ContainsEndOfLine(tokenBefore);
-			if (!check1Pass)
-			{
-				ReportDiagnostic(context, tokenBefore);
-			}
-
 			var lastToken = logicalNode.GetLastToken();
 			var violations = logicalNode.DescendantTokens()
 				.Where(ContainsEndOfLine)
