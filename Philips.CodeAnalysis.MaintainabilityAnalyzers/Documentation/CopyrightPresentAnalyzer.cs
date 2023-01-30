@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const string Title = @"Copyright Present";
 		private const string MessageFormat = 
-			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'.";
+			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'. {0}";
 		private const string Description =
 			@"File should start with a comment containing the company name, the year and either © or 'Copyright'.";
 		private const string Category = Categories.Documentation;
@@ -87,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxTrivia syntaxTrivia = leadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!CheckCopyrightStatement(context, syntaxTrivia))
 			{
-				CreateDiagnostic(context, location);
+				CreateDiagnostic(context, location, syntaxTrivia.ToFullString());
 			}
 		}
 
@@ -103,15 +103,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n => n.HasLeadingTrivia);
 		}
 
-		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location, string debug = "")
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, debug);
 			context.ReportDiagnostic(diagnostic);
 		}
 
 		private bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
 			var comment = trivia.ToFullString();
-			Console.WriteLine($"Checking: {comment}");
 			// Check the copyright mark itself
 			bool hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
 			
