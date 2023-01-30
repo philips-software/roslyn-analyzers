@@ -63,4 +63,7 @@ jobs:
           EOF
 
       - name: Dogfood Performance
-        run: dotnet build --configuration Debug --verbosity:detailed /property:ReportAnalyzer=true
+        run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
+        
+      - name: Analyze Performance
+        run: ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Debug/net7.0/Philips.CodeAnalysis.AnalyzerPerformance.exe msbuild.binlog
