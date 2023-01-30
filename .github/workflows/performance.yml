@@ -66,4 +66,5 @@ jobs:
         run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
         
       - name: Analyze Performance
+        if: ${{ always() }}
         run: ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Debug/net7.0/Philips.CodeAnalysis.AnalyzerPerformance.exe msbuild.binlog
