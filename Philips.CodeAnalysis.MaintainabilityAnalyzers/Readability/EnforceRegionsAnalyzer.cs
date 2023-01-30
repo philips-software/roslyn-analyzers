@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
 
-		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, LocationRangeModel, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
+		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
 			{ NonPublicDataMembersRegion, CheckMembersOfNonPublicDataMembersRegion },
 			{ NonPublicPropertiesAndMethodsRegion, CheckMembersOfNonPublicPropertiesAndMethodsRegion },
@@ -86,7 +86,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (RegionChecks.TryGetValue(pair.Key, out var functionToCall))
 				{
 					var membersOfRegion = GetMembersOfRegion(members, pair.Value);
-					functionToCall(membersOfRegion, pair.Value, context);
+					functionToCall(membersOfRegion, context);
 				}
 			}
 
@@ -217,11 +217,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Checks whether the members inside the Public Interface region belong there.
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
-		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfPublicInterfaceRegion(IReadOnlyList<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+		private static bool CheckMembersOfPublicInterfaceRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
@@ -340,11 +336,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Check whether the members inside Non-Public Properties/Methods region belong there
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
-		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfNonPublicPropertiesAndMethodsRegion(IReadOnlyList<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+ 		/// <returns>Dummy return</returns>
+		private static bool CheckMembersOfNonPublicPropertiesAndMethodsRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{
@@ -397,11 +390,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Check whether the members of Non-Public Data Members Region belong there
 		/// </summary>
-		/// <param name="members"></param>
-		/// <param name="locationRange"></param>
-		/// <param name="context"></param>
 		/// <returns>Dummy return</returns>
-		private static bool CheckMembersOfNonPublicDataMembersRegion(IReadOnlyList<MemberDeclarationSyntax> members, LocationRangeModel locationRange, SyntaxNodeAnalysisContext context)
+		private static bool CheckMembersOfNonPublicDataMembersRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
 			{

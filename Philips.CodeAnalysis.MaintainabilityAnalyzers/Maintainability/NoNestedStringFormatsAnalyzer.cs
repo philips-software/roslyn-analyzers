@@ -135,7 +135,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				conversion.Operand.Type.SpecialType == SpecialType.System_String)
 			{
 				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-				return;
 			}
 		}
 
@@ -161,7 +160,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 						//string format ala string.format("{0}", 3)
 						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
 							argument.Syntax.GetLocation()));
-						return;
 					}
 				}
 			}
