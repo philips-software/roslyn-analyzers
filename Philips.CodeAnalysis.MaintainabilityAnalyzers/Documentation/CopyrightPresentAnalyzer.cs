@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
-				CreateDiagnostic(context, location);
+				CreateDiagnostic(context, location, "NoCommentInTrivia");
 				return;
 			}
 
@@ -100,7 +100,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static SyntaxNodeOrToken FindFirstWithLeadingTrivia(SyntaxNode root)
 		{
-			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n => n.HasLeadingTrivia);
+			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n =>
+			{
+				var trivia = n.GetLeadingTrivia();
+				return trivia.Any(SyntaxKind.SingleLineCommentTrivia) || trivia.Any(SyntaxKind.RegionDirectiveTrivia);
+			});
 		}
 
 		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location, string debug = "")
