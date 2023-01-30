@@ -31,14 +31,28 @@ namespace DontUseMagicNumbersTests {
 		private const string CorrectUnsigned = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
-        private uint NoMagic = 0;
+        private uint NoMagic = 0u;
     }
 }";
 
 		private const string CorrectLong = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
-        private long NoMagic = 1;
+        private long NoMagic = 1L;
+    }
+}";
+
+		private const string CorrectUnsignedLong = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private long NoMagic = 1uL;
+    }
+}";
+
+		private const string CorrectDecimal = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private decimal NoMagic = 1m;
     }
 }";
 
@@ -140,6 +154,8 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectOne, DisplayName = nameof(CorrectOne)),
 		 DataRow(CorrectUnsigned, DisplayName = nameof(CorrectUnsigned)),
 		 DataRow(CorrectLong, DisplayName = nameof(CorrectLong)),
+		 DataRow(CorrectUnsignedLong, DisplayName = nameof(CorrectUnsignedLong)),
+		 DataRow(CorrectDecimal, DisplayName = nameof(CorrectDecimal)),
 		 DataRow(CorrectZeroFloat, DisplayName = nameof(CorrectZeroFloat)),
 		 DataRow(CorrectOneFloat, DisplayName = nameof(CorrectOneFloat)),
 		 DataRow(CorrectField, DisplayName = nameof(CorrectField)),
