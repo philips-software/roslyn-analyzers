@@ -63,10 +63,10 @@ jobs:
           EOF
 
       - name: Dogfood Performance
+        continue-on-error: true
         run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
         
       - name: Analyze Performance
-        if: ${{ always() }}
         run: |
           ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog  >> $GITHUB_STEP_SUMMARY
 
