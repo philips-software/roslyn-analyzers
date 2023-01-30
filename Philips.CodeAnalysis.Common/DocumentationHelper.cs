@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class DocumentationHelper
 	{
-		private readonly List<XmlElementSyntax> xmlElements;
+		private readonly List<XmlElementSyntax> xmlElements = new();
 	
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
@@ -35,19 +35,17 @@ namespace Philips.CodeAnalysis.Common
 					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
 			}
-			if (doc == default)
-			{
-				xmlElements = new List<XmlElementSyntax>();
-				ExistingDocumentation = null;
-			}
-			else
+			if (doc != default)
 			{
 				ExistingDocumentation = doc.GetStructure() as DocumentationCommentTriviaSyntax;
-				xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
+				if (ExistingDocumentation != null)
+				{
+					xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
+				}
 			}
 		}
 
-		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
+		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; } = null;
 
 		public void AddException(string exceptionTypeName, string description)
 		{
@@ -87,7 +85,7 @@ namespace Philips.CodeAnalysis.Common
 
 		private static bool IsCommentTrivia(SyntaxTrivia trivia)
 		{
-			return trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia);
+			return trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || trivia.IsKind(SyntaxKind.SingleLineCommentTrivia);
 		}
 		private static bool IsExceptionElement(XmlElementSyntax element)
 		{
