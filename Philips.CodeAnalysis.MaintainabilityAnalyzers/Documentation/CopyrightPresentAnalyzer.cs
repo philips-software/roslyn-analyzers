@@ -69,9 +69,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			var location = GetSquiggleLocation(node.SyntaxTree);
-			var docNode = FindFirstDocumentation(node);
-			var leadingTrivia = docNode.GetLeadingTrivia();
-
+			var nodeOrToken = FindFirstWithLeadingTrivia(node);
+			var leadingTrivia = nodeOrToken.GetLeadingTrivia();
+			
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
 				CreateDiagnostic(context, location);
@@ -98,9 +98,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return location;
 		}
 
-		private static SyntaxNode FindFirstDocumentation(SyntaxNode root)
+		private static SyntaxNodeOrToken FindFirstWithLeadingTrivia(SyntaxNode root)
 		{
-			return root.DescendantNodesAndSelf().FirstOrDefault(n => n.HasLeadingTrivia);
+			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n => n.HasLeadingTrivia);
 		}
 
 		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
