@@ -1,7 +1,9 @@
-﻿using Microsoft.Build.Logging.StructuredLogger;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
+	[ExcludeFromCodeCoverage]
 	public static class Program
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
@@ -44,7 +46,6 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
 			_records.Sort();
-			_records.Reverse();
 			foreach (var record in _records)
 			{
 				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.DisplayTime} |");
@@ -83,6 +84,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		}
 	}
 
+	[ExcludeFromCodeCoverage]
 	internal class AnalyzerPerfRecord : IComparable<AnalyzerPerfRecord>
 	{
 		public string Id { get; init; }
@@ -101,30 +103,11 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				if (Time.CompareTo(otherRecord.Time) != 0)
 				{
-					return Time.CompareTo(otherRecord.Time);
+					return Time.CompareTo(otherRecord.Time) * -1;
 				}
 				return Id.CompareTo(otherRecord.Id);
 			}
 			throw new ArgumentException($"Object is not a {nameof(AnalyzerPerfRecord)}");
 		}
 	}
-	internal class AnalyzerPerfRecordComparer : Comparer<AnalyzerPerfRecord>
-	{
-		public override int Compare(AnalyzerPerfRecord x, AnalyzerPerfRecord y)
-		{
-			if (x.Time.CompareTo(y.Time) != 0)
-			{
-				return x.Time.CompareTo(y.Time);
-			}
-			else if (x.Id.CompareTo(y.Id) != 0)
-			{
-				return x.Id.CompareTo(y.Id);
-			}
-			else
-			{
-				return 0;
-			}
-		}
-	}
-
 }
