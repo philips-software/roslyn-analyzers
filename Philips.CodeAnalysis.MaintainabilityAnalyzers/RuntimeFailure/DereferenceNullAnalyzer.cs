@@ -48,11 +48,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// The DataFlowAnalysis API is fairly limited.  It just provides a StartStatement and EndStatement.
 		/// However, an "if" statement includes the entire Block that comes after the if clause.  This is
 		/// insufficient granularity.  Consider the following example:
-		///  y = x as yType;
+		///  y = x as yType
 		///  if (blah)
 		///  {
 		///    -optional code here-
-		///    y.ToString();
+		///    y.ToString()
 		/// We need to pass to DataFlowAnalysis a statement that is before y.ToString() for the endStatement.
 		/// But if the firstStatement is the if clause, it includes the entire if block, of which endStatement is inside of.
 		/// This causes DataFlowAnalysis to throw an exception.
@@ -75,7 +75,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
-			return (binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
+			return 
+				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
 				binaryExpressionSyntax != null &&
 				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
 				equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax;
@@ -111,9 +112,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// </summary>
 		private IdentifierNameSyntax GetFirstMemberAccess(ISymbol ourSymbol, SemanticModel model, BlockSyntax blockOfInterest)
 		{
-			SimpleMemberAccessVisitor visitor = new();
-			visitor.Visit(blockOfInterest);
-			foreach (MemberAccessExpressionSyntax memberAccessExpressionSyntax in visitor.MemberAccesses)
+			var memberAccesses = blockOfInterest.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>();
+			foreach (MemberAccessExpressionSyntax memberAccessExpressionSyntax in memberAccesses)
 			{
 				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax)
 				{
@@ -178,36 +178,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
 			(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
-			if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
+			if (CheckStatements(context, lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
 			{
-				// There's nothing to analyze; they immediately used the symbol after the 'as'
-
-				// Before reporting an error, note common possibility that the situation could be:
-				// string y = obj as string;
-				// if (y != null && y.ToString() == @"")
-				// Ie there's nothing to analyze between the statements, but within the statement exists a check
-				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax && HasNullCheck(ifStatementSyntax.Condition))
-				{
-					return;
-				}
-				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax && HasNullCheck(whileStatementSyntax.Condition))
-				{
-					return;
-				}
-				if (firstStatementOfAnalysis is ReturnStatementSyntax returnStatementSyntax && HasNullCheck(returnStatementSyntax.Expression))
-				{
-					return;
-				}
-
-				if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>().Any(c => HasNullCheck(c.Condition)))
-				{
-					return;
-				}
-
-				Report(context, identifierNameSyntax);
 				return;
 			}
 
+			bool ourSymbolIsReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
+			if (!ourSymbolIsReadOrWritten)
+			{
+				Report(context, identifierNameSyntax);
+			}
+		}
+
+		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
+			StatementSyntax lastStatementOfAnalysis, ISymbol ourSymbol)
+		{
 			bool ourSymbolIsReadOrWritten = false;
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
@@ -232,26 +217,51 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				}
 			}
 
-			if (!ourSymbolIsReadOrWritten)
-			{
-				Report(context, identifierNameSyntax);
-			}
+			return ourSymbolIsReadOrWritten;
 		}
-	}
 
-
-	/// <summary>
-	/// 
-	/// </summary>
-	public class SimpleMemberAccessVisitor : CSharpSyntaxWalker
-	{
-		public override void VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+		private bool CheckStatements(SyntaxNodeAnalysisContext context, int lastStatementOfAnalysisIndex,
+			int firstStatementOfAnalysisIndex, StatementSyntax firstStatementOfAnalysis,
+			IdentifierNameSyntax identifierNameSyntax)
 		{
-			base.VisitMemberAccessExpression(node);
-			MemberAccesses.Add(node);
-		}
+			if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
+			{
+				// There's nothing to analyze; they immediately used the symbol after the 'as'
 
-		public List<MemberAccessExpressionSyntax> MemberAccesses { get; } = new List<MemberAccessExpressionSyntax>();
+				// Before reporting an error, note common possibility that the situation could be:
+				// string y = obj as string
+				// if (y != null && y.ToString() == @"")
+				// Ie there's nothing to analyze between the statements, but within the statement exists a check
+				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax &&
+				    HasNullCheck(ifStatementSyntax.Condition))
+				{
+					return true;
+				}
+
+				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax &&
+				    HasNullCheck(whileStatementSyntax.Condition))
+				{
+					return true;
+				}
+
+				if (firstStatementOfAnalysis is ReturnStatementSyntax returnStatementSyntax &&
+				    HasNullCheck(returnStatementSyntax.Expression))
+				{
+					return true;
+				}
+
+				if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>()
+				    .Any(c => HasNullCheck(c.Condition)))
+				{
+					return true;
+				}
+
+				Report(context, identifierNameSyntax);
+				return true;
+			}
+
+			return false;
+		}
 	}
 }
 

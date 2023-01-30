@@ -44,7 +44,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static bool IsInlineNew(SyntaxNode node)
 		{
-			return node is MemberAccessExpressionSyntax || 
+			return 
+				node is MemberAccessExpressionSyntax || 
 				(node is ParenthesizedExpressionSyntax syntax && IsInlineNew(syntax.Parent));
 		}
 	}

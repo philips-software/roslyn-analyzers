@@ -141,7 +141,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var docHelper = new DocumentationHelper(method);
 			var documentedExceptions = docHelper.GetExceptionCrefs();
 			var comparer = new NamespaceIgnoringComparer();
-			var remainingExceptions = unhandledExceptions.Where(ex => documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
+			var remainingExceptions = 
+				unhandledExceptions.Where(ex => 
+					documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
 			{
 				var loc = method.Identifier.GetLocation();

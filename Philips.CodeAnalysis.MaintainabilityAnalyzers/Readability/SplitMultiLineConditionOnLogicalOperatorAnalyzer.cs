@@ -145,10 +145,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			// - ( for more complex logic expressions
 			// - && and || as these are the logical operators.
 			// => for lambdas
-			return !token.IsKind(SyntaxKind.OpenParenToken) &&
-			       !token.IsKind(SyntaxKind.AmpersandAmpersandToken) &&
-			       !token.IsKind(SyntaxKind.BarBarToken) &&
-			       !token.IsKind(SyntaxKind.EqualsGreaterThanToken);
+			return 
+				!token.IsKind(SyntaxKind.OpenParenToken) &&
+			    !token.IsKind(SyntaxKind.AmpersandAmpersandToken) &&
+			    !token.IsKind(SyntaxKind.BarBarToken) &&
+			    !token.IsKind(SyntaxKind.EqualsGreaterThanToken);
 		}
 	}
 }

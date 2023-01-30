@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = @"Avoid inline magic numbers";
 		private const string Description = @"Avoid inline magic number, define them as constant or include in an enumeration instead.";
 		private const string Category = Categories.Maintainability;
+		private const long FirstInvalidNumber = 3L;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidMagicNumbers),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
@@ -70,7 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static bool IsAllowedNumber(string text)
 		{
 			// Initialize with first number that is NOT allowed.
-			long parsed = 3L;
+			long parsed = FirstInvalidNumber;
 			string trimmed = text.TrimEnd('f', 'd');
 			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
 			{
