@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -19,12 +18,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Do not use #pragma warning";
 		private const string Category = Categories.Maintainability;
 
-		public List<DiagnosticDescriptor> Rules { get; } = new()
-		{
-			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description),
-		};
+		public static readonly DiagnosticDescriptor Rule =
+			new (Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { var rulesArray = Rules.ToArray(); return ImmutableArray.Create(rulesArray); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>  ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -49,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			CSharpSyntaxNode violation = pragma;
 			var location = violation.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

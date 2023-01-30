@@ -83,11 +83,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private bool IsCountGreaterThanZero(ExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
-			return condition is ParenthesizedExpressionSyntax parenthesized
-				? IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel)
-				: condition is BinaryExpressionSyntax binaryExpressionSyntax
-					&& IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
+			bool result;
+			if (condition is ParenthesizedExpressionSyntax parenthesized)
+			{
+				result = IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
+			} 
+			else 
+			{
+				result = condition is BinaryExpressionSyntax binaryExpressionSyntax &&
+				         IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
+			}
+
+			return result;
 		}
+
 		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
 			switch (condition.OperatorToken.Kind())
@@ -175,10 +184,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			ifIdentifier = null;
 			method = null;
 
-			return expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
-				? TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method)
-				: expression is InvocationExpressionSyntax invocationExpression
-				&& TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
+			return expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax ?
+				TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method) :
+				expression is InvocationExpressionSyntax invocationExpression &&
+				TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
 		}
 
 		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)

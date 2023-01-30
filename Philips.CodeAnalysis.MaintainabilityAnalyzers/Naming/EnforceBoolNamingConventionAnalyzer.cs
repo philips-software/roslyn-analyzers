@@ -35,12 +35,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_checkFieldVariables = checkFieldVariables;
 		}
 
-		public List<DiagnosticDescriptor> Rules { get; } = new()
-		{
-			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
-		};
+		public static readonly DiagnosticDescriptor Rule = 
+			new(Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { var items = Rules.ToArray(); return ImmutableArray.Create(items); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -75,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var location = foreachStatement.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, foreachStatement.Identifier.ValueText);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -102,7 +100,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 
 				var location = syntax.Identifier.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, syntax.Identifier.ValueText);
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, syntax.Identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -183,7 +181,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var location = parameter.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, parameter.Identifier.ValueText);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, parameter.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -220,7 +218,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var location = property.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], location, property.Identifier.ValueText);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, property.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
