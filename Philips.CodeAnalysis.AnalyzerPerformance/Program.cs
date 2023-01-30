@@ -2,8 +2,10 @@
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
-	public static class BinaryLogReadBuild
+	public static class Program
 	{
+		private static readonly List<AnalyzerPerfRecord> _records = new();
+
 		public static void Main(string[] args)
 		{
 			if (args.Length == 0)
@@ -25,15 +27,24 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 		private static void AnalyzePackages(NamedNode namedNode)
 		{
-			Console.WriteLine(@"### Analyzer Performance");
-			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
-			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
 				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Philips.CodeAnalysis"))
 				{
 					AnalyzerItems(namedAnalyzerPackageFolder);
 				}
+			}
+			OutputResults();
+		}
+
+		private static void OutputResults()
+		{
+			Console.WriteLine(@"### Analyzer Performance");
+			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
+			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
+			foreach (var record in _records)
+			{
+				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.Time} |");
 			}
 		}
 
@@ -48,9 +59,25 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 					string[] analyzerParts = analyzerAndId[0].Split(".");
 
-					Console.WriteLine($"| {id} | {analyzerParts[2]} | {analyzerParts[analyzerParts.Length-1]} | {item.Text} |");
+					AnalyzerPerfRecord record = new()
+					{
+						Id = id,
+						Package = analyzerParts[2],
+						Analyzer = analyzerParts[analyzerParts.Length - 1],
+						DisplayTime = item.Text
+					};
+					_records.Add(record);
 				}
 			}
 		}
+	}
+
+	internal record AnalyzerPerfRecord
+	{
+		public string Id { get; init; }
+		public string Package { get; init; }
+		public string Analyzer { get; init; }
+		public string DisplayTime { get; init; }
+		public int Time { get; init; }
 	}
 }
