@@ -25,6 +25,9 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 		private static void AnalyzePackages(NamedNode namedNode)
 		{
+			Console.WriteLine(@"###Analyzer Performance");
+			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
+			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
 				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Microsoft.CodeAnalysis"))
