@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			// Initialize with first number that is NOT allowed.
 			long parsed = FirstInvalidNumber;
-			string trimmed = text.TrimEnd('f', 'd');
+			string trimmed = text.ToLower(CultureInfo.InvariantCulture).TrimEnd('f', 'd', 'l', 'm', 'u');
 			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
 			{
 				parsed = integer;
