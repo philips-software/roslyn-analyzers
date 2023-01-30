@@ -42,6 +42,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"### Analyzer Performance");
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
+
+			Comparer<AnalyzerPerfRecord> comparer = Comparer<AnalyzerPerfRecord>.Default;
+			_records.Sort(comparer);
+			_records.Reverse();
 			foreach (var record in _records)
 			{
 				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.DisplayTime} |");
@@ -59,12 +63,20 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 					string[] analyzerParts = analyzerAndId[0].Split(".");
 
+					string[] timeParts = item.Text.Split(" ");
+					double time = double.Parse(timeParts[0]);
+					if (timeParts[1] == "s")
+					{
+						time *= 1000;
+					}
+
 					AnalyzerPerfRecord record = new()
 					{
 						Id = id,
 						Package = analyzerParts[2],
 						Analyzer = analyzerParts[analyzerParts.Length - 1],
 						DisplayTime = item.Text,
+						Time = (int)time
 					};
 					_records.Add(record);
 				}
@@ -72,12 +84,28 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		}
 	}
 
-	internal record AnalyzerPerfRecord
+	internal class AnalyzerPerfRecord : Comparer<AnalyzerPerfRecord>
 	{
 		public string Id { get; init; }
 		public string Package { get; init; }
 		public string Analyzer { get; init; }
 		public string DisplayTime { get; init; }
 		public int Time { get; init; }
+
+		public override int Compare(AnalyzerPerfRecord x, AnalyzerPerfRecord y)
+		{
+			if (x.Time.CompareTo(y.Time) != 0)
+			{
+				return x.Time.CompareTo(y.Time);
+			}
+			else if (x.Id.CompareTo(y.Id) != 0)
+			{
+				return x.Id.CompareTo(y.Id);
+			}
+			else
+			{
+				return 0;
+			}
+		}
 	}
 }
