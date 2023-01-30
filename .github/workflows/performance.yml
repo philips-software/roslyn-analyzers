@@ -67,4 +67,8 @@ jobs:
         
       - name: Analyze Performance
         if: ${{ always() }}
-        run: $GITHUB_WORKSPACE/Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance.exe msbuild.binlog
+        run: |
+          ls
+          cd ./Philips.CodeAnalysis.AnalyzerPerformance
+          ls
+          $GITHUB_WORKSPACE/Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance.exe msbuild.binlog
