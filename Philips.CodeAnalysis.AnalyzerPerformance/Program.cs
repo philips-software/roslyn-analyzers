@@ -43,8 +43,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			Comparer<AnalyzerPerfRecord> comparer = Comparer<AnalyzerPerfRecord>.Default;
-			_records.Sort(comparer);
+			_records.Sort();
 			_records.Reverse();
 			foreach (var record in _records)
 			{
@@ -84,7 +83,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		}
 	}
 
-	internal class AnalyzerPerfRecord : Comparer<AnalyzerPerfRecord>
+	internal class AnalyzerPerfRecord : IComparable<AnalyzerPerfRecord>
 	{
 		public string Id { get; init; }
 		public string Package { get; init; }
@@ -92,6 +91,25 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		public string DisplayTime { get; init; }
 		public int Time { get; init; }
 
+		public int CompareTo(AnalyzerPerfRecord other)
+		{
+			if (other == null)
+			{
+				return 1;
+			}
+			if (other is AnalyzerPerfRecord otherRecord)
+			{
+				if (Time.CompareTo(otherRecord.Time) != 0)
+				{
+					return Time.CompareTo(otherRecord.Time);
+				}
+				return Id.CompareTo(otherRecord.Id);
+			}
+			throw new ArgumentException($"Object is not a {nameof(AnalyzerPerfRecord)}");
+		}
+	}
+	internal class AnalyzerPerfRecordComparer : Comparer<AnalyzerPerfRecord>
+	{
 		public override int Compare(AnalyzerPerfRecord x, AnalyzerPerfRecord y)
 		{
 			if (x.Time.CompareTo(y.Time) != 0)
@@ -108,4 +126,5 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			}
 		}
 	}
+
 }
