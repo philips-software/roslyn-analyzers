@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticClasses), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(HashSet<string> exceptions, bool generateExceptionsFile)
 		{
@@ -90,12 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If the class only contains const and static readonly fields, let it go
 			if (!classDeclarationSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>().Any() &&
-				classDeclarationSyntax.DescendantNodes()
-					.OfType<FieldDeclarationSyntax>()
-					.Select(f => f.Modifiers)
-					.All(m => 
-						m.Any(SyntaxKind.ConstKeyword) || 
-						(m.Any(SyntaxKind.StaticKeyword) && m.Any(SyntaxKind.ReadOnlyKeyword))))
+				classDeclarationSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().All(IsConstant))
 			{
 				return;
 			}
@@ -124,6 +119,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
 			Diagnostic diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
+		}
+
+		private static bool IsConstant(FieldDeclarationSyntax field)
+		{
+			var modifiers = field.Modifiers;
+			return modifiers.Any(SyntaxKind.ConstKeyword) ||
+			       (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
 		}
 	}
 }
