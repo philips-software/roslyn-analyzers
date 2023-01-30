@@ -111,6 +111,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
 			var comment = trivia.ToFullString();
+			Console.WriteLine($"Checking: {comment}");
 			// Check the copyright mark itself
 			bool hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
 			
