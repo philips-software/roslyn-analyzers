@@ -69,4 +69,4 @@ jobs:
         if: ${{ always() }}
         run: |
           cd ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0
-          ./Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog
+          ./Philips.CodeAnalysis.AnalyzerPerformance ../../Debug/net7.0/msbuild.binlog
