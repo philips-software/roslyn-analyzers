@@ -75,10 +75,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
-			return (binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword)
-				&& binaryExpressionSyntax != null 
-				&& binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax
-				&& equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax;
+			return (binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
+				binaryExpressionSyntax != null &&
+				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
+				equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax;
 		}
 
 		/// <summary>

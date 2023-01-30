@@ -8,11 +8,6 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	internal sealed class AssertMetadata
-	{
-		public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
-	}
-
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AssertFailAnalyzer : DiagnosticAnalyzer
 	{
@@ -24,6 +19,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		private sealed class AssertMetadata
+		{
+			public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
+		}
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return false;
 			}
 
-			// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail;
+			// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail.
 
 			IOperation previous = blockOperation.Operations[index - 1];
 

@@ -73,11 +73,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// However, if the types differ, it will be a runtime Assert fail, so the early notice is advantageous.  The code is also clearer.
 			// Moreover, if it were "AreNotEqual", that is particularly insidious, because the Assert would pass due to the type difference
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
-			//if (ti2.Type.ToString() == @"object")
-			//{
-			//	return;
-			//}
-
 			if (!context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
 				var location = mds.GetLocation();

@@ -42,7 +42,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool IsIdentifierDynamicType(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifierNameSyntax)
 		{
-			if (identifierNameSyntax.Identifier.ValueText == "dynamic" && !identifierNameSyntax.Parent.IsKind(SyntaxKind.Argument) &&
+			if (identifierNameSyntax.Identifier.ValueText == "dynamic" &&
+				!identifierNameSyntax.Parent.IsKind(SyntaxKind.Argument) &&
 				!identifierNameSyntax.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
 			{
 				return true;
