@@ -60,4 +60,4 @@ jobs:
           EOF
 
       - name: Eat the Dogfood
-        run: dotnet build --configuration Debug --framework net7.0
+        run: dotnet build --configuration Debug --framework netstandard2.0
