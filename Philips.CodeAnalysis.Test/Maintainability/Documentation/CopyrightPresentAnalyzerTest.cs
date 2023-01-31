@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -81,6 +82,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"/* Copyright Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"// © Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"/* © Koninklijke Philips N.V. 2021", true, -1)]
+		[DataRow(@"// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+namespace Philips.CodeAnalysis.Common
+{
+}", true, -1)]
 		[DataRow(@"", false, 2)]
 		[DataTestMethod]
 		public void HeaderIsDetected(string content, bool isGood, int errorStartLine)
@@ -193,6 +199,22 @@ using System.Reflection;
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
 			VerifyDiagnostic(text, filenamePrefix, expected);
+		}
+
+		[DataTestMethod]
+		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
+		public void DogFoodMaintainability(string folder, string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path);
+		}
+
+		[DataTestMethod]
+		[DataRow("MsTestAttributeDefinitions")]
+		public void DogFoodMsTest(string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path);
 		}
 	}
 }
