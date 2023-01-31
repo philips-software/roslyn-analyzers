@@ -157,7 +157,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectZero, DisplayName = nameof(CorrectZero)),
 		 DataRow(CorrectOne, DisplayName = nameof(CorrectOne)),
@@ -182,7 +182,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongInstanceField, DisplayName = nameof(WrongInstanceField)),
 		 DataRow(WrongConstLocal, DisplayName = nameof(WrongConstLocal)),
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
@@ -195,7 +195,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
