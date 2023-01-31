@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzerTest : DiagnosticVerifier
+	public class ServiceContractHasOperationContractAnalyzerTest : DiagnosticVerifier
 	{
 		#region Non-Public Data Members
 
@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer();
+			return new ServiceContractHasOperationContractAnalyzer();
 		}
 
 		protected override MetadataReference[] GetMetadataReferences()

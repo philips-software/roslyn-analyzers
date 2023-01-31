@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer : DiagnosticAnalyzer
+	public class ServiceContractHasOperationContractAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Interfaces marked with [ServiceContract] must have methods marked with [OperationContract]";
 		private const string MessageFormat = @"Method '{0}' is not marked [OperationContract]";
@@ -24,11 +24,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private readonly AttributeHelper _attributeHelper;
 
-		public ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer()
+		public ServiceContractHasOperationContractAnalyzer()
 			: this(new AttributeHelper())
 		{ }
 
-		public ServiceContractAreAnnotatedWithOperationContractAttributeAnalyzer(AttributeHelper attributeHelper)
+		public ServiceContractHasOperationContractAnalyzer(AttributeHelper attributeHelper)
 		{
 			_attributeHelper = attributeHelper;
 		}

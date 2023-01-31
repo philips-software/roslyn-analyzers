@@ -26,3 +26,6 @@ jobs:
 
   dogfood:
     uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
+
+#  performance:
+#    uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
