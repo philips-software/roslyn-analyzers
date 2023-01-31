@@ -49,7 +49,8 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.CreateArray(DiagnosticIds.GotoNotAllowed).Append(DiagnosticIds.GotoNotAllowed));
+			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.GotoNotAllowed).Append(DiagnosticIds.GotoNotAllowed);
+			VerifyDiagnostic(template, expected);
 		}
 
 		[TestMethod]
