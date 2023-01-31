@@ -1,0 +1,67 @@
+name: Analyzer Performance
+on:
+  workflow_call:
+      
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a
+        with:
+          dotnet-version: |
+            7.0.x
+
+      - name: Build Dogfood
+        run: |
+          cat > ./Directory.Build.props << 'EOF'
+          <Project>
+            <PropertyGroup>
+              <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+              <PackageVersion>1.0.0</PackageVersion>
+            </PropertyGroup>
+          </Project>
+          EOF
+          dotnet build --configuration Release
+
+      - name: Prepare to eat Dogfood
+        run: |
+          dotnet nuget add source $GITHUB_WORKSPACE/Packages
+          rm -f ./Directory.Build.props
+          cat > ./Directory.Build.props << EOF
+          <Project>
+            <ItemGroup>
+              <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+              <PackageReference Include="Philips.CodeAnalysis.DuplicateCodeAnalyzer.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+              <PackageReference Include="Philips.CodeAnalysis.SecurityAnalyzers.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+              <PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+              <PackageReference Include="Philips.CodeAnalysis.MoqAnalyzers.Dogfood" Version="1.0.0">
+                <PrivateAssets>all</PrivateAssets>
+                <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+              </PackageReference>
+            </ItemGroup>
+          </Project>
+          EOF
+
+      - name: Dogfood Performance
+        continue-on-error: true
+        run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
+        
+      - name: Analyze Performance
+        run: |
+          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog  >> $GITHUB_STEP_SUMMARY
+
