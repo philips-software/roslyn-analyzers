@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidAttributeAnalyzer : DiagnosticAnalyzer
 	{
-		public const string AvoidAttributesWhitelist = @"AvoidAttributesWhitelist.txt";
+		public const string AttributesWhitelist = @"AvoidAttributesWhitelist.txt";
 
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
 
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			foreach (var file in options.AdditionalFiles)
 			{
-				if (Path.GetFileName(file.Path) != AvoidAttributesWhitelist)
+				if (Path.GetFileName(file.Path) != AttributesWhitelist)
 				{
 					continue;
 				}
@@ -148,7 +148,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				canBeSuppressed: false,
 				isEnabledByDefault: true);
 
-			var ignoreAttribute = new AttributeModel(@"Ignore",
+			var removedAttribute = new AttributeModel(@"Ignore",
 				@"Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute",
 				@"Ignore attribute not allowed",
 				@"Tests may not use the Ignore attribute.",
@@ -191,7 +191,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
-			builder["Microsoft.VisualStudio.TestTools.UnitTesting.Assert"] = ImmutableArray.Create(ownerAttribute, ignoreAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
+			builder["Microsoft.VisualStudio.TestTools.UnitTesting.Assert"] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
 
 			return builder.ToImmutable();
 		}
