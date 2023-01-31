@@ -152,30 +152,38 @@ namespace Philips.CodeAnalysis.Test
 				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
 				var diags = compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().Result;
-				foreach (var diag in diags)
-				{
-					if (diag.Location == Location.None || diag.Location.IsInMetadata)
-					{
-						diagnostics.Add(diag);
-					}
-					else
-					{
-						for (int i = 0; i < documents.Length; i++)
-						{
-							var document = documents[i];
-							var tree = document.GetSyntaxTreeAsync().Result;
-							if (tree == diag.Location.SourceTree)
-							{
-								diagnostics.Add(diag);
-							}
-						}
-					}
-				}
+				List<Diagnostic> ourDiagnostics = CollectOurDiagnostics(diags, documents);
+				diagnostics.AddRange(ourDiagnostics);
 			}
 
 			var results = SortDiagnostics(diagnostics);
 			diagnostics.Clear();
 			return results;
+		}
+
+		private List<Diagnostic> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, Document[] documents)
+		{
+			List<Diagnostic> diagnostics = new();
+			foreach (var diag in diags)
+			{
+				if (diag.Location == Location.None || diag.Location.IsInMetadata)
+				{
+					diagnostics.Add(diag);
+				}
+				else
+				{
+					for (int i = 0; i < documents.Length; i++)
+					{
+						var document = documents[i];
+						var tree = document.GetSyntaxTreeAsync().Result;
+						if (tree == diag.Location.SourceTree)
+						{
+							diagnostics.Add(diag);
+						}
+					}
+				}
+			}
+			return diagnostics;
 		}
 
 		/// <summary>

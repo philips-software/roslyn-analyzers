@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			var attempts = analyzerDiagnostics.Length;
-			for (int i = 0; i < attempts; ++i)
+			for (int i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
 			{
 				var actions = new List<CodeAction>();
 				var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.Test
 				}
 
 
-				if (scope == FixAllScope.Custom)
+				if (scope == FixAllScope.Custom) // I.e., if not a FixAll
 				{
 					if (codeFixIndex != null)
 					{
@@ -138,12 +138,6 @@ namespace Philips.CodeAnalysis.Test
 						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
 							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
 							document.GetSyntaxRootAsync().Result.ToFullString()));
-				}
-
-				//check if there are analyzer diagnostics left after the code fix
-				if (!analyzerDiagnostics.Any())
-				{
-					break;
 				}
 			}
 

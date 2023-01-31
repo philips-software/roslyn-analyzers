@@ -153,27 +153,32 @@ namespace Philips.CodeAnalysis.Test
 					}
 				}
 
-				if (actual.Id != expected.Id)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic id to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.Id, actual.Id, FormatDiagnostics(analyzer, actual)));
-				}
+				CheckDiagnostic(analyzer, actual, expected);
+			}
+		}
 
-				if (actual.Severity != expected.Severity)
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic severity to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.Severity, actual.Severity, FormatDiagnostics(analyzer, actual)));
-				}
+		private static void CheckDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic actual, DiagnosticResult expected)
+		{
+			if (actual.Id != expected.Id)
+			{
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic id to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Id, actual.Id, FormatDiagnostics(analyzer, actual)));
+			}
 
-				var input = actual.GetMessage();
-				if (expected.Message != null && !expected.Message.IsMatch(input))
-				{
-					Assert.IsTrue(false,
-						string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-							expected.Message, actual.GetMessage(), FormatDiagnostics(analyzer, actual)));
-				}
+			if (actual.Severity != expected.Severity)
+			{
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic severity to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Severity, actual.Severity, FormatDiagnostics(analyzer, actual)));
+			}
+
+			var input = actual.GetMessage();
+			if (expected.Message != null && !expected.Message.IsMatch(input))
+			{
+				Assert.IsTrue(false,
+					string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Message, actual.GetMessage(), FormatDiagnostics(analyzer, actual)));
 			}
 		}
 
@@ -186,14 +191,7 @@ namespace Philips.CodeAnalysis.Test
 		/// <param name="expected">The DiagnosticResultLocation that should have been found</param>
 		private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
 		{
-			var actualSpan = actual.GetLineSpan();
-
-			if (expected.Path != null)
-			{
-				Assert.IsTrue(actualSpan.Path == expected.Path || (actualSpan.Path != null && actualSpan.Path.Contains("Test0.") && expected.Path.Contains("Test.")),
-					string.Format("Expected diagnostic to be in file \"{0}\" was actually in file \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Path, actualSpan.Path, FormatDiagnostics(analyzer, diagnostic)));
-			}
+			FileLinePositionSpan actualSpan = CheckPath(analyzer, diagnostic, actual, expected);
 
 			var actualLinePosition = actualSpan.StartLinePosition;
 
@@ -206,9 +204,9 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualLinePosition.Character > 0 && 
-				expected.Column.HasValue && 
-				expected.Column != -1 && 
+			if (actualLinePosition.Character > 0 &&
+				expected.Column.HasValue &&
+				expected.Column != -1 &&
 				actualLinePosition.Character + 1 != expected.Column)
 			{
 				Assert.IsTrue(false,
@@ -227,9 +225,9 @@ namespace Philips.CodeAnalysis.Test
 			}
 
 			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualEndLinePosition.Character > 0 && 
-				expected.EndColumn.HasValue && 
-				expected.Column != -1 && 
+			if (actualEndLinePosition.Character > 0 &&
+				expected.EndColumn.HasValue &&
+				expected.Column != -1 &&
 				actualEndLinePosition.Character + 1 != expected.EndColumn)
 			{
 				Assert.IsTrue(false,
@@ -237,6 +235,20 @@ namespace Philips.CodeAnalysis.Test
 						expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
 			}
 
+		}
+
+		private static FileLinePositionSpan CheckPath(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
+		{
+			var actualSpan = actual.GetLineSpan();
+
+			if (expected.Path != null)
+			{
+				Assert.IsTrue(actualSpan.Path == expected.Path || (actualSpan.Path != null && actualSpan.Path.Contains("Test0.") && expected.Path.Contains("Test.")),
+					string.Format("Expected diagnostic to be in file \"{0}\" was actually in file \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
+						expected.Path, actualSpan.Path, FormatDiagnostics(analyzer, diagnostic)));
+			}
+
+			return actualSpan;
 		}
 		#endregion
 
@@ -252,47 +264,52 @@ namespace Philips.CodeAnalysis.Test
 			var builder = new StringBuilder();
 			for (int i = 0; i < diagnostics.Length; ++i)
 			{
-				builder.AppendLine("// " + diagnostics[i].ToString());
-
-				var analyzerType = analyzer.GetType();
-				var rules = analyzer.SupportedDiagnostics;
-
-				foreach (var rule in rules)
-				{
-					if (rule != null && rule.Id == diagnostics[i].Id)
-					{
-						var location = diagnostics[i].Location;
-						if (location == Location.None)
-						{
-							builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
-						}
-						else
-						{
-							Assert.IsTrue(location.IsInSource,
-								$"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostics[i]}\r\n");
-
-							string resultMethodName = "GetCSharpResultAt";
-							var linePosition = diagnostics[i].Location.GetLineSpan().StartLinePosition;
-
-							builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
-								resultMethodName,
-								linePosition.Line + 1,
-								linePosition.Character + 1,
-								analyzerType.Name,
-								rule.Id);
-						}
-
-						if (i != diagnostics.Length - 1)
-						{
-							builder.Append(',');
-						}
-
-						builder.AppendLine();
-						break;
-					}
-				}
+				FormatDiagnostic(analyzer, diagnostics[i], builder, i == diagnostics.Length - 1);
 			}
 			return builder.ToString();
+		}
+
+		private static void FormatDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, StringBuilder builder, bool isLast)
+		{
+			builder.AppendLine("// " + diagnostic.ToString());
+
+			var analyzerType = analyzer.GetType();
+			var rules = analyzer.SupportedDiagnostics;
+
+			foreach (var rule in rules)
+			{
+				if (rule != null && rule.Id == diagnostic.Id)
+				{
+					var location = diagnostic.Location;
+					if (location == Location.None)
+					{
+						builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
+					}
+					else
+					{
+						Assert.IsTrue(location.IsInSource,
+							$"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostic}\r\n");
+
+						string resultMethodName = "GetCSharpResultAt";
+						var linePosition = diagnostic.Location.GetLineSpan().StartLinePosition;
+
+						builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
+							resultMethodName,
+							linePosition.Line + 1,
+							linePosition.Character + 1,
+							analyzerType.Name,
+							rule.Id);
+					}
+
+					if (!isLast)
+					{
+						builder.Append(',');
+					}
+
+					builder.AppendLine();
+					break;
+				}
+			}
 		}
 		#endregion
 	}
