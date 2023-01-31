@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.Simplification;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Verifiers
 {
 	/// <summary>
 	/// Diagnostic Producer class with extra methods dealing with applying codefixes

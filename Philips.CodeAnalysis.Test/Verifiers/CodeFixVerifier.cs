@@ -11,8 +11,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.Test.Helpers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Verifiers
 {
 	/// <summary>
 	/// Superclass of all Unit tests made for diagnostics with codefixes.

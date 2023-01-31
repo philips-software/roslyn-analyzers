@@ -2,8 +2,9 @@
 
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Philips.CodeAnalysis.Test.Helpers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Verifiers
 {
 	public abstract class AssertDiagnosticVerifier : DiagnosticVerifier
 	{
