@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
@@ -108,6 +110,26 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 				return Id.CompareTo(otherRecord.Id);
 			}
 			throw new ArgumentException($"Object is not a {nameof(AnalyzerPerfRecord)}");
+		}
+
+		public static bool operator <(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) < 0;
+		}
+
+		public static bool operator >(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) > 0;
+		}
+
+		public static bool operator <=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) <= 0;
+		}
+
+		public static bool operator >=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) >= 0;
 		}
 	}
 }
