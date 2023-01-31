@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -198,6 +199,14 @@ using System.Reflection;
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 
 			VerifyDiagnostic(text, filenamePrefix, expected);
+		}
+
+		[DataTestMethod]
+		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
+		public void DogFood(string folder, string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path);
 		}
 	}
 }
