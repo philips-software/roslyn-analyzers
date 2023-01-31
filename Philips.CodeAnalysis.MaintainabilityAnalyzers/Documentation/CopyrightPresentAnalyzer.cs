@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const string Title = @"Copyright Present";
 		private const string MessageFormat = 
-			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'. {0}";
+			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'.";
 		private const string Description =
 			@"File should start with a comment containing the company name, the year and either © or 'Copyright'.";
 		private const string Category = Categories.Documentation;
