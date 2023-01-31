@@ -23,7 +23,6 @@ jobs:
             <PropertyGroup>
               <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
               <PackageVersion>1.0.3</PackageVersion>
-              <TargetFrameworks>net7.0</TargetFrameworks>
             </PropertyGroup>
           </Project>
           EOF
@@ -61,4 +60,4 @@ jobs:
           EOF
 
       - name: Eat the Dogfood
-        run: dotnet build --configuration Debug
+        run: dotnet build --configuration Debug --framework net7.0
