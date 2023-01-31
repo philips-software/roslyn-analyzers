@@ -51,7 +51,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
@@ -62,7 +62,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) {
@@ -74,7 +74,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
