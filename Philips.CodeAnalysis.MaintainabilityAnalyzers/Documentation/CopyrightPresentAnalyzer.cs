@@ -69,8 +69,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			var location = GetSquiggleLocation(node.SyntaxTree);
-			var leadingTrivia = node.GetLeadingTrivia();
-
+			var nodeOrToken = FindFirstWithLeadingTrivia(node);
+			var leadingTrivia = nodeOrToken.GetLeadingTrivia();
+			
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
 				CreateDiagnostic(context, location);
@@ -96,7 +97,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var location = Location.Create(tree, span);
 			return location;
 		}
-			
+
+		private static SyntaxNodeOrToken FindFirstWithLeadingTrivia(SyntaxNode root)
+		{
+			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n =>
+			{
+				var trivia = n.GetLeadingTrivia();
+				return trivia.Any(SyntaxKind.SingleLineCommentTrivia) || trivia.Any(SyntaxKind.RegionDirectiveTrivia);
+			});
+		}
 
 		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
@@ -107,7 +116,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {
 			var comment = trivia.ToFullString();
 			// Check the copyright mark itself
-			bool hasCopyright = comment.Contains("©") || comment.Contains("Copyright");
+			bool hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
 			
 			// Check the year
 			bool hasYear = yearRegex.IsMatch(comment);
