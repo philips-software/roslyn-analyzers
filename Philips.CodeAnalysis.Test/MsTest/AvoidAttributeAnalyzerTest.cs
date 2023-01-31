@@ -19,7 +19,7 @@ Foo.WhitelistedFunction
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidAttributeAnalyzer.AvoidAttributesWhitelist, allowedMethodName) };
+			return new[] { ("NotFile.txt", "data"), (AvoidAttributeAnalyzer.AttributesWhitelist, allowedMethodName) };
 		}
 
 		[DataTestMethod]
