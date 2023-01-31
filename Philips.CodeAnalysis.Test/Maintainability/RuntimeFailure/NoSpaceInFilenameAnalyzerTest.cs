@@ -37,7 +37,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(CorrectName, DisplayName = "CorrectName"),
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
@@ -48,7 +48,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// Diagnostic is expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(SpaceName, 1, 1, DisplayName = "SpaceName"),
 		 DataRow(SpaceAbsolutePath, 1, 1, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]

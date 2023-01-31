@@ -25,7 +25,7 @@ namespace AlignFilenameAndClassName {{
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("class", "Program"),
 		 DataRow("class", "Program.Part"),
 		 DataRow("struct", "Program"),
@@ -38,7 +38,7 @@ namespace AlignFilenameAndClassName {{
 		/// <summary>
 		/// Diagnostics should show up hare.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("class", "Program2"),
 		 DataRow("struct", "SomethingElse"),
 		 DataRow("enum", "Prog")]

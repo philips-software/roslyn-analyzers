@@ -115,7 +115,16 @@ namespace DontUseMagicNumbersTests {
     }
 }";
 
-        private const string WrongInstanceField = @"
+		private const string CorrectInTestClass = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+namespace DontUseMagicNumbersTests {
+    [TestClass]
+    public class Number {
+        int Magic = 3;
+    }
+}";
+        
+		private const string WrongInstanceField = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
         private int Magic = 5;
@@ -150,7 +159,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectZero, DisplayName = nameof(CorrectZero)),
 		 DataRow(CorrectOne, DisplayName = nameof(CorrectOne)),
@@ -165,7 +174,8 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectPowerOf10, DisplayName = nameof(CorrectPowerOf10)),
 		 DataRow(CorrectPowerOf2, DisplayName = nameof(CorrectPowerOf2)),
 		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle)),
-		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum))]
+		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum)),
+		 DataRow(CorrectInTestClass, DisplayName = nameof(CorrectInTestClass))]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -174,7 +184,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongInstanceField, DisplayName = nameof(WrongInstanceField)),
 		 DataRow(WrongConstLocal, DisplayName = nameof(WrongConstLocal)),
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
@@ -187,7 +197,7 @@ namespace DontUseMagicNumbersTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

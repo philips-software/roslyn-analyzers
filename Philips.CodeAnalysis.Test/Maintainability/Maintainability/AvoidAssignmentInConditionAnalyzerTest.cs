@@ -115,7 +115,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = "Correct"),
 		 DataRow(CorrectTernary, DisplayName = "CorrectTernary"),
@@ -131,7 +131,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
@@ -142,7 +142,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

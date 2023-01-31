@@ -248,7 +248,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectNumberOfIncrementDecrement, DisplayName = nameof(CorrectNumberOfIncrementDecrement)),
 		 DataRow(CorrectNumberOfPlusMinus, DisplayName = nameof(CorrectNumberOfPlusMinus)),
@@ -266,7 +266,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
 		 DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
 		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticIds.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
@@ -283,7 +283,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

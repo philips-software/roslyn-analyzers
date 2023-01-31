@@ -75,7 +75,7 @@ namespace AvoidUsingParametersTest {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectNoParameters, DisplayName = nameof(CorrectNoParameters)),
@@ -90,7 +90,7 @@ namespace AvoidUsingParametersTest {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidUsingParametersAsTempVariables);
@@ -100,7 +100,7 @@ namespace AvoidUsingParametersTest {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

@@ -14,7 +14,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidTaskResultAnalyzerTest : AssertCodeFixVerifier
 	{
-		[TestMethod]
 		[DataRow("ValueTask", "4")]
 		[DataRow("Task", "() => 4")]
 		[DataTestMethod]

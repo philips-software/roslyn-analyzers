@@ -80,7 +80,7 @@ public class TestClass : IData
 			VerifySuccessfulCompilation(content);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		public void ParameterNotWrittenToButRequiredForBaseClass()
 		{
 			string content = $@"

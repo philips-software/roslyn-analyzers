@@ -149,7 +149,7 @@ class Foo
 		[DataRow(@"")]
 		[DataRow(@"
 ")]
-		[TestMethod]
+		[DataTestMethod]
 		public void EmptyUnitIsIgnored(string text)
 		{
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();

@@ -176,7 +176,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectReadOnlyList, DisplayName = nameof(CorrectReadOnlyList)),
 		 DataRow(CorrectReadOnlyCollection, DisplayName = nameof(CorrectReadOnlyCollection)),
@@ -193,7 +193,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongList, CorrectReadOnlyList, DisplayName = nameof(WrongList)),
 		 DataRow(WrongIList, CorrectReadOnlyList, DisplayName = nameof(WrongIList)),
 		 DataRow(WrongQueue, CorrectReadOnlyCollection, DisplayName = nameof(WrongQueue)),
@@ -215,7 +215,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

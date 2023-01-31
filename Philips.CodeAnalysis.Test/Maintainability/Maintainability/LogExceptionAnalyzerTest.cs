@@ -93,7 +93,7 @@ public class Program {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Correct, DisplayName = "Correct"),
 			DataRow(CorrectThrow, DisplayName = "CorrectThrow"),
 			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
@@ -105,7 +105,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Missing, DisplayName = "Missing")]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
@@ -116,7 +116,7 @@ public class Program {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{

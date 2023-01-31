@@ -38,7 +38,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(CorrectCode, DisplayName = "CorrectCode")]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{

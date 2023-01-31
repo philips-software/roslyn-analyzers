@@ -116,7 +116,7 @@ namespace InnerExceptionUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Correct, DisplayName = "Correct"),
 			DataRow(NoRethrow, DisplayName = "NoRethrow"),
 			DataRow(RethrowOriginal, DisplayName = "RethrowOriginal"),
@@ -130,7 +130,7 @@ namespace InnerExceptionUnitTest {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(ThrowOther, DisplayName = "ThrowOther")]
 		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
 		{
@@ -141,7 +141,7 @@ namespace InnerExceptionUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(ThrowOther, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
