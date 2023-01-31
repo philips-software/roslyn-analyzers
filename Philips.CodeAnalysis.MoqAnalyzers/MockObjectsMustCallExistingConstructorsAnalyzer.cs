@@ -124,35 +124,22 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			VerifyMockAttempt(context, mockedClass, objectCreationExpressionSyntax.ArgumentList, true);
 		}
 
-		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool canHaveMockBehavior)
+		private bool IsFirstArgumentMockBehavior(SyntaxNodeAnalysisContext context, ArgumentListSyntax argumentList)
 		{
-			if (mockedClass is IErrorTypeSymbol)
-			{
-				return;
-			}
-
-			ImmutableArray<ArgumentSyntax> arguments = ImmutableArray<ArgumentSyntax>.Empty;
-
-			if (argumentList?.Arguments != null)
-			{
-				arguments = argumentList.Arguments.ToImmutableArray();
-			}
-
-			if (canHaveMockBehavior && arguments.Length > 0 && argumentList?.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
+			if (argumentList?.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
 				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text == "MockBehavior")
 				{
-					//they passed a mock behavior as the first argument.  ignore this one, mock swallows it.
-					arguments = arguments.RemoveAt(0);
+					return true;
 				}
 			}
-			else if (canHaveMockBehavior && arguments.Length > 0 && argumentList?.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax)
+			else if (argumentList?.Arguments[0].Expression is IdentifierNameSyntax identifierNameSyntax)
 			{
 				SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(identifierNameSyntax);
 
 				if (symbolInfo.Symbol == null)
 				{
-					return;
+					return false;
 				}
 
 				ITypeSymbol typeSymbol = null;
@@ -171,9 +158,30 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (typeSymbol != null && typeSymbol.Name == "MockBehavior")
 				{
-					//they passed a mock behavior as the first argument.  ignore this one, mock swallows it.
-					arguments = arguments.RemoveAt(0);
+					return true;
 				}
+			}
+			return false;
+		}
+
+		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool canHaveMockBehavior)
+		{
+			if (mockedClass is IErrorTypeSymbol)
+			{
+				return;
+			}
+
+			ImmutableArray<ArgumentSyntax> arguments = ImmutableArray<ArgumentSyntax>.Empty;
+
+			if (argumentList?.Arguments != null)
+			{
+				arguments = argumentList.Arguments.ToImmutableArray();
+			}
+
+			if (canHaveMockBehavior && arguments.Length > 0 && IsFirstArgumentMockBehavior(context, argumentList))
+			{
+				//they passed a mock behavior as the first argument.  ignore this one, mock swallows it.
+				arguments = arguments.RemoveAt(0);
 			}
 
 			switch (mockedClass.TypeKind)
