@@ -21,10 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = "Whitelist this class";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticClasses)); }
-		}
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticClasses));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -34,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			TextDocument text = GetDocument(context.Document.Project, AvoidStaticClassesAnalyzer.FileName);
+			TextDocument text = GetDocument(context.Document.Project, AvoidStaticClassesAnalyzer.AllowedFileName);
 
 			if (text == null)
 			{

@@ -3,10 +3,10 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
@@ -38,16 +38,29 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	/// 
 	/// </summary>
 	[TestClass]
-	public class AvoidStaticClassAnalyzerTest : DiagnosticVerifier
+	public class AvoidStaticClassAnalyzerTest : CodeFixVerifier
 	{
 		public const string KnownWhitelistClassNamespace = "Philips.Monitoring.Common";
 		public const string KnownWhitelistClassClassName = "SerializationHelper";
 		public const string KnownWildcardClassName = "AssemblyInitialize";
 		public const string AnotherKnownWildcardClassName = "Program";
+		private const string AllowedStaticTypes = @"AllowedClass
+AllowedStruct
+AllowedEnumeration";
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidStaticClassesAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidStaticClassesCodeFixProvider();
+		}
+
+		protected override (string name, string content)[] GetAdditionalTexts()
+		{
+			return new[] { (AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes) };
 		}
 
 		private string CreateField(string modifiers, string name)
@@ -188,6 +201,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			VerifySuccessfulCompilation(noDiagnostic);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
 			VerifyDiagnostic(methodHavingDiagnostic);
+			VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic);
 		}
 
 		[TestMethod]
