@@ -179,7 +179,7 @@ Foo.WhitelistedFunction";
 			s.Add(76);
 			s.Add(130);
 
-			Assert.IsTrue(r.Components.SequenceEqual(s.Components));
+			Assert.IsTrue(r.IsDuplicate(s));
 			Assert.AreEqual(r.HashCode, s.HashCode);
 		}
 
@@ -253,7 +253,7 @@ Foo.WhitelistedFunction";
 			s.Add(316);
 			s.Add(26);
 
-			Assert.IsFalse(r.Components.SequenceEqual(s.Components));
+			Assert.IsFalse(r.IsDuplicate(s));
 			Assert.AreEqual(r.HashCode, s.HashCode);
 		}
 

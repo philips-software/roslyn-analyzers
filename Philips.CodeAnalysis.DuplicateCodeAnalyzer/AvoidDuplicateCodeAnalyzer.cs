@@ -439,7 +439,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					// We found a potential duplicate.  Is it actually?
 					foreach (Evidence e in existingValues)
 					{
-						if (e.Components.SequenceEqual(value.Components))
+						if (e.IsDuplicate(value))
 						{
 							// Yes, just return the duplicate information
 							return e;
@@ -472,8 +472,14 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			Hash = componentSum;
 		}
 
+		public bool IsDuplicate(Evidence otherEvidence)
+		{
+			return Components.SequenceEqual(otherEvidence.Components);
+		}
+
 		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
-		public List<int> Components { get; }
+		private List<int> Components { get; }
+
 		public int Hash { get; }
 	}
 
@@ -532,7 +538,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class RollingHashCalculator<T>
 	{
-		public Queue<T> Components { get; } = new();
+		protected Queue<T> Components { get; } = new();
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
@@ -575,6 +581,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public bool IsFull()
 		{
 			return Components.Count >= MaxItems;
+		}
+
+		public bool IsDuplicate(RollingHashCalculator<T> otherCalculator)
+		{
+			return Components.SequenceEqual(otherCalculator.Components);
 		}
 
 		public T Add(T token)
