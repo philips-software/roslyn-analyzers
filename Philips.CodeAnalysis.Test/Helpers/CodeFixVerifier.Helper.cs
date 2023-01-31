@@ -77,24 +77,8 @@ namespace Philips.CodeAnalysis.Test
 		private static string GetStringFromDocument(Document document)
 		{
 			var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-
-			//OptionSet options = simplifiedDoc.Project.Solution.Workspace.Options;
-
-			//options = options.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, LanguageNames.CSharp), true);
-			//options = options.WithChangedOption(new OptionKey(FormattingOptions.NewLine, LanguageNames.CSharp), "lf");
-			//options = options.WithChangedOption(new OptionKey(CSharpFormattingOptions.NewLinesForBracesInControlBlocks), true);
-			//options = options.WithChangedOption(new OptionKey(CSharpFormattingOptions.NewLinesForBracesInMethods), true);
-			//options = options.WithChangedOption(new OptionKey(CSharpFormattingOptions.NewLinesForBracesInTypes), true);
-			//options = options.WithChangedOption(new OptionKey(CSharpFormattingOptions.WrappingKeepStatementsOnSingleLine), false);
-
-			//simplifiedDoc = Formatter.FormatAsync(simplifiedDoc, options).Result;
 			var root = simplifiedDoc.GetSyntaxRootAsync().Result;
-
 			var v = root.GetText().ToString();
-
-			//root = Formatter.Format(root, simplifiedDoc.Project.Solution.Workspace);
-			//return root.GetText().ToString();
-
 			return v;
 		}
 	}

@@ -496,7 +496,6 @@ class Foo
 ";
 
 			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
-			//VerifyFix(errorContent, fixedContent);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

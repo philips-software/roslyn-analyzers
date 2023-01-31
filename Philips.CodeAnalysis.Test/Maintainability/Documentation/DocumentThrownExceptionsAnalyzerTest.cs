@@ -280,7 +280,6 @@ public class Foo
 		{
 			// See https://github.com/dotnet/roslyn/issues/58210. Until decide how we want to handle this, these will pass.
 			VerifySuccessfulCompilation(testCode);
-			//VerifyFix(testCode, fixedCode);
 		}
 	}
 }
