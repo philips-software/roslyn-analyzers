@@ -538,7 +538,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class RollingHashCalculator<T>
 	{
-		protected Queue<T> Components { get; } = new();
+		private readonly Queue<T> _components = new();
+		protected ImmutableQueue<T> Components => ImmutableQueue.Create(_components.ToArray());
+
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
@@ -563,8 +565,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public (List<int> components, int hash) ToComponentHashes()
 		{
 			int sum = 0;
-			var componentHashes = new List<int>(Components.Count);
-			foreach (T token in Components)
+			var componentHashes = new List<int>(_components.Count);
+			foreach (T token in _components)
 			{
 				int hashcode = token.GetHashCode();
 
@@ -580,27 +582,27 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public bool IsFull()
 		{
-			return Components.Count >= MaxItems;
+			return _components.Count >= MaxItems;
 		}
 
 		public bool IsDuplicate(RollingHashCalculator<T> otherCalculator)
 		{
-			return Components.SequenceEqual(otherCalculator.Components);
+			return _components.SequenceEqual(otherCalculator._components);
 		}
 
 		public T Add(T token)
 		{
-			Components.Enqueue(token);
+			_components.Enqueue(token);
 			T purgedHashComponent = default;
 			bool isPurged = false;
-			if (Components.Count > MaxItems)
+			if (_components.Count > MaxItems)
 			{
 				// Remove old value
-				purgedHashComponent = Components.Dequeue();
+				purgedHashComponent = _components.Dequeue();
 				isPurged = true;
 			}
 			CalcNewHashCode(token, isPurged, purgedHashComponent);
-			return Components.Peek();
+			return _components.Peek();
 		}
 
 		protected virtual void CalcNewHashCode(T hashComponent, bool isPurged, T purgedHashComponent)
