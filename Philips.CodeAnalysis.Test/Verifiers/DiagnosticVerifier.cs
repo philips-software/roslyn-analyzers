@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
@@ -60,9 +61,24 @@ namespace Philips.CodeAnalysis.Test
 			VerifyDiagnostic(source, null, expected);
 		}
 
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		protected void VerifySuccessfulCompilation(string source)
 		{
 			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
+		}
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted file as a source
+		/// </summary>
+		/// <param name="path">The file on disk to run the analyzer on</param>
+		protected void VerifySuccessfulCompilationFromFile(string path)
+		{
+			var content = File.ReadAllText(path);
+			var fileName = Path.GetFileNameWithoutExtension(path);
+			VerifyDiagnostic(content, fileName, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
