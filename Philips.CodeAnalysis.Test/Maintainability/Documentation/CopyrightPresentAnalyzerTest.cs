@@ -203,9 +203,17 @@ using System.Reflection;
 
 		[DataTestMethod]
 		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
-		public void DogFood(string folder, string analyzerName)
+		public void DogFoodMaintainability(string folder, string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path);
+		}
+
+		[DataTestMethod]
+		[DataRow("MsTestAttributeDefinitions")]
+		public void DogFoodMsTest(string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
 			VerifySuccessfulCompilationFromFile(path);
 		}
 	}
