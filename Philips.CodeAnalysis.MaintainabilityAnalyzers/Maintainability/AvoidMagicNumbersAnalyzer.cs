@@ -44,6 +44,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
+			TestHelper helper = new();
+			if (helper.IsInTestClass(context))
+			{
+				return;
+			}
+
 			if (!literal.Token.IsKind(SyntaxKind.NumericLiteralToken))
 			{
 				return;
