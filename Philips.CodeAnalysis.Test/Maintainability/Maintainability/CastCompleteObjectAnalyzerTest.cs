@@ -42,7 +42,7 @@ namespace CastCompleteTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectSingleField, DisplayName = nameof(CorrectSingleField)),
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
@@ -54,7 +54,7 @@ namespace CastCompleteTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.CastCompleteObject);
@@ -64,7 +64,7 @@ namespace CastCompleteTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{

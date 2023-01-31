@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class AvoidAsyncVoidAnalyzerTest : AssertDiagnosticVerifier
 	{
 
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(false, "void", false)]
 		[DataRow(true, "void", true)]
 		[DataRow(true, "Task", false)]
