@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
-				CreateDiagnostic(context, location, "NoCommentInTrivia");
+				CreateDiagnostic(context, location);
 				return;
 			}
 
@@ -87,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxTrivia syntaxTrivia = leadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!CheckCopyrightStatement(context, syntaxTrivia))
 			{
-				CreateDiagnostic(context, location, syntaxTrivia.ToFullString());
+				CreateDiagnostic(context, location);
 			}
 		}
 
@@ -107,9 +107,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			});
 		}
 
-		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location, string debug = "")
+		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, debug);
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
