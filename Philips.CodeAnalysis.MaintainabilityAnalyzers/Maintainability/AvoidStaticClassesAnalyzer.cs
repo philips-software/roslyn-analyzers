@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidStaticClassesAnalyzer : DiagnosticAnalyzer
 	{
-		public const string FileName = @"StaticClasses.Allowed.txt";
+		public const string AllowedFileName = @"StaticClasses.Allowed.txt";
 		private const string Title = @"Avoid static classes";
 		public const string MessageFormat = @"Avoid static classes";
 		private const string Description = @"Static Classes are not easily mockable. Avoid them so that your code is Unit Testable.";
@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
 			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
-			HashSet<string> exceptions = helper.InitializeExceptions(FileName, Rule.Id);
+			HashSet<string> exceptions = helper.InitializeExceptions(AllowedFileName, Rule.Id);
 
 			// Add standard exceptions
 			exceptions.Add(@"*.Startup");
