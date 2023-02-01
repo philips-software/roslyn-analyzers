@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Helpers
 {
 	public class TestDiagnosticProvider : FixAllContext.DiagnosticProvider
 	{

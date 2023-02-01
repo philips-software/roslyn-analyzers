@@ -14,6 +14,8 @@ using System.Text.RegularExpressions;
 using Moq;
 using Castle.Core.Internal;
 using System.Collections.Immutable;
+using Philips.CodeAnalysis.Test.Verifiers;
+using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {

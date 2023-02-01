@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Helpers
 {
 	/// <summary>
 	/// Location where the diagnostic appears, as determined by path, line number, and column number.
