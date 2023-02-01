@@ -35,6 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadGeneratedCodeIgnoredTest()
 		{
 			const string template = @"
@@ -55,6 +56,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoad1()
 		{
 			const string template = @"
@@ -70,6 +72,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadIf()
 		{
 			const string template = @"
@@ -85,6 +88,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadExpressionBody()
 		{
 			const string template = @"
@@ -97,6 +101,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadIfNotEqual()
 		{
 			const string template = @"
@@ -112,6 +117,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadIfReturn()
 		{
 			const string template = @"
@@ -127,6 +133,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadIfLogicalOr()
 		{
 			const string template = @"
@@ -142,6 +149,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadIfLogicalAnd()
 		{
 			const string template = @"
@@ -157,6 +165,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadBreak()
 		{
 			const string template = @"
@@ -172,6 +181,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadBang()
 		{
 			const string template = @"
@@ -187,6 +197,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadNested1()
 		{
 			const string template = @"
@@ -206,6 +217,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadNested2()
 		{
 			const string template = @"
@@ -227,6 +239,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadNested3()
 		{
 			const string template = @"
@@ -252,6 +265,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadCombo()
 		{
 			const string template = @"
@@ -272,6 +286,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoad3()
 		{
 			const string template = @"
@@ -338,6 +353,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoad4()
 		{
 			const string template = @"
@@ -399,6 +415,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoad5()
 		{
 			const string template = @"
@@ -459,6 +476,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitPassTest()
 		{
 			const string template = @"
@@ -485,6 +503,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitFailTest()
 		{
 			const string template = @"
@@ -525,6 +544,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitPassTest()
 		{
 			const string template = @"
@@ -551,6 +571,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitFailTest()
 		{
 			const string template = @"
@@ -588,6 +609,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitPassTest()
 		{
 			const string template = @"
@@ -614,6 +636,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CognitiveLoadInitFailTest()
 		{
 			const string template = @"

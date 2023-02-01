@@ -50,6 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"_ = new X509Certificate2().PrivateKey", 0, 2)]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
 			_ = cert.PrivateKey;", 1, 0)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidPrivateKeyPropertyOnX509Certificate(string s, int row, int col)
 		{
 

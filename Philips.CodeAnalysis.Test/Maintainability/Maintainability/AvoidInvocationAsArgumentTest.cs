@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentTest()
 		{
 			string template = @"
@@ -61,6 +62,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentReturnTest()
 		{
 			string errorContent = @"
@@ -94,6 +96,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsUnknownSymbolArgumentReturnTest()
 		{
 			string errorContent = @"
@@ -125,6 +128,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixTest()
 		{
 			string errorContent = @"
@@ -156,6 +160,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationInIfStatementTest()
 		{
 			string errorContent = @"
@@ -189,6 +194,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationInWhileStatementTest()
 		{
 			string errorContent = @"
@@ -222,6 +228,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsMemberAccessArgumentFixTest()
 		{
 			string errorContent = @"
@@ -253,6 +260,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsStaticMemberAccessArgumentFixTest()
 		{
 			string errorContent = @"
@@ -284,6 +292,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentLocalAssignmentTest()
 		{
 			string errorContent = @"
@@ -315,6 +324,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentAssignmentTest()
 		{
 			string errorContent = @"
@@ -349,6 +359,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixReturnTest()
 		{
 			string errorContent = @"
@@ -382,6 +393,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixIfTest()
 		{
 			string errorContent = @"
@@ -416,6 +428,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixNewTest()
 		{
 			string errorContent = @"
@@ -446,6 +459,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixSwitchTest()
 		{
 			string errorContent = @"
@@ -485,6 +499,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidInvocationAsArgumentFixExpressionTest()
 		{
 			string errorContent = @"

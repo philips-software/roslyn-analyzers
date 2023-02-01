@@ -25,6 +25,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsTrue(true != false)", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true == false)", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true != false)", "Assert.AreEqual(true, false)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReplacesEqualsEquals(string given, string expected)
 		{
 			VerifyChange(given, expected);
@@ -35,6 +36,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Object o = null;\n      Assert.IsTrue(o != null)", "Object o = null;\n      Assert.IsNotNull(o)")]
 		[DataRow("Object o = null;\n      Assert.IsFalse(o == null)", "Object o = null;\n      Assert.IsNotNull(o)")]
 		[DataRow("Object o = null;\n      Assert.IsFalse(o != null)", "Object o = null;\n      Assert.IsNull(o)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IsNullIsNotNull(string given, string expected)
 		{
 			VerifyChange(given, expected, expectedErrorLineOffset: 1);
@@ -46,6 +48,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsFalse(true == false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PreserveMessage(string given, string expected)
 		{
 			VerifyChange(given, expected);
@@ -55,6 +58,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsTrue(true.Equals(false))", "Assert.AreEqual(true, false)")]
 		//[DataRow("Assert.IsTrue(!true.Equals(false))", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true.Equals(false))", "Assert.AreNotEqual(true, false)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		//[DataRow("Assert.IsFalse(!true.Equals(false))", "Assert.AreEqual(true, false)")]
 		//[DataRow("Assert.IsFalse(!true.Equals(false))", "Assert.AreEqual(true, false)")]
 		public void ReplacesEquals(string given, string expected)
@@ -64,6 +68,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\n      Assert.IsTrue(true)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CanBreakDownCompoundStatements(string given, string expected)
 		{
 			VerifyChange(given, expected);
@@ -72,12 +77,14 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\n      Assert.IsTrue(true, \"blah\")")]
 		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PreserveCompoundMessages(string given, string expected)
 		{
 			VerifyChange(given, expected);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void StaticFunctionCallDoesntThrow()
 		{
 			string givenText = @"
@@ -104,6 +111,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CommentsAreNotRemoved()
 		{
 			string given = @"
@@ -121,6 +129,7 @@ int i = 50;
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TrailingWhitespacePreserved()
 		{
 			string given = @"
@@ -147,6 +156,7 @@ int i = 50;
 		[DataRow("Assert.IsFalse(1 != 2 && 2 == 3)")]
 		[DataRow("Assert.IsTrue(1 != 2 || 2 == 3)")]
 		[DataRow("Assert.IsFalse(1 != 2 || 2 == 3)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CanBreakDownFalseOrOrCompoundStatements(string given)
 		{
 			VerifyNoChange(given);
@@ -155,6 +165,7 @@ int i = 50;
 		[DataTestMethod]
 		[DataRow("bool value = false; Assert.IsFalse(value)")]
 		[DataRow("Assert.IsFalse(\"foo\".Contains(\"f\"))")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EnsureWeDontChangeValues(string given)
 		{
 			VerifyNoChange(given);
@@ -174,18 +185,21 @@ int i = 50;
 		[DataRow("Assert.AreEqual(false, !false)")]
 		[DataRow("Assert.AreEqual(!false, !false)")]
 		[DataRow("Assert.AreEqual(!false, false)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteral(string given)
 		{
 			VerifyNoChange(given);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNoCrash()
 		{
 			VerifyNoChange("Assert.IsTrue(");
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckForNoSemanticModel()
 		{
 			const string template = @"

@@ -56,6 +56,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow(@"public class A {{}}", false, 6, 2)]
 		[DataRow(@"class A {{}}", true, 6, 2)]
 		[DataRow(@"private class A {{}}", true, 6, 2)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EnforcePublicInterfaceRegion(string given, bool isError, int line, int column)
 		{
 
@@ -72,6 +73,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void UnnamedRegionTest()
 		{
 			string baseline = @"
@@ -127,6 +129,7 @@ class Foo
 		[DataRow(@"delegate int();", true, 6, 14)]
 		[DataRow(@"private delegate int();", true, 6, 22)]
 		[DataRow(@"public delegate int();", true, 6, 21)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EnforeNonPublicPropertiesMethodsRegion(string given, bool isError, int line, int column)
 		{
 			string baseline = @"
@@ -179,6 +182,7 @@ class Foo
 		[DataRow(@"delegate int();", false, 6, 2)]
 		[DataRow(@"private delegate int();", false, 6, 2)]
 		[DataRow(@"public delegate int();", true, 6, 21)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EnforeNonPublicDataMembersRegion(string given, bool isError, int line, int column)
 		{
 			string baseline = @"
@@ -200,6 +204,7 @@ class Foo
 		[DataRow(@"Public Interface", false)]
 		[DataRow(@"#region", false)]
 		[DataRow(@"#regionPublic Interface", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionNameTest(string given, bool isError)
 		{
 			string baseline = @"
@@ -217,6 +222,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"Non-Public Properties/Methods", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DupliateRegionTest(string given, bool isError)
 		{
 			string baseline = @"

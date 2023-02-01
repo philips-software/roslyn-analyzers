@@ -42,6 +42,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		[DataRow("[TestMethod]", 1, false)]
 		[DataRow("[DataTestMethod]", 0, true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustBeInTestClass(string testType, int parameters, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -78,6 +79,7 @@ public class Tests
 		[DataRow(0)]
 		[DataRow(1)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DerivedDataSourcesShouldBeIgnored(int parameters)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -118,6 +120,7 @@ public class Tests
 
 		[DynamicData(nameof(DataRowVariants), DynamicDataSourceType.Method)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

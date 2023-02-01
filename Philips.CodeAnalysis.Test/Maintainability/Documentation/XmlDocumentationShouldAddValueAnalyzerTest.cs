@@ -47,6 +47,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		#region Public Interface
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DefaultWhiteSpaceTest()
 		{
 			string content = $@"
@@ -62,6 +63,7 @@ public class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyClassTest()
 		{
 			string content = $@"
@@ -75,6 +77,7 @@ public class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyMethodTest()
 		{
 			string content = $@"
@@ -91,6 +94,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyPropertyTest()
 		{
 			string content = $@"
@@ -105,6 +109,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyFieldTest()
 		{
 			string content = $@"
@@ -119,6 +124,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyEventTest()
 		{
 			string content = $@"
@@ -133,6 +139,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyEnumTest()
 		{
 			string content = $@"
@@ -153,6 +160,7 @@ public enum TestEnumeration
 		[DataRow("Gets an instance of Foo", true)]
 		[DataRow("Get an instance of Foo to please Bar", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddClassTests(string text, bool isError)
 		{
 			string content = $@"
@@ -175,6 +183,7 @@ public class Foo
 		[DataRow("Gets a roms", true)]
 		[DataRow("Get an instance of Foo to please Bar", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddMethodTests(string text, bool isError)
 		{
 			string content = $@"
@@ -200,6 +209,7 @@ public class TestClass
 		[DataRow("Gets an instance of Foo", true)]
 		[DataRow("Get an instance of Foo to please Bar", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddPropertyTests(string text, bool isError)
 		{
 			string content = $@"
@@ -224,6 +234,7 @@ public class TestClass
 		[DataRow("Gets an instance of Foo", true)]
 		[DataRow("Get an instance of Foo to please Bar", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddFieldTests(string text, bool isError)
 		{
 			string content = $@"
@@ -245,6 +256,7 @@ public class TestClass
 		[DataRow("Raises an instance of the Foo event", true)]
 		[DataRow("Raised when Foo happens", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddEventTests(string text, bool isError)
 		{
 			string content = $@"
@@ -262,6 +274,7 @@ public class TestClass
 		[DataRow("It is Foo", true)]
 		[DataRow("When it is Foo", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddEnumTests(string text, bool isError)
 		{
 			string content = $@"
@@ -279,6 +292,7 @@ public enum Foo
 		[DataRow("It is Foo", true)]
 		[DataRow("When it is Foo", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ValueAddEnumMemberTests(string text, bool isError)
 		{
 			string content = $@"
@@ -297,6 +311,7 @@ public enum TestEnumeration
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CodeFixEmptyTests(string text)
 		{
 			string errorContent = $@"
@@ -326,6 +341,7 @@ public class TestClass
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CodeFixValueTests(string text)
 		{
 			string errorContent = $@"
@@ -349,6 +365,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void InheritDocTests()
 		{
 			string content = $@"
@@ -366,6 +383,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RemarksOnlyTests()
 		{
 			string content = $@"
@@ -385,6 +403,7 @@ public class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorTest()
 		{
 			string content = $@"

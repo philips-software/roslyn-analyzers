@@ -75,6 +75,7 @@ namespace FinalizerTest {
 }";
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFinalizerHasOnlyDisposeNoDiagnosticIsTriggered()
 		{
 			VerifySuccessfulCompilation(CorrectWithDispose);
@@ -85,6 +86,7 @@ namespace FinalizerTest {
 		 DataRow(WrongReferenceCall, DisplayName = nameof(WrongReferenceCall)),
 		 DataRow(WrongFieldAssignment, DisplayName = nameof(WrongFieldAssignment)),
 		 DataRow(WrongOtherMethod, DisplayName = nameof(WrongOtherMethod))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingFinalizers));

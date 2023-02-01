@@ -45,6 +45,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		#region Public Interface
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void VerifyIgnoresEmptyInterface()
 		{
 			const string text = @"
@@ -55,6 +56,7 @@ public interface IFoo { }
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void VerifyIgnoresEmptyInterfaceWithAllOperationContracts()
 		{
 			const string text = @"using System.ServiceModel;
@@ -66,6 +68,7 @@ public interface IFoo { }
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void VerifyIgnoresEmptyInterfaceWithAllOperationContracts2()
 		{
 			const string text = @"using System.ServiceModel;
@@ -81,6 +84,7 @@ public interface IFoo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void VerifyInterfaceWithNoOperationContracts()
 		{
 			const string text = @"using System.ServiceModel;
@@ -107,6 +111,7 @@ public interface IFoo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void VerifyInterfaceWithNoOperationContracts2()
 		{
 			const string text = @"using System.ServiceModel;

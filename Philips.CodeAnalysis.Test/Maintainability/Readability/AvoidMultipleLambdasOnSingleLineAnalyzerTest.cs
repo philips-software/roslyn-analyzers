@@ -150,6 +150,7 @@ public static class Foo
 		[DataRow(WrongMultiple, CorrectMultiple, DisplayName = nameof(WrongMultiple)),
 		 DataRow(WrongDistinct, CorrectDistinct, DisplayName = nameof(WrongDistinct)),
 		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
@@ -165,12 +166,14 @@ public static class Foo
 		 DataRow(CorrectDistinct, DisplayName = nameof(CorrectDistinct)),
 		 DataRow(CorrectMoreLines, DisplayName = nameof(CorrectMoreLines)),
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CorrectDoesNotFlag(string input)
 		{
 			VerifySuccessfulCompilation(input);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedFileWrongIsNotFlagged()
 		{
 			VerifyDiagnostic(WrongMultiple, @"Foo.designer");

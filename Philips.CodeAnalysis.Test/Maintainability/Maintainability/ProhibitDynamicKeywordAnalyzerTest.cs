@@ -39,6 +39,7 @@ bool isDynamic = !String.IsNullOrEmpty(dynamic) &&
 dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }", 0)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CantBeDynamic(string testCode, int errorCount)
 		{
 			List<DiagnosticResult> results = new();

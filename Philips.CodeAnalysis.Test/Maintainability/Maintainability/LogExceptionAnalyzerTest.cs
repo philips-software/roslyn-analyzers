@@ -97,6 +97,7 @@ public class Program {
 		[DataRow(Correct, DisplayName = "Correct"),
 			DataRow(CorrectThrow, DisplayName = "CorrectThrow"),
 			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -107,6 +108,7 @@ public class Program {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Missing, DisplayName = "Missing")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException); 
@@ -118,6 +120,7 @@ public class Program {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

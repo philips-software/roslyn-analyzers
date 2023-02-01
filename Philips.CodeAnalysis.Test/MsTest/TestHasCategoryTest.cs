@@ -20,6 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
 		[DataRow(@"[Owner(""MK""), TestMethod]", 15)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestHasCategoryAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -53,6 +54,7 @@ class Foo
 		[DataRow(@"ManualTest", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestHasCategoryAttributeTest2(string category, bool isError)
 		{
 			string baseline = @"
@@ -73,6 +75,7 @@ class Foo
 		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
 		{
 			string baseline = @"
@@ -98,6 +101,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow(@"Foo1", false)]
 		[DataRow(@"Foo2", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestHasCategoryAttributeWhiteListTest(string testName, bool isError)
 		{
 			string baseline = @"
@@ -114,6 +118,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FixAddsCategoryAttributeTest()
 		{
 			string baseline = @"

@@ -47,6 +47,7 @@ class Foo
 
 		[DataRow("(int Foo, int Bar)")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NamedTuplesDontCauseErrors(string argument)
 		{
 			var source = CreateFunction(argument);
@@ -55,6 +56,7 @@ class Foo
 
 		[DataRow("(int, int)")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
 			var source = CreateFunction(argument);
@@ -64,6 +66,7 @@ class Foo
 
 		[DataRow("(int Foo, int)")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorIfTupleElementDoesNotHaveName(string argument)
 		{
 			var source = CreateFunction(argument);

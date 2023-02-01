@@ -37,6 +37,7 @@ class Foo
 		[DataRow("public string Password {get; set;}", @"")]
 		[DataRow(@"", "/*  MyPassword */")]
 		[DataRow(@"", "//  MyPassword")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckPasswordTest(string content0, string content1)
 		{
 			var format = GetTemplate();
@@ -51,6 +52,7 @@ class Foo
 		[DataRow("public string MyProperty {get; set;}", @"")]
 		[DataRow(@"", "/*  MyComment */")]
 		[DataRow(@"", "//  MyComment")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNoPasswordTest(string content0, string content1)
 		{
 			var format = GetTemplate();

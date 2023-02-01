@@ -38,6 +38,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidMsFakesTest()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
@@ -45,6 +46,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidMsFakesNotRelevantTest()
 		{
 			var file = CreateFunction("using (new MemoryStream()) {}");

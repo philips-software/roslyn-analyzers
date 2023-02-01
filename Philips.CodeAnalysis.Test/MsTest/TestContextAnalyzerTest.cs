@@ -28,6 +28,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void HasTestContextPropertyButNoUsageTest()
 		{
 			string givenText = @"

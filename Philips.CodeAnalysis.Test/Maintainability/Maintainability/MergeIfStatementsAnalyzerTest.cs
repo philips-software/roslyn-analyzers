@@ -22,6 +22,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotMergeIfsGeneratedCodeTest()
 		{
 			const string testCode = @"
@@ -66,6 +67,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"if (1==1) { if (1==1 || 2==2) {} }", DisplayName = "Has ||")]
 		[DataRow(@"if (1==1 || 2==2) { if (1==1) {} }", DisplayName = "Parent has ||")]
 		[DataRow(@"if (1==1 || 2==2) if (2==2) {}", DisplayName = "Parent has ||, no { }")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotMergeIfsTest(string test)
 		{
 			const string testCodeTemplate = @"
@@ -84,6 +86,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow(@"if(1==1) { if (2==2) {} }", @"if (1 == 1 && 2 == 2)")]
 		[DataRow(@"if (3==3) if (4==4) {}", @"if (3 == 3 && 4 == 4)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MergeIfsTest(string test, string fixedTest)
 		{
 			fixedTest += Environment.NewLine + "{ }";

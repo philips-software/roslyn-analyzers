@@ -33,6 +33,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"// Some comment")]
 		[DataRow(@"// Some comment ending with a dot.")]
 		[DataRow(@"// For example: int i = 0.")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TextualCommentAreFine(string content)
 		{
 			VerifySuccessfulCompilation(content);
@@ -41,6 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataTestMethod]
 		[DataRow(WrongCommentedLine, DisplayName = nameof(WrongCommentedLine)),
 		 DataRow(WrongCommentedChunk, DisplayName = nameof(WrongCommentedChunk))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CodeCommentsShouldTriggerDiagnostic(string content)
 		{
 			DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticIds.RemoveCommentedCode);

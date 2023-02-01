@@ -65,6 +65,7 @@ namespace ComplexConditionUnitTests {
 		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -75,6 +76,7 @@ namespace ComplexConditionUnitTests {
 		/// </summary>
 		[TestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
@@ -86,6 +88,7 @@ namespace ComplexConditionUnitTests {
 		/// </summary>
 		[TestMethod]
 		[DataRow(Wrong, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

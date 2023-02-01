@@ -106,6 +106,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, false, true, false)]
 		[DataRow(false, false, false, true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NonGeneratedCodeIsFlagged(bool tree, bool structStatement, bool constructor, bool switchStatement)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
@@ -127,6 +128,7 @@ public void Method(int i) { switch(i) { default: break;} }
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedConstructorIsNotFlagged()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = true;
@@ -142,6 +144,7 @@ public class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedStructIsNotFlagged()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = true;
@@ -155,6 +158,7 @@ public struct Foo { }
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedSwitchIsNotFlagged()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = true;
@@ -185,6 +189,7 @@ public class Foo
 		[DataRow(@"Foo.g", false, true, false)]
 		[DataRow(@"Foo.g", false, false, true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedFilesNamesAreNotFlagged(string fileNamePrefix, bool tree, bool constructor, bool switchStatement)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
@@ -199,7 +204,7 @@ public class Foo
 		[DataRow(@"Foo")]
 		[DataRow(@"Foo.xyz")]
 		[DataTestMethod]
-
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NonGeneratedFilesAreFlagged(string fileNamePrefix)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;

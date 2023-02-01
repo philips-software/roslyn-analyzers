@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
@@ -34,6 +35,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsFalse(true)")]
 		[DataRow("Assert.IsFalse(false)")]
 		[DataRow("Assert.IsFalse(!false)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteral(string given)
 		{
 			VerifyError(given, Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueLiteral));

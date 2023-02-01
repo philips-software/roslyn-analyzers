@@ -50,6 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.TestFramework\\MyHelper.cs")]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName="Namespace Match, Folder Does not")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReportIncorrectNamespaceMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
@@ -72,6 +73,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 1")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
@@ -97,6 +99,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 1")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReportIncorrectNamespaceMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
@@ -118,6 +121,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataTestMethod]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);

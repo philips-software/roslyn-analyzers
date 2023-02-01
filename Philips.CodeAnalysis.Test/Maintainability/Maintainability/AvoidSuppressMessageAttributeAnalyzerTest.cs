@@ -23,6 +23,7 @@ Foo.WhitelistedFunction
 		}
 		
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidSuppressMessageNotRaisedInGeneratedCode()
 		{
 			string baseline = @"
@@ -84,6 +85,7 @@ namespace WpfApp1 {
 		[DataRow("WhitelistedFunction", "", "System.Diagnostics.CodeAnalysis.SuppressMessage")]
 		[DataRow("WhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidSupressMessageRaisedInUserCode(string functionName, string usingStatement, string attribute)
 		{
 			string baseline = @"
