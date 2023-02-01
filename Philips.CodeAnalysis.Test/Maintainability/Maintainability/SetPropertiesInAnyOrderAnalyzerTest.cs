@@ -19,20 +19,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		private const string CorrectAutoProperties = @"
 namespace PropertiesinOrderTests {
     public class Number {
-        private int One { get; }
-        private int Two { get; }
-    }
-}";
-
-		private const string WrongInReturn = @"
-namespace PropertiesinOrderTests {
-    public class Number {
-        private int One { get; }
-        private int Two {
-            get {
-                return One + 1;
-            }
-        }
+        private int One { get; set; }
+        private int Two { get; set; }
     }
 }";
 
@@ -41,9 +29,8 @@ namespace PropertiesinOrderTests {
     public class Number {
         private int One { get; }
         private int Two {
-            get {
-                int two = One + 1;
-                return two;
+            set {
+                One = value - 1;
             }
         }
     }
@@ -65,10 +52,9 @@ namespace PropertiesinOrderTests {
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongInReturn, DisplayName = nameof(WrongInReturn)),
-		 DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
+		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenRefereningOtherPropertiesDiagnosticIsRaised(string testCode) {
+		public void WhenReferencingOtherPropertiesDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.SetPropertiesInAnyOrder);
 			VerifyDiagnostic(testCode, expected);
 		}
@@ -81,7 +67,7 @@ namespace PropertiesinOrderTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(WrongInReturn, filePath);
+			VerifyDiagnostic(WrongInAssignment, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

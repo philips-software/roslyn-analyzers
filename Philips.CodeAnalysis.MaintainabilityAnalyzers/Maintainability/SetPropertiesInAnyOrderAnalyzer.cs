@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.GetAccessorDeclaration);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SetAccessorDeclaration);
 		}
 		
 		private static void Analyze(SyntaxNodeAnalysisContext context)
