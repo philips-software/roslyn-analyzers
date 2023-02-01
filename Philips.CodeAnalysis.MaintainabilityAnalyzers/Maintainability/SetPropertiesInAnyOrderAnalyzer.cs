@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = @"Set properties in any order";
 		private const string MessageFormat = @"Avoid getting other properties when setting property {0}.";
-		private const string Description = @"Getting other properties in a setter makes this setter dependant on the order in which these properties are set.";
+		private const string Description = @"Getting other properties in a setter makes this setter dependent on the order in which these properties are set.";
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.SetPropertiesInAnyOrder),
