@@ -33,6 +33,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foo", false, 3)]
 		[DataRow("_foo", true, 3)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableNameIsCorrect(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -74,6 +75,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", true, 3)]
 		[DataRow("_foo_", true, 3)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableNameIgnoresPublicFields(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -107,6 +109,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromArray()
 		{
 			string baseline = @"class Foo 
@@ -122,6 +125,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromConstant()
 		{
 			string baseline = @"class Foo 
@@ -137,6 +141,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromCastConstant()
 		{
 			string baseline = @"class Foo 
@@ -152,6 +157,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromCharArray()
 		{
 			string baseline = @"class Foo 
@@ -167,6 +173,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromImplicitArray()
 		{
 			string baseline = @"public static class Foo 
@@ -182,6 +189,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromImplicitArrayInitializer()
 		{
 			string baseline = @"public static class Foo 
@@ -197,6 +205,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromArrayWrittenTo()
 		{
 			string baseline = @"public static class Foo 
@@ -218,6 +227,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromFunction()
 		{
 			string baseline = @"public static class Foo 
@@ -234,6 +244,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromDateTime()
 		{
 			string baseline = @"public static class Foo 
@@ -249,6 +260,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FieldVariableFromConstantValue()
 		{
 			string baseline = @"class Foo 
@@ -271,6 +283,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", false, 3)]
 		[DataRow("_foo_", false, 3)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventNameIsCorrect(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -311,6 +324,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__Foo", false, 5)]
 		[DataRow("_foo", false, 5)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LocalVariableNameIsCorrect(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -353,6 +367,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__Foo", "const", false, 5)]
 		[DataRow("_foo", "const", false, 5)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -395,6 +410,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
 		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LocalVariableNameIsCorrectForLoop(string content, bool isGood, int errorLine, int errorColumn)
 		{
 			string baseline = @"class Foo 
@@ -434,6 +450,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("using(var _i = new MemoryStream()){}", false, 5)]
 		[DataRow("using(var _I = new MemoryStream()){}", false, 5)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LocalVariableNameIsCorrectUsing(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 
@@ -473,6 +490,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false, 5)]
 		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false, 5)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
 		{
 			string baseline = @"class Foo 

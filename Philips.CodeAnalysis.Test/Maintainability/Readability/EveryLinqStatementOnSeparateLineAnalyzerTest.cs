@@ -70,6 +70,7 @@ public static class Foo
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectWithComments, DisplayName = nameof(CorrectWithComments)),
 		 DataRow(CorrectWithCommentsOnSeparateLine, DisplayName = nameof(CorrectWithCommentsOnSeparateLine))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
 		{
 
@@ -103,6 +104,7 @@ public static class Foo
 		[DataTestMethod]
 		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)), 
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
 			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.EveryLinqStatementOnSeparateLine));
@@ -114,6 +116,7 @@ public static class Foo
 		/// </summary>
 		[TestMethod]
 		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

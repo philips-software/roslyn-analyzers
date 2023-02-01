@@ -72,6 +72,7 @@ Foo.WhitelistedFunction";
 		[DataRow(10)]
 		[DataRow(20)]
 		[DataRow(50)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RollingTokenSetCountTest(int duplicateTokenThreshold)
 		{
 			var rollingTokenSet = new RollingTokenSet(new SumHashCalculator(duplicateTokenThreshold));
@@ -107,6 +108,7 @@ Foo.WhitelistedFunction";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RollingHashCalculator1Test()
 		{
 			var r = new RollingHashCalculator<int>(1, 256, 101);
@@ -122,6 +124,7 @@ Foo.WhitelistedFunction";
 		// See https://en.wikipedia.org/wiki/Rabin–Karp_algorithm for "hi" example
 		[DataTestMethod]
 		[DataRow(256, 101, 104, 105, 65)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RollingHashCalculator2Test(int b, int m, int val1, int val2, int result)
 		{
 			var r = new RollingHashCalculator<int>(2, b, m);
@@ -144,6 +147,7 @@ Foo.WhitelistedFunction";
 
 		// See https://en.wikipedia.org/wiki/Rabin–Karp_algorithm for "abracadabra" example
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void RollingHashCalculator3Test()
 		{
 			var r = new RollingHashCalculator<int>(3, 256, 101);
@@ -165,6 +169,7 @@ Foo.WhitelistedFunction";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SequenceEqualTest()
 		{
 			var r = new RollingHashCalculator<int>(4, 2048, 10007);
@@ -187,6 +192,7 @@ Foo.WhitelistedFunction";
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void KnownCollisionTest()
 		{
 			var r = new RollingHashCalculator<int>(30, 2048, 10007);
@@ -261,6 +267,7 @@ Foo.WhitelistedFunction";
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DuplicateDictionaryTest()
 		{
 			var dictionary = new DuplicateDetector();
@@ -287,6 +294,7 @@ Foo.WhitelistedFunction";
 
 		[DataTestMethod]
 		[DataRow("object obj = new object();", "Foo()")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidDuplicateCodeNoError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
@@ -297,6 +305,7 @@ Foo.WhitelistedFunction";
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidDuplicateCodeError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
@@ -306,6 +315,7 @@ Foo.WhitelistedFunction";
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidDuplicateCodeErrorInSameMethod()
 		{
 			string baseline = @"
@@ -324,6 +334,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidDuplicateCodeNoErrorWhenOverlapping()
 		{
 			// The first two initializations are identical to the second two initializations, but "int b = 0" is overlapping.

@@ -16,6 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenTo(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
@@ -35,6 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenToStruct(bool isWrittenTo)
 		{
 			string content = $@"
@@ -60,6 +62,7 @@ public class TestClass
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenToButRequiredForInterface(bool isExplicit)
 		{
 			string content = $@"
@@ -81,6 +84,7 @@ public class TestClass : IData
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenToButRequiredForBaseClass()
 		{
 			string content = $@"
@@ -104,6 +108,7 @@ public class TestClass : Data
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenToExpressionMethod(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
@@ -117,6 +122,7 @@ public class TestClass : Data
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParameterNotWrittenToNestedMethod()
 		{
 			string content = $@"public class TestClass
@@ -142,6 +148,7 @@ public class TestClass : Data
 		[DataRow(": Foo", false)]
 		[DataRow("", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyStatementMethodBody(string baseClass, bool isError)
 		{
 			string content = $@"
@@ -162,6 +169,7 @@ public class TestClass {baseClass}
 		[DataRow(": Foo", "_ = i.ToString()", false)]
 		[DataRow("", "_ = i.ToString()", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SingleStatementMethodBody(string baseClass, string statement, bool isError)
 		{
 			string content = $@"

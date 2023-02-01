@@ -80,6 +80,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("int.TryParse(\"3\", out int i);")]
 		[DataRow("float.TryParse(\"3.00\", out float i);")]
 		[DataRow("double.TryParse(\"3.00\", out double i);")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTryParseWithoutCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
@@ -101,6 +102,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("int.TryParse(\"3\", NumberStyles.Any, CultureInfo.InvariantCulture, out int i);")]
 		[DataRow("float.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out float i);")]
 		[DataRow("double.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out double i);")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotFlagTryParseWithCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
@@ -110,6 +112,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow("TestParser.TryParse(\"3\", out TestParser tp);")]
 		[DataRow("TestParser.TryParse();")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTryParseWithoutCultureForReferenceTypes(string s)
 		{
 			string editorCode = string.Format(ClassString, s);
@@ -131,7 +134,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow("TestParser.TryParse(\"3\", NumberStyles.Any, CultureInfo.InvariantCulture, out TestParser tp);")]
 		[DataRow("TestParser.TryParse(\"3\", CultureInfo.InvariantCulture, out TestParser tp);")]
-
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotFlagTryParseWithCultureForReferenceTypes(string s)
 		{
 			string editorCode = string.Format(ClassString, s);

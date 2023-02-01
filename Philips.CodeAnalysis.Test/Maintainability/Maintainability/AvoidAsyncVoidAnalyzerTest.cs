@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(true, "void", true)]
 		[DataRow(true, "Task", false)]
 		[DataRow(true, "Task<int>", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultObjectCreationTest(bool isAsync, string returnType, bool isError)
 		{
 			string code = $@"using System;
@@ -35,6 +36,7 @@ public class Tests
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultObjectCreationCorrectTest()
 		{
 			string correctTemplate = $@"
@@ -63,6 +65,7 @@ public class MyEventArgs : EventArgs
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultObjectCreationInCorrectTestForCustomEventArgs()
 		{
 			string correctTemplate = $@"
@@ -81,6 +84,7 @@ class FooClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultObjectCreationInCorrectTestForEventArgs()
 		{
 			string correctTemplate = $@"
@@ -109,6 +113,7 @@ class FooClass
     return 42;
 });")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidAsyncVoidDelegate(bool isError, string code)
 		{
 			string correctTemplate = $@"

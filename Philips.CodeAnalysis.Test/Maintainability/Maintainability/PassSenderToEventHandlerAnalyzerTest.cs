@@ -56,6 +56,7 @@ namespace PassSenderTests {
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -67,6 +68,7 @@ namespace PassSenderTests {
 		[DataTestMethod]
 		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.PassSenderToEventHandler);
 			VerifyDiagnostic(testCode, expected);
@@ -78,6 +80,7 @@ namespace PassSenderTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongSender, filePath);

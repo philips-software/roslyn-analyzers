@@ -48,6 +48,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		#region Public Interface
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DataTestMethodsMustHaveDataRows()
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -75,6 +76,7 @@ public class Tests
 		[DataRow("[DataRow(\"arg\"), DynamicData(\"test\"), DynamicData(\"test2\")]", true)]
 		[DataRow("", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DataTestMethodsMustHaveDataRows2(string arg, bool isError)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -101,6 +103,7 @@ public class Tests
 		[DataRow("[DynamicData(\"test\")]", true)]
 		[DataRow("", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustNotHaveDataRows(string arg, bool isError)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

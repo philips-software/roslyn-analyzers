@@ -39,6 +39,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(true, "Foo.Bar", false, "")]
 		[DataRow(false, "Foo.Bar", false, "")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
 		{
 			const string Template = @"
@@ -78,6 +79,7 @@ public static class Program
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExtensionMethodCallSelfErrors()
 		{
 			const string Template = @"
@@ -106,6 +108,7 @@ public static class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExtensionMethodCallSelfErrors2()
 		{
 			const string Template = @"
@@ -295,6 +298,7 @@ public class Baz
 }
 ", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExtensionMethodsDontCallDifferentMethods(string template, bool isError)
 		{
 			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();

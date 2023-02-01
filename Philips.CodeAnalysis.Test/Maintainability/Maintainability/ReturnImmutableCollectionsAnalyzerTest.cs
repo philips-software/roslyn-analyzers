@@ -185,6 +185,7 @@ namespace ReturnImmutableTests {
 		 DataRow(CorrectImmutableArray, DisplayName = nameof(CorrectImmutableArray)),
 		 DataRow(CorrectPrivate, DisplayName = nameof(CorrectPrivate)),
 		 DataRow(CorrectProperty, DisplayName = nameof(CorrectProperty))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -203,6 +204,7 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongIDictionary, CorrectReadOnlyDictionary, DisplayName = nameof(WrongIDictionary)),
 		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ReturnImmutableCollections);
 			VerifyDiagnostic(testCode, expected);
@@ -217,6 +219,7 @@ namespace ReturnImmutableTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongList, filePath);

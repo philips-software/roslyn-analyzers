@@ -289,6 +289,7 @@ namespace MultiLineConditionUnitTests
 		 DataRow(CorrectReturnStatement, DisplayName = nameof(CorrectReturnStatement)),
 		 DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine)),
 		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -303,6 +304,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool))]
 		[DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))]
 		[DataRow(WrongReturnStatement, CorrectReturnStatement, 11, 22, DisplayName = nameof(WrongReturnStatement))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
 			string testCode,
 			string fixedCode,
@@ -333,6 +335,7 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(Wrong4Violations, 3, DisplayName = nameof(Wrong4Violations))
 		]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMultiLineConditionIsIncorrectInMorePlacesCorrectNumberOfDiagnosticIsTriggered(
 			string testCode,
 			int expectedCount
@@ -354,6 +357,7 @@ namespace MultiLineConditionUnitTests
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongBreak, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

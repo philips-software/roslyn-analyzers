@@ -50,6 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		#region Test Methods
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReportEmptyNamespacePrefix()
 		{
 

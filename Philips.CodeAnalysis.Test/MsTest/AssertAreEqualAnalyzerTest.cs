@@ -34,6 +34,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckDefaultBehavior()
 		{
 			VerifyNoError(@"
@@ -71,6 +72,7 @@ Assert.AreEqual(default, GetValue());
 		[DataRow(false, "1u", null, false)]
 		[DataRow(false, "0u", null, false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
 		{
 			string expectedParameter = arg0 ?? "GetValue()";
@@ -125,6 +127,7 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 		[DataRow("1u")]
 		[DataRow("0u")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNull(string arg)
 		{
 			string template = @$"
@@ -144,6 +147,7 @@ Assert.IsNull({arg});
 		[DataRow("1u")]
 		[DataRow("0u")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNotNull(string arg)
 		{
 			string template = @$"
@@ -158,6 +162,7 @@ Assert.IsNotNull({arg});
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckWillIgnoreTypeArgument()
 		{
 			VerifyError(@"

@@ -16,6 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PragmaWarningNotAvoidedTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -44,6 +45,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PragmaAllowedDisableSelf()
 		{
 			string text = @"
@@ -61,6 +63,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PragmaAllowedGeneratedCode(string test, int expectedColumn)
 		{
 			string baseline = @"

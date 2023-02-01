@@ -60,6 +60,7 @@ namespace PathTooLongUnitTest {
 		[DataRow(ShortName, DisplayName = "ShortName"),
 		 DataRow(ShortAbsolutePath, DisplayName = "ShortAbsolutePath"),
 		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(Correct, filePath);
@@ -73,6 +74,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(LongAbsolutePath, DisplayName = "LongAbsolutePath"),
 		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
 			VerifyDiagnostic(Correct, filePath, expected);

@@ -92,6 +92,7 @@ AllowedMethodName
 		[DataRow("ANamespace", "AllowedType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod")]
 		[DataRow("ANamespace", "SomeType", "AllowedMethodName")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
@@ -101,6 +102,7 @@ AllowedMethodName
 		[DataTestMethod]
 		[DataRow("SomeNamespace", "SomeType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod2")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);

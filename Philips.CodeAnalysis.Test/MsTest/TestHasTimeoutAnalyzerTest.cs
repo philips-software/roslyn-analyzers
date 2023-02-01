@@ -50,7 +50,7 @@ class TestDefinitions
 		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\n    [Timeout(1000)]")]
 		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n    [Timeout(TestTimeouts.CiAppropriate)]")]
-
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
 		{
 			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
@@ -58,7 +58,7 @@ class TestDefinitions
 
 		[DataTestMethod]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
-
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
 		{
 			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
@@ -66,7 +66,7 @@ class TestDefinitions
 
 		[DataTestMethod]
 		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
-
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
 		{
 			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
@@ -76,6 +76,7 @@ class TestDefinitions
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.CiAppropriate)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributeWrong(string methodAttributes)
 		{
 			VerifyError(string.Empty, methodAttributes);
@@ -86,6 +87,7 @@ class TestDefinitions
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAcceptable)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.Smoke)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributeCorrect(string methodAttributes)
 		{
 			VerifyNoChange(string.Empty, methodAttributes);
@@ -99,6 +101,7 @@ class TestDefinitions
 		[DataRow("[TestMethod, Owner(\"\"), Timeout(1)]")]
 		[DataRow("[DataTestMethod, Timeout(1)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n [Timeout(TestTimeouts.CiAppropriate)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TimeoutAttributePresent(string methodAttributes)
 		{
 			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
@@ -109,12 +112,14 @@ class TestDefinitions
 		[DataRow("[TestCleanup]")]
 		[DataRow("[AssemblyInitialize]")]
 		[DataRow("[DataRow]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotApplyToNonTestMethods(string methodAttributes)
 		{
 			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"

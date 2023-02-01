@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"

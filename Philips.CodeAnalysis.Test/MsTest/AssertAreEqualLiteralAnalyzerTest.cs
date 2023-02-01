@@ -56,6 +56,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreNotEqual(true, !false)")]
 		[DataRow("Assert.AreNotEqual(false, true)")]
 		[DataRow("Assert.AreNotEqual(true, false)")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteral(string given)
 		{
 			VerifyError(given);
@@ -79,6 +80,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreEqual(!false, !Get())", "Assert.IsTrue(!Get())")]
 		[DataRow("Assert.AreNotEqual(!true, !Get())", "Assert.IsTrue(!Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())", "Assert.IsFalse(!Get())")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteralChanged(string given, string expected)
 		{
 			OtherClassSyntax = @"
@@ -106,6 +108,7 @@ static bool Get() { return true; }
 		[DataRow("Assert.AreEqual(!false, !Get())")]
 		[DataRow("Assert.AreNotEqual(!true, !Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteralNoChange(string given)
 		{
 			OtherClassSyntax = @"
@@ -116,6 +119,7 @@ static bool? Get() { return true; }
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AssertNullables()
 		{
 			// Confirm behavior of Assert.

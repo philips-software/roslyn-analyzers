@@ -41,6 +41,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 		[DataRow(false, "m.Object, EventArgs.Empty")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventMustHaveCorrectArguments(bool isError, string args)
 		{
 			const string template = @"
@@ -90,6 +91,7 @@ public static class Bar
 		[DataRow(false, "m.Object, EventArgs.Empty")]
 		[DataRow(false, "EventArgs.Empty")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventMustHaveCorrectArgumentCount(bool isError, string args)
 		{
 			const string template = @"
@@ -138,6 +140,7 @@ public static class Bar
 		[DataRow(true, "EventArgs.Empty", @"PH2053")]
 		//[DataRow(false, "new DerivedEventArgs()", DiagnosticIds.MockRaiseArgumentsMustMatchEvent)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventMustHaveCorrectArgumentCount2(bool isError, string args, string diagnosticId)
 		{
 			const string template = @"
@@ -190,6 +193,7 @@ public static class Bar
 		[DataRow(true, "EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
 		[DataRow(true, "EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 3, @"PH2053")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventMustHaveCorrectArgumentsNonEventHandler(bool isError, string args, int errorCount, string diagnosticId)
 		{
 			const string template = @"
@@ -245,6 +249,7 @@ public static class Bar
 		[DataRow(true, "EventArgs.Empty", 1, @"PH2054")]
 		[DataRow(true, "EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EventMustHaveCorrectArgumentsNonEventHandler2(bool isError, string args, int errorCount, string diagnosticId)
 		{
 			const string template = @"

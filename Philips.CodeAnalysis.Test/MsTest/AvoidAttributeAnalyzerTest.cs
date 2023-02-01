@@ -27,6 +27,7 @@ Foo.WhitelistedFunction
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Ignore]", 16)]
 		[DataRow(@"[Ignore]", 4)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidIgnoreAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -60,6 +61,7 @@ class Foo
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[Owner(""MK"")]", 4)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -90,6 +92,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"[TestInitialize]", 4)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTestInitializeMethodTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -121,6 +124,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"[TestCleanup]", 4)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTestCleanupMethodTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -152,6 +156,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"[ClassInitialize]", 4)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidClassInitializeMethodTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -183,6 +188,7 @@ class Foo
 
 		[DataTestMethod]
 		[DataRow(@"[ClassCleanup]", 4)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidClassCleanupMethodTest(string test, int expectedColumn)
 		{
 			string baseline = @"
@@ -216,6 +222,7 @@ class Foo
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhitelistIsApplied(string test)
 		{
 			string baseline = @"
@@ -238,6 +245,7 @@ class Foo
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhitelistIsAppliedUnresolvable(string test)
 		{
 			string baseline = @"

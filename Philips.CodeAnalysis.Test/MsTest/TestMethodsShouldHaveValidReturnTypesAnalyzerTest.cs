@@ -37,6 +37,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(true, "Task", false)]
 		[DataRow(true, "Task<int>", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustReturnVoid(bool isAsync, string returnType, bool isError)
 		{
 			string code = $@"using System;

@@ -165,6 +165,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckFixAllProvider()
 		{
 			// Arrange

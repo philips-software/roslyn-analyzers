@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedAbsoluteWindowsPaths()
 		{
 			const string template = @"
@@ -35,6 +36,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedAbsoluteWindowsPathWithDoubleSlash()
 		{
 			const string template = @"
@@ -53,6 +55,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedPathsRegardlessOfCase()
 		{
 			const string template = @"
@@ -70,6 +73,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedPaths2()
 		{
 			const string template = @"
@@ -98,6 +102,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedPathsWithSpace()
 		{
 			const string template = @"
@@ -116,6 +121,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesHardCodedPathsWithSpecialCharacters()
 		{
 			const string template = @"
@@ -135,6 +141,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotCatchNormalString()
 		{
 			const string template = @"
@@ -153,6 +160,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotCatchShortString()
 		{
 			const string template = @"
@@ -170,6 +178,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotCatchEmptyString()
 		{
 			const string template = @"
@@ -187,6 +196,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotCatchRelativePath()
 		{
 			const string template = @"
@@ -203,6 +213,7 @@ class foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesnotCatchPathsInComments()
 		{
 			const string template = @"

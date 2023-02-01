@@ -48,6 +48,7 @@ namespace ComplexConditionUnitTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -58,6 +59,7 @@ namespace ComplexConditionUnitTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);

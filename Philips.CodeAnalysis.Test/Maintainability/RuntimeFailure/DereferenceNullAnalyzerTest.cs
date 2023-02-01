@@ -36,6 +36,7 @@ class Foo
 		}
 		
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionWithNestedExpression()
 		{
 			string testCode = @"
@@ -81,6 +82,7 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "string t1 = y.ToString()")]
 		[DataRow("string z = \"hi\"", "int t2 = y.Length")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionFindingTest(string content1, string content2)
 		{
 			var format = GetTemplate();
@@ -101,6 +103,7 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("y=string.Empty", "int t2 = y.Length")]
 		[DataRow("if (y==null) int b = 0", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionNoFindingTest(string content1, string content2)
 		{
 			var format = GetTemplate();
@@ -110,6 +113,7 @@ Instruction i = method.Body.Instructions[0];
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionDifferentBlockTest()
 		{
 			string testCode = @"
@@ -132,6 +136,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfDereferenceTest()
 		{
 			string testCode = @"
@@ -154,6 +159,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckDereferenceTest()
 		{
 			string testCode = @"
@@ -175,6 +181,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTest()
 		{
 			string testCode = @"
@@ -193,6 +200,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTest()
 		{
 			string testCode = @"
@@ -215,6 +223,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTest()
 		{
 			string testCode = @"
@@ -234,6 +243,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckDereference2Test()
 		{
 			string testCode = @"
@@ -256,6 +266,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckDereference3Test()
 		{
 			string testCode = @"
@@ -274,6 +285,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckDereference4Test()
 		{
 			string testCode = @"
@@ -295,6 +307,7 @@ class Foo
 		}
 		
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionIfCheckHasValueTest()
 		{
 			string testCode = @"
@@ -316,6 +329,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionWhileCheckDereferenceTest()
 		{
 			string testCode = @"
@@ -339,6 +353,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DereferenceNullAsExpressionWhileCheckDereference2Test()
 		{
 			string testCode = @"

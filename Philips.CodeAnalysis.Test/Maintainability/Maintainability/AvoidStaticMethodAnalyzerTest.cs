@@ -75,6 +75,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowExternalCode()
 		{
 			string template = CreateFunction("static", externKeyword: "extern");
@@ -82,6 +83,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoreIfInStaticClass()
 		{
 			string template = CreateFunction("static", classStaticModifier: "static");
@@ -89,6 +91,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void OnlyCatchStaticMethods()
 		{
 			string template = CreateFunction("");
@@ -96,6 +99,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowStaticMainMethod()
 		{
 			string template = CreateFunction("static", methodName: "Main");
@@ -103,6 +107,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoreIfCallsLocalStaticMethod()
 		{
 			string template = CreateFunction("static", localMethodModifier: "static");
@@ -111,6 +116,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchIfUsesForeignStaticMethod()
 		{
 			string template = CreateFunction("static", foreignMethodModifier: "static");
@@ -118,6 +124,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowStaticFactoryMethod()
 		{
 			string template = CreateFunction("static", factoryMethod: true);
@@ -125,6 +132,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowStaticDynamicDataMethod()
 		{
 			string template = CreateFunction("static", returnType: "IEnumerable<object[]>");
@@ -132,6 +140,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchPlainStaticMethod()
 		{
 			string template = CreateFunction("static");
