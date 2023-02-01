@@ -1,7 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -20,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidPassByReference), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
