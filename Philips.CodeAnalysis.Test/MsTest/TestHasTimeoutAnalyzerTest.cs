@@ -14,9 +14,9 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestHasTimeoutTest : AssertCodeFixVerifier
+	public class TestHasTimeoutAnalyzerTest : AssertCodeFixVerifier
 	{
-		public TestHasTimeoutTest()
+		public TestHasTimeoutAnalyzerTest()
 		{
 			OtherClassSyntax = @"
 class TestTimeouts

@@ -55,10 +55,9 @@ AllowedMethodName
 				context.RegisterCompilationStartAction(AnalyzeCompilationStart);
 				context.EnableConcurrentExecution();
 				context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-				context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+				
 			}
 
-			[SuppressMessage("Build", "RS1012")]
 			private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
 			{
 				foreach (var file in context.Options.AdditionalFiles)
@@ -69,6 +68,7 @@ AllowedMethodName
 						_allowedSymbols.LoadAllowedMethods(text, context.Compilation);
 					}
 				}
+				context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
 			}
 
 			private void AnalyzeMethod(SymbolAnalysisContext context)

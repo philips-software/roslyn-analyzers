@@ -8,45 +8,6 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.Test.Helpers
 {
 	/// <summary>
-	/// Location where the diagnostic appears, as determined by path, line number, and column number.
-	/// </summary>
-	public readonly struct DiagnosticResultLocation
-	{
-		public DiagnosticResultLocation(int? line) : this(null, line, null)
-		{
-		}
-
-		public DiagnosticResultLocation(string path, int? line, int? column)
-			: this(path, line, column, null, null)
-		{ }
-		public DiagnosticResultLocation(string path, int? line, int? column, int? endLine, int? endColumn)
-		{
-			if (line.HasValue && line < -1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(line), "line must be >= -1");
-			}
-
-			if (column.HasValue && column < -1)
-			{
-				throw new ArgumentOutOfRangeException(nameof(column), "column must be >= -1");
-			}
-
-			Path = path;
-			Line = line;
-			Column = column;
-			EndLine = endLine;
-			EndColumn = endColumn;
-		}
-
-		public string Path { get; }
-		public int? Line { get; }
-		public int? Column { get; }
-
-		public int? EndLine { get; }
-		public int? EndColumn { get; }
-	}
-
-	/// <summary>
 	/// Struct that stores information about a Diagnostic appearing in a source
 	/// </summary>
 	public struct DiagnosticResult
@@ -76,29 +37,11 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public Regex Message { get; set; }
 
-		public string Path
-		{
-			get
-			{
-				return Locations.Length > 0 ? Locations[0].Path : "";
-			}
-		}
+		public string Path => Locations.Length > 0 ? Locations[0].Path : "";
 
-		public int? Line
-		{
-			get
-			{
-				return Locations.Length > 0 ? Locations[0].Line : -1;
-			}
-		}
+		public int? Line => Locations.Length > 0 ? Locations[0].Line : -1;
 
-		public int? Column
-		{
-			get
-			{
-				return Locations.Length > 0 ? Locations[0].Column : -1;
-			}
-		}
+		public int? Column => Locations.Length > 0 ? Locations[0].Column : -1;
 	}
 
 	internal static class DiagnosticResultHelper
@@ -124,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public static DiagnosticResult[] Append(this DiagnosticResult[] array, DiagnosticIds diagnosticId, Regex message = null)
 		{
-			DiagnosticResult[] larger = new DiagnosticResult[array.Length + 1];
+			var larger = new DiagnosticResult[array.Length + 1];
 			array.AsSpan().CopyTo(larger);
 			larger[array.Length] = Create(diagnosticId, message);
 			return larger;
