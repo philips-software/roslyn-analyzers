@@ -226,6 +226,7 @@ public class Foo
 		 DataRow(CorrectCatchAllAlias, DisplayName = nameof(CorrectCatchAllAlias)),
 		 DataRow(CorrectEnumerateFiles, DisplayName = nameof(CorrectEnumerateFiles)),
 		 DataRow(CorrectEnumerateDirectories, DisplayName = nameof(CorrectEnumerateDirectories))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -235,6 +236,7 @@ public class Foo
 		[DataRow(WrongDirectoryCreate, FixedDirectoryCreate, DisplayName = nameof(WrongDirectoryCreate)),
 		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, DisplayName = nameof(WrongEnumerateFiles)),
 		 DataRow(WrongDangerous, FixedDangerous, DisplayName = nameof(WrongDangerous))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentUnhandledExceptions));

@@ -176,6 +176,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle)),
 		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum)),
 		 DataRow(CorrectInTestClass, DisplayName = nameof(CorrectInTestClass))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -189,6 +190,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongConstLocal, DisplayName = nameof(WrongConstLocal)),
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidMagicNumbers);
 			VerifyDiagnostic(testCode, expected);
@@ -199,6 +201,7 @@ namespace DontUseMagicNumbersTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongLocal, filePath);

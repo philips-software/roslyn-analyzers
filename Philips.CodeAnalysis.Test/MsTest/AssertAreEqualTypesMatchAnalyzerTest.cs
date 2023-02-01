@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("d1", "b2", false)]
 		[DataRow("f1", "b2", false)]
 		[DataRow("x1", "b2", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AreEqualTypesMatchTest(string arg1, string arg2, bool isError)
 		{
 			string baseline = @"

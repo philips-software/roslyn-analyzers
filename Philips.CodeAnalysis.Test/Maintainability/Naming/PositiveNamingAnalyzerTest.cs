@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NegativeField()
 		{
 			const string template = @"
@@ -32,6 +33,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PositiveField()
 		{
 			const string template = @"
@@ -46,6 +48,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NegativeLocalVariable()
 		{
 			const string template = @"
@@ -63,6 +66,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NegativeProperty()
 		{
 			const string template = @"

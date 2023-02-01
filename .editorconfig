@@ -136,6 +136,7 @@ dotnet_diagnostic.IDE1005.severity = error
 dotnet_diagnostic.IDE1006.severity = error
 
 dotnet_code_quality.PH2006.folder_in_namespace = true
+dotnet_code_quality.PH2015.allowed_test_categories = TestDefinitions.UnitTests
 dotnet_code_quality.PH2028.company_name = Koninklijke Philips N.V.
 dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
 dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis

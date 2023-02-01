@@ -258,6 +258,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfGreaterLessThanOrEqual, DisplayName = nameof(CorrectNumberOfGreaterLessThanOrEqual)),
 		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift)),
 		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -275,6 +276,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
 		 DataRow(WrongNumberOfPlusEqual, DiagnosticIds.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
 			VerifyDiagnostic(testCode, expected);
@@ -285,6 +287,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongNumberOfPlusMinus, filePath);

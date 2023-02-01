@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNestedStringFormat()
 		{
 			const string template = @"
@@ -36,6 +37,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNestedInterpolatedStringFormat()
 		{
 			const string template = @"
@@ -53,6 +55,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNestedInterpolatedStringFormatCustomMethod()
 		{
 			const string template = @"
@@ -75,6 +78,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly()
 		{
 			const string template = @"
@@ -93,6 +97,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly2()
 		{
 			const string template = @"
@@ -124,6 +129,7 @@ class Foo
 		[DataRow("{0}")]
 		[DataRow("{1}")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly2a(string arg)
 		{
 			string template = $@"
@@ -151,6 +157,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly3()
 		{
 			const string template = @"
@@ -169,6 +176,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly3a()
 		{
 			const string template = @"
@@ -187,6 +195,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly4()
 		{
 			const string template = @"
@@ -215,6 +224,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly5()
 		{
 			const string template = @"
@@ -233,6 +243,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly6()
 		{
 			const string template = @"
@@ -259,6 +270,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly6a()
 		{
 			const string template = @"
@@ -289,6 +301,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyFromStringMethod()
 		{
 			const string template = @"
@@ -315,6 +328,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyFromIntField()
 		{
 			const string template = @"
@@ -341,6 +355,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyFromLocal()
 		{
 			const string template = @"
@@ -368,6 +383,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyFromParameter()
 		{
 			const string template = @"
@@ -394,6 +410,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyFromOutParameter()
 		{
 			const string template = @"
@@ -428,6 +445,7 @@ class Foo
 		[DataRow("\"{0}\"", ", errorMessage", true)]
 		[DataRow("\"this is a test\"", "", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyLogStatement(string format, string args, bool isError)
 		{
 			const string template = @"
@@ -474,6 +492,7 @@ class Foo
 		[DataRow("$\"this is a test\"")]
 		[DataRow("$\"{errorMessage}\"")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyIssue134(string format)
 		{
 			const string template = @"
@@ -496,6 +515,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly6b()
 		{
 			const string template = @"
@@ -526,6 +546,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselessly6c()
 		{
 			const string template = @"
@@ -544,6 +565,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNoNestedStringFormat()
 		{
 			const string template = @"
@@ -561,6 +583,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNoNestedStringFormat2()
 		{
 			const string template = @"
@@ -581,6 +604,7 @@ class Foo
 		[DataRow(@"string.Format(""{0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""{0}"", new object[] { Environment.NewLine })")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorsOnPropertyLikeStrings(string argument)
 		{
 			string template = @$"
@@ -604,6 +628,7 @@ class Foo
 		[DataRow(@"string.Format(""This is a test {0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""This is a test {0}"", new object[] { Environment.NewLine })")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoresFormatStringsWithAdditionalText(string argument)
 		{
 			string template = @$"

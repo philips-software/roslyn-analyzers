@@ -3,6 +3,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Common
 {
@@ -15,6 +16,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		 DataRow("System.Exception", "Exception"),
 		 DataRow("System.IO.IOException", "IOException"),
 		 DataRow("IO.IOException", "System.IO.IOException")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ComparingEquivalentShouldReturnZero(string left, string right)
 		{
 			// Arrange
@@ -32,6 +34,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		 DataRow("System.Exception", null),
 		 DataRow("System.IO.IOException", ""),
 		 DataRow("", "System.IO.IOException")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void InvalidInputShouldReturnNonZero(string left, string right)
 		{
 			// Arrange
@@ -46,6 +49,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow("System.Exception"),
 		 DataRow("System.IO.IOException"),
 		 DataRow("")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GetHashCodeShouldReturnSameAsInput(string input)
 		{
 			// Arrange

@@ -17,6 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class DisallowDisposeRegistrationCodeFixProviderTest : AssertCodeFixVerifier
 	{
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DisallowDisposeRegistrationTest()
 		{
 			string givenText = @"

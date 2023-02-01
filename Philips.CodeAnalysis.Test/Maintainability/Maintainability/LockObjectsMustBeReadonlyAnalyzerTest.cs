@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("static readonly object _foo", false)]
 		[DataRow("readonly object _foo", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonly(string field, bool isError)
 		{
 			const string template = @"using System;
@@ -48,6 +49,7 @@ class Foo
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonlyLocalVariables(string field, bool isError)
 		{
 			const string template = @"using System;
@@ -71,6 +73,7 @@ class Foo
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonlyFunctionReturn(string field, bool isError)
 		{
 			const string template = @"using System;
@@ -98,6 +101,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonlyPartialStatement()
 		{
 			const string template = @"using System;
@@ -115,6 +119,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonlyPartialStatement2()
 		{
 			const string template = @"using System;
@@ -132,6 +137,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LockObjectsMustBeReadonlyVerifyErrorMessage()
 		{
 			const string template = @"using System;

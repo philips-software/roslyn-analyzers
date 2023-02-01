@@ -82,6 +82,7 @@ namespace AvoidUsingParametersTest {
 		 DataRow(CorrectOutParameter, DisplayName = nameof(CorrectOutParameter)),
 		 DataRow(CorrectRefParameter, DisplayName = nameof(CorrectRefParameter)),
 		 DataRow(CorrectStaticField, DisplayName = nameof(CorrectStaticField))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -92,6 +93,7 @@ namespace AvoidUsingParametersTest {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidUsingParametersAsTempVariables);
 			VerifyDiagnostic(testCode, expected);
@@ -102,6 +104,7 @@ namespace AvoidUsingParametersTest {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(Wrong, filePath);

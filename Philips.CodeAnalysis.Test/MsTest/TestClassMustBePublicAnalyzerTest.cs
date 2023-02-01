@@ -37,6 +37,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestClassMustBePublic(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -78,6 +79,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected static", false)]
 		[DataRow("public", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestClassWithAssemblyInitializeMustBePublicStatic(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

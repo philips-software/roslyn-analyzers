@@ -36,6 +36,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void HasWrongVersionTriggersDiagnostics()
 		{
 			var diagnostics = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssemblyVersionChange);

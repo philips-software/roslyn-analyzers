@@ -34,6 +34,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("int")]
 		[DataRow("string")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SwitchWithOnlyDefaultCaseIsFlagged(string type)
 		{
 			string input = $@"
@@ -75,6 +76,7 @@ public class Foo
 ";
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
@@ -83,6 +85,7 @@ public class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			VerifyDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
@@ -92,6 +95,7 @@ public class Foo
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SwitchWithMultipleCasesIsFlagged(string type, string value)
 		{
 			string input = $@"
@@ -117,6 +121,7 @@ public static class Foo
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SwitchWithMultipleCasesIsIgnored(string type, string value)
 		{
 			string input = $@"
@@ -144,6 +149,7 @@ public static class Foo
 		[DataRow("int")]
 		[DataRow("string")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SwitchExpressionWithOnlyDefaultCaseIsFlagged(string type)
 		{
 			string input = $@"
@@ -166,6 +172,7 @@ public static class Foo
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SwitchExpressionWithMultipleCasesIsIgnored(string type, string value)
 		{
 			string input = $@"

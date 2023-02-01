@@ -57,6 +57,7 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow("ClassCleanup")]
 		[DataRow("AssemblyCleanup")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyMethodTriggersAnalyzer(string attribute)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

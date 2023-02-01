@@ -122,6 +122,7 @@ namespace InnerExceptionUnitTest {
 			DataRow(RethrowOriginal, DisplayName = "RethrowOriginal"),
 			DataRow(HttpResponseInline, DisplayName = "HttpResponseInline"),
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -132,6 +133,7 @@ namespace InnerExceptionUnitTest {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(ThrowOther, DisplayName = "ThrowOther")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ThrowInnerException);
@@ -143,6 +145,7 @@ namespace InnerExceptionUnitTest {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(ThrowOther, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

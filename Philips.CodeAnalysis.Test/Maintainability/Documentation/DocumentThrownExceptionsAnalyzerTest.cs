@@ -259,6 +259,7 @@ public class Foo
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow)),
 		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -268,6 +269,7 @@ public class Foo
 		[DataRow(WrongNoCref, FixedNoCref, DisplayName = nameof(WrongNoCref))]
 		[DataRow(WrongEmptyCref, FixedEmptyCref, DisplayName = nameof(WrongEmptyCref))]
 		[DataRow(WrongType, FixedWrongType, DisplayName = nameof(WrongType))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.DocumentThrownExceptions));
@@ -278,6 +280,7 @@ public class Foo
 		[DataRow(WrongNoDoc, CorrectWithThrow, DisplayName = nameof(WrongNoDoc))]
 		[DataRow(WrongInProperty, CorrectInProperty, DisplayName = nameof(WrongInProperty))]
 		[DataRow(WrongRethrow, CorrectRethrow, DisplayName = nameof(WrongRethrow))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
 			// See https://github.com/dotnet/roslyn/issues/58210. Until decide how we want to handle this, these will pass.

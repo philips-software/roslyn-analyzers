@@ -17,6 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class AvoidEmptyTypeInitializerAnalyzerTest : CodeFixVerifier
 	{
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidEmptyTypeInitializerPartialDoesntCrash()
 		{
 			const string template = @"public class Foo 
@@ -37,6 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("", "int x = 4;", false)]
 		[DataRow("static", "int x = 4;", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidEmptyTypeInitializerStatic(string modifier, string content, bool isError)
 		{
 			const string template = @"public class Foo 
@@ -76,6 +78,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"  /** <summary>
   </summary> */")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
 		{
 			const string template = @"public class Foo 

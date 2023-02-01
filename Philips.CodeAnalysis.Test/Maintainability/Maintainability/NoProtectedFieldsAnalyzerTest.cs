@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("private", false)]
 		[DataRow("internal", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ProtectedFieldsRaiseError(string modifiers, bool isError)
 		{
 			const string template = @"""

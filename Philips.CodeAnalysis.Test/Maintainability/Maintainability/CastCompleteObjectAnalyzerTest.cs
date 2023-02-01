@@ -48,6 +48,7 @@ namespace CastCompleteTests {
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectSingleField, DisplayName = nameof(CorrectSingleField)),
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -58,6 +59,7 @@ namespace CastCompleteTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.CastCompleteObject);
 			VerifyDiagnostic(testCode, expected);
@@ -68,6 +70,7 @@ namespace CastCompleteTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongMulipleFields, filePath);

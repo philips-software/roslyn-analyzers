@@ -38,6 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRange(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -87,6 +88,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckElseClause(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -119,6 +121,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNestedRange(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -178,6 +181,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNestedRange2(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -210,6 +214,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNestedRange2a()
 		{
 			const string template = @"
@@ -247,6 +252,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckNestedRange3(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -288,6 +294,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRangeBraces(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -333,6 +340,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRangeNoBraces(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -376,6 +384,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRange2(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -407,6 +416,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRange3(string declaration, string countLengthMethod)
 		{
 			const string template = @"
@@ -436,6 +446,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckArrayRange4(string declaration, string countLengthMethod)
 		{
 			const string template = @"

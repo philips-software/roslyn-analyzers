@@ -15,6 +15,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public class ExpectedExceptionAttributeAnalyzerTest : DiagnosticVerifier
 	{
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExpectedExceptionAttributeTest()
 		{
 			string givenText = @"

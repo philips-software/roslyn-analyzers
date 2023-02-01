@@ -17,6 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("ValueTask", "4")]
 		[DataRow("Task", "() => 4")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultTest(string taskType, string argument)
 		{
 			string template = $@"
@@ -38,6 +39,7 @@ class FooClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultObjectCreationTest()
 		{
 			string template = $@"
@@ -59,6 +61,7 @@ class FooClass
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultCallMethodTest()
 		{
 			string template = $@"
@@ -84,6 +87,7 @@ class FooClass
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTaskResultCallMethodThisTest()
 		{
 			string template = $@"

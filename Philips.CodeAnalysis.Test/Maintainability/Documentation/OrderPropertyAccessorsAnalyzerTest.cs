@@ -34,6 +34,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"{ set; get; }", true)]
 		[DataRow(@"{ set{ } get{ return default; } }", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void OrderTests(string property, bool isError)
 		{
 			string text = $@"

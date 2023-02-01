@@ -51,6 +51,7 @@ class Foo
 		[DataRow("data.Item2", true)]
 		[DataRow("data.num", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NamedTuplesDontCauseErrors(string argument, bool isError)
 		{
 			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
