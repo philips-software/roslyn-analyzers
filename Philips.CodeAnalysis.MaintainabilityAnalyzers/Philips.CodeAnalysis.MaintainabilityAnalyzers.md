@@ -83,4 +83,5 @@
 | PH2130  | Avoid implementing finalizers                | Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.|
 | PH2131  | Align filename and class name                | Name the file after the class, struct or enum it contains. |
 | PH2132  | Remove commented code                        | Remove commented code.|
+| PH2133  | Unmanaged objects need disposing             | Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable |
 | PH2134  | Set properties in any order                  | Getting other properties in a setter makes this setter dependent on the order in which these properties are set. |
