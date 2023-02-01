@@ -12,6 +12,8 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System.Collections.Generic;
 using System.Linq;
+using Philips.CodeAnalysis.Test.Verifiers;
+using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {

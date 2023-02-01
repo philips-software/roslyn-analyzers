@@ -9,8 +9,9 @@ using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Test.Helpers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Verifiers
 {
 	/// <summary>
 	/// Superclass of all Unit Tests for DiagnosticAnalyzers
