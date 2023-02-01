@@ -126,5 +126,6 @@ namespace Philips.CodeAnalysis.Common
 		AlignFilenameAndClassName = 2131,
 		RemoveCommentedCode = 2132,
 		UnmanagedObjectsNeedDisposing = 2133,
+		SetPropertiesInAnyOrder = 2134,
 	}
 }
