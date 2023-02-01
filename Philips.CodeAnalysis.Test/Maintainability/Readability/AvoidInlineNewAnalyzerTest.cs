@@ -39,6 +39,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontInlineNewCall()
 		{
 			var file = CreateFunction("string str = new object().ToString()");
@@ -46,6 +47,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfPlacedInLocal()
 		{
 			var file = CreateFunction("object obj = new object(); string str = obj.ToString();");
@@ -53,6 +55,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfPlacedInField()
 		{
 			var file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
@@ -62,6 +65,7 @@ class Foo
 		[DataRow("new Foo()")]
 		[DataRow("(new Foo())")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontInlineNewCallCustomType(string newVarient)
 		{
 			var file = CreateFunction($"string str = {newVarient}.ToString()");
@@ -69,6 +73,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfPlacedInLocalCustomType()
 		{
 			var file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
@@ -76,6 +81,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfPlacedInFieldCustomType()
 		{
 			var file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
@@ -84,6 +90,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfPlacedInContainer()
 		{
 			var file = CreateFunction("var v = new List<object>(); v.Add(new object());");
@@ -91,6 +98,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfReturned()
 		{
 			var file = CreateFunction("return new object();");
@@ -98,6 +106,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorIfReturned()
 		{
 			var file = CreateFunction("return new object().ToString();");
@@ -105,6 +114,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoErrorIfThrown()
 		{
 			var file = CreateFunction("throw new Exception();");
@@ -112,6 +122,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorIfThrown()
 		{
 			var file = CreateFunction("throw new object().Foo;");

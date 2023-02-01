@@ -23,12 +23,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FixAllProviderTest()
 		{
 			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCodeFixProvider().GetFixAllProvider());
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesEmptyPrivateMethod()
 		{
 			const string template = @"
@@ -46,6 +48,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesEmptyStatementMethod()
 		{
 			const string template = @"
@@ -74,6 +77,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesEmptyStatementBlock()
 		{
 			const string template = @"
@@ -94,6 +98,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesStatementBlockWithJustComment()
 		{
 			const string template = @"
@@ -112,6 +117,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotCatchStatementBlock()
 		{
 			const string template = @"
@@ -133,6 +139,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoesNotFailOnEmptyConstructor()
 		{
 			const string template = @"
@@ -147,6 +154,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorWithEmptyStatementBlockFails()
 		{
 			const string template = @"
@@ -163,6 +171,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyCatchBlockFails()
 		{
 			const string template = @"
@@ -186,6 +195,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyPublicMethodAllowed()
 		{
 			const string template = @"
@@ -203,6 +213,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyProtectedMethodAllowed()
 		{
 			const string template = @"
@@ -220,6 +231,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParenthesizedLambdasAllowed()
 		{
 			const string template = @"
@@ -237,6 +249,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SimpleLambdasAllowed()
 		{
 			const string template = @"
@@ -255,6 +268,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void EmptyLockBlocksAllowed()
 		{
 			const string template = @"
@@ -274,6 +288,7 @@ class Foo
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PublicMethodWithEmptyStatementBlockFails()
 		{
 			const string template = @"

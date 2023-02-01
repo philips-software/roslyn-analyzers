@@ -55,6 +55,7 @@ public class DerivedTestMethod : TestMethod
 		[DataRow(false, "object", "abstract", "[ClassInitialize]")]
 		[DataRow(false, "object", "abstract", "[ClassCleanup]")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustBeInTestClass(bool isError, string baseClass, string classQualifier, string testType)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

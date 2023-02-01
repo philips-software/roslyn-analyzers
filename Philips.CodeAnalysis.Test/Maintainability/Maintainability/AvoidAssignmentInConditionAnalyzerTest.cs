@@ -123,6 +123,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectInitializer, DisplayName = "CorrectInitializer"),
 		 DataRow(CorrectPropertyAssignment, DisplayName = "CorrectPropertyAssignment"),
 		 DataRow(CorrectNullCoalescing, DisplayName = "CorrectNullCoalescing")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -134,6 +135,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssignmentInCondition);
 			VerifyDiagnostic(testCode, expected);
@@ -144,6 +146,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(Violation, filePath);

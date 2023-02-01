@@ -44,6 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("static readonly int i = 1;", false)]
 		[DataRow("private int i = 1;", false)]
 		[DataRow("private struct testStruct { public int i; }", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidPublicMemberVariablesTest(string content, bool isError)
 		{
 			const string template = @"public class C {{    {0}       }}";

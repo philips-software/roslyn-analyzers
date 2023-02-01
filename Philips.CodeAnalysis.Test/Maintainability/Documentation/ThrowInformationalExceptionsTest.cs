@@ -139,6 +139,7 @@ public class Foo
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
 		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString)),
 		 DataRow(CorrectAddStatement, DisplayName = nameof(CorrectAddStatement))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -147,6 +148,7 @@ public class Foo
 		[DataTestMethod]
 		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments)),
 		DataRow(WrongIssue273, DisplayName = nameof(WrongIssue273))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
 			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions, new Regex("Specify context to the .+, by using a constructor overload that sets the Message property.")));

@@ -35,6 +35,7 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow(@"protected", false)]
 		[DataRow(@"protected internal", false)]
 		[DataRow(@"private protected", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MethodAccessModifierTest(string given, bool isError)
 		{
 			string baseline = @"
@@ -56,6 +57,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow(@"[TestClass]", true)]
 		[DataRow(@"", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ClassTypeTest(string given, bool isError)
 		{
 			string baseline = @"
@@ -83,6 +85,7 @@ class Foo
 		[DataRow(@"[ClassCleanup()]", false)]
 		[DataRow(@"[ClassInitialize()", false)]
 		[DataRow(@"", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MethodTypeTest(string given, bool isError)
 		{
 			string baseline = @"

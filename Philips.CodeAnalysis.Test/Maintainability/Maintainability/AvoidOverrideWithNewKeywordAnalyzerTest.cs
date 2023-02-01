@@ -81,6 +81,7 @@ namespace MultiLineConditionUnitTests
 
 		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void OverrideVirtualDoesNotTriggersDiagnostics(string input)
 		{
 
@@ -90,6 +91,7 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)), 
 		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void OverrideWithNewKeywordTriggersDiagnostics(string input)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidOverridingWithNewKeyword,
@@ -102,6 +104,7 @@ namespace MultiLineConditionUnitTests
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongMethod, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			VerifyDiagnostic(testCode, filePath);

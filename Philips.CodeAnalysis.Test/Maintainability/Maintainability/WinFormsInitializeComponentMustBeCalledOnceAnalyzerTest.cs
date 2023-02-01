@@ -245,6 +245,7 @@ class ContainerControl
 		[DataRow(@"", @"", true, true)]
 		[DataRow(@"InitializeComponent();", @"", false, true)]
 		[DataRow(@"", @"InitializeComponent();", false, false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzers(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
 		{
 			string code = CreateCode(param1, param2);
@@ -272,6 +273,7 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructors()
 		{
 			string code = CreateCodeWithOutConstructors();
@@ -283,6 +285,7 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors()
 		{
 			string code = CreateCodeWithDisjointConstructors();
@@ -294,6 +297,7 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClass()
 		{
 			string code = CreateCodeWithStaticConstructor();
@@ -305,6 +309,7 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
 		{
 			string code = CreateCode(@"", @"");

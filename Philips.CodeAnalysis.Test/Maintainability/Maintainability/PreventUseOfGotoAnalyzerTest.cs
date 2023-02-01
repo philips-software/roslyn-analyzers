@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoLabeledStatements()
 		{
 			const string template = @"
@@ -36,6 +37,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoLabeledStatementsWithGoto()
 		{
 			const string template = @"
@@ -56,6 +58,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoGotoCase()
 		{
 			const string template = @"
@@ -78,6 +81,7 @@ class Foo
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoGotoDefault()
 		{
 			const string template = @"

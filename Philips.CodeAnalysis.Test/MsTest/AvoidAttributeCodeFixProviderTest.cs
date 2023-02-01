@@ -35,6 +35,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("[TestInitialize]\n public void SomeMethod() {int i = 5;}")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTestInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
@@ -48,6 +49,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("[ClassInitialize]\n public void SomeMethod() {int i = 5;}")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidClassInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
@@ -60,6 +62,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("[TestCleanup]\n public void SomeMethod() {int i = 5;}")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidTestCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
@@ -72,6 +75,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("[ClassCleanup]\n public void SomeMethod() {int i = 5;}")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidClassCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);

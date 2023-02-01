@@ -36,6 +36,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustBeInTestClass(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

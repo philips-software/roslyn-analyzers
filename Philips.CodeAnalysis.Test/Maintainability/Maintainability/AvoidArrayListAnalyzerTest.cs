@@ -83,6 +83,7 @@ namespace AvoidArrayListTests {
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectField, DisplayName = nameof(CorrectField)),
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			VerifySuccessfulCompilation(testCode);
@@ -95,6 +96,7 @@ namespace AvoidArrayListTests {
 		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)), 
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidArrayList);
 			VerifyDiagnostic(testCode, expected);
@@ -109,6 +111,7 @@ namespace AvoidArrayListTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			VerifyDiagnostic(WrongLocal, filePath);

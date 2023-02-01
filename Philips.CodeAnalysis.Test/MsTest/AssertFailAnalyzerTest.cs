@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
@@ -27,6 +28,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#region Public Interface
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertFailInGuardedIfStatement()
 		{
 			VerifyError(@"
@@ -39,6 +41,7 @@ if(!isDone)
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertFailInGuardedElseStatement()
 		{
 			VerifyError(@"
@@ -54,6 +57,7 @@ else
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertFailInGuardedElseStatementWithoutBraces()
 		{
 			VerifyError(@"
@@ -67,6 +71,7 @@ else
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoreAssertFailInCatchBlock()
 		{
 			VerifyNoError(@"
@@ -81,6 +86,7 @@ catch
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertFailInTryBlock()
 		{
 			VerifyError(@"
@@ -95,6 +101,7 @@ catch
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoreAssertInForeach()
 		{
 			VerifyNoError(@"
@@ -107,6 +114,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertInEmptyForeach()
 		{
 			VerifyError(@"
@@ -118,6 +126,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertInEmptyForeachNoBraces()
 		{
 			VerifyError(@"
@@ -128,6 +137,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IgnoreAssertInEmptyUsing()
 		{
 			VerifyNoError(@"
@@ -140,6 +150,7 @@ using(foo)
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertEndingForeachLoop()
 		{
 			VerifyError(@"
@@ -156,6 +167,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertEndingForeachLoopNoBraces()
 		{
 			VerifyError(@"
@@ -170,6 +182,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertEndingForeachLoopElse()
 		{
 			VerifyError(@"
@@ -188,6 +201,7 @@ foreach(var foo in Array.Empty<int>())
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FlagAssertEndingForeachLoopNoBracesElse()
 		{
 			VerifyError(@"

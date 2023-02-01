@@ -64,6 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("")]
 		[DataRow("test")]
 		[DataRow("Philips.Test")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReportIncorrectNamespacePrefix(string prefix)
 		{
 
@@ -83,6 +84,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotReportANamespacePrefixError()
 		{
 			string code = string.Format(ClassString, configuredPrefix + ".");

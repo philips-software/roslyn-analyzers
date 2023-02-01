@@ -31,6 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("new object()", true)]
 		[DataRow("new object().ToString()", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void PreventLockOnUncapturedVariable(string lockText, bool expectedError)
 		{
 			string text = @$"

@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[DataTestMethod]
 		[DataRow(@"Thread.Sleep(200);", 5)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ThreadSleepNotAvoidedTest(string test, int expectedColumn)
 		{
 			string baseline = @"

@@ -29,6 +29,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#region Public Interface
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustHaveUniqueNames()
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;

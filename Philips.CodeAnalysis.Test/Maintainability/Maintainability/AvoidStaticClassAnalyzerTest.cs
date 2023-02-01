@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesShouldWhitelistTest()
 		{
 			HashSet<string> exceptions = new()
@@ -100,6 +101,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesOnlyConstFieldTest()
 		{
 			string testClass = $@"
@@ -112,6 +114,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesViolatingFieldTest()
 		{
 			string testClass = $@"
@@ -125,6 +128,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesMixFieldTest()
 		{
 			string testClass = $@"
@@ -141,6 +145,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesMixViolationTest()
 		{
 			string testClass = $@"
@@ -157,6 +162,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesRogueMethodTest()
 		{
 			string testClass = $@"
@@ -173,6 +179,7 @@ AllowedEnumeration";
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesTest()
 		{
 			var file = CreateFunction("static");
@@ -181,6 +188,7 @@ AllowedEnumeration";
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
@@ -188,6 +196,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesShouldWhitelistWildCardClassTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName);
@@ -197,6 +206,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
@@ -207,6 +217,7 @@ AllowedEnumeration";
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidNoStaticClassesTest()
 		{
 			var file = CreateFunction("");

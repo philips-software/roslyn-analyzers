@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("[TestMethod, Description(TestDescriptions.longDescription)]", "[TestMethod]")]
 		[DataRow("[TestMethod, Description(\"asdfasdkfasdfkasd\")]", "[TestMethod]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IncorrectDescriptionAttribute(string methodAttributes, string expectedMethodAttributes)
 		{
 			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
@@ -33,12 +34,14 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("[TestMethod][Description(TestDescriptions.shortDescription)]")]
 		[DataRow("[TestMethod, Description(TestDescriptions.shortDescription)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CorrectDescriptionAttribute(string methodAttributes)
 		{
 			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"

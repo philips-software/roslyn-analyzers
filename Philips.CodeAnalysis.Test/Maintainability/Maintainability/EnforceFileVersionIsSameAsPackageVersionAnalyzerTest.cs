@@ -27,6 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("1.0.0", "1.0.0-ci.1", false)]
 		[DataRow("1.1.2", "1.1.2+417ce", false)]
 		[DataRow("1.1.2", "1.1.2-beta+417ce", false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
 			string code = $@"
@@ -57,6 +58,7 @@ class FooClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoDiagnosticWhenNoPackageVersion()
 		{
 			string code = $@"
@@ -79,6 +81,7 @@ class FooClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void NoDiagnosticWhenNoFileVersionOrPackageVersion()
 		{
 			string code = $@"

@@ -42,6 +42,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustExistViaNewMock(string arguments, bool isError)
 		{
 			const string template = @"
@@ -78,6 +79,7 @@ public static class Bar
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustExistViaNewMock2()
 		{
 			const string template = @"
@@ -110,6 +112,7 @@ public static class Bar
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustExistViaNewMock3()
 		{
 			const string template = @"
@@ -131,6 +134,7 @@ public static class Bar
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MockBehaviorCanBeTakenFromMethodParameter()
 		{
 			const string template = @"
@@ -162,6 +166,7 @@ public static class Bar
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MockBehaviorCanBeTakenFromLocal()
 		{
 			const string template = @"
@@ -192,6 +197,7 @@ public static class Bar
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void MockBehaviorCanBeTakenFromField()
 		{
 			const string template = @"
@@ -225,6 +231,7 @@ public static class Bar
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DelegateConstructorsMustExistViaNewMock(string arguments, bool isError)
 		{
 			const string template = @"
@@ -262,6 +269,7 @@ public static class Bar
 		[DataRow("(MockBehavior.Default) { TestProperty = string.Empty }", false)]
 		[DataRow("(1, 2) { TestProperty = string.Empty }", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DelegateConstructorsMustHandleNoArgumentList(string arguments, bool isError)
 		{
 			const string template = @"
@@ -302,6 +310,7 @@ public static class Bar
 		[DataRow("string.Empty, false", false)]
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorHandlesTypesCorrectly(string arguments, bool isError)
 		{
 			const string template = @"
@@ -343,6 +352,7 @@ public static class Bar
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataRow("DateTime.Now, false", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorHandlesGenericsTypesCorrectly(string arguments, bool isError)
 		{
 			const string template = @"using System;
@@ -384,6 +394,7 @@ public static class Bar
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustExistViaCreate(string arguments, bool isError)
 		{
 			const string template = @"
@@ -422,6 +433,7 @@ public static class Bar
 
 		[DataRow("", false)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustExistViaMockOf(string arguments, bool isError)
 		{
 			const string template = @"
@@ -467,6 +479,7 @@ public static class Bar
 		[DataRow("Mockable m = repo.Create<Mockable")]
 		[DataRow("Mockable m = repo.Create<Mockable>")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustNotCauseCrash(string statement)
 		{
 			const string template = @"
@@ -494,6 +507,7 @@ public static class Bar
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void CanMockInterfaces(string arguments, bool isError)
 		{
 			const string template = @"
@@ -532,6 +546,7 @@ public static class Bar
 		[DataRow("null", false)]
 		[DataRow("int.MaxValue", true)]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ConstructorsMustHaveCorrectTypeParameters(string arguments, bool isError)
 		{
 			const string template = @"

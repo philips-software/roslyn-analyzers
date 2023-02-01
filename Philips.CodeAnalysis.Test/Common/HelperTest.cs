@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Common
 {
@@ -19,6 +20,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void ToPrettyListTest()
 		{
 			Diagnostic diagnostic1 = Make("PH1000");
@@ -57,6 +59,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		 DataRow("protected internal const", true),
 		 DataRow("protected internal readonly", true),
 		 DataRow("protected internal", true)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void IsCallableFromOutsideClassTest(string modifiers, bool expected)
 		{
 			// Arrange

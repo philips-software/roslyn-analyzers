@@ -36,6 +36,7 @@ class Foo
 		}
 		
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void InvalidVersionShouldTriggerTriggerDiagnostics()
 		{
 			var diagnostic = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssemblyVersionChange);

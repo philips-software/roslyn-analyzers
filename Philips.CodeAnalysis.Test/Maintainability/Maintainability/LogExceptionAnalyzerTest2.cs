@@ -40,6 +40,7 @@ public class Program {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(CorrectCode, DisplayName = "CorrectCode")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException);
