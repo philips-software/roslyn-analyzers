@@ -135,7 +135,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     var newDiagnostics2 = GetCompilerDiagnostics(document);
                     newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
-                    Assert.IsTrue(false,
+                    Assert.Fail(
                         string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
                             string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
                             document.GetSyntaxRootAsync().Result.ToFullString()));

@@ -84,7 +84,7 @@ AllowedMethodName
 			public static DiagnosticDescriptor Rule => 
 				new("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
 
-			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create<DiagnosticDescriptor>(Rule);
+			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 		}
 
 		[DataTestMethod]
