@@ -58,7 +58,8 @@ class Foo
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyDiagnostic(source, DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferTuplesWithNamedFields).Append(DiagnosticIds.PreferTuplesWithNamedFields));
+			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferTuplesWithNamedFields).Append(DiagnosticIds.PreferTuplesWithNamedFields);
+			VerifyDiagnostic(source, expected);
 		}
 
 		[DataRow("(int Foo, int)")]
