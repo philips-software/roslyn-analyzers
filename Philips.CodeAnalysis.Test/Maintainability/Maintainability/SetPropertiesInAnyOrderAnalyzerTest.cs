@@ -19,16 +19,40 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		private const string CorrectAutoProperties = @"
 namespace PropertiesinOrderTests {
     public class Number {
-        private int One { get; set; }
-        private int Two { get; set; }
+        public int One { get; set; }
+        public int Two { get; set; }
+    }
+}";
+
+		private const string CorrectInitializer = @"
+namespace PropertiesinOrderTests {
+    public class Number {
+        public int One { get; set; } = 1;
+        public int Two { get; set; }
+    }
+}";
+
+		private const string CorrectNoSetter = @"
+namespace PropertiesinOrderTests {
+    public class Number {
+        public int One { get; };
+        public int Two { get; set; }
+    }
+}";
+
+		private const string CorrectPrivateSetter = @"
+namespace PropertiesinOrderTests {
+    public class Number {
+        public int One { get; private set; };
+        public int Two { get; set; }
     }
 }";
 
 		private const string WrongInAssignment = @"
 namespace PropertiesinOrderTests {
     public class Number {
-        private int One { get; }
-        private int Two {
+        public int One { get; set; }
+        public int Two {
             set {
                 One = value - 1;
             }
@@ -41,7 +65,10 @@ namespace PropertiesinOrderTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
-		 DataRow(CorrectAutoProperties, DisplayName = nameof(CorrectAutoProperties))]
+		 DataRow(CorrectAutoProperties, DisplayName = nameof(CorrectAutoProperties)),
+		 DataRow(CorrectInitializer, DisplayName = nameof(CorrectInitializer)),
+		 DataRow(CorrectNoSetter, DisplayName = nameof(CorrectNoSetter)),
+		 DataRow(CorrectPrivateSetter, DisplayName = nameof(CorrectPrivateSetter))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{

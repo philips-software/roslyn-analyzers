@@ -60,7 +60,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static IEnumerable<string> GetProperties(BaseTypeDeclarationSyntax type)
 		{
-			return type.DescendantNodes().OfType<PropertyDeclarationSyntax>().Select(prop => prop.Identifier.Text);
+			return type.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(IsAssignable).Select(prop => prop.Identifier.Text);
+		}
+
+		private static bool IsAssignable(PropertyDeclarationSyntax property)
+		{
+			return property.Initializer != null || property.AccessorList.Accessors.Any(IsPublicSetter);
+		}
+
+		private static bool IsPublicSetter(AccessorDeclarationSyntax accessor)
+		{
+			return accessor.Keyword.Text == "set" && !accessor.Modifiers.Any(SyntaxKind.PrivateKeyword);
 		}
 
 		private static bool ReferencesOtherProperties(StatementSyntax statement, IEnumerable<string> otherProperties)
