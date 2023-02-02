@@ -34,14 +34,7 @@ namespace Philips.CodeAnalysis.Test.Common
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
 		{
-			foreach (var file in context.Options.AdditionalFiles)
-			{
-				if (file.Path.Contains(AllowedFileName))
-				{
-					var text = file.GetText();
-					_allowedSymbols.LoadAllowedMethods(text, context.Compilation);
-				}
-			}
+			_allowedSymbols.Initialize(context.Options.AdditionalFiles, context.Compilation, AllowedFileName);
 
 			if (_checkMethods)
 			{

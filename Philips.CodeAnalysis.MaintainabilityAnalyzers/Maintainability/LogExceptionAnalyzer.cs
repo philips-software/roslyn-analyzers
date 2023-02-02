@@ -1,6 +1,5 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -19,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LogExceptionAnalyzer : DiagnosticAnalyzer
 	{
-		private const string LogMethodNames = "log_method_names";
+		public const string AllowedFileName = "AllowedLogMethods.txt";
 
 		private const string Title = "Log caught exceptions.";
 		private const string Message = "Exception that is caught is not logged.";
@@ -38,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			);
 
 		private const string InvalidSetupTitle = @"Log caught exceptions setup";
-		private const string InvalidSetupMessage = @"This analyzer requires an .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list of allowed method calls inside catch blocks.";
+		private const string InvalidSetupMessage = @"This analyzer requires an <AdditionalFiles> entry named {0} specifying a list of allowed method calls inside catch blocks.";
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig.";
 		private static readonly DiagnosticDescriptor InvalidSetupRule = new(Helper.ToDiagnosticId(DiagnosticIds.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
@@ -56,30 +55,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(
-				startContext =>
+				compilationContext =>
 				{
-					var additionalFiles = new AdditionalFilesHelper(
-						startContext.Options,
-						startContext.Compilation);
-					var methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					var allowedSymbols = new AllowedSymbols();
+					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, compilationContext.Compilation, AllowedFileName);
 
-					var compilationAnalyzer = new CompilationAnalyzer(methodNames);
+					var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);
 
-					if (methodNames.Count == 0)
+					if (allowedSymbols.Count == 0)
 					{
-						startContext.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
+						compilationContext.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
 					}
 					else
 					{
-						startContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
+						compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
 					}
 				});
 		}
 
 		private sealed class CompilationAnalyzer
 		{
-			private readonly IEnumerable<string> _logMethodNames;
-			public CompilationAnalyzer(IEnumerable<string> logMethodNames)
+			private readonly AllowedSymbols _logMethodNames;
+			
+			public CompilationAnalyzer(AllowedSymbols logMethodNames)
 			{
 				_logMethodNames = logMethodNames;
 			}
@@ -91,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				// Look for logging method calls underneath this node.
 				var hasCallingLogNodes = catchNode.DescendantNodes()
 					.OfType<InvocationExpressionSyntax>()
-					.Any(x => IsCallingLogMethod(x));
+					.Any(invocation => IsCallingLogMethod(context, invocation));
 				// If another exception is thrown, logging is not required.
 				var hasThrowNodes = catchNode.DescendantNodes()
 					.OfType<ThrowStatementSyntax>()
@@ -107,18 +105,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var syntaxTree = context.Compilation.SyntaxTrees.First();
 				var loc = Location.Create(syntaxTree, TextSpan.FromBounds(0, 0));
-				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames));
+				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, AllowedFileName));
 			}
 
-			private bool IsCallingLogMethod(SyntaxNode node)
+			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
 				var isLoggingMethod = false;
-				var invocation = (InvocationExpressionSyntax)node;
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
 				{
-					var methodName = memberAccess.Name.Identifier.Text;
-					isLoggingMethod = _logMethodNames.Contains(methodName);
+					if (context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
+					{
+						isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(method => _logMethodNames.IsAllowed(method));
+					}
 				}
+
 				return isLoggingMethod;
 			}
 		}

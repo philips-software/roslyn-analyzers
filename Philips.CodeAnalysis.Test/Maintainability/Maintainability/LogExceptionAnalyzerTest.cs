@@ -17,7 +17,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class LogExceptionAnalyzerTest : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = "TestLog,TestTrace";
+		private const string configuredLogMethods = @"
+*.*.TestLog
+TestTrace
+";
+
 		private const string Correct = @"
 using System;
 
@@ -31,7 +35,9 @@ public class Program {
         }
     }
 
-    private static void LogDebug(string message) {
+    private class Log {
+        public static void TestLog(string message) {
+        }
     }
 }
 }";
@@ -48,10 +54,6 @@ public class Program {
             throw new AggregateException('message', ex);
         }
     }
-
-    private static void Debug(string message) {
-    }
-}
 }";
 
 		private const string CorrectVerboseTracer = @"
@@ -67,7 +69,9 @@ public class Program {
         }
     }
 
-    private static void Debug(string message) {
+    private class Tracer {
+        public static void TestTrace(string message) {
+        }
     }
 }
 }";
@@ -134,13 +138,9 @@ public class Program {
 			return new LogExceptionAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.LogException) }.log_method_names", configuredLogMethods }
-			};
-			return options;
+			return new [] {(LogExceptionAnalyzer.AllowedFileName, configuredLogMethods)};
 		}
 	}
 }

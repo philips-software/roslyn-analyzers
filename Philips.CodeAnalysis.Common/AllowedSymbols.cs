@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -28,9 +29,27 @@ namespace Philips.CodeAnalysis.Common
 		}
 
 		/// <summary>
+		/// Total number of allowed symbols defined.
+		/// </summary>
+		public int Count => _allowedMethods.Count + _allowedLines.Count + _allowedTypes.Count + _allowedNamespaces.Count;
+
+		public void Initialize(ImmutableArray<AdditionalText> additionalFiles, Compilation compilation, string filenameToInitialize)
+		{
+			foreach (AdditionalText additionalFile in additionalFiles)
+			{
+				string fileName = Path.GetFileName(additionalFile.Path);
+				if (StringComparer.OrdinalIgnoreCase.Equals(fileName, filenameToInitialize))
+				{
+					var allowedMethods = additionalFile.GetText();
+					LoadAllowedMethods(allowedMethods, compilation);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Load the methods for which duplicate code is allowed.
 		/// </summary>
-		public void LoadAllowedMethods(SourceText text, Compilation compilation)
+		private void LoadAllowedMethods(SourceText text, Compilation compilation)
 		{
 			foreach (var textLine in text.Lines)
 			{
