@@ -60,7 +60,7 @@ class Foo
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
 			var source = CreateFunction(argument);
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferTuplesWithNamedFields).Append(DiagnosticIds.PreferTuplesWithNamedFields);
+			var expected = DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields, DiagnosticIds.PreferTuplesWithNamedFields);
 			VerifyDiagnostic(source, expected);
 		}
 

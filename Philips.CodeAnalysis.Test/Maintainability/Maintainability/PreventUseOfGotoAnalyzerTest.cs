@@ -53,7 +53,7 @@ class Foo
 }
 ";
 
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.GotoNotAllowed).Append(DiagnosticIds.GotoNotAllowed);
+			var expected = DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed, DiagnosticIds.GotoNotAllowed);
 			VerifyDiagnostic(template, expected);
 		}
 
