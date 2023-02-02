@@ -26,6 +26,7 @@ AllowedMethodName
 *.TypeInAnyNamespace
 *.*.MethodInAnyTypeAndNamespace
 ANamespace.*.MethodInAnyTypeInNamespace
+Philips.Detailed.AType.AllowedMethodInFullNamespace
 ~N:AllowedNamespace # With comment on same line
 ~T:ANamespace.AllowedType ; With comment on same line
 ~M:ANamespace.AType.AllowedMethod() // With comment on same line
@@ -45,7 +46,8 @@ ANamespace.*.MethodInAnyTypeInNamespace
 		[DataRow("AllowedNamespace", "SomeType"),
 		 DataRow("ANamespace", "AllowedType"),
 		 DataRow("SomeNamespace", "TypeInAnyNamespace"),
-		 DataRow("SomeNamespace", "AllowedMethodName")]
+		 DataRow("SomeNamespace", "AllowedMethodName"),
+		 DataRow("Philips.Detailed.AType", "AllowedMethodInFullNamespace")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
 		{
