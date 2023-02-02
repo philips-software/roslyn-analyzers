@@ -54,15 +54,15 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void NamedTuplesDontCauseErrors(string argument, bool isError)
 		{
-			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
-
+			var source = CreateFunction(argument);
 			if (isError)
 			{
-				results = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferUsingNamedTupleField);
+				VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferUsingNamedTupleField));
 			}
-
-			var source = CreateFunction(argument);
-			VerifyDiagnostic(source, results);
+			else
+			{
+				VerifySuccessfulCompilation(source);
+			}
 		}
 
 		#endregion

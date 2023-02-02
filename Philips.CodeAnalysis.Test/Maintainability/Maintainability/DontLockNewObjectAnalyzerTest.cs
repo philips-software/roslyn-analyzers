@@ -1,11 +1,13 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System;
+using System.Reflection.Metadata;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -43,9 +45,17 @@ public class Foo
 		lock({lockText}){{}}
 	}}
 }}
-";
 
-			VerifyDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
+			";
+
+			if (expectedError)
+			{
+				VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticIds.DontLockNewObject));
+			}
+			else
+			{
+				VerifySuccessfulCompilation(text);
+			}
 		}
 
 		#endregion
