@@ -15,6 +15,9 @@ namespace Philips.CodeAnalysis.Common
 	/// </summary>
 	public class AllowedSymbols
 	{
+		private const int NamespaceIndexDelta = 3;
+		private const int TypeIndexDelta = 2;
+		private const int MethodIndexDelta = 1;
 		private readonly Compilation _compilation;
 		private readonly HashSet<IMethodSymbol> _allowedMethods;
 		private readonly HashSet<ITypeSymbol> _allowedTypes;
@@ -159,13 +162,13 @@ namespace Philips.CodeAnalysis.Common
 			string methodName = method?.Name;
 			bool result = true;
 			int length = parts.Length;
-			int nsIndex = length - 3;
-			int typeIndex = length - 2;
-			int methodIndex = length - 1;
+			int nsIndex = length - NamespaceIndexDelta;
+			int typeIndex = length - TypeIndexDelta;
+			int methodIndex = length - MethodIndexDelta;
 			if (method == null)
 			{
-				nsIndex = length - 2;
-				typeIndex = length - 1;
+				nsIndex = length - TypeIndexDelta;
+				typeIndex = length - MethodIndexDelta;
 			}
 
 			if (parts[nsIndex] != "*")
