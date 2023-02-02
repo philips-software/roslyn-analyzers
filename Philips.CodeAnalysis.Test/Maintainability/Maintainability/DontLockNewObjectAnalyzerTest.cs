@@ -9,6 +9,7 @@ using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
+
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]

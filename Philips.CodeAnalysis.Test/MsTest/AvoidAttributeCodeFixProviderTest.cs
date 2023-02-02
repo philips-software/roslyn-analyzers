@@ -13,9 +13,8 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class AvoidAttributeCodeFixProviderTest : AssertCodeFixVerifier
+	public class AvoidAttributeCodeFixProviderTest : CodeFixVerifier
 	{
-
 		private readonly string baseline = @"
             using Microsoft.VisualStudio.TestTools.UnitTesting;
             [TestClass]
@@ -108,11 +107,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

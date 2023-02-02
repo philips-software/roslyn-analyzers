@@ -12,7 +12,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidTaskResultAnalyzerTest : AssertCodeFixVerifier
+	public class AvoidTaskResultAnalyzerTest : CodeFixVerifier
 	{
 		[DataRow("ValueTask", "4")]
 		[DataRow("Task", "() => 4")]
@@ -119,11 +119,6 @@ class FooClass
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidTaskResultAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -16,7 +16,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
-	public class NamespaceMatchAssemblyAnalyzerNoFolderTest : DiagnosticVerifier
+	public class NamespaceMatchAssemblyAnalyzerNoFolderTest : NamespaceMatchAssemblyAnalyzerVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
-					NamespaceMatchAssemblyAnalyzerUseFolderTest.GetBaseDiagnosticLocation(sanitizedPath, 0,0)
+					GetBaseDiagnosticLocation(sanitizedPath, 0,0)
 				}
 			};
 
@@ -60,6 +60,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
 			VerifyDiagnostic(code, sanitizedPath, Array.Empty<DiagnosticResult>());
+		}
+	}
+	public abstract class NamespaceMatchAssemblyAnalyzerVerifier : DiagnosticVerifier
+	{
+		private const int BaseColumnErrorLocation = 14;
+		private const int BaseRowErrorLocation = 4;
+		protected DiagnosticResultLocation GetBaseDiagnosticLocation(string path, int rowOffset = 0, int columnOffset = 0)
+		{
+			return new DiagnosticResultLocation(path + ".cs", BaseRowErrorLocation + rowOffset, BaseColumnErrorLocation + columnOffset);
 		}
 	}
 
