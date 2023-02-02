@@ -247,7 +247,7 @@ class Foo
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceNonDuplicateRegion),
+						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
 						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
@@ -272,7 +272,7 @@ class Foo
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceRegions),
+						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
 						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]

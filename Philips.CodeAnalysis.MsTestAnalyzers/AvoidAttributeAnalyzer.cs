@@ -144,7 +144,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Owner attribute not allowed",
 				@"Tests may not use the Owner attribute.",
 				@"The Owner attribute is no more relevant.",
-				DiagnosticIds.AvoidOwnerAttribute,
+				DiagnosticId.AvoidOwnerAttribute,
 				canBeSuppressed: false,
 				isEnabledByDefault: true);
 
@@ -153,7 +153,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Ignore attribute not allowed",
 				@"Tests may not use the Ignore attribute.",
 				@"The Ignore attribute creates dead code and build warnings.  Rather than ignoring a test, fix it or remove it.  (Rely on Version Control to save it.)",
-				DiagnosticIds.AvoidIgnoreAttribute,
+				DiagnosticId.AvoidIgnoreAttribute,
 				canBeSuppressed: false,
 				isEnabledByDefault: true);
 
@@ -161,7 +161,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"TestInitialize methods not allowed",
 				@"Tests may not have any TestInitialize methods. ({0})",
 				@"TestInitialize methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidTestInitializeMethod,
+				DiagnosticId.AvoidTestInitializeMethod,
 				canBeSuppressed: true,
 				isEnabledByDefault: true);
 
@@ -169,7 +169,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"ClassInitialize methods not allowed",
 				@"Tests may not have any ClassInitialize methods. ({0})",
 				@"ClassInitialize methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidClassInitializeMethod,
+				DiagnosticId.AvoidClassInitializeMethod,
 				canBeSuppressed: true,
 				isEnabledByDefault: true);
 
@@ -177,7 +177,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"ClassCleanup methods not allowed",
 				@"Tests may not have any ClassCleanup methods. ({0})",
 				@"ClassCleanup methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidClassCleanupMethod,
+				DiagnosticId.AvoidClassCleanupMethod,
 				canBeSuppressed: true,
 				isEnabledByDefault: true);
 
@@ -185,7 +185,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"TestCleanup methods not allowed",
 				@"Tests may not have any TestCleanup methods. ({0})",
 				@"TestCleanup methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidTestCleanupMethod,
+				DiagnosticId.AvoidTestCleanupMethod,
 				canBeSuppressed: true,
 				isEnabledByDefault: true);
 

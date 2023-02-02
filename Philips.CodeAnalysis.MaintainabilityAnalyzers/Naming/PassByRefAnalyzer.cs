@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Description = @"There is no need to pass parameters by reference if the method does not write to them.";
 		private const string Category = Categories.Maintainability;
 
-		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidPassByReference), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidPassByReference), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

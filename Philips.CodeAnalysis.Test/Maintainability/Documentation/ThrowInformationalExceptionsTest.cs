@@ -151,7 +151,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.ThrowInformationalExceptions, new Regex("Specify context to the .+, by using a constructor overload that sets the Message property.")));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.ThrowInformationalExceptions, new Regex("Specify context to the .+, by using a constructor overload that sets the Message property.")));
 		}
 	}
 }

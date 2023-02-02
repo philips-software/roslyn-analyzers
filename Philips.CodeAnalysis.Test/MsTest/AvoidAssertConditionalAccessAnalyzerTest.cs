@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidAssertConditionalAccessAnalyzerFailTest(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
+			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
 		}
 
 		[DataTestMethod]
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
+			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
 		}
 
 		[DataTestMethod]

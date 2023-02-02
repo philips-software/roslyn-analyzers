@@ -84,7 +84,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
 		}
 
 		[TestMethod]
@@ -113,7 +113,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -129,7 +129,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
 		}
 
 		[TestMethod]
@@ -145,7 +145,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -161,7 +161,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -177,7 +177,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -193,7 +193,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
 		}
 
 		[TestMethod]
@@ -213,7 +213,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(4)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(4)));
 		}
 
 		[TestMethod]
@@ -235,7 +235,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(6)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(6)));
 		}
 
 		[TestMethod]
@@ -259,7 +259,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(8)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(8)));
 		}
 
 
@@ -282,7 +282,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(5)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(5)));
 		}
 
 		[TestMethod]
@@ -348,7 +348,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(34)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(34)));
 		}
 
 
@@ -411,7 +411,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(26)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(26)));
 		}
 
 		[TestMethod]
@@ -460,7 +460,7 @@ class Foo
 		return document;
 	}
 }";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, MakeRegex(40)));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(40)));
 		}
 	}
 
@@ -527,7 +527,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}
@@ -595,7 +595,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}
@@ -660,7 +660,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
 		}
 
 	}

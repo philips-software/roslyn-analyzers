@@ -68,7 +68,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(12),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -102,7 +102,7 @@ public static class Bar
 			{
 				new DiagnosticResult()
 				{
-					Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+					Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 					Location = new DiagnosticResultLocation(12),
 					Severity = DiagnosticSeverity.Error,
 				}
@@ -255,7 +255,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(10),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -296,7 +296,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -337,7 +337,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -380,7 +380,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -421,7 +421,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -459,7 +459,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -532,7 +532,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(12),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -573,7 +573,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
+						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
 					}

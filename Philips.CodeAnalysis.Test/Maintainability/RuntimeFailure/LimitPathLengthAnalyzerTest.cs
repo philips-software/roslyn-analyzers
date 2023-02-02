@@ -76,7 +76,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitPathLength);
 			VerifyDiagnostic(Correct, filePath, expected);
 		}
 

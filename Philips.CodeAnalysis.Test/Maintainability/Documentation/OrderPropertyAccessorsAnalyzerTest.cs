@@ -59,7 +59,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticIds.OrderPropertyAccessors));
+			VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticId.OrderPropertyAccessors));
 		}
 
 

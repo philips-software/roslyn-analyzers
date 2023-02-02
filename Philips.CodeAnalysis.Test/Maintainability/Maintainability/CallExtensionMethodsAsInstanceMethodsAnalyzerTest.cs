@@ -66,7 +66,7 @@ public static class Program
 			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
+				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
 			VerifyDiagnostic(text, result);
@@ -99,7 +99,7 @@ public static class Foo
 ";
 			var text = string.Format(Template, "Bar(obj, null)");
 
-			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
+			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
 
 			VerifyDiagnostic(text, result);
 
@@ -133,7 +133,7 @@ public static class Foo
 ";
 			var text = string.Format(Template, "RemoveByKeys(dict, items)");
 
-			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
+			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
 
 			VerifyDiagnostic(text, result);
 
@@ -304,7 +304,7 @@ public class Baz
 			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods) };
+				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
 			}
 
 			VerifyDiagnostic(template, result);

@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 class Foo {{ {0} string _foo; }}
 """;
 
-			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
+			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticId.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
 
 			VerifyDiagnostic(string.Format(template, modifiers), expected);
 		}

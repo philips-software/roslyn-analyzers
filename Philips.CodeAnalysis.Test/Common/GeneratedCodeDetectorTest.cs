@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			public static bool ShouldAnalyzeSwitch { get; set; }
 
 			private const string Title = @"Avoid writing code";
-			public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodName), Title, Title, Categories.Maintainability, DiagnosticSeverity.Error, true, Title);
+			public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodName), Title, Title, Categories.Maintainability, DiagnosticSeverity.Error, true, Title);
 			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 			public override void Initialize(AnalysisContext context)
@@ -123,7 +123,7 @@ public class Foo
 public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
+			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.TestMethodName) };
 			VerifyDiagnostic(input, expected);
 		}
 
@@ -209,7 +209,7 @@ public class Foo
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
+			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.TestMethodName) };
 			VerifyDiagnostic(input, fileNamePrefix, expected);
 		}
 	}

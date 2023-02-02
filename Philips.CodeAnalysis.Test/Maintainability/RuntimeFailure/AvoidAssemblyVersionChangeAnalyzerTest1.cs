@@ -30,7 +30,7 @@ class Foo
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange) }.assembly_version", ConfiguredVersion }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) }.assembly_version", ConfiguredVersion }
 			};
 			return options;
 		}
@@ -39,7 +39,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void HasWrongVersionTriggersDiagnostics()
 		{
-			var diagnostics = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssemblyVersionChange);
+			var diagnostics = DiagnosticResultHelper.Create(DiagnosticId.AvoidAssemblyVersionChange);
 			VerifyDiagnostic(TestCode, diagnostics);
 		}
 	}

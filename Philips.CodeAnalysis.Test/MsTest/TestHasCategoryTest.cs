@@ -37,7 +37,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -159,7 +159,7 @@ class Foo
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 						Message = new System.Text.RegularExpressions.Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
@@ -196,7 +196,7 @@ class Foo
 		{
 			var options = new Dictionary<string, string>
 			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
 			};
 			return options;
 		}

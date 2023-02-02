@@ -68,7 +68,7 @@ public class Tests
 			{
 				VerifyDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments),
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) },
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
@@ -174,7 +174,7 @@ public class Tests
 			}
 			else
 			{
-				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.TestMethodsMustHaveTheCorrectNumberOfArguments));
+				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments));
 			}
 		}
 	}

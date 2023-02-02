@@ -177,7 +177,7 @@ class ContainerControl
 		{
 			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
+				Id = Helper.ToDiagnosticId(DiagnosticId.InitializeComponentMustBeCalledOnce),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

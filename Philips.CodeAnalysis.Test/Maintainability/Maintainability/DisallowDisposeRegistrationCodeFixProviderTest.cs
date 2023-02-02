@@ -33,7 +33,7 @@ class Foo
 ";
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DisallowDisposeRegistration),
+				Id = Helper.ToDiagnosticId(DiagnosticId.DisallowDisposeRegistration),
 				Message = new Regex(DisallowDisposeRegistrationAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

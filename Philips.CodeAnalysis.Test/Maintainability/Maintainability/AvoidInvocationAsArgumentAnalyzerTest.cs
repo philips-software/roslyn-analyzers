@@ -48,7 +48,7 @@ class Foo
 ";
 			var results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidInvocationAsArgument),
+						Id = Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument),
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
@@ -91,7 +91,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -123,7 +123,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -155,7 +155,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -189,7 +189,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -223,7 +223,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -255,7 +255,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -287,7 +287,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -319,7 +319,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -353,7 +353,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -388,7 +388,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -423,7 +423,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -454,7 +454,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -494,7 +494,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -512,7 +512,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticIds.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
 			//VerifyFix(errorContent, fixedContent);
 		}
 

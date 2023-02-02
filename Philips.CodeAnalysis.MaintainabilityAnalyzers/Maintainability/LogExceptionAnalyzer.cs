@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticIds.LogException),
+				Helper.ToDiagnosticId(DiagnosticId.LogException),
 				Title,
 				Message,
 				Category,
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string InvalidSetupTitle = @"Log caught exceptions setup";
 		private const string InvalidSetupMessage = @"This analyzer requires an .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list of allowed method calls inside catch blocks.";
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig.";
-		private static readonly DiagnosticDescriptor InvalidSetupRule = new(Helper.ToDiagnosticId(DiagnosticIds.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
+		private static readonly DiagnosticDescriptor InvalidSetupRule = new(Helper.ToDiagnosticId(DiagnosticId.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
 
 		/// <summary>

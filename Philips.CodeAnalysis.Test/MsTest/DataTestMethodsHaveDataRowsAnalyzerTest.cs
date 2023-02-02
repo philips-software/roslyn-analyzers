@@ -62,7 +62,7 @@ public class Tests
 
 			VerifyDiagnostic(code, new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+				Id = Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) }
@@ -91,7 +91,7 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticIds.DataTestMethodsHaveDataRows);
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
 				VerifyDiagnostic(code, expected);
 			}
 			else
@@ -120,7 +120,7 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticIds.DataTestMethodsHaveDataRows);
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
 				VerifyDiagnostic(code, expected);
 			}
 			else

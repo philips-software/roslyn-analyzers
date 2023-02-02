@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class Helper
 	{
-		public static string ToDiagnosticId(DiagnosticIds id)
+		public static string ToDiagnosticId(DiagnosticId id)
 		{
 			return @"PH" + ((int)id).ToString();
 		}

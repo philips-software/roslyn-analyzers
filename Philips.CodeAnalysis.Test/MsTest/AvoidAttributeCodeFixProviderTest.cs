@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestInitializeMethod);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestInitializeMethod);
 			VerifyDiagnostic(givenText, expected);
 
 			VerifyFix(givenText, expectedText);
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassInitializeMethod);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassInitializeMethod);
 			VerifyDiagnostic(givenText, expected);
 
 			VerifyFix(givenText, expectedText);
@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestCleanupMethod);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestCleanupMethod);
 			VerifyDiagnostic(givenText, expected);
 
 			VerifyFix(givenText, expectedText);
@@ -79,13 +79,13 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassCleanupMethod);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassCleanupMethod);
 			VerifyDiagnostic(givenText, expected);
 
 			VerifyFix(givenText, expectedText);
 		}
 
-		private DiagnosticResult GetExpectedDiagnostic(DiagnosticIds id)
+		private DiagnosticResult GetExpectedDiagnostic(DiagnosticId id)
 		{
 			return new DiagnosticResult
 			{

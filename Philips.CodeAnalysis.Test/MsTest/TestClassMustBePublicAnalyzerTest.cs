@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 				{
 					VerifyDiagnostic(text, new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 				{
 					VerifyDiagnostic(text, new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,

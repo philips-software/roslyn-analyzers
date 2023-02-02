@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Description = @"Name the file after the class, struct or enum it contains";
 		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AlignFilenameAndClassName),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AlignFilenameAndClassName),
 			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
 			description: Description);
 

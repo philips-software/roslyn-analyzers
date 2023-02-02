@@ -70,7 +70,7 @@ namespace PassSenderTests {
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.PassSenderToEventHandler);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.PassSenderToEventHandler);
 			VerifyDiagnostic(testCode, expected);
 			VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
 		}

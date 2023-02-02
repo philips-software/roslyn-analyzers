@@ -45,7 +45,7 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 			List<DiagnosticResult> results = new();
 			for (int i = 0; i < errorCount; i++)
 			{
-				results.Add(DiagnosticResultHelper.Create(DiagnosticIds.DynamicKeywordProhibited));
+				results.Add(DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited));
 			}
 
 			var expected = results.ToArray();

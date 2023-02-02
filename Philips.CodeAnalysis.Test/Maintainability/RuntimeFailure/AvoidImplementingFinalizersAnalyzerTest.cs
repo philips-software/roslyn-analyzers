@@ -89,7 +89,7 @@ namespace FinalizerTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidImplementingFinalizers));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidImplementingFinalizers));
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

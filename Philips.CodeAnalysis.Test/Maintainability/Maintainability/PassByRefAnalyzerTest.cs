@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}
 			else
 			{
-				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.AvoidPassByReference));
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
 			}
 		}
 
@@ -68,7 +68,7 @@ public class TestClass
 			}
 			else
 			{
-				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.AvoidPassByReference));
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
 			}
 		}
 
@@ -137,7 +137,7 @@ public class TestClass : Data
 			}
 			else
 			{
-				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.AvoidPassByReference));
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
 			}
 		}
 
@@ -182,7 +182,7 @@ public class TestClass {baseClass}
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.AvoidPassByReference));
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
 			}
 			else
 			{
@@ -210,7 +210,7 @@ public class TestClass {baseClass}
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.AvoidPassByReference));
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
 			}
 			else
 			{

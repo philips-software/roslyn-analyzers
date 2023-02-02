@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CheckLiteral(string given)
 		{
-			VerifyError(given, Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueLiteral));
+			VerifyError(given, Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral));
 		}
 
 		#endregion

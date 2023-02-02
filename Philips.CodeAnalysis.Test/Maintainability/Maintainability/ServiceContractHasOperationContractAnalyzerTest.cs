@@ -99,7 +99,7 @@ public interface IFoo
 			{
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.ServiceContractsMustHaveOperationContractAttributes),
+					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -129,7 +129,7 @@ public interface IFoo
 			{
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.ServiceContractsMustHaveOperationContractAttributes),
+					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]

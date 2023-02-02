@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Category = Categories.Security;
 
 		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
+			Helper.ToDiagnosticId(DiagnosticId.AvoidPasswordField), 
 			Title, MessageFormat, Category, 
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 

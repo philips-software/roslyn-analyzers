@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity),
+				Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity),
 				Title,
 				Message,
 				Category,

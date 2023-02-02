@@ -57,7 +57,7 @@ class Foo
 			var source = CreateFunction(argument);
 			if (isError)
 			{
-				VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferUsingNamedTupleField));
+				VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticId.PreferUsingNamedTupleField));
 			}
 			else
 			{
