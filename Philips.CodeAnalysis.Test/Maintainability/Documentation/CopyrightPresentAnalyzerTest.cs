@@ -24,8 +24,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			return new CopyrightPresentAnalyzer();
 		}
 
-		protected override DiagnosticId DiagnosticId => DiagnosticId.CopyrightPresent;
-
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			Dictionary<string, string> options = new()

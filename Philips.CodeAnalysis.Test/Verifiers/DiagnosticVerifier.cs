@@ -23,7 +23,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	{
 		#region To be implemented by Test classes
 
-		protected virtual DiagnosticId DiagnosticId { get; } = DiagnosticId.None;
 
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
@@ -36,26 +35,35 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected void VerifyDiagnostic(string source)
 		{
-			Assert.AreNotEqual(DiagnosticId.None, DiagnosticId, "Overload DiagnosticId property before calling this method.");
-			VerifyDiagnostic(source, DiagnosticId);
+			var diagnosticsCount = GetDiagnosticAnalyzer().SupportedDiagnostics.Length;
+			Assert.AreEqual(1, diagnosticsCount, "This overload is only applicable when the Analyzer supports one diagnostic.");
+
+			string id = GetDiagnosticAnalyzer().SupportedDiagnostics.First().Id;
+			var diagnosticResult = CreateDiagnosticResult(id);
+			VerifyDiagnostic(source, diagnosticResult);
 		}
 
-		protected void VerifyDiagnostic(string source, DiagnosticId diagnosticId)
+		private DiagnosticResult CreateDiagnosticResult(string id)
 		{
-			var diagnosticResult = new DiagnosticResult()
+			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(diagnosticId),
+				Id = id,
 				Location = new DiagnosticResultLocation(null),
 				Message = null,
 				Severity = DiagnosticSeverity.Error,
 			};
 
+		}
+
+		protected void VerifyDiagnostic(string source, DiagnosticId diagnosticId)
+		{
+			var id = Helper.ToDiagnosticId(diagnosticId);
+			var diagnosticResult = CreateDiagnosticResult(id);
 			VerifyDiagnostic(source, diagnosticResult);
 		}
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
@@ -67,7 +75,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
@@ -78,7 +85,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>

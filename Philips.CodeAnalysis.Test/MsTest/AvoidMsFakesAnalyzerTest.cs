@@ -42,7 +42,7 @@ class Foo
 		public void AvoidMsFakesTest()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 

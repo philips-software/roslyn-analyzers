@@ -43,7 +43,7 @@ class Foo
 		public void DontInlineNewCall()
 		{
 			var file = CreateFunction("string str = new object().ToString()");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
@@ -70,7 +70,7 @@ class Foo
 		public void DontInlineNewCallCustomType(string newVarient)
 		{
 			var file = CreateFunction($"string str = {newVarient}.ToString()");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
@@ -112,7 +112,7 @@ class Foo
 		public void ErrorIfReturned()
 		{
 			var file = CreateFunction("return new object().ToString();");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
@@ -129,7 +129,7 @@ class Foo
 		public void ErrorIfThrown()
 		{
 			var file = CreateFunction("throw new object().Foo;");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 

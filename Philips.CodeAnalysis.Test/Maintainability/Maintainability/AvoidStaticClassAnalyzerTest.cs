@@ -100,7 +100,7 @@ AllowedEnumeration";
 				{CreateField("", "ViolatingField")}
 			}}}}";
 
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
@@ -135,7 +135,7 @@ AllowedEnumeration";
 				{CreateField("const", "F5")}
 			}}}}";
 
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
@@ -152,7 +152,7 @@ AllowedEnumeration";
 				public static void Foo();
 			}}}}";
 
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
@@ -162,7 +162,7 @@ AllowedEnumeration";
 		public void AvoidStaticClassesTest()
 		{
 			var file = CreateFunction("static");
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
@@ -172,7 +172,7 @@ AllowedEnumeration";
 		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
@@ -193,7 +193,7 @@ AllowedEnumeration";
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
 			VerifySuccessfulCompilation(noDiagnostic);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(methodHavingDiagnostic, diagnosticResult);
 			VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic);
 		}

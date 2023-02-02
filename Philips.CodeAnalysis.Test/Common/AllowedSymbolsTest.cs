@@ -96,7 +96,7 @@ AllowedMethodName
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			var diagnosticResult = GetDiagnosticResult();
 			VerifyDiagnostic(file, diagnosticResult);
 		}
 
