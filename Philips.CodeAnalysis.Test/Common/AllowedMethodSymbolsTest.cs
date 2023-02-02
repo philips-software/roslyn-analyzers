@@ -25,6 +25,7 @@ namespace Philips.CodeAnalysis.Test.Common
 AllowedMethodName
 *.TypeInAnyNamespace
 *.*.MethodInAnyTypeAndNamespace
+*.Log.*
 ANamespace.*.MethodInAnyTypeInNamespace
 Philips.Detailed.AType.AllowedMethodInFullNamespace
 ~N:AllowedNamespace # With comment on same line
@@ -50,7 +51,8 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		 DataRow("NotListedNamespace", "TypeInAnyNamespace", "NotListedMethodName"),
 		 DataRow("ANamespace", "NotListedType", "MethodInAnyTypeInNamespace"),
 		 DataRow("NotListedNamespace", "NotListedType", "MethodInAnyTypeAndNamespace"),
-		 DataRow("Philips.Detailed", "AType", "AllowedMethodInFullNamespace")]
+		 DataRow("Philips.Detailed", "AType", "AllowedMethodInFullNamespace"),
+		 DataRow("SomeNamespace", "Log", "SomeMethod")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{

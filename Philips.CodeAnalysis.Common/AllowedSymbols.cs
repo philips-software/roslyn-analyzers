@@ -182,7 +182,7 @@ namespace Philips.CodeAnalysis.Common
 				result &= parts[typeIndex] == typeName;
 			}
 
-			if (method != null)
+			if (method != null && parts[methodIndex] != "*")
 			{
 				result &= parts[methodIndex] == methodName;
 			}

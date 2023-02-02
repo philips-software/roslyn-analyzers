@@ -25,6 +25,7 @@ namespace Philips.CodeAnalysis.Test.Common
 AllowedMethodName
 *.TypeInAnyNamespace
 *.*.MethodInAnyTypeAndNamespace
+*.Log.*
 ANamespace.*.MethodInAnyTypeInNamespace
 Philips.Detailed.AType.AllowedMethodInFullNamespace
 ~N:AllowedNamespace # With comment on same line

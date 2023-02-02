@@ -58,6 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				compilationContext =>
 				{
 					var allowedSymbols = new AllowedSymbols(compilationContext.Compilation);
+					allowedSymbols.RegisterLine("*.Log.*");
 					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 
 					var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);

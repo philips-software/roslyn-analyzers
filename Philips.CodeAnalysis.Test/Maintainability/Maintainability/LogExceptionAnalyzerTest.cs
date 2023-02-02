@@ -31,12 +31,32 @@ public class Program {
         try {
             Console.WriteLine('Hello world!');
         } catch {
-            Log.TestLog('Goodbye');            
+            Logger.TestLog('Goodbye');            
+        }
+    }
+
+    private class Logger {
+        public static void TestLog(string message) {
+        }
+    }
+}
+}";
+
+		private const string CorrectLogClass = @"
+using System;
+
+namespace LogExceptionUnitTests {
+public class Program {
+    public static void Main(string[] args) {
+        try {
+            Console.WriteLine('Hello world!');
+        } catch {
+            Log.SomeLog('Goodbye');            
         }
     }
 
     private class Log {
-        public static void TestLog(string message) {
+        public static void SomeLog(string message) {
         }
     }
 }
@@ -98,9 +118,10 @@ public class Program {
 		/// No diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(Correct, DisplayName = "Correct"),
-			DataRow(CorrectThrow, DisplayName = "CorrectThrow"),
-			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
+		[DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectLogClass, DisplayName = nameof(CorrectLogClass)),
+		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
+		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
@@ -111,7 +132,7 @@ public class Program {
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(Missing, DisplayName = "Missing")]
+		[DataRow(Missing, DisplayName = nameof(Missing))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
