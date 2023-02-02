@@ -59,7 +59,7 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaised(string fieldType)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.UnmanagedObjectsNeedDisposing);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.UnmanagedObjectsNeedDisposing);
 			var source = CreateClass(fieldType, false);
 			VerifyDiagnostic(source, expected);
 		}

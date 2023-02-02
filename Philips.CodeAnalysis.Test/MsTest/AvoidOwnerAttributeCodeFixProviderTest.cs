@@ -47,7 +47,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidOwnerAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidOwnerAttribute),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

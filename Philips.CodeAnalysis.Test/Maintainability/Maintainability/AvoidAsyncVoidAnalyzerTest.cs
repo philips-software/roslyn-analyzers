@@ -27,7 +27,7 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+			VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
 		}
 
 		[DataTestMethod]
@@ -94,7 +94,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+			VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
 		}
 
 		[TestMethod]
@@ -143,7 +143,7 @@ class FooClass
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+				VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
 			}
 			else
 			{

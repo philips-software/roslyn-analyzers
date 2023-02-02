@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{"IDictionary", "IReadOnlyDictionary" }
 		};
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.ReturnImmutableCollections));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ReturnImmutableCollections));
 		
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

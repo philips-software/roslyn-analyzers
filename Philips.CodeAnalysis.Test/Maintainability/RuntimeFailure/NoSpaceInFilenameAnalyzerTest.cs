@@ -55,7 +55,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.NoSpaceInFilename);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.NoSpaceInFilename);
 			VerifyDiagnostic(Correct, filePath, expected);
 		}
 

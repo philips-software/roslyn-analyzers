@@ -136,7 +136,7 @@ namespace InnerExceptionUnitTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ThrowInnerException);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.ThrowInnerException);
 			VerifyDiagnostic(testCode, expected);
 		}
 

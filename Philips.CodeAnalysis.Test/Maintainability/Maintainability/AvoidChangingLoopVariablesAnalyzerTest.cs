@@ -71,7 +71,7 @@ namespace AvoidUsingParametersTest {
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidChangingLoopVariables);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidChangingLoopVariables);
 			VerifyDiagnostic(testCode, expected);
 		}
 

@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -303,7 +303,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -347,7 +347,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -390,7 +390,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -433,7 +433,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -473,7 +473,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -513,7 +513,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
+					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]

@@ -31,7 +31,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 
@@ -49,7 +49,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 
@@ -68,7 +68,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 
@@ -97,7 +97,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 
@@ -116,7 +116,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 
@@ -135,7 +135,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoHardcodedPaths));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
 
 		}
 

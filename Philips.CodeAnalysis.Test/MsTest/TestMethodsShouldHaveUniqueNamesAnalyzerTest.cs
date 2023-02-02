@@ -52,14 +52,14 @@ public class Tests
 			VerifyDiagnostic(code, new []{ 
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, null) },
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 				},
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, null) },
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,

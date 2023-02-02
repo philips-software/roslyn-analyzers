@@ -206,7 +206,7 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ReturnImmutableCollections);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.ReturnImmutableCollections);
 			VerifyDiagnostic(testCode, expected);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{

@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule = new(
-				Helper.ToDiagnosticId(DiagnosticIds.MergeIfStatements), TitleFormat, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, DescriptionFormat);
+				Helper.ToDiagnosticId(DiagnosticId.MergeIfStatements), TitleFormat, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, DescriptionFormat);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

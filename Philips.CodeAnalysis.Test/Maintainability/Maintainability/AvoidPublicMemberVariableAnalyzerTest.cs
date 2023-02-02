@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPublicMemberVariables),
+						Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPublicMemberVariables),
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]

@@ -51,7 +51,7 @@ public class Foo
 
 			if (expectedError)
 			{
-				VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticIds.DontLockNewObject));
+				VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticId.DontLockNewObject));
 			}
 			else
 			{

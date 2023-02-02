@@ -268,16 +268,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
-		 DataRow(WrongNumberOfPlusMinus, DiagnosticIds.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
-		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticIds.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
-		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
-		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
-		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
-		 DataRow(WrongNumberOfRightLeftShift, DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
-		 DataRow(WrongNumberOfPlusEqual, DiagnosticIds.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
+		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
+		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
+		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
+		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticId.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
+		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticId.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
+		 DataRow(WrongNumberOfGreaterLessThanOrEqual, DiagnosticId.AlignNumberOfGreaterAndLessThanOrEqualOperators, DisplayName = nameof(WrongNumberOfGreaterLessThanOrEqual)),
+		 DataRow(WrongNumberOfRightLeftShift, DiagnosticId.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
+		 DataRow(WrongNumberOfPlusEqual, DiagnosticId.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticIds diagnosticId) {
+		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticId diagnosticId) {
 			var expected = DiagnosticResultHelper.Create(diagnosticId);
 			VerifyDiagnostic(testCode, expected);
 		}

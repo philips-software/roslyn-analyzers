@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticIds.UnmanagedObjectsNeedDisposing),
+				Helper.ToDiagnosticId(DiagnosticId.UnmanagedObjectsNeedDisposing),
 				Title,
 				Message,
 				Category,

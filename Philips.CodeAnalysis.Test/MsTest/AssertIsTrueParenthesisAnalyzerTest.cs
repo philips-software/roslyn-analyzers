@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueParenthesis),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueParenthesis),
 				Message = new Regex(".+"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

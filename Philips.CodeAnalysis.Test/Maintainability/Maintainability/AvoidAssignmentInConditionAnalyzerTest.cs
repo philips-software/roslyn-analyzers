@@ -137,7 +137,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssignmentInCondition);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidAssignmentInCondition);
 			VerifyDiagnostic(testCode, expected);
 		}
 

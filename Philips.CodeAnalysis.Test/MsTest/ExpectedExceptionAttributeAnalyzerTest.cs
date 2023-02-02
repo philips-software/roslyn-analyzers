@@ -33,7 +33,7 @@ namespace ExpectedAnalyzerAttributeTest
 ";
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.ExpectedExceptionAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.ExpectedExceptionAttribute),
 				Message = new Regex(ExpectedExceptionAttributeAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

@@ -19,8 +19,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string Description = @"Parameter mismatch";
 		private const string Category = Categories.RuntimeFailure;
 
-		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(TypeMismatchRule, ArgumentCountRule); } }
 

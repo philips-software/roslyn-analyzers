@@ -6,7 +6,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class AttributeModel
 	{
-		public AttributeModel(string name, string fullName, string title, string messageFormat, string description, DiagnosticIds diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
+		public AttributeModel(string name, string fullName, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
 		{
 			Name = name;
 			FullName = fullName;
@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Common
 			CanBeSuppressed = canBeSuppressed;
 		}
 
-		public AttributeModel(AttributeDefinition attribute, string title, string messageFormat, string description, DiagnosticIds diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
+		public AttributeModel(AttributeDefinition attribute, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
 			: this(attribute.Name, attribute.FullName, title, messageFormat, description, diagnosticId, canBeSuppressed, isEnabledByDefault)
 		{ }
 
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public string Description { get; } = string.Empty;
 
-		public DiagnosticIds DiagnosticId { get; }
+		public DiagnosticId DiagnosticId { get; }
 
 		public DiagnosticDescriptor Rule { get; } = null;
 

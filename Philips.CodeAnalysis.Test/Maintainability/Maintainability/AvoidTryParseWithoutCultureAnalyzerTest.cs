@@ -86,7 +86,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string code = string.Format(ClassString, s);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -119,7 +119,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string code = string.Concat(editorCode, TestParserDefinition);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTryParseWithoutCulture),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 	internal static class DiagnosticResultHelper
 	{
-		public static DiagnosticResult Create(DiagnosticIds diagnosticId, Regex message = null)
+		public static DiagnosticResult Create(DiagnosticId diagnosticId, Regex message = null)
 		{
 			return new DiagnosticResult()
 			{
@@ -58,10 +58,10 @@ namespace Philips.CodeAnalysis.Test.Helpers
 			};
 		}
 
-		public static DiagnosticResult[] Create(params DiagnosticIds[] diagnosticIds)
+		public static DiagnosticResult[] Create(params DiagnosticId[] diagnosticIds)
 		{
 			List<DiagnosticResult> diagnosticResults = new();
-			foreach(DiagnosticIds diagnosticId in diagnosticIds)
+			foreach(DiagnosticId diagnosticId in diagnosticIds)
 			{
 				DiagnosticResult dr = Create(diagnosticId);
 				diagnosticResults.Add(dr);

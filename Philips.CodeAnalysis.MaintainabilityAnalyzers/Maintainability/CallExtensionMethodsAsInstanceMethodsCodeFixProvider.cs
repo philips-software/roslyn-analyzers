@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CallExtensionMethodsAsInstanceMethodsAnalyzer)), Shared]
 	public class CallExtensionMethodsAsInstanceMethodsCodeFixProvider : CodeFixProvider
 	{
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods));
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{

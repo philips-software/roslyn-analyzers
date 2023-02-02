@@ -54,7 +54,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualTypesMatch),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch),
 				Message = new Regex(expectedMessage),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

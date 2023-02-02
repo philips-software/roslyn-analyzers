@@ -29,7 +29,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.PositiveNaming));
 		}
 
 		[TestMethod]
@@ -62,7 +62,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.PositiveNaming));
 		}
 
 		[TestMethod]
@@ -77,7 +77,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.PositiveNaming));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.PositiveNaming));
 		}
 	}
 }

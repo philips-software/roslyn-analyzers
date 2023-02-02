@@ -79,7 +79,7 @@ namespace ComplexConditionUnitTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitConditionComplexity);
 			VerifyDiagnostic(testCode, expected);
 		}
 
@@ -105,7 +105,7 @@ namespace ComplexConditionUnitTests {
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
-				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity)}.max_operators";
+				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
 			Dictionary<string, string> options = new()
 			{
 				{ key, ConfiguredMaxOperators.ToString() }

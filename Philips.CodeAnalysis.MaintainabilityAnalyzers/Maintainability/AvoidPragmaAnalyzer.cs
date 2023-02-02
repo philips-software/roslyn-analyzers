@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		public static readonly DiagnosticDescriptor Rule =
-			new (Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+			new (Helper.ToDiagnosticId(DiagnosticId.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>  ImmutableArray.Create(Rule);
 
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			string myOwnId = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma);
+			string myOwnId = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma);
 			if (pragma.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName))
 									.Any(i => i.ToString().Contains(myOwnId)))
 			{

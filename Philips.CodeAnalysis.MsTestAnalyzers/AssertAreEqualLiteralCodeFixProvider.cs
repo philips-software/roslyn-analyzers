@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualLiteral)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()

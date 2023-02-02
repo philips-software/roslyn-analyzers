@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		}
 
 		private static readonly DiagnosticDescriptor Rule =
-			new(Helper.ToDiagnosticId(DiagnosticIds.DocumentUnhandledExceptions), Title, MessageFormat, Category,
+			new(Helper.ToDiagnosticId(DiagnosticId.DocumentUnhandledExceptions), Title, MessageFormat, Category,
 				DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

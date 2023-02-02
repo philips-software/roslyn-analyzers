@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string code = string.Format(ClassString, s);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPrivateKeyProperty),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

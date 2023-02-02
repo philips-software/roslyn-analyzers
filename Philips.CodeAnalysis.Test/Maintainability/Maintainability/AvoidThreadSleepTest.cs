@@ -49,7 +49,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidThreadSleep),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidThreadSleep),
 				Message = new Regex(AvoidThreadSleepAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
