@@ -57,7 +57,8 @@ ANamespace.*.MethodInAnyTypeInNamespace
 		[DataRow("SomeNamespace", "SomeType")]
 		[DataRow("ANamespace", "AType")]
 		[DataRow("SomeNamespace", "AllowedType")]
-		[DataRow("AllowedMethodName", "AllowedType")]
+		[DataRow("AllowedMethodName", "AType")]
+		[DataRow("ANamespace.DetailedNamespace", "AType")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName)
 		{

@@ -55,11 +55,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
-				AllowedSymbols allowedSymbols = new();
+				AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
 				if (options.UseExceptionsFile)
 				{
-					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, compilationContext.Compilation, AllowedFileName);
+					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 				}
 				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.GenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);

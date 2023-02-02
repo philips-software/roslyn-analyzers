@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 
-		private readonly AllowedSymbols _allowedSymbols = new();
+		private AllowedSymbols _allowedSymbols;
 		private readonly bool _checkMethods;
 
 		public AllowedSymbolsTestAnalyzer(bool checkMethods)
@@ -34,7 +34,8 @@ namespace Philips.CodeAnalysis.Test.Common
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
 		{
-			_allowedSymbols.Initialize(context.Options.AdditionalFiles, context.Compilation, AllowedFileName);
+			_allowedSymbols = new AllowedSymbols(context.Compilation);
+			_allowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
 			if (_checkMethods)
 			{
