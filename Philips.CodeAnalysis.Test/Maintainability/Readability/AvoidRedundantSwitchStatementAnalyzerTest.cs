@@ -14,15 +14,6 @@ using Philips.CodeAnalysis.Test.Helpers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-		}
-	}
-
-	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -192,5 +183,14 @@ public static class Foo
 			VerifySuccessfulCompilation(input);
 		}
 
+	}
+
+	[TestClass]
+	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+		}
 	}
 }

@@ -114,7 +114,7 @@ public static class Foo
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)

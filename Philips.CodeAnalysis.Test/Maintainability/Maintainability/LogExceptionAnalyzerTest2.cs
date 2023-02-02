@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	/// Test class for <see cref="LogExceptionAnalyzer"/>, for wrong .editorconfig usage.
 	/// </summary>
 	[TestClass]
-	public class LogExceptionAnalyzerTests : DiagnosticVerifier
+	public class LogExceptionAnalyzerTest2 : DiagnosticVerifier
 	{
 		private const string configuredLogMethods = "TestLog,TestTrace";
 		private const string CorrectCode = @"

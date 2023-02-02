@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidThrowFromUnexpectedLocationsTest : DiagnosticVerifier
+	public class AvoidThrowingUnexpectedExceptionsAnalyzerTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{

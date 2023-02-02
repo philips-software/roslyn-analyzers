@@ -14,37 +14,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotMergeIfsGeneratedCodeTest()
-		{
-			const string testCode = @"
-		        public class MyClass
-				{
-					public void Foo()
-					{
-						if (1 == 1) 
-						{
-							if (2 == 2)
-							{ }
-						}
-					}
-			    }";
-
-			VerifyDiagnostic(testCode, "Test.Designer");
-		}
-	}
-
-
-
-	[TestClass]
 	public class MergeIfStatementsAnalyzerTest : CodeFixVerifier
 	{
 		protected override CodeFixProvider GetCodeFixProvider()
@@ -107,6 +76,35 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticIds.MergeIfStatements);
 			VerifyDiagnostic(testCode, expectedDiagnostic);
 			VerifyFix(testCode, fixedCode);
+		}
+	}
+
+	[TestClass]
+	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DoNotMergeIfsGeneratedCodeTest()
+		{
+			const string testCode = @"
+		        public class MyClass
+				{
+					public void Foo()
+					{
+						if (1 == 1) 
+						{
+							if (2 == 2)
+							{ }
+						}
+					}
+			    }";
+
+			VerifyDiagnostic(testCode, "Test.Designer");
 		}
 	}
 }

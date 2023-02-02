@@ -62,7 +62,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -74,7 +74,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
@@ -86,7 +86,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Wrong, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)

@@ -13,30 +13,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-	[TestClass]
-	public class AvoidStaticClassAnalyzerTest2 : AvoidStaticClassAnalyzerTest
-	{
-		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
-
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return _mock.Object;
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldWhitelistTest()
-		{
-			HashSet<string> exceptions = new()
-			{
-				KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName
-			};
-			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
-			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
-			VerifySuccessfulCompilation(file);
-		}
-	}
-
 	/// <summary>
 	/// 
 	/// </summary>
@@ -237,6 +213,30 @@ AllowedEnumeration";
 					new DiagnosticResultLocation("Test0.cs", 3, -1),
 				}
 			});
+		}
+	}
+
+	[TestClass]
+	public class AvoidStaticClassAnalyzerTest2 : AvoidStaticClassAnalyzerTest
+	{
+		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return _mock.Object;
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void AvoidStaticClassesShouldWhitelistTest()
+		{
+			HashSet<string> exceptions = new()
+			{
+				KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName
+			};
+			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
+			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
+			VerifySuccessfulCompilation(file);
 		}
 	}
 }
