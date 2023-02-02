@@ -43,7 +43,7 @@ class Foo
 		public void DontInlineNewCall()
 		{
 			var file = CreateFunction("string str = new object().ToString()");
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[TestMethod]
@@ -69,7 +69,7 @@ class Foo
 		public void DontInlineNewCallCustomType(string newVarient)
 		{
 			var file = CreateFunction($"string str = {newVarient}.ToString()");
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[TestMethod]
@@ -110,7 +110,7 @@ class Foo
 		public void ErrorIfReturned()
 		{
 			var file = CreateFunction("return new object().ToString();");
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[TestMethod]
@@ -126,10 +126,10 @@ class Foo
 		public void ErrorIfThrown()
 		{
 			var file = CreateFunction("throw new object().Foo;");
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
-		private void VerifyDiagnostic(string file)
+		private void Verify(string file)
 		{
 			VerifyDiagnostic(file, new DiagnosticResult()
 			{

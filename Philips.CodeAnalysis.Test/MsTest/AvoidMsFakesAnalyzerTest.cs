@@ -42,7 +42,7 @@ class Foo
 		public void AvoidMsFakesTest()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[TestMethod]
@@ -54,7 +54,7 @@ class Foo
 		}
 
 
-		private void VerifyDiagnostic(string file)
+		private void Verify(string file)
 		{
 			VerifyDiagnostic(file, new DiagnosticResult()
 			{

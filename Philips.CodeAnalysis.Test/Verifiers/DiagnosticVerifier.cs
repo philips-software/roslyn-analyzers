@@ -6,9 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Verifiers
@@ -40,6 +43,25 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
 		}
 
+		protected void VerifyDiagnostic(string source)
+		{
+			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
+			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
+			VerifyDiagnostic(source, analyzer.DiagnosticId);
+		}
+
+		protected void VerifyDiagnostic(string source, DiagnosticId id)
+		{
+			var diagnosticResult = new DiagnosticResult()
+			{
+				Id = Helper.ToDiagnosticId(id),
+				Location = new DiagnosticResultLocation(null),
+				Message = new Regex(".*"),
+				Severity = DiagnosticSeverity.Error,
+			};
+			VerifyDiagnostic(source, diagnosticResult);
+		}
+
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
 		/// Note: input a DiagnosticResult for each Diagnostic expected
@@ -69,6 +91,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected void VerifySuccessfulCompilation(string source)
 		{
 			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
+		}
+
+		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix)
+		{
+			VerifyDiagnostic(source, fileNamePrefix, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>

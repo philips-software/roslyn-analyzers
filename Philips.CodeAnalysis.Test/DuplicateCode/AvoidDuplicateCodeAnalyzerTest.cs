@@ -330,7 +330,7 @@ class Foo
 }}
 ";
 
-			VerifyDiagnostic(baseline);
+			Verify(baseline);
 		}
 
 		[TestMethod]
@@ -378,7 +378,7 @@ namespace MyNamespace
 		}
 
 
-		private void VerifyDiagnostic(string file)
+		private void Verify(string file)
 		{
 			VerifyDiagnostic(file,
 				new DiagnosticResult()
