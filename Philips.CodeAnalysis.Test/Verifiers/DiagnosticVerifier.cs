@@ -6,9 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Verifiers
@@ -19,6 +22,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	public abstract partial class DiagnosticVerifier
 	{
 		#region To be implemented by Test classes
+
+		protected virtual DiagnosticId DiagnosticId { get; } = DiagnosticId.None;
+
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
@@ -27,6 +33,25 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		#endregion
 
 		#region Verifier wrappers
+
+		protected void VerifyDiagnostic(string source)
+		{
+			Assert.AreNotEqual(DiagnosticId.None, DiagnosticId, "Overload DiagnosticId property before calling this method.");
+			VerifyDiagnostic(source, DiagnosticId);
+		}
+
+		protected void VerifyDiagnostic(string source, DiagnosticId diagnosticId)
+		{
+			var diagnosticResult = new DiagnosticResult()
+			{
+				Id = Helper.ToDiagnosticId(diagnosticId),
+				Location = new DiagnosticResultLocation(null),
+				Message = null,
+				Severity = DiagnosticSeverity.Error,
+			};
+
+			VerifyDiagnostic(source, diagnosticResult);
+		}
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -69,6 +94,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected void VerifySuccessfulCompilation(string source)
 		{
 			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
+		}
+
+		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix)
+		{
+			VerifyDiagnostic(source, fileNamePrefix, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>

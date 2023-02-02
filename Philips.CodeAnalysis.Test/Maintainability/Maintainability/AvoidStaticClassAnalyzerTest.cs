@@ -100,7 +100,8 @@ AllowedEnumeration";
 				{CreateField("", "ViolatingField")}
 			}}}}";
 
-			VerifyDiagnostic(testClass);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -134,7 +135,8 @@ AllowedEnumeration";
 				{CreateField("const", "F5")}
 			}}}}";
 
-			VerifyDiagnostic(testClass);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -150,7 +152,8 @@ AllowedEnumeration";
 				public static void Foo();
 			}}}}";
 
-			VerifyDiagnostic(testClass);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(testClass, diagnosticResult);
 		}
 
 
@@ -159,7 +162,8 @@ AllowedEnumeration";
 		public void AvoidStaticClassesTest()
 		{
 			var file = CreateFunction("static");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 
@@ -168,7 +172,8 @@ AllowedEnumeration";
 		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -188,7 +193,8 @@ AllowedEnumeration";
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
 			VerifySuccessfulCompilation(noDiagnostic);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
-			VerifyDiagnostic(methodHavingDiagnostic);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(methodHavingDiagnostic, diagnosticResult);
 			VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic);
 		}
 
@@ -201,9 +207,9 @@ AllowedEnumeration";
 		}
 
 
-		private void VerifyDiagnostic(string file)
+		private DiagnosticResult GetDiagnosticResult()
 		{
-			VerifyDiagnostic(file, new DiagnosticResult()
+			return new DiagnosticResult()
 			{
 				Id = AvoidStaticClassesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),
@@ -212,7 +218,7 @@ AllowedEnumeration";
 				{
 					new DiagnosticResultLocation("Test0.cs", 3, -1),
 				}
-			});
+			};
 		}
 	}
 

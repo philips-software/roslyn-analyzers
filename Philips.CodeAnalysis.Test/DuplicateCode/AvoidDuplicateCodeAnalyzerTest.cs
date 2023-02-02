@@ -330,7 +330,19 @@ class Foo
 }}
 ";
 
-			VerifyDiagnostic(baseline);
+			var diagnosticResult = new DiagnosticResult()
+			{
+				Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+				Message = new Regex("Duplicate shape found.+"),
+				Severity = DiagnosticSeverity.Error,
+				Locations = new[]
+				{
+						new DiagnosticResultLocation("Test0.cs", null, null),
+						new DiagnosticResultLocation("Test0.cs", null, null),
+					}
+			};
+
+			VerifyDiagnostic(baseline, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -375,24 +387,6 @@ namespace MyNamespace
 ";
 
 			return string.Format(baseline, content1, content2);
-		}
-
-
-		private void VerifyDiagnostic(string file)
-		{
-			VerifyDiagnostic(file,
-				new DiagnosticResult()
-				{
-					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
-					Message = new Regex("Duplicate shape found.+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", null, null),
-						new DiagnosticResultLocation("Test0.cs", null, null),
-					}
-				}
-			);
 		}
 	}
 }

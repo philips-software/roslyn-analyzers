@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public int? Column => Locations.Length > 0 ? Locations[0].Column : -1;
 	}
-
+	
 	internal static class DiagnosticResultHelper
 	{
 		public static DiagnosticResult Create(DiagnosticId diagnosticId, Regex message = null)

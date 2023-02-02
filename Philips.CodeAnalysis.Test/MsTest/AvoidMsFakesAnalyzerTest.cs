@@ -42,7 +42,8 @@ class Foo
 		public void AvoidMsFakesTest()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -54,9 +55,9 @@ class Foo
 		}
 
 
-		private void VerifyDiagnostic(string file)
+		private DiagnosticResult GetDiagnosticResult()
 		{
-			VerifyDiagnostic(file, new DiagnosticResult()
+			return new DiagnosticResult()
 			{
 				Id = AvoidMsFakesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),
@@ -65,7 +66,7 @@ class Foo
 				{
 					new DiagnosticResultLocation("Test0.cs", 6, -1),
 				}
-			});
+			};
 		}
 	}
 }

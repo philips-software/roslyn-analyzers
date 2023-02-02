@@ -43,7 +43,8 @@ class Foo
 		public void DontInlineNewCall()
 		{
 			var file = CreateFunction("string str = new object().ToString()");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -69,7 +70,8 @@ class Foo
 		public void DontInlineNewCallCustomType(string newVarient)
 		{
 			var file = CreateFunction($"string str = {newVarient}.ToString()");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -110,7 +112,8 @@ class Foo
 		public void ErrorIfReturned()
 		{
 			var file = CreateFunction("return new object().ToString();");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[TestMethod]
@@ -126,12 +129,13 @@ class Foo
 		public void ErrorIfThrown()
 		{
 			var file = CreateFunction("throw new object().Foo;");
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
-		private void VerifyDiagnostic(string file)
+		private DiagnosticResult GetDiagnosticResult()
 		{
-			VerifyDiagnostic(file, new DiagnosticResult()
+			return new DiagnosticResult()
 			{
 				Id = AvoidInlineNewAnalyzer.Rule.Id,
 				Message = new Regex(".+"),
@@ -140,7 +144,7 @@ class Foo
 				{
 					new DiagnosticResultLocation("Test0.cs", 6, -1),
 				}
-			});
+			};
 		}
 	}
 }

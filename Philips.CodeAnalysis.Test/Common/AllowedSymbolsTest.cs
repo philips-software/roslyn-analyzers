@@ -96,7 +96,8 @@ AllowedMethodName
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			VerifyDiagnostic(file);
+			DiagnosticResult diagnosticResult = GetDiagnosticResult();
+			VerifyDiagnostic(file, diagnosticResult);
 		}
 
 		[DataTestMethod]
@@ -115,20 +116,18 @@ AllowedMethodName
 				$"namespace {nsName} {{\npublic class {typeName}\n{{\nprivate void {methodName}()\n{{\nreturn;\n}}\n}}\n}}\n";
 		}
 
-		private void VerifyDiagnostic(string file)
+		private DiagnosticResult GetDiagnosticResult()
 		{
-			VerifyDiagnostic(file,
-				new DiagnosticResult()
-				{
-					Id = AllowedSymbolsTestAnalyzer.Rule.Id,
-					Message = new Regex("AllowedSymbolsFound"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
+			return new DiagnosticResult()
+			{
+				Id = AllowedSymbolsTestAnalyzer.Rule.Id,
+				Message = new Regex("AllowedSymbolsFound"),
+				Severity = DiagnosticSeverity.Error,
+				Locations = new[]
 					{
 						new DiagnosticResultLocation("Test0.cs", null, null)
 					}
-				}
-			);
+			};
 		}
 	}
 }
