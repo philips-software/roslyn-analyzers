@@ -14,7 +14,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class DisallowDisposeRegistrationCodeFixProviderTest : AssertCodeFixVerifier
+	public class DisallowDisposeRegistrationCodeFixProviderTest : CodeFixVerifier
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -33,7 +33,7 @@ class Foo
 ";
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DisallowDisposeRegistration),
+				Id = Helper.ToDiagnosticId(DiagnosticId.DisallowDisposeRegistration),
 				Message = new Regex(DisallowDisposeRegistrationAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -56,11 +56,6 @@ class Foo
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DisallowDisposeRegistrationAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

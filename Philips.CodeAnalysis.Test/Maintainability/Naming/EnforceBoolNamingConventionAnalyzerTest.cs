@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -145,7 +145,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -241,7 +241,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -305,7 +305,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -342,7 +342,7 @@ class Foo
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -382,7 +382,7 @@ class Foo
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -421,7 +421,7 @@ class Foo
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -469,7 +469,7 @@ class Foo
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]

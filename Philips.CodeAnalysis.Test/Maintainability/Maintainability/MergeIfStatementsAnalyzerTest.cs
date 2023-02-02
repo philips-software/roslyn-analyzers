@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string testCode = string.Format(testCodeTemplate, test);
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
-			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticIds.MergeIfStatements);
+			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticId.MergeIfStatements);
 			VerifyDiagnostic(testCode, expectedDiagnostic);
 			VerifyFix(testCode, fixedCode);
 		}

@@ -61,7 +61,7 @@ namespace CastCompleteTests {
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.CastCompleteObject);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.CastCompleteObject);
 			VerifyDiagnostic(testCode, expected);
 		}
 

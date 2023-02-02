@@ -49,7 +49,7 @@ namespace TestMethodNameAnalyzerTest
 
 			DiagnosticResult[] expected = new [] { new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodName),
+				Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
 				Message = new Regex(expectedMessage),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

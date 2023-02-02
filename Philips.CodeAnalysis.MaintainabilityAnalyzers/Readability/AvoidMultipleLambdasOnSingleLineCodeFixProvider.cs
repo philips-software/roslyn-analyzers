@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 		private const string Title = "Put every linq statement on a separate line";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidMultipleLambdasOnSingleLine));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidMultipleLambdasOnSingleLine));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

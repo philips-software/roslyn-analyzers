@@ -67,7 +67,7 @@ Instruction i = method.Body.Instructions[0];
 		}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
 			VerifyDiagnostic(testCode, expected);
 		}
 		
@@ -87,7 +87,7 @@ Instruction i = method.Body.Instructions[0];
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
 			VerifyDiagnostic(testCode, expected);
 		}
 
@@ -154,7 +154,7 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
 			VerifyDiagnostic(testCode, expected);
 		}
 
@@ -347,7 +347,7 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
 			VerifyDiagnostic(testCode, expected);
 		}
 

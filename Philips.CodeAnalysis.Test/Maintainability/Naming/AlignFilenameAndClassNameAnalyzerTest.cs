@@ -46,7 +46,7 @@ namespace AlignFilenameAndClassName {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenNamesDontAlignDiagnosticIsRaised(string typeKind, string filePath)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AlignFilenameAndClassName);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.AlignFilenameAndClassName);
 			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), filePath, expected);
 		}
 

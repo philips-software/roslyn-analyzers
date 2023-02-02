@@ -43,7 +43,7 @@ public class Program {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.LogException);
 			VerifyDiagnostic(testCode, expected);
 		}
 
@@ -59,7 +59,7 @@ public class Program {
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.LogException) }.wrong_method_names", configuredLogMethods }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.LogException) }.wrong_method_names", configuredLogMethods }
 			};
 			return options;
 		}

@@ -95,7 +95,7 @@ namespace AvoidUsingParametersTest {
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidUsingParametersAsTempVariables);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidUsingParametersAsTempVariables);
 			VerifyDiagnostic(testCode, expected);
 		}
 

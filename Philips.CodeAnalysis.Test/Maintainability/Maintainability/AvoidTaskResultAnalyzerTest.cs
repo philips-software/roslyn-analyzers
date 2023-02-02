@@ -12,7 +12,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidTaskResultAnalyzerTest : AssertCodeFixVerifier
+	public class AvoidTaskResultAnalyzerTest : CodeFixVerifier
 	{
 		[DataRow("ValueTask", "4")]
 		[DataRow("Task", "() => 4")]
@@ -34,7 +34,7 @@ class FooClass
 			string before = string.Format(template, @"task.Result");
 			string after = string.Format(template, @"await task");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -55,7 +55,7 @@ class FooClass
 			string before = string.Format(template, @"new Task<int>(() => 4).Result");
 			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -81,7 +81,7 @@ class FooClass
 			string before = string.Format(template, @"Foo(1).Result");
 			string after = string.Format(template, @"await Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -107,7 +107,7 @@ class FooClass
 			string before = string.Format(template, @"this.Foo(1).Result");
 			string after = string.Format(template, @"await this.Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticIds.AvoidTaskResult));
+			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
 			VerifyFix(before, after);
 		}
 
@@ -119,11 +119,6 @@ class FooClass
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidTaskResultAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static readonly SyntaxAnnotation annotation = new($"SplitCondition");
 
 		public override ImmutableArray<string> FixableDiagnosticIds =>
-			ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator));
+			ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.SplitMultiLineConditionOnLogicalOperator));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

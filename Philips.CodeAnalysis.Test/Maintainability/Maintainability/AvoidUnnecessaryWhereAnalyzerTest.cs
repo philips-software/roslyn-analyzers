@@ -50,7 +50,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticIds.AvoidUnnecessaryWhere));
+			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidUnnecessaryWhere));
 		}
 
 

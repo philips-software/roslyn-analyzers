@@ -60,7 +60,7 @@ public class Tests
 				{
 					VerifyDiagnostic(text, new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustBePublic),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, modifier.Length + 8) },
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,

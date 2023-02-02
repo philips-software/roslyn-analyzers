@@ -33,7 +33,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
 		}
 
 		[TestMethod]
@@ -51,7 +51,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
 		}
 
 		[TestMethod]
@@ -74,7 +74,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
 		}
 
 		[TestMethod]
@@ -93,7 +93,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -123,7 +123,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[DataRow("{0}")]
@@ -153,7 +153,7 @@ class Foo
 }}
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -172,7 +172,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -218,7 +218,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 
@@ -239,7 +239,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -266,7 +266,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -297,7 +297,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -324,7 +324,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -351,7 +351,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -379,7 +379,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -406,7 +406,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[TestMethod]
@@ -439,7 +439,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[DataRow("\"{0}\"", ", errorMessage", true)]
@@ -482,7 +482,7 @@ class Foo
 			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats) };
+				expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats) };
 			}
 
 			VerifyDiagnostic(string.Format(template, format, args), expected);
@@ -618,7 +618,7 @@ class Foo
 }}
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
 		}
 
 		[DataRow(@"$""{Test()}""")]

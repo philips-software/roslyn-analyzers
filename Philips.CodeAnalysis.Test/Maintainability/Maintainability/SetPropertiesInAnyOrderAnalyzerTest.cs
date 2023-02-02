@@ -82,7 +82,7 @@ namespace PropertiesinOrderTests {
 		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenReferencingOtherPropertiesDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.SetPropertiesInAnyOrder);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.SetPropertiesInAnyOrder);
 			VerifyDiagnostic(testCode, expected);
 		}
 

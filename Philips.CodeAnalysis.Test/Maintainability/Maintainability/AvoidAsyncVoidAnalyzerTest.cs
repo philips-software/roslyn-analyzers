@@ -13,14 +13,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidAsyncVoidAnalyzerTest : AssertDiagnosticVerifier
 	{
-
 		[DataTestMethod]
-		[DataRow(false, "void", false)]
-		[DataRow(true, "void", true)]
-		[DataRow(true, "Task", false)]
-		[DataRow(true, "Task<int>", false)]
+		[DataRow(true, "void")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationTest(bool isAsync, string returnType, bool isError)
+		public void AvoidTaskResultObjectInvalidCreationTest(bool isAsync, string returnType)
 		{
 			string code = $@"using System;
 using System.Threading.Tasks;
@@ -31,7 +27,25 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidAsyncVoid) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
+		}
+
+		[DataTestMethod]
+		[DataRow(false, "void")]
+		[DataRow(true, "Task")]
+		[DataRow(true, "Task<int>")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void AvoidTaskResultObjectCreationValidTest(bool isAsync, string returnType)
+		{
+			string code = $@"using System;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+public class Tests
+{{
+	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
+}}";
+			VerifySuccessfulCompilation(code);
 		}
 
 
@@ -80,7 +94,7 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+			VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
 		}
 
 		[TestMethod]
@@ -129,7 +143,7 @@ class FooClass
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticIds.AvoidAsyncVoid));
+				VerifyDiagnostic(correctTemplate, DiagnosticResultHelper.Create(DiagnosticId.AvoidAsyncVoid));
 			}
 			else
 			{

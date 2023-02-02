@@ -41,7 +41,7 @@ class Foo
 			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
 			}
 
 			VerifyDiagnostic(string.Format(template, field), result);
@@ -65,7 +65,7 @@ class Foo
 			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
 			}
 
 			VerifyDiagnostic(string.Format(template, field), result);
@@ -94,7 +94,7 @@ class Foo
 			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
 			}
 
 			VerifyDiagnostic(string.Format(template, field), result);
@@ -151,7 +151,7 @@ class Foo
 	}}
 }}
 ";
-			var error = DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly);
+			var error = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
 			error.Message = new Regex("'_foo'");
 
 			var result = new DiagnosticResult[]

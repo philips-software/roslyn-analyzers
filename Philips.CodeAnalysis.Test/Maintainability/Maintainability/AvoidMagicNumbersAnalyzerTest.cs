@@ -192,7 +192,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidMagicNumbers);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidMagicNumbers);
 			VerifyDiagnostic(testCode, expected);
 		}
 

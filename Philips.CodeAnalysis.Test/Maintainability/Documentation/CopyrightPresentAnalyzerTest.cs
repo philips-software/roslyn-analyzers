@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent) }.company_name", configuredCompanyName  }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent) }.company_name", configuredCompanyName  }
 			};
 			return options;
 		}
@@ -116,7 +116,7 @@ class Foo
 			{
 				expected = new[] { new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent),
+					Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
@@ -143,7 +143,7 @@ class Foo
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.CopyrightPresent) };
+			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.CopyrightPresent) };
 
 			VerifyDiagnostic(givenText, expected);
 		}

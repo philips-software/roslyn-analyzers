@@ -60,7 +60,7 @@ class Foo
 		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
 		{
 			var source = CreateFunction(argument);
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferTuplesWithNamedFields).Append(DiagnosticIds.PreferTuplesWithNamedFields);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.PreferTuplesWithNamedFields, DiagnosticId.PreferTuplesWithNamedFields);
 			VerifyDiagnostic(source, expected);
 		}
 
@@ -70,7 +70,7 @@ class Foo
 		public void ErrorIfTupleElementDoesNotHaveName(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			VerifyDiagnostic(source, DiagnosticResultHelper.Create(DiagnosticId.PreferTuplesWithNamedFields));
 		}
 
 		#endregion

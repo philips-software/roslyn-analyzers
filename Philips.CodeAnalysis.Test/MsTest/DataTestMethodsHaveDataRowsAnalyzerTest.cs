@@ -62,7 +62,7 @@ public class Tests
 
 			VerifyDiagnostic(code, new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+				Id = Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) }
@@ -79,7 +79,7 @@ public class Tests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void DataTestMethodsMustHaveDataRows2(string arg, bool isError)
 		{
-			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
@@ -88,14 +88,16 @@ public class Tests
 	[DataTestMethod]
 	public void Foo() {{ }}
 }}";
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			string code = string.Format(template, arg);
 			if (isError)
 			{
-				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
+				VerifyDiagnostic(code, expected);
 			}
-
-			VerifyDiagnostic(string.Format(code, arg), expected);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("[DerivedDataSource]", false)]
@@ -106,7 +108,7 @@ public class Tests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustNotHaveDataRows(string arg, bool isError)
 		{
-			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 [TestClass]
 public class Tests
@@ -115,14 +117,16 @@ public class Tests
 	[TestMethod]
 	public void Foo() {{ }}
 }}";
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			string code = string.Format(template, arg);
 			if (isError)
 			{
-				expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DataTestMethodsHaveDataRows);
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
+				VerifyDiagnostic(code, expected);
 			}
-
-			VerifyDiagnostic(string.Format(code, arg), expected);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		#endregion

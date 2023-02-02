@@ -32,7 +32,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma),
 				Message = new Regex(AvoidPragmaAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

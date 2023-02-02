@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Common;
@@ -46,7 +47,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 	internal static class DiagnosticResultHelper
 	{
-		public static DiagnosticResult Create(DiagnosticIds diagnosticId, Regex message = null)
+		public static DiagnosticResult Create(DiagnosticId diagnosticId, Regex message = null)
 		{
 			return new DiagnosticResult()
 			{
@@ -57,20 +58,15 @@ namespace Philips.CodeAnalysis.Test.Helpers
 			};
 		}
 
-		public static DiagnosticResult[] CreateArray(DiagnosticIds diagnosticId, Regex message = null)
+		public static DiagnosticResult[] Create(params DiagnosticId[] diagnosticIds)
 		{
-			return new []
+			List<DiagnosticResult> diagnosticResults = new();
+			foreach(DiagnosticId diagnosticId in diagnosticIds)
 			{
-				Create(diagnosticId, message),
-			};
-		}
-
-		public static DiagnosticResult[] Append(this DiagnosticResult[] array, DiagnosticIds diagnosticId, Regex message = null)
-		{
-			var larger = new DiagnosticResult[array.Length + 1];
-			array.AsSpan().CopyTo(larger);
-			larger[array.Length] = Create(diagnosticId, message);
-			return larger;
+				DiagnosticResult dr = Create(diagnosticId);
+				diagnosticResults.Add(dr);
+			}
+			return diagnosticResults.ToArray();
 		}
 	}
 }

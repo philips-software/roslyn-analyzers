@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = "Replace ArrayList with List<T>";
 		private readonly SyntaxAnnotation annotation = new("ReplaceArrayList");
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidArrayList));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidArrayList));
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{

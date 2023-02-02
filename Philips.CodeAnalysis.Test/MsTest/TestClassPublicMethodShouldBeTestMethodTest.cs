@@ -111,7 +111,7 @@ class Foo
 			{
 				results = new[] { new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassPublicMethodShouldBeTestMethod),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod),
 						Message = new System.Text.RegularExpressions.Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]

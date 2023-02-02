@@ -314,7 +314,7 @@ namespace MultiLineConditionUnitTests
 		{
 			var expected = new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
+				Id = Helper.ToDiagnosticId(DiagnosticId.SplitMultiLineConditionOnLogicalOperator),
 				Severity = DiagnosticSeverity.Warning,
 				Locations =
 					new[] {
@@ -343,7 +343,7 @@ namespace MultiLineConditionUnitTests
 		{
 			var expected = new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.SplitMultiLineConditionOnLogicalOperator),
+				Id = Helper.ToDiagnosticId(DiagnosticId.SplitMultiLineConditionOnLogicalOperator),
 				Severity = DiagnosticSeverity.Warning,
 				Location = new DiagnosticResultLocation()
 			};

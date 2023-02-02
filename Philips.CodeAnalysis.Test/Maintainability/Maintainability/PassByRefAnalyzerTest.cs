@@ -29,8 +29,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 }}
 ";
-
-			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				VerifySuccessfulCompilation(content);
+			}
+			else
+			{
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
+			}
 		}
 
 		[DataRow(true)]
@@ -56,7 +62,14 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				VerifySuccessfulCompilation(content);
+			}
+			else
+			{
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
+			}
 		}
 
 		[DataRow(true)]
@@ -118,7 +131,14 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				VerifySuccessfulCompilation(content);
+			}
+			else
+			{
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
+			}
 		}
 
 		[TestMethod]
@@ -160,8 +180,14 @@ public class TestClass {baseClass}
 	}}
 }}
 ";
-
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
+			}
+			else
+			{
+				VerifySuccessfulCompilation(content);
+			}
 		}
 
 		[DataRow(": Foo", "i = 0", false)]
@@ -182,8 +208,14 @@ public class TestClass {baseClass}
 	}}
 }}
 ";
-
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.AvoidPassByReference));
+			}
+			else
+			{
+				VerifySuccessfulCompilation(content);
+			}
 		}
 
 

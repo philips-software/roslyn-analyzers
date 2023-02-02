@@ -22,11 +22,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"DataTestMethods are only executed with DataRows";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor RuleShouldBeTestMethod = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor RuleShouldBeTestMethod = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsDataTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor RuleShouldBeDataTestMethod = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor RuleShouldBeDataTestMethod = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)

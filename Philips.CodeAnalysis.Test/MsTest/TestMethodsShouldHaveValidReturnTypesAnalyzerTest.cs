@@ -51,7 +51,15 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.TestMethodsMustHaveValidReturnType) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustHaveValidReturnType);
+				VerifyDiagnostic(code, expected);
+			}
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		#endregion

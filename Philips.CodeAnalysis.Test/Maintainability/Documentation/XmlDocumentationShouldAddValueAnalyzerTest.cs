@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue) }.additional_useless_words", configuredAdditionalUselessWords  }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue) }.additional_useless_words", configuredAdditionalUselessWords  }
 			};
 			return options;
 		}
@@ -59,7 +59,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -73,7 +73,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -90,7 +90,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -105,7 +105,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -120,7 +120,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -135,7 +135,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
 		[TestMethod]
@@ -150,18 +150,17 @@ public enum TestEnumeration
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticIds.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddClassTests(string text, bool isError)
+		public void ValueAddClassInvalidTests(string text)
 		{
 			string content = $@"
 /// <summary>{text}</summary>
@@ -170,21 +169,35 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Gets an dummy Foo", true)]
-		[DataRow("Gets a rom", true)]
-		[DataRow("Gets a roms", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddMethodTests(string text, bool isError)
+		public void ValueAddClassValidTests(string text)
+		{
+			string content = $@"
+/// <summary>{text}</summary>
+public class Foo
+{{
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
+		[DataRow("Gets an dummy Foo")]
+		[DataRow("Gets a rom")]
+		[DataRow("Gets a roms")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddMethodInvalidTests(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -196,21 +209,37 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Gets and sets the Foo", true)]
-		[DataRow("Gets or sets the Foo", true)]
-		[DataRow("Gets/sets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddPropertyTests(string text, bool isError)
+		public void ValueAddMethodValidTests(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public void Foo()
+	{{
+	}}
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Gets and sets the Foo")]
+		[DataRow("Gets or sets the Foo")]
+		[DataRow("Gets/sets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddPropertyInvalidTests(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -223,19 +252,38 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+		}
+
+		[DataRow("Get an instance of Foo to please Bar")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddPropertyValidTests(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public int Foo
+	{{
+		get;
+	}}
+}}
+";
+
+			VerifySuccessfulCompilation(content);
 		}
 
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddFieldTests(string text, bool isError)
+		public void ValueAddFieldInvalidTests(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -245,19 +293,34 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("Fire Foo", true)]
-		[DataRow("Fires the Foo", true)]
-		[DataRow("Fires the Foo event", true)]
-		[DataRow("Raise Foo", true)]
-		[DataRow("Raises an instance of the Foo event", true)]
-		[DataRow("Raised when Foo happens", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddEventTests(string text, bool isError)
+		public void ValueAddFieldValidTests(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public int Foo;
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
+
+		[DataRow("On Foo")]
+		[DataRow("Fire Foo")]
+		[DataRow("Fires the Foo")]
+		[DataRow("Fires the Foo event")]
+		[DataRow("Raise Foo")]
+		[DataRow("Raises an instance of the Foo event")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddEventInvalidTests(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -267,15 +330,29 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("It is Foo", true)]
-		[DataRow("When it is Foo", false)]
+		[DataRow("Raised when Foo happens")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddEnumTests(string text, bool isError)
+		public void ValueAddEventValidTests(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public event System.EventHandler Foo;
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
+		[DataRow("On Foo")]
+		[DataRow("It is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddEnumTests(string text)
 		{
 			string content = $@"
 /// <summary>{text}</summary>
@@ -285,15 +362,30 @@ public enum Foo
 }}
 ";
 
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("It is Foo", true)]
-		[DataRow("When it is Foo", false)]
+		[DataRow("When it is Foo")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ValueAddEnumMemberTests(string text, bool isError)
+		public void ValueAddEnumValidTests(string text)
+		{
+			string content = $@"
+/// <summary>{text}</summary>
+public enum Foo
+{{
+	Member = 1,
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
+
+		[DataRow("On Foo")]
+		[DataRow("It is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddEnumMemberInvalidTests(string text)
 		{
 			string content = $@"
 public enum TestEnumeration
@@ -302,9 +394,24 @@ public enum TestEnumeration
 	Foo = 1,
 }}
 ";
-
-			VerifyDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
+
+		[DataRow("When it is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void ValueAddEnumMemberValidTests(string text)
+		{
+			string content = $@"
+public enum TestEnumeration
+{{
+	/// <summary>{text}</summary>
+	Foo = 1,
+}}
+";
+			VerifySuccessfulCompilation(content);
+		}
+
 
 		[DataRow("event System.EventHandler Foo;")]
 		[DataRow("void Foo() { }")]
@@ -331,8 +438,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
-
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -359,8 +465,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
-
+			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -418,7 +523,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
 		}
 		#endregion
 	}

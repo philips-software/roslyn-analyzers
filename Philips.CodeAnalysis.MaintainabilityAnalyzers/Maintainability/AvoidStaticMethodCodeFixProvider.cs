@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidStaticMethods)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()

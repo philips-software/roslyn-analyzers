@@ -30,7 +30,7 @@ class Foo
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.AvoidAssemblyVersionChange) }.assembly_version", InvalidVersion }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) }.assembly_version", InvalidVersion }
 			};
 			return options;
 		}
@@ -39,7 +39,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void InvalidVersionShouldTriggerTriggerDiagnostics()
 		{
-			var diagnostic = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssemblyVersionChange);
+			var diagnostic = DiagnosticResultHelper.Create(DiagnosticId.AvoidAssemblyVersionChange);
 			VerifyDiagnostic(TestCode, diagnostic);
 		}
 	}

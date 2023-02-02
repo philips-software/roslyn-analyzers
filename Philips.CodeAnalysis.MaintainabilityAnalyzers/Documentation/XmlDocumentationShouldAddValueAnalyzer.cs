@@ -28,8 +28,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating its name.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
-		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
+		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
+		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
 			new( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });

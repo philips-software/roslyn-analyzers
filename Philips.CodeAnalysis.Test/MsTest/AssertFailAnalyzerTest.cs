@@ -37,7 +37,7 @@ if(!isDone)
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -53,7 +53,7 @@ else
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -67,7 +67,7 @@ if(!isDone)
 }
 else
 	Assert.Fail();
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -97,7 +97,7 @@ try
 catch
 {
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -122,7 +122,7 @@ foreach(var foo in Array.Empty<int>())
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -133,7 +133,7 @@ foreach(var foo in Array.Empty<int>())
 foreach(var foo in Array.Empty<int>())
 	Assert.Fail();
 
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -163,7 +163,7 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -178,7 +178,7 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -197,7 +197,7 @@ foreach(var foo in Array.Empty<int>())
 		Assert.Fail();
 	}
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 
 		[TestMethod]
@@ -212,7 +212,7 @@ foreach(var foo in Array.Empty<int>())
 	else
 		Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticIds.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
 		}
 		#endregion
 	}

@@ -43,7 +43,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticId.AvoidSwitchStatementsWithNoCases));
 		}
 
 
@@ -105,7 +105,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticId.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]
@@ -156,7 +156,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticId.AvoidSwitchStatementsWithNoCases));
 		}
 
 		[DataRow("byte", "1")]

@@ -43,6 +43,7 @@ namespace MyNamespace
 		[DataRow("IntPtr", true, DisplayName = "CorrectIntPtrDisposable"),
 		 DataRow("HANDLE", true, DisplayName = "CorrectHandleDisposable"),
 		 DataRow("int", false, DisplayName = "CorrectIntNotDisposable")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string fieldType, bool isDisposable)
 		{
 			var source = CreateClass(fieldType, isDisposable);
@@ -55,9 +56,10 @@ namespace MyNamespace
 		[DataTestMethod]
 		[DataRow("IntPtr", DisplayName = "WrongIntPtrNotDisposable"),
 		 DataRow("Handle", DisplayName = "WrongHandleNotDisposable")]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaised(string fieldType)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.UnmanagedObjectsNeedDisposing);
+			var expected = DiagnosticResultHelper.Create(DiagnosticId.UnmanagedObjectsNeedDisposing);
 			var source = CreateClass(fieldType, false);
 			VerifyDiagnostic(source, expected);
 		}

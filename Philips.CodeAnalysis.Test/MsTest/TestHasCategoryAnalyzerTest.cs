@@ -37,7 +37,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -191,14 +191,3 @@ class Foo
 		{
 			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
 		}
-
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
-		{
-			var options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
-			};
-			return options;
-		}
-	}
-}

@@ -24,27 +24,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor IncrementAndDecrementRule =
-			GenerateRule("++", "--", DiagnosticIds.AlignNumberOfIncrementAndDecrementOperators);
+			GenerateRule("++", "--", DiagnosticId.AlignNumberOfIncrementAndDecrementOperators);
 
 		private static readonly DiagnosticDescriptor PlusMinusRule =
-			GenerateRule("+", "-", DiagnosticIds.AlignNumberOfPlusAndMinusOperators);
+			GenerateRule("+", "-", DiagnosticId.AlignNumberOfPlusAndMinusOperators);
 
 		private static readonly DiagnosticDescriptor MultiplyDivideRule =
-			GenerateRule("*", "/", DiagnosticIds.AlignNumberOfMultiplyAndDivideOperators);
+			GenerateRule("*", "/", DiagnosticId.AlignNumberOfMultiplyAndDivideOperators);
 
 		private static readonly DiagnosticDescriptor GreaterLessThanRule =
-			GenerateRule(">", "<", DiagnosticIds.AlignNumberOfGreaterAndLessThanOperators);
+			GenerateRule(">", "<", DiagnosticId.AlignNumberOfGreaterAndLessThanOperators);
 
 		private static readonly DiagnosticDescriptor GreaterLessThanOrEqualRule =
-			GenerateRule(">=", "<=", DiagnosticIds.AlignNumberOfGreaterAndLessThanOrEqualOperators);
+			GenerateRule(">=", "<=", DiagnosticId.AlignNumberOfGreaterAndLessThanOrEqualOperators);
 
 		private static readonly DiagnosticDescriptor ShiftRightAndLeftRule =
-			GenerateRule(">>", "<<", DiagnosticIds.AlignNumberOfShiftRightAndLeftOperators);
+			GenerateRule(">>", "<<", DiagnosticId.AlignNumberOfShiftRightAndLeftOperators);
 
 		private static readonly DiagnosticDescriptor PlusAndEqualRule =
-			GenerateRule("+", "==", DiagnosticIds.AlignNumberOfPlusAndEqualOperators);
+			GenerateRule("+", "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
 
-		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticIds diagnosticId)
+		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{
 			return new(
 				Helper.ToDiagnosticId(diagnosticId),

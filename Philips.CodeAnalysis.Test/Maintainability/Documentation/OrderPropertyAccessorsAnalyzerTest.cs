@@ -25,17 +25,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		#endregion
 
 		#region Public Interface
-		[DataRow(@"{ get; set; }", false)]
-		[DataRow(@"{ get; }", false)]
-		[DataRow(@"{ get { return null; } }", false)]
-		[DataRow(@"{ set {} }", false)]
-		[DataRow(@"{ get; init; }", false)]
-		[DataRow(@"{ init; get; }", true)]
-		[DataRow(@"{ set; get; }", true)]
-		[DataRow(@"{ set{ } get{ return default; } }", true)]
+
+		[DataRow(@"{ get; set; }")]
+		[DataRow(@"{ get; }")]
+		[DataRow(@"{ get { return null; } }")]
+		[DataRow(@"{ set {} }")]
+		[DataRow(@"{ get; init; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void OrderTests(string property, bool isError)
+		public void OrderValidTests(string property)
 		{
 			string text = $@"
 public class TestClass
@@ -44,8 +42,26 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(text, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.OrderPropertyAccessors) : Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(text);
 		}
+
+		[DataRow(@"{ init; get; }")]
+		[DataRow(@"{ set; get; }")]
+		[DataRow(@"{ set{ } get{ return default; } }")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void OrderInvalidTests(string property)
+		{
+			string text = $@"
+public class TestClass
+{{
+	public string Foo {property}
+}}
+";
+
+			VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticId.OrderPropertyAccessors));
+		}
+
 
 		#endregion
 	}
