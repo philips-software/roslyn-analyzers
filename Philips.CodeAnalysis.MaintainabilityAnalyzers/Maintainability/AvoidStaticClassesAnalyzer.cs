@@ -113,7 +113,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (_generateExceptionsFile)
 			{
-				File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString() + Environment.NewLine);
+				var exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+				if (exceptionSymbol != null)
+				{
+					var docId = exceptionSymbol.GetDocumentationCommentId();
+					File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", $"~{docId}{Environment.NewLine}");
+				}
 			}
 
 			var location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();

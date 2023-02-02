@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 
@@ -70,11 +70,21 @@ namespace Philips.CodeAnalysis.Common
 		{
 			var requestedType = requested.ContainingType;
 			var requestedNamespace = requestedType.ContainingNamespace;
+			return
+				_allowedMethods.Contains(requested) ||
+				_allowedTypes.Contains(requestedType) ||
+				_allowedNamespaces.Contains(requestedNamespace) ||
+				MatchesAnyLine(requestedNamespace.Name, requestedType.Name, requested.Name);
+		}
+
+		public bool IsAllowed(INamedTypeSymbol requested)
+		{
+			var requestedNamespace = requested.ContainingNamespace;
 			return 
 				_allowedLines.Contains(requested.Name) ||
-			    _allowedMethods.Contains(requested) ||
-			    _allowedTypes.Contains(requestedType) ||
-			    _allowedNamespaces.Contains(requestedNamespace);
+			    _allowedTypes.Contains(requested) ||
+			    _allowedNamespaces.Contains(requestedNamespace) ||
+				MatchesAnyLine(requestedNamespace.Name, requested.Name, null);
 		}
 
 		/// <summary>
@@ -100,6 +110,35 @@ namespace Philips.CodeAnalysis.Common
 				throw new InvalidDataException(
 					"Invalid symbol type found: " + symbol.MetadataName);
 			}
+		}
+
+		private bool MatchesAnyLine(string nsName, string typeName, string methodName)
+		{
+			return _allowedLines.Any(line =>
+			{
+				var parts = line.Split('.');
+				switch (parts.Length)
+				{
+					case 1:
+						return (methodName == null) ? line == typeName : line == methodName;
+					case 2:
+						return (parts[0] == "*") ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
+					case 3:
+						bool result = true;
+						if (parts[0] != "*")
+						{
+							result &= parts[0] == nsName;
+						}
+						if(parts[1] != "*")
+						{
+							result &= parts[1] == typeName;
+						}
+						result &= parts[2] == methodName;
+						return result;
+					default:
+						return false;
+				}
+			});
 		}
 
 		private string StripComments(string input)
