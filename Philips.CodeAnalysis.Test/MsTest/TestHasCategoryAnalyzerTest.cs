@@ -40,10 +40,7 @@ class Foo
 				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, expectedColumn)
-				}
+				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, expectedColumn) }
 			};
 
 			VerifyDiagnostic(givenText, expected);
@@ -157,15 +154,14 @@ class Foo
 			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				results = new[]
+				{
+					new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", null, null)
-						}
+						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
 					}
 				};
 			}
@@ -173,6 +169,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
+
 			VerifyDiagnostic(givenText, results);
 		}
 
@@ -191,3 +188,13 @@ class Foo
 		{
 			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
 		}
+		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			var options = new Dictionary<string, string>
+			{
+				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
+			};
+			return options;
+		}
+	}
+}
