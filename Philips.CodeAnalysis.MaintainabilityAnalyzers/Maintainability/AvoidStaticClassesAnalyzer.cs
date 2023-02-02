@@ -39,8 +39,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			allowedSymbols.RegisterLine(@"*.AssemblyInitialize");
 
 			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
-			var exceptionOptions = helper.LoadExceptionsOptions(Rule.Id);
-			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, helper.ExceptionsOptions.GenerateExceptionsFile);
+			var exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
+			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.GenerateExceptionsFile);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -92,7 +92,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
-			var item = declaredSymbol.ToDisplayString();
 			if (_allowedSymbols.IsAllowed(declaredSymbol))
 			{
 				return;

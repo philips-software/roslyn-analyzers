@@ -111,12 +111,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
 				var isLoggingMethod = false;
-				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
+				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
+				    context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{
-					if (context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
-					{
-						isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(method => _logMethodNames.IsAllowed(method));
-					}
+					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(method => _logMethodNames.IsAllowed(method));
 				}
 
 				return isLoggingMethod;

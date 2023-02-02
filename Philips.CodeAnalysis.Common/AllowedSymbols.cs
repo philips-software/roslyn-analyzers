@@ -137,47 +137,56 @@ namespace Philips.CodeAnalysis.Common
 		{
 			var nsName = ns.ToString();
 			var typeName = type.Name;
-			var methodName = method?.Name;
 			return _allowedLines.Any(line =>
 			{
 				var parts = line.Split('.');
 				if (parts.Length == 1)
 				{
-					return (methodName == null) ? line == typeName : line == methodName;
+					return (method == null) ? line == typeName : line == method.Name;
 				}
 				else if (parts.Length == 2)
 				{
 					return (parts[0] == "*") ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
-				} else {
-					bool result = true;
-					int length = parts.Length;
-					int nsIndex = length - 3;
-					int typeIndex = length - 2;
-					int methodIndex = length - 1;
-					if (method == null)
-					{
-						nsIndex = length - 2;
-						typeIndex = length - 1;
-					}
-					if (parts[nsIndex] != "*")
-					{
-						var fullNs = string.Join(".", parts, 0, nsIndex + 1);
-						result &= fullNs == nsName;
-					}
-					if(parts[typeIndex] != "*")
-					{
-						result &= parts[typeIndex] == typeName;
-					}
-
-					if (method != null)
-					{
-						result &= parts[methodIndex] == methodName;
-					}
-
-					return result;
+				} else
+				{
+					return MatchesFullNamespace(parts, nsName, typeName, method);
 				}
 			});
 		}
+
+		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
+		{
+			string methodName = method?.Name;
+			bool result = true;
+			int length = parts.Length;
+			int nsIndex = length - 3;
+			int typeIndex = length - 2;
+			int methodIndex = length - 1;
+			if (method == null)
+			{
+				nsIndex = length - 2;
+				typeIndex = length - 1;
+			}
+
+			if (parts[nsIndex] != "*")
+			{
+				var fullNs = string.Join(".", parts, 0, nsIndex + 1);
+				result &= fullNs == nsName;
+			}
+
+			if (parts[typeIndex] != "*")
+			{
+				result &= parts[typeIndex] == typeName;
+			}
+
+			if (method != null)
+			{
+				result &= parts[methodIndex] == methodName;
+			}
+
+			return result;
+		}
+
 
 		private string StripComments(string input)
 		{
