@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			if (symbol is null || symbol is not IMethodSymbol methodSymbol)
+			if (symbol is not IMethodSymbol methodSymbol)
 			{
 				return;
 			}

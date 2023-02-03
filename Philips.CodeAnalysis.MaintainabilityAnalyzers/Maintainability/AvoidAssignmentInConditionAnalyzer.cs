@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
-
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Philips.CodeAnalysis.Common;
@@ -78,16 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void CheckDescendantHasNoAssignment(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
-			bool found = false;
-			foreach (var child in node.DescendantTokens())
-			{
-				if (child.IsKind(SyntaxKind.EqualsToken))
-				{
-					found = true;
-					break;
-				}
-			}
-			if (found)
+			if (node.DescendantTokens().Any(child => child.IsKind(SyntaxKind.EqualsToken)))
 			{
 				var location = node.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location));

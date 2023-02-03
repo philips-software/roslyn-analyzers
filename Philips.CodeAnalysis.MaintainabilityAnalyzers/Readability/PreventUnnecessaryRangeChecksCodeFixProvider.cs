@@ -46,31 +46,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => RemoveIfStatement2(context.Document, node, c),
+						createChangedDocument: c => RemoveIfStatement(context.Document, node, c),
 						equivalenceKey: Title),
 					diagnostic);
 			}
 		}
 
 		private async Task<Document> RemoveIfStatement(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
-		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-			SyntaxNode replaceNode = node.Statement;
-			SyntaxNode ifBlock = node.Statement;
-
-			if (ifBlock is BlockSyntax block)
-			{
-				var trivia = node.GetLeadingTrivia();
-				replaceNode = block.Statements[0].WithLeadingTrivia(trivia);
-			}
-
-			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
-
-			return document.WithSyntaxRoot(root);
-		}
-
-		private async Task<Document> RemoveIfStatement2(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken);
 

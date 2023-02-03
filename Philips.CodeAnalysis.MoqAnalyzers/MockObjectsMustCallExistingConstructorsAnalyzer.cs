@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			//by now we know they are calling foo.Create<T>/foo.Of.  Drop to the semantic model, is this MockRepository.Create<T> or Mock.Of<T>?
 			SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax);
 
-			if (symbol.Symbol == null || symbol.Symbol is not IMethodSymbol method)
+			if (symbol.Symbol is not IMethodSymbol method)
 			{
 				return;
 			}
@@ -108,7 +108,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax);
 
-			if (symbolInfo.Symbol == null || symbolInfo.Symbol is not IMethodSymbol mockConstructorMethod)
+			if (symbolInfo.Symbol is not IMethodSymbol mockConstructorMethod)
 			{
 				return;
 			}

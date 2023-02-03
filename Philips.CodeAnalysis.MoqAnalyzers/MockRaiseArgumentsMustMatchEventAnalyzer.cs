@@ -113,7 +113,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			SymbolInfo raiseSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax.Expression);
 
-			if (raiseSymbol.Symbol == null || raiseSymbol.Symbol is not IMethodSymbol raiseMethodSymbol)
+			if (raiseSymbol.Symbol is not IMethodSymbol raiseMethodSymbol)
 			{
 				return;
 			}

@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 namespace Philips.CodeAnalysis.Benchmark
 {
     [ExcludeFromCodeCoverage]
-	public class Program
+	public static class Program
 	{
 		public static void Main()
 		{

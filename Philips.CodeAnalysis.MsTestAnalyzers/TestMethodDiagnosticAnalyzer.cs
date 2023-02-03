@@ -1,9 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -14,11 +12,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		protected AttributeHelper AttributeHelper { get; private set; }
 
-		public TestMethodDiagnosticAnalyzer()
+		protected TestMethodDiagnosticAnalyzer()
 			: this(new AttributeHelper())
 		{ }
 
-		public TestMethodDiagnosticAnalyzer(AttributeHelper attributeHelper)
+		protected TestMethodDiagnosticAnalyzer(AttributeHelper attributeHelper)
 		{
 			AttributeHelper = attributeHelper;
 		}

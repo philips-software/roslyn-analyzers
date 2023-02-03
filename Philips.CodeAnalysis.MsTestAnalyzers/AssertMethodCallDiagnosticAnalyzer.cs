@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith("Assert"))
 			{
-				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression) ?? Array.Empty<Diagnostic>())
+				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression))
 				{
 					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
 					{
