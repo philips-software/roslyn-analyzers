@@ -151,10 +151,9 @@ class Foo
 		private void VerifyError(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[]
+				var results = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -164,13 +163,12 @@ class Foo
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
 					}
 				};
+				VerifyDiagnostic(givenText, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
-
-			VerifyDiagnostic(givenText, results);
 		}
 
 
