@@ -47,18 +47,25 @@ namespace TestMethodNameAnalyzerTest
 			var fixedName = FixName(name);
 			string fixedText = string.Format(baseline, fixedName);
 
-			DiagnosticResult[] expected = new [] { new DiagnosticResult
+			if (isError)
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
-				Message = new Regex(expectedMessage),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+				DiagnosticResult[] expected = new[] { new DiagnosticResult
 				{
-					new DiagnosticResultLocation("Test0.cs", 7, 17)
-				}
-			}};
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
+					Message = new Regex(expectedMessage),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", 7, 17)
+					}
+				}};
+				VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
+			}
+			else
+			{
+				VerifySuccessfulCompilation(givenText);
+			}
 
-			VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
 			VerifyFix(givenText, fixedText);
 		}
 		

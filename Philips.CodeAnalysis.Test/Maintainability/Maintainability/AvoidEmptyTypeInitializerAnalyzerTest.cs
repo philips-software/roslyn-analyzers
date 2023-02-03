@@ -27,10 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 }}
 ";
 			string classContent = template;
-
-			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(classContent, results);
+			VerifySuccessfulCompilation(classContent);
 		}
 
 		[DataRow("static", "", true)]
@@ -65,13 +62,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 						}
 					}
 				};
+				VerifyDiagnostic(classContent, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(classContent);
 			}
-
-			VerifyDiagnostic(classContent, results);
 		}
 
 		[DataRow("  /// <summary />")]

@@ -58,15 +58,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -76,9 +74,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 15)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -135,15 +132,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -153,9 +148,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 14)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -168,10 +162,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -185,11 +176,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	private static readonly bool _shouldFoo = true;
 }}
 ";
-			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(baseline);
 		}
 
 		[DataRow("i", false, 5)]
@@ -231,15 +218,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -249,9 +234,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 8)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foreach(bool i in new[] { true, false }){}", false, 5)]
@@ -295,15 +279,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -313,9 +295,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 16)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("_foo", false, 4)]
@@ -332,15 +313,13 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -350,9 +329,8 @@ class Foo
 					new DiagnosticResultLocation("Test.cs", errorLine, 18)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 6)]
@@ -372,15 +350,13 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -390,9 +366,8 @@ class Foo
 					new DiagnosticResultLocation("Test.cs", errorLine, 11)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", false, 5)]
@@ -411,15 +386,13 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -429,9 +402,8 @@ class Foo
 					new DiagnosticResultLocation("Test.cs", errorLine, 7)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("Foo", false, 4)]
@@ -459,15 +431,13 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
@@ -477,9 +447,8 @@ class Foo
 					new DiagnosticResultLocation("Test.cs", errorLine, 14)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 
@@ -505,10 +474,7 @@ class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -533,10 +499,7 @@ abstract class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -555,10 +518,7 @@ abstract class Foo : ApplicationContext
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 	}
 }

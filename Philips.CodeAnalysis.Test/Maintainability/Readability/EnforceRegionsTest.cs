@@ -267,10 +267,9 @@ class Foo
 		private void VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var results = new[] { new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
 						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
@@ -281,12 +280,12 @@ class Foo
 						}
 					}
 				};
+				VerifyDiagnostic(givenText, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
-			VerifyDiagnostic(givenText, results);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

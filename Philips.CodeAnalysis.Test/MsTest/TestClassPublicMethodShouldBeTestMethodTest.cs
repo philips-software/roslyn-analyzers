@@ -106,10 +106,9 @@ class Foo
 		private void VerifyError(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var results = new[] { new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod),
 						Message = new System.Text.RegularExpressions.Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
@@ -120,12 +119,12 @@ class Foo
 						}
 					}
 				};
+				VerifyDiagnostic(givenText, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
-			VerifyDiagnostic(givenText, results);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

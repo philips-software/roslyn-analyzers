@@ -70,6 +70,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null)
 		{
+			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
+
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
 		}
@@ -81,7 +83,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix = null)
 		{
-			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>(), fileNamePrefix);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, fileNamePrefix, analyzer, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
@@ -92,7 +95,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var content = File.ReadAllText(path);
 			var fileName = Path.GetFileNameWithoutExtension(path);
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>(), fileName);
+			VerifySuccessfulCompilation(content, fileName);
 		}
 
 		/// <summary>
