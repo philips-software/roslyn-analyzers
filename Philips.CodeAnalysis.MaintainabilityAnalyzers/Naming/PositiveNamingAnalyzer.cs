@@ -1,6 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -56,13 +57,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				return;
 			}
-			foreach (var variable in variables)
+			foreach (var variable in variables.Where(v => !IsPositiveName(v.Identifier.Text)))
 			{
-				if (!IsPositiveName(variable.Identifier.Text))
-				{
-					var location = node.GetLocation();
-					CreateDiagnostic(context, location);
-				}
+				var loc = variable.GetLocation();
+				CreateDiagnostic(context, loc);
 			}
 		}
 

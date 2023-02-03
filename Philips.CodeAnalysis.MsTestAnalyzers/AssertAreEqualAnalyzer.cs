@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -32,12 +33,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (memberName is not @"AreEqual" and not @"AreNotEqual")
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
 			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
@@ -49,12 +50,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (!arg0Literal && !arg1Literal)
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
 			if (arg0Literal && !arg0Null)
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
 			if (arg1Literal || arg0Null)
@@ -64,7 +65,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return new[] { diagnostic };
 			}
 
-			return null;
+			return Array.Empty<Diagnostic>();
 		}
 
 

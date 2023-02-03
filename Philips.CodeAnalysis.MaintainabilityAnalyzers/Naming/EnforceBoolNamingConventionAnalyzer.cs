@@ -87,20 +87,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			foreach (VariableDeclaratorSyntax syntax in variableDeclaration.Variables)
+			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(syntax => syntax.Identifier))
 			{
 				if (!ShouldCheck(variableDeclaration, context, out Regex validator))
 				{
 					continue;
 				}
 
-				if (IsNameValid(validator, syntax.Identifier))
+				if (IsNameValid(validator, identifier))
 				{
 					continue;
 				}
 
-				var location = syntax.Identifier.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, syntax.Identifier.ValueText);
+				var location = identifier.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

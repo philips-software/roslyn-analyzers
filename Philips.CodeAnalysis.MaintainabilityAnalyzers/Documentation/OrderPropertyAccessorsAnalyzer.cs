@@ -60,7 +60,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (accessor.Keyword.IsKind(SyntaxKind.SetKeyword) || accessor.Keyword.Text == "init")
 				{
 					setIndex = i;
-					continue;
 				}
 			}
 
