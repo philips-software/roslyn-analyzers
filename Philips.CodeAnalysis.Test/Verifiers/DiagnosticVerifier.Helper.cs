@@ -44,11 +44,13 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// Given classes in the form of strings, their language, and an IDiagnosticAnalyzer to apply to it, return the diagnostics found in the string after converting it to a document.
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer)
+		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
 		{
-			var documents = GetDocuments(sources, filenamePrefix);
+			var documents = GetDocuments(sources, filenamePrefix, assemblyName);
 			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
 		}
 
@@ -197,18 +199,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}
 
-        #endregion
+		#endregion
 
-        #region Set up compilation and documents
-        /// <summary>
-        /// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
-        /// </summary>
-        /// <param name="sources">Classes in the form of strings</param>
-        /// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		#region Set up compilation and documents
+		/// <summary>
+		/// Given an array of strings as sources and a language, turn them into a project and return the documents and spans of it.
+		/// </summary>
+		/// <param name="sources">Classes in the form of strings</param>
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-        private Document[] GetDocuments(string[] sources, string filenamePrefix)
+		private Document[] GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
 		{
-			var project = CreateProject(sources, filenamePrefix);
+			var project = CreateProject(sources, filenamePrefix, assemblyName);
 			var documents = project.Documents.ToArray();
 
 			return documents;
@@ -265,22 +268,21 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="sources">Classes in the form of strings</param>
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
-		private Project CreateProject(string[] sources, string filenamePrefix = null)
+		private Project CreateProject(string[] sources, string filenamePrefix = null, string assemblyName = null)
 		{
 			bool isCustomPrefix = filenamePrefix != null;
 			filenamePrefix ??= DefaultFilePathPrefix;
 			string fileExt = CSharpDefaultFileExt;
+			string projectName = assemblyName ?? TestProjectName;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
-
-			var documentIdtemp = DocumentId.CreateNewId(projectId, debugName: "hi");
-
 			var documentInfos = GetAdditionalDocumentInfos(projectId);
 			var adhocWorkspace = new AdhocWorkspace();
 			var solution = adhocWorkspace
 				.CurrentSolution
-				.AddProject(projectId, TestProjectName, TestProjectName, LanguageNames.CSharp)
+				.AddProject(projectId, TestProjectName, projectName, LanguageNames.CSharp)
 				.AddAdditionalDocuments(documentInfos)
 				.AddMetadataReference(projectId, CorlibReference)
 				.AddMetadataReference(projectId, SystemCoreReference)
@@ -290,7 +292,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				.AddMetadataReference(projectId, GeneratedCodeReference)
 				.AddMetadataReference(projectId, ThreadingReference);
 
-			foreach (MetadataReference testReferences in GetMetadataReferences())
+			foreach (var testReferences in GetMetadataReferences())
 			{
 				solution = solution.AddMetadataReference(projectId, testReferences);
 			}
@@ -298,10 +300,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
 			var neededAssemblies = new[]
 			{
-	"System.Runtime",
-	"mscorlib",
-};
-			foreach (MetadataReference references in trustedAssembliesPaths.Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
+				"System.Runtime",
+				"mscorlib",
+			};
+			foreach (var references in trustedAssembliesPaths.Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
 				.Select(p => MetadataReference.CreateFromFile(p)))
 			{
 				solution = solution.AddMetadataReference(projectId, references);
