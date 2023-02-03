@@ -57,9 +57,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				return;
 			}
-			foreach (var location in from variable in variables where !IsPositiveName(variable.Identifier.Text) select node.GetLocation())
+			foreach (var variable in variables.Where(v => !IsPositiveName(v.Identifier.Text)))
 			{
-				CreateDiagnostic(context, location);
+				var loc = variable.GetLocation();
+				CreateDiagnostic(context, loc);
 			}
 		}
 
