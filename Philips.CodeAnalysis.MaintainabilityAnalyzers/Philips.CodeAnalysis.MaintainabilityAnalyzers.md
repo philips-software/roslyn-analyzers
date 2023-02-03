@@ -61,7 +61,7 @@
 | PH2108  | Align number of >= and <= operators          | Overload the smaller or equal (<=) operator, when you overload the greater or equal (>=) operator, as these are often used in combination with each other. |
 | PH2109  | Align number of >> and << operators          | Overload the left shift (<<) operator, when you overload the right shift (>>) operator, as these are often used in combination with each other. |
 | PH2110  | Align number of ++ and -- operators          | Overload the increment (--) operator, when you overload the increment (++) operator, as these are often used in combination with each other. |
-| PH2111  | Reduce Cognitive Load                        | Reduce the number of nested blocks, logical cases, and negations in this method. |
+| PH2111  | Reduce Cognitive Load                        | Reduce the number of logical cases, negations, or especially nested blocks in this method. Extracting a method is the typical solution. |
 | PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
