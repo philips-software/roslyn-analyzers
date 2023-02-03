@@ -114,11 +114,19 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 		public static bool operator ==(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
 		{
+			if (left is null)
+			{
+				return right is null;
+			}
 			return left.CompareTo(right) == 0;
 		}
 
 		public static bool operator !=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
 		{
+			if(left is null)
+			{
+				return right is not null;
+			}
 			return left.CompareTo(right) != 0;
 		}
 
