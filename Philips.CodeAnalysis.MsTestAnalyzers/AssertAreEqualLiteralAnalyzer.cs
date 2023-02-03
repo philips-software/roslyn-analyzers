@@ -32,12 +32,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				case @"AreNotEqual":
 					break;
 				default:
-					return Array.Empty<Diagnostic>(); ;
+					return Array.Empty<Diagnostic>();
 			}
 
 			if (invocationExpressionSyntax.ArgumentList?.Arguments.Count < 2)
 			{
-				return Array.Empty<Diagnostic>(); ;
+				return Array.Empty<Diagnostic>();
 			}
 
 			ArgumentSyntax expected = invocationExpressionSyntax.ArgumentList?.Arguments[0];
@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// We only need to check 'expected'.  Other analyzers catch any literals in the 'actual'
 			if (!IsLiteral(expected.Expression))
 			{
-				return Array.Empty<Diagnostic>(); ;
+				return Array.Empty<Diagnostic>();
 			}
 
 			// If the 'actual' is a nullable type, then it's reasonable to call, e.g., AreEqual(true, bool?)
