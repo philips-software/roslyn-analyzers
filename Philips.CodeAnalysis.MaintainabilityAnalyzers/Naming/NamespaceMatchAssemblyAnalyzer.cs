@@ -59,7 +59,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			InitializeConfiguration(context);
 
-			if (_folderInNamespace)
+			string myAssemblyName = context.Compilation?.AssemblyName;
+			if (!IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
+			{
+				ReportDiagnostic(context, namespaceDeclaration);
+				return;
+			}
+
+			if(_folderInNamespace)
 			{
 				// Does the namespace exactly match the trailing folders?
 				if (DoesFilePathEndWithNamespace(myNamespace, myFilePath))
@@ -76,11 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 			}
 
-			// TODO: Check assembly name, see issue #174
-
-			var location = namespaceDeclaration.Name.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-			context.ReportDiagnostic(diagnostic);
+			ReportDiagnostic(context, namespaceDeclaration);
 		}
 
 		private bool IsNamespacePartOfPath(string ns, string path)
@@ -103,6 +106,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return allowedNamespace.EndsWith(ns, StringComparison.OrdinalIgnoreCase);
 		}
 
+		private bool IsNamespacePartOfAssemblyName(string ns, string assemblyName)
+		{
+			return !string.IsNullOrEmpty(assemblyName) && ns.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase);
+		}
+
 		private void InitializeConfiguration(SyntaxNodeAnalysisContext context)
 		{
 			if (!_configInitialized)
@@ -112,6 +120,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				_ = bool.TryParse(folderInNamespace, out _folderInNamespace);
 				_configInitialized = true;
 			}
+		}
+
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext context,
+			NamespaceDeclarationSyntax namespaceDeclaration)
+		{
+			var location = namespaceDeclaration.Name.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			context.ReportDiagnostic(diagnostic);
 		}
 	}
 }
