@@ -53,7 +53,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
 		{
 			var file = GenerateCodeFile(nsName, typeName);
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[DataTestMethod]
@@ -75,7 +75,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 				$"namespace {nsName} {{\npublic class {typeName}\n{{\n}}\n}}\n";
 		}
 
-		private void VerifyDiagnostic(string file)
+		private void Verify(string file)
 		{
 			VerifyDiagnostic(file,
 				new DiagnosticResult()
