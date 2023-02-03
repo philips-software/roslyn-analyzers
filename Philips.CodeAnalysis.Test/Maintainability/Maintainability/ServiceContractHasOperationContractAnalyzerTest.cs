@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				VerifyDiagnostic(source, null, expected);
+				VerifyDiagnostic(source, expected);
 			}
 		}
 

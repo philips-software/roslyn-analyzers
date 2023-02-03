@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}
 			    }";
 
-			VerifyDiagnostic(testCode, "Test.Designer");
+			VerifySuccessfulCompilation(testCode, "Test.Designer");
 		}
 	}
 }

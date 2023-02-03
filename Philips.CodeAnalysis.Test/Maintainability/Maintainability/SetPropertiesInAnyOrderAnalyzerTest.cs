@@ -94,7 +94,7 @@ namespace PropertiesinOrderTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(WrongInAssignment, filePath);
+			VerifySuccessfulCompilation(WrongInAssignment, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

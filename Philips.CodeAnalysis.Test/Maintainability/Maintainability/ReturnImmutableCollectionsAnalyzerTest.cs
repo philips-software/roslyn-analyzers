@@ -222,7 +222,7 @@ namespace ReturnImmutableTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(WrongList, filePath);
+			VerifySuccessfulCompilation(WrongList, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
