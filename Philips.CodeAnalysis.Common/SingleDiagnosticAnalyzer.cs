@@ -14,9 +14,9 @@ namespace Philips.CodeAnalysis.Common
 {
 	public abstract class SingleDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		public DiagnosticId DiagnosticId { get; private set; }
+		public DiagnosticId DiagnosticId { get; }
 
-		protected readonly DiagnosticDescriptor Rule;
+		public DiagnosticDescriptor Rule { get; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
