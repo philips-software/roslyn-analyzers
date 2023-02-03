@@ -22,19 +22,19 @@ namespace Philips.CodeAnalysis.Common
 			: this(attribute.Name, attribute.FullName, title, messageFormat, description, diagnosticId, canBeSuppressed, isEnabledByDefault)
 		{ }
 
-		public string Name { get; } = string.Empty;
+		public string Name { get; }
 
-		public string FullName { get; } = string.Empty;
+		public string FullName { get; }
 
-		public string Title { get; } = string.Empty;
+		public string Title { get; }
 
-		public string MessageFormat { get; } = string.Empty;
+		public string MessageFormat { get; }
 
-		public string Description { get; } = string.Empty;
+		public string Description { get; }
 
 		public DiagnosticId DiagnosticId { get; }
 
-		public DiagnosticDescriptor Rule { get; } = null;
+		public DiagnosticDescriptor Rule { get; }
 
 		public bool CanBeSuppressed { get; }
 

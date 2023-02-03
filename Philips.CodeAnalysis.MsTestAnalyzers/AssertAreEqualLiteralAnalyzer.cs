@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -21,7 +22,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
@@ -31,12 +32,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				case @"AreNotEqual":
 					break;
 				default:
-					return null;
+					return Array.Empty<Diagnostic>(); ;
 			}
 
 			if (invocationExpressionSyntax.ArgumentList?.Arguments.Count < 2)
 			{
-				return null;
+				return Array.Empty<Diagnostic>(); ;
 			}
 
 			ArgumentSyntax expected = invocationExpressionSyntax.ArgumentList?.Arguments[0];
@@ -45,7 +46,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// We only need to check 'expected'.  Other analyzers catch any literals in the 'actual'
 			if (!IsLiteral(expected.Expression))
 			{
-				return null;
+				return Array.Empty<Diagnostic>(); ;
 			}
 
 			// If the 'actual' is a nullable type, then it's reasonable to call, e.g., AreEqual(true, bool?)
@@ -54,7 +55,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			Conversion conversion = context.SemanticModel.Compilation.ClassifyConversion(actualType.Type, expectedType.Type);
 			var location = invocationExpressionSyntax.GetLocation();
-			return conversion.IsNullable ? null : (IEnumerable<Diagnostic>)(new[] { Diagnostic.Create(Rule, location) });
+			return conversion.IsNullable ? Array.Empty<Diagnostic>() : (IEnumerable<Diagnostic>)(new[] { Diagnostic.Create(Rule, location) });
 		}
 
 		private bool IsLiteral(ExpressionSyntax expression)

@@ -14,8 +14,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidTryParseWithoutCultureAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Do not use TryParse without specifying a culture";
 		private const string MessageFormat = @"Do not use TryParse without specifying a culture if such an overload exists.";
 		private const string Description = @"Do not use TryParse without specifying a culture if such an overload exists. Failure to do so may result in code not correctly handling localized delimiters (such as commas instead of decimal points).";
@@ -27,10 +25,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			@"IFormatProvider",
 			@"CultureInfo"
 		};
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
@@ -61,16 +55,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ImmutableArray<ISymbol> members = methodSymbol.ContainingType.GetMembers();
 			IEnumerable<ISymbol> tryParseOverloads = members.Where(x => x.Name.StartsWith(TryParseMethodName));
 
-			foreach (ISymbol member in tryParseOverloads)
+			foreach (ISymbol _ in tryParseOverloads.Where(m => m is IMethodSymbol method && HasCultureParameter(method)))
 			{
-				if (member is IMethodSymbol method && HasCultureParameter(method))
-				{
-					// There is an overload that can accept culture as a parameter. Display an error.
-					var location = invocationExpressionSyntax.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-					context.ReportDiagnostic(diagnostic);
-					return;
-				}
+				// There is an overload that can accept culture as a parameter. Display an error.
+				var location = invocationExpressionSyntax.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				context.ReportDiagnostic(diagnostic);
+				return;
 			}
 		}
 
@@ -87,10 +78,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return false;
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
@@ -102,7 +89,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 		}
-
-		#endregion
 	}
 }

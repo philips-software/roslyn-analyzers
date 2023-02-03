@@ -1,6 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
@@ -52,22 +53,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
-			if (symbol is null || symbol is not IMethodSymbol methodSymbol)
+			if (symbol is not IMethodSymbol methodSymbol)
 			{
 				return;
 			}
 
 			HashSet<INamedTypeSymbol> presentAttributes = new();
-			foreach (AttributeData attribute in methodSymbol.GetAttributes())
+			foreach (INamedTypeSymbol attribute in methodSymbol.GetAttributes().Select(attribute => attribute.AttributeClass))
 			{
-				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
+				if (definitions.NonTestMethods.Contains(attribute))
 				{
-					presentAttributes.Add(attribute.AttributeClass);
+					presentAttributes.Add(attribute);
 				}
 
-				if (attribute.AttributeClass.IsDerivedFrom(definitions.TestMethodSymbol))
+				if (attribute.IsDerivedFrom(definitions.TestMethodSymbol))
 				{
-					presentAttributes.Add(attribute.AttributeClass);
+					presentAttributes.Add(attribute);
 				}
 			}
 

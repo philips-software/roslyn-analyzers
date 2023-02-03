@@ -63,12 +63,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
-				foreach (AttributeSyntax attributesyntax in attributes.Attributes)
+				if (attributes.Attributes.Any(attributeSyntax => attributeSyntax.Name.ToString().Contains(@"TestCategory")))
 				{
-					if (attributesyntax.Name.ToString().Contains(@"TestCategory"))
-					{
-						return document;
-					}
+					return document;
 				}
 			}
 
@@ -79,7 +76,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeSyntax attribute = SyntaxFactory.Attribute(name, arguments);
 
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(
-				SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(attribute));
+				SyntaxFactory.SingletonSeparatedList(attribute));
 
 			attributeLists = method.AttributeLists.Add(attributeList);
 			MethodDeclarationSyntax newMethod = method.WithAttributeLists(attributeLists);

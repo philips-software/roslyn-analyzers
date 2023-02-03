@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -180,15 +181,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <returns>List of members belonging to the given region</returns>
 		private static IReadOnlyList<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
 		{
-			List<MemberDeclarationSyntax> filteredMembers = new();
-			foreach (MemberDeclarationSyntax member in members)
-			{
-				if (MemberPresentInRegion(member, locationRange))
-				{
-					filteredMembers.Add(member);
-				}
-			}
-			return filteredMembers;
+			return members.Where(member => MemberPresentInRegion(member, locationRange)).ToList();
 		}
 
 		/// <summary>
@@ -249,11 +242,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			if (member.Kind() == SyntaxKind.StructDeclaration)
-			{
-				return;
-			}
-			else
+			if (member.Kind() != SyntaxKind.StructDeclaration)
 			{
 				var memberLocation = member.GetLocation();
 				CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, NonCheckedMember);

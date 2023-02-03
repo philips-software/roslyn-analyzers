@@ -85,14 +85,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
-				foreach (AttributeSyntax attributesyntax in attributes.Attributes)
+				foreach (AttributeSyntax attributeSyntax in attributes.Attributes.Where(attr => attr.Name.ToString().Contains(@"Timeout")))
 				{
-					if (attributesyntax.Name.ToString().Contains(@"Timeout"))
-					{
-						SyntaxNode newRoot = rootNode.ReplaceNode(attributesyntax, newAttribute);
+					SyntaxNode newRoot = rootNode.ReplaceNode(attributeSyntax, newAttribute);
 
-						return document.WithSyntaxRoot(newRoot);
-					}
+					return document.WithSyntaxRoot(newRoot);
 				}
 			}
 

@@ -112,6 +112,16 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			throw new ArgumentException($"Object is not a {nameof(AnalyzerPerfRecord)}");
 		}
 
+		public static bool operator ==(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) == 0;
+		}
+
+		public static bool operator !=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
+		{
+			return left.CompareTo(right) != 0;
+		}
+
 		public static bool operator <(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
 		{
 			return left.CompareTo(right) < 0;
@@ -130,6 +140,21 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		public static bool operator >=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
 		{
 			return left.CompareTo(right) >= 0;
+		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is AnalyzerPerfRecord other)
+			{
+				return this == other;
+			}
+
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
 		}
 	}
 }

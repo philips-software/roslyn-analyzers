@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			foreach (var syntax in variableDeclaration.Variables)
+			foreach (var identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
 			{
 				bool shouldCheck;
 				Regex validator;
@@ -128,14 +128,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				if (IsNameValid(validator, syntax.Identifier))
+				if (IsNameValid(validator, identifier))
 				{
 					continue;
 				}
 
 				CSharpSyntaxNode violation = variableDeclaration;
 				var location = violation.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, syntax.Identifier.ValueText);
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

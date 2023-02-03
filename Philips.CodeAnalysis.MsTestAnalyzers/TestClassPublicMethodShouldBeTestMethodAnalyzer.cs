@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -75,15 +76,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			bool isAllowedToBePublic = false;
-			foreach (AttributeData attribute in symbol.GetAttributes())
+			foreach (INamedTypeSymbol attribute in symbol.GetAttributes().Select(attr => attr.AttributeClass))
 			{
-				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
+				if (definitions.NonTestMethods.Contains(attribute))
 				{
 					isAllowedToBePublic = true;
 					break;
 				}
 
-				if (attribute.AttributeClass.IsDerivedFrom(definitions.TestMethodSymbol))
+				if (attribute.IsDerivedFrom(definitions.TestMethodSymbol))
 				{
 					isAllowedToBePublic = true;
 					break;
