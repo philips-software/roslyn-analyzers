@@ -12,12 +12,13 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	/// <summary>
-	/// Test class for <see cref="LogExceptionAnalyzer"/>, for wrong .editorconfig usage.
+	/// Test class for <see cref="LogExceptionAnalyzer"/>, for using .editorconfig to configure.
 	/// </summary>
 	[TestClass]
-	public class LogExceptionAnalyzerTest2 : DiagnosticVerifier
+	public class LogExceptionAnalyzerTestFromEditorConfig : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = "TestLog,TestTrace";
+		private const string configuredLogMethods = "EditorTestTrace,EditorTestLog";
+
 		private const string CorrectCode = @"
 using System;
 
@@ -27,11 +28,13 @@ public class Program {
         try {
             Console.WriteLine('Hello world!');
         } catch {
-            Log.TestLog('Goodbye');            
+            Logger.EditorTestLog('Goodbye');            
         }
     }
 
-    private static void LogDebug(string message) {
+    private class Logger {
+        public static void EditorTestLog(string message) {
+        }
     }
 }
 }";
@@ -41,10 +44,9 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(CorrectCode, DisplayName = "CorrectCode")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
+		public void WhenExceptionIsLoggedNoDiagnosticShouldBeTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LogException);
-			VerifyDiagnostic(testCode, expected);
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		/// <summary>
@@ -59,7 +61,7 @@ public class Program {
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.LogException) }.wrong_method_names", configuredLogMethods }
+				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.LogException) }.log_method_names", configuredLogMethods }
 			};
 			return options;
 		}

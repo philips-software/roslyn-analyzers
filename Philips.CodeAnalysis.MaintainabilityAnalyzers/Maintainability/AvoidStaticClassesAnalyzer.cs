@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -25,22 +24,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(HashSet<string> exceptions, bool generateExceptionsFile)
+		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
 		{
-			return new AvoidStaticClassesCompilationAnalyzer(exceptions, generateExceptionsFile);
+			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, generateExceptionsFile);
 		}
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
-			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
-			HashSet<string> exceptions = helper.InitializeExceptions(AllowedFileName, Rule.Id);
-
+			AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
+			allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 			// Add standard exceptions
-			exceptions.Add(@"*.Startup");
-			exceptions.Add(@"*.Program");
-			exceptions.Add(@"*.AssemblyInitialize");
+			allowedSymbols.RegisterLine(@"*.Startup");
+			allowedSymbols.RegisterLine(@"*.Program");
+			allowedSymbols.RegisterLine(@"*.AssemblyInitialize");
 
-			var compilationAnalyzer = CreateCompilationAnalyzer(exceptions, helper.ExceptionsOptions.GenerateExceptionsFile);
+			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
+			var exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
+			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.GenerateExceptionsFile);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -54,12 +54,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidStaticClassesCompilationAnalyzer
 	{
-		private readonly HashSet<string> _exceptions;
+		private readonly AllowedSymbols _allowedSymbols;
 		private readonly bool _generateExceptionsFile;
 
-		public AvoidStaticClassesCompilationAnalyzer(HashSet<string> exceptions, bool generateExceptionsFile)
+		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
 		{
-			_exceptions = exceptions;
+			_allowedSymbols = allowedSymbols;
 			_generateExceptionsFile = generateExceptionsFile;
 		}
 
@@ -82,12 +82,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// Even more likely to have a whitelisted class with the wildcard on the namespace
-			if (_exceptions.Any(str => str.EndsWith(@"*." + classDeclarationSyntax.Identifier.ValueText)))
-			{
-				return;
-			}
-
 			// If the class only contains const and static readonly fields, let it go
 			if (!classDeclarationSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>().Any() &&
 				classDeclarationSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().All(IsConstant))
@@ -98,9 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
-			var item = declaredSymbol.ToDisplayString();
-			if (_exceptions.Any(str => str.EndsWith(@"." + classDeclarationSyntax.Identifier.ValueText)) &&
-				_exceptions.Contains(item))
+			if (_allowedSymbols.IsAllowed(declaredSymbol))
 			{
 				return;
 			}
@@ -113,7 +105,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (_generateExceptionsFile)
 			{
-				File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax).ToDisplayString() + Environment.NewLine);
+				var exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+				if (exceptionSymbol != null)
+				{
+					var docId = exceptionSymbol.GetDocumentationCommentId();
+					File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", $"~{docId}{Environment.NewLine}");
+				}
 			}
 
 			var location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();

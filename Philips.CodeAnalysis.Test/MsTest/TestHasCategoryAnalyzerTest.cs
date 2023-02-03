@@ -15,7 +15,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestHasCategoryTest : CodeFixVerifier
+	public class TestHasCategoryAnalyzerTest : CodeFixVerifier
 	{
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
@@ -40,10 +40,7 @@ class Foo
 				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, expectedColumn)
-				}
+				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, expectedColumn) }
 			};
 
 			VerifyDiagnostic(givenText, expected);
@@ -157,15 +154,14 @@ class Foo
 			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				results = new[]
+				{
+					new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
-						Message = new System.Text.RegularExpressions.Regex(TestHasCategoryAnalyzer.MessageFormat),
+						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", null, null)
-						}
+						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
 					}
 				};
 			}
@@ -173,6 +169,7 @@ class Foo
 			{
 				results = Array.Empty<DiagnosticResult>();
 			}
+
 			VerifyDiagnostic(givenText, results);
 		}
 
@@ -189,9 +186,8 @@ class Foo
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "Foo.Foo1") };
+			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
 		}
-
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var options = new Dictionary<string, string>
