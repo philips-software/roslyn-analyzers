@@ -55,13 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ImmutableArray<ISymbol> members = methodSymbol.ContainingType.GetMembers();
 			IEnumerable<ISymbol> tryParseOverloads = members.Where(x => x.Name.StartsWith(TryParseMethodName));
 
-			foreach (ISymbol _ in tryParseOverloads.Where(m => m is IMethodSymbol method && HasCultureParameter(method)))
+			if (tryParseOverloads.Any(m => m is IMethodSymbol method && HasCultureParameter(method)))
 			{
 				// There is an overload that can accept culture as a parameter. Display an error.
 				var location = invocationExpressionSyntax.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
-				return;
 			}
 		}
 

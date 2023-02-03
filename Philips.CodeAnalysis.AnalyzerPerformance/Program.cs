@@ -101,15 +101,11 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				return 1;
 			}
-			if (other is AnalyzerPerfRecord otherRecord)
+			if (Time.CompareTo(other.Time) != 0)
 			{
-				if (Time.CompareTo(otherRecord.Time) != 0)
-				{
-					return Time.CompareTo(otherRecord.Time) * -1;
-				}
-				return Id.CompareTo(otherRecord.Id);
+				return Time.CompareTo(other.Time) * -1;
 			}
-			throw new ArgumentException($"Object is not a {nameof(AnalyzerPerfRecord)}");
+			return StringComparer.Ordinal.Compare(Id, other.Id);
 		}
 
 		public static bool operator ==(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
@@ -152,17 +148,12 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 		public override bool Equals(object obj)
 		{
-			if (obj is AnalyzerPerfRecord other)
-			{
-				return this == other;
-			}
-
-			return false;
+			return this == (obj as AnalyzerPerfRecord);
 		}
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return HashCode.Combine(Id, Package, Analyzer, DisplayTime, Time);
 		}
 	}
 }

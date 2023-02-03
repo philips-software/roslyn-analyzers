@@ -440,7 +440,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (_library.TryGetValue(key, out List<Evidence> existingValues))
 				{
 					// We found a potential duplicate.  Is it actually?
-					foreach (var e in existingValues.Where(e => e.IsDuplicate(value)))
+					var e = existingValues.FirstOrDefault(e => e.IsDuplicate(value));
+					if (e != null)
 					{
 						// Yes, just return the duplicate information
 						return e;
