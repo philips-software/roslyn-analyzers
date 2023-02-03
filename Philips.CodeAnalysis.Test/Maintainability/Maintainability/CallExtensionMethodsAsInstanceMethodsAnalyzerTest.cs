@@ -62,14 +62,15 @@ public static class Program
 ";
 
 			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
-
-			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				VerifyDiagnostic(text, result);
 			}
-
-			VerifyDiagnostic(text, result);
+			else
+			{
+				VerifySuccessfulCompilation(text);
+			}
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
@@ -301,13 +302,15 @@ public class Baz
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void ExtensionMethodsDontCallDifferentMethods(string template, bool isError)
 		{
-			DiagnosticResult[] result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				VerifyDiagnostic(template, result);
 			}
-
-			VerifyDiagnostic(template, result);
+			else
+			{
+				VerifySuccessfulCompilation(template);
+			}
 		}
 	}
 }

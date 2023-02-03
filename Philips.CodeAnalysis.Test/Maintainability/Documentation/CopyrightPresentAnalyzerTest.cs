@@ -110,23 +110,25 @@ class Foo
 
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
+				expected = new[]
+				{ 
+					new DiagnosticResult
 					{
-					new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
-				} }
+						Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
+						Message = new Regex(".+"),
+						Severity = DiagnosticSeverity.Error,
+						Locations = new[]
+						{
+							new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
+						}
+					}
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]

@@ -52,18 +52,24 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 			var arg2Type = GetWellKnownTypeName(arg2);
 			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
 
-			DiagnosticResult[] expected = new [] { new DiagnosticResult
+			if (isError)
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch),
-				Message = new Regex(expectedMessage),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+				DiagnosticResult[] expected = new[] { new DiagnosticResult
 				{
-					new DiagnosticResultLocation("Test0.cs", 15, 7)
-				}
-			}};
-
-			VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
+					Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch),
+					Message = new Regex(expectedMessage),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", 15, 7)
+					}
+				}};
+				VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
+			}
+			else
+			{
+				VerifySuccessfulCompilation(givenText);
+			}
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -479,13 +479,16 @@ class Foo
 	}}
 }}
 ";
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, format, args);
 			if (isError)
 			{
-				expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats) };
+				var expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats) };
+				VerifyDiagnostic(code, expected);
 			}
-
-			VerifyDiagnostic(string.Format(template, format, args), expected);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("$\"{0}\"")]
