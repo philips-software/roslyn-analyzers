@@ -17,16 +17,16 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		#region Helper Analyzer
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private sealed class AvoidWritingCodeAnalyzer : DiagnosticAnalyzer
+		private sealed class AvoidWritingCodeAnalyzer : SingleDiagnosticAnalyzer
 		{
+			public AvoidWritingCodeAnalyzer()
+				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)
+			{ }
+
 			public static bool ShouldAnalyzeTree { get; set; }
 			public static bool ShouldAnalyzeConstructor { get; set; }
 			public static bool ShouldAnalyzeStruct { get; set; }
 			public static bool ShouldAnalyzeSwitch { get; set; }
-
-			private const string Title = @"Avoid writing code";
-			public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodName), Title, Title, Categories.Maintainability, DiagnosticSeverity.Error, true, Title);
-			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 			public override void Initialize(AnalysisContext context)
 			{
@@ -123,8 +123,7 @@ public class Foo
 public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.TestMethodName) };
-			VerifyDiagnostic(input, expected);
+			VerifyDiagnostic(input);
 		}
 
 		[TestMethod]
@@ -197,8 +196,7 @@ public class Foo
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = switchStatement;
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-			VerifyDiagnostic(input, fileNamePrefix, expected);
+			VerifySuccessfulCompilation(input, fileNamePrefix);
 		}
 
 		[DataRow(@"Foo")]
