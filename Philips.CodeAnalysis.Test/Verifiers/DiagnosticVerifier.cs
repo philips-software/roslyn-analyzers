@@ -31,18 +31,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Verifier wrappers
 
-		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
-		{
-			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
-		}
-
 		protected void VerifyDiagnostic(string source)
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
@@ -62,16 +50,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			VerifyDiagnostic(source, diagnosticResult);
 		}
 
-		/// <summary>
-		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
-		/// Note: input a DiagnosticResult for each Diagnostic expected
-		/// </summary>
-		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult expected)
-		{
-			VerifyDiagnostic(source, null, new[] { expected });
-		}
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
@@ -79,23 +57,31 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null)
 		{
-			VerifyDiagnostic(source, null, expected);
+			VerifyDiagnostic(source, new[] { expected }, filenamePrefix);
 		}
+
+		/// <summary>
+		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
+		/// Note: input a DiagnosticResult for each Diagnostic expected
+		/// </summary>
+		/// <param name="source">A class in the form of a string to run the analyzer on</param>
+		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
+		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null)
+		{
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
+		}
+
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		protected void VerifySuccessfulCompilation(string source)
+		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix = null)
 		{
-			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>());
-		}
-
-		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix)
-		{
-			VerifyDiagnostic(source, fileNamePrefix, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>(), fileNamePrefix);
 		}
 
 		/// <summary>
@@ -106,7 +92,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var content = File.ReadAllText(path);
 			var fileName = Path.GetFileNameWithoutExtension(path);
-			VerifyDiagnostic(content, fileName, Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>(), fileName);
 		}
 
 		/// <summary>

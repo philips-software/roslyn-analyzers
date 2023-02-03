@@ -43,7 +43,7 @@ namespace PathTooLongUnitTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(Correct, filePath);
+			VerifySuccessfulCompilation(Correct, filePath);
 		}
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace PathTooLongUnitTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticId.NoSpaceInFilename);
-			VerifyDiagnostic(Correct, filePath, expected);
+			VerifyDiagnostic(Correct, expected, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

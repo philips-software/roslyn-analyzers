@@ -176,7 +176,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedFileWrongIsNotFlagged()
 		{
-			VerifyDiagnostic(WrongMultiple, @"Foo.designer");
+			VerifySuccessfulCompilation(WrongMultiple, @"Foo.designer");
 		}
 	}
 }

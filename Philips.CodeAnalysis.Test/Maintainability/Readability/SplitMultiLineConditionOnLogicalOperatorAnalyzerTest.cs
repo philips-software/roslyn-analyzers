@@ -360,7 +360,7 @@ namespace MultiLineConditionUnitTests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
-			VerifyDiagnostic(testCode, filePath);
+			VerifySuccessfulCompilation(testCode, filePath);
 		}
 
 		/// <summary>

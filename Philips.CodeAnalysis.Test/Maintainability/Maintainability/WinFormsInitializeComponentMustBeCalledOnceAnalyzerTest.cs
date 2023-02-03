@@ -313,7 +313,7 @@ class ContainerControl
 		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
 		{
 			string code = CreateCode(@"", @"");
-			VerifyDiagnostic(code, @"Test.Designer");
+			VerifySuccessfulCompilation(code, @"Test.Designer");
 		}
 
 		#endregion

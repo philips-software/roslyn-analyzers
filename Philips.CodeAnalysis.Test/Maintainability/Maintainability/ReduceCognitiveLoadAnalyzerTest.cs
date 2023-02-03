@@ -51,7 +51,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, "Test.Designer");
+			VerifySuccessfulCompilation(template, "Test.Designer");
 		}
 
 

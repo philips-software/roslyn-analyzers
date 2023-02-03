@@ -73,7 +73,7 @@ namespace CastCompleteTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(WrongMulipleFields, filePath);
+			VerifySuccessfulCompilation(WrongMulipleFields, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
