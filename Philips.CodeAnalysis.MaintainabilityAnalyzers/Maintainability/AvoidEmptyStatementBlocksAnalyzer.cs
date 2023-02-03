@@ -67,13 +67,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
+			Helper helper = new();
 			// Empty public or protected methods are acceptable, as it could be part of an API, or an interface implementation
-			if (blockSyntax.Parent is MethodDeclarationSyntax methodSynxtax)
+			if (blockSyntax.Parent is MethodDeclarationSyntax methodSyntax && helper.IsCallableFromOutsideClass(methodSyntax))
 			{
-				if (methodSynxtax.Modifiers.Any(SyntaxKind.PublicKeyword) || methodSynxtax.Modifiers.Any(SyntaxKind.ProtectedKeyword))
-				{
-					return;
-				}
+				return;
 			}
 
 			// Empty catch blocks are a different type of code smell.

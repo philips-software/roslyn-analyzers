@@ -201,16 +201,19 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
 			{
-				string result = string.Empty;
-				string[] lines = ex.StackTrace.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+				StringBuilder builder = new();
+				string[] lines = ex.StackTrace.Split(new[]{ ':' }, StringSplitOptions.RemoveEmptyEntries);
 				foreach (string line in lines)
 				{
 					if (line.StartsWith("line") && line.Length >= 8)
 					{
-						result += line.Substring(0, 8);
-						result += " ";
+						var exception = line.Substring(0, 8);
+						builder.Append(exception);
+						builder.Append(' ');
 					}
 				}
+
+				string result = builder.ToString();
 				if (string.IsNullOrWhiteSpace(result))
 				{
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
@@ -422,13 +425,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (_library.TryGetValue(key, out List<Evidence> existingValues))
 				{
 					// We found a potential duplicate.  Is it actually?
-					foreach (Evidence e in existingValues)
+					var e = existingValues.FirstOrDefault(e => e.IsDuplicate(value));
+					if (e != null)
 					{
-						if (e.IsDuplicate(value))
-						{
-							// Yes, just return the duplicate information
-							return e;
-						}
+						// Yes, just return the duplicate information
+						return e;
 					}
 					// Our key exists already, but not us.  I.e., a hash collision.
 					existingValues.Add(value);
