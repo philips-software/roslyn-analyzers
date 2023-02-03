@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class LogExceptionAnalyzer : DiagnosticAnalyzer
 	{
 		public const string AllowedFileName = "AllowedLogMethods.txt";
+		private const string LogMethodNames = "log_method_names";
 
 		private const string Title = "Log caught exceptions.";
 		private const string Message = "Exception that is caught is not logged.";
@@ -37,8 +38,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			);
 
 		private const string InvalidSetupTitle = @"Log caught exceptions setup";
-		private const string InvalidSetupMessage = @"This analyzer requires an <AdditionalFiles> entry named {0} specifying a list of allowed method calls inside catch blocks.";
-		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig.";
+		private const string InvalidSetupMessage = @"This analyzer requires an either .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list or an <AdditionalFiles> element named {2} specifying a list of allowed method calls inside catch blocks.";
+		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig or <AdditionalFiles> element.";
 		private static readonly DiagnosticDescriptor InvalidSetupRule = new(Helper.ToDiagnosticId(DiagnosticId.LogException), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
 
@@ -60,6 +61,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					var allowedSymbols = new AllowedSymbols(compilationContext.Compilation);
 					allowedSymbols.RegisterLine("*.Log.*");
 					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+
+					// Support legacy configuration via .editorconfig also.
+					var additionalFiles = new AdditionalFilesHelper(
+						compilationContext.Options,
+						compilationContext.Compilation);
+					var methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					foreach (var methodName in methodNames)
+					{
+						allowedSymbols.RegisterLine(methodName);
+					}
 
 					var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);
 
@@ -106,7 +117,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var syntaxTree = context.Compilation.SyntaxTrees.First();
 				var loc = Location.Create(syntaxTree, TextSpan.FromBounds(0, 0));
-				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, AllowedFileName));
+				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames, AllowedFileName));
 			}
 
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
