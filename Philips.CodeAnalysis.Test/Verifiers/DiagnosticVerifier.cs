@@ -59,7 +59,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null)
 		{
-			VerifyDiagnostic(source, new[] { expected }, filenamePrefix);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, new[] { expected });
 		}
 
 		/// <summary>
@@ -71,6 +72,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null)
 		{
 			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
+			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);

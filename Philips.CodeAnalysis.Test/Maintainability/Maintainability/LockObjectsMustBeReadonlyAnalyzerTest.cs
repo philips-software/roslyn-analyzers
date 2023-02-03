@@ -40,7 +40,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
 				VerifyDiagnostic(string.Format(template, field), result);
 			}
 			else
@@ -157,14 +157,8 @@ class Foo
 	}}
 }}
 ";
-			var error = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-			error.Message = new Regex("'_foo'");
-
-			var result = new DiagnosticResult[]
-			{
-				error,
-			};
-
+			var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
+			result.Message = new Regex("'_foo'");
 			VerifyDiagnostic(template, result);
 		}
 	}

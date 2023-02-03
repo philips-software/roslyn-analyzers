@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -45,7 +46,22 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
+			DiagnosticResult[] expected = new[]
+			{
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				},
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				}
+			};
+			VerifyDiagnostic(test, expected);
 		}
 
 		[DataTestMethod]

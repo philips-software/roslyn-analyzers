@@ -126,15 +126,13 @@ public static class Bar
 
 			if (isError)
 			{
-				var expectedErrors = new[]
-				{
+				var expectedErrors =
 					new DiagnosticResult()
 					{
 						Id= Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
-					}
-				};
+					};
 				VerifyDiagnostic(code, expectedErrors);
 			}
 			else
@@ -144,11 +142,11 @@ public static class Bar
 		}
 
 		//[DataRow(true, "", DiagnosticIds.MockRaiseArgumentCountMismatch)]
-		[DataRow(true, "EventArgs.Empty", @"PH2053")]
+		[DataRow("EventArgs.Empty", @"PH2053")]
 		//[DataRow(false, "new DerivedEventArgs()", DiagnosticIds.MockRaiseArgumentsMustMatchEvent)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentCount2(bool isError, string args, string diagnosticId)
+		public void EventMustHaveCorrectArgumentCount2(string args, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -172,19 +170,13 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			if (isError)
-			{
-				expectedErrors = new[]
+			var expectedErrors =
+				new DiagnosticResult()
 				{
-					new DiagnosticResult()
-					{
-						Id= diagnosticId,
-						Location = new DiagnosticResultLocation(18),
-						Severity = DiagnosticSeverity.Error,
-					}
+					Id= diagnosticId,
+					Location = new DiagnosticResultLocation(18),
+					Severity = DiagnosticSeverity.Error,
 				};
-			}
 
 			string arguments = string.Empty;
 			if (args.Length > 0)
@@ -195,13 +187,13 @@ public static class Bar
 			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
-		[DataRow(true, "", 1, @"PH2054")]
-		[DataRow(true, "EventArgs.Empty", 1, @"PH2054")]
-		[DataRow(true, "EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
-		[DataRow(true, "EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 3, @"PH2053")]
+		[DataRow("", 1, @"PH2054")]
+		[DataRow("EventArgs.Empty", 1, @"PH2054")]
+		[DataRow("EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
+		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 3, @"PH2053")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentsNonEventHandler(bool isError, string args, int errorCount, string diagnosticId)
+		public void EventMustHaveCorrectArgumentsNonEventHandler(string args, int errorCount, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -225,23 +217,19 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			if (isError)
+			List<DiagnosticResult> diagnosticResults = new();
+
+			for (int i = 0; i < errorCount; i++)
 			{
-				List<DiagnosticResult> diagnosticResults = new();
-
-				for (int i = 0; i < errorCount; i++)
+				diagnosticResults.Add(new DiagnosticResult()
 				{
-					diagnosticResults.Add(new DiagnosticResult()
-					{
-						Id = diagnosticId,
-						Location = new DiagnosticResultLocation(18),
-						Severity = DiagnosticSeverity.Error,
-					});
-				}
-
-				expectedErrors = diagnosticResults.ToArray();
+					Id = diagnosticId,
+					Location = new DiagnosticResultLocation(18),
+					Severity = DiagnosticSeverity.Error,
+				});
 			}
+
+			var expectedErrors = diagnosticResults.ToArray();
 
 			string arguments = string.Empty;
 			if (args.Length > 0)
@@ -252,12 +240,12 @@ public static class Bar
 			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
 		}
 
-		[DataRow(true, "", 1, @"PH2054")]
-		[DataRow(true, "EventArgs.Empty", 1, @"PH2054")]
-		[DataRow(true, "EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
+		[DataRow("", @"PH2054")]
+		[DataRow("EventArgs.Empty", @"PH2054")]
+		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", @"PH2054")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentsNonEventHandler2(bool isError, string args, int errorCount, string diagnosticId)
+		public void EventMustHaveCorrectArgumentsNonEventHandler2(string args, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -281,23 +269,12 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			if (isError)
+			var result = new DiagnosticResult()
 			{
-				List<DiagnosticResult> diagnosticResults = new();
-
-				for (int i = 0; i < errorCount; i++)
-				{
-					diagnosticResults.Add(new DiagnosticResult()
-					{
-						Id = diagnosticId,
-						Location = new DiagnosticResultLocation(18),
-						Severity = DiagnosticSeverity.Error,
-					});
-				}
-
-				expectedErrors = diagnosticResults.ToArray();
-			}
+				Id = diagnosticId,
+				Location = new DiagnosticResultLocation(18),
+				Severity = DiagnosticSeverity.Error,
+			};
 
 			string arguments = string.Empty;
 			if (args.Length > 0)
@@ -305,7 +282,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			VerifyDiagnostic(string.Format(template, arguments), result);
 		}
 
 		#endregion

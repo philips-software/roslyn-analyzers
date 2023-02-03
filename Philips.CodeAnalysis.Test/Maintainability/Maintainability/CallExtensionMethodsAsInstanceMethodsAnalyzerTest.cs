@@ -64,7 +64,7 @@ public static class Program
 			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 			if (isError)
 			{
-				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 				VerifyDiagnostic(text, result);
 			}
 			else
@@ -99,9 +99,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "Bar(obj, null)");
-
-			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
-
+			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
@@ -133,9 +131,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "RemoveByKeys(dict, items)");
-
-			DiagnosticResult[] result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
-
+			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 			VerifyDiagnostic(text, result);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");

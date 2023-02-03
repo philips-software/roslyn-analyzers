@@ -482,7 +482,7 @@ class Foo
 			var code = string.Format(template, format, args);
 			if (isError)
 			{
-				var expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats) };
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats);
 				VerifyDiagnostic(code, expected);
 			}
 			else

@@ -49,7 +49,7 @@ namespace TestMethodNameAnalyzerTest
 
 			if (isError)
 			{
-				DiagnosticResult[] expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
 					Message = new Regex(expectedMessage),
@@ -58,8 +58,8 @@ namespace TestMethodNameAnalyzerTest
 					{
 						new DiagnosticResultLocation("Test0.cs", 7, 17)
 					}
-				}};
-				VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
+				};
+				VerifyDiagnostic(givenText, expected);
 			}
 			else
 			{

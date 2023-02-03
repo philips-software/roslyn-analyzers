@@ -10,17 +10,17 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	{
 		private readonly AssertCodeHelper _helper = new();
 
-		protected void VerifyError(string methodBody, params string[] expectedDiagnosticIds)
+		protected void VerifyError(string methodBody, string expectedDiagnosticId)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			var expected = expectedDiagnosticIds.Select(expectedDiagnosticId =>
+			var expected = 
 				new DiagnosticResult()
 				{
 					Id = expectedDiagnosticId,
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
-				}).ToArray();
+				};
 			VerifyDiagnostic(test, expected);
 		}
 

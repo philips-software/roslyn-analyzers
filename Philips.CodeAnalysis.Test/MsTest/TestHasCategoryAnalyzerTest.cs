@@ -153,16 +153,14 @@ class Foo
 			string givenText = string.Format(baseline, given);
 			if (isError)
 			{
-				var results = new[]
-				{
+				var results = 
 					new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
-					}
-				};
+					};
 				VerifyDiagnostic(givenText, results);
 			}
 			else

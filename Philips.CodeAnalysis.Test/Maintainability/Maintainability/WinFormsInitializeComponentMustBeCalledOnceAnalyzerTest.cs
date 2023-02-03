@@ -193,8 +193,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnFirst(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(11, 16);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
+			DiagnosticResult expected = GetDiagnosticResult(11, 16);
 			VerifyDiagnostic(file, expected);
 		}
 
@@ -204,8 +203,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnSecond(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(15, 3);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
+			DiagnosticResult expected = GetDiagnosticResult(15, 3);
 			VerifyDiagnostic(file, expected);
 		}
 
@@ -227,8 +225,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticOnClass(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(9, 22);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
+			DiagnosticResult expected = GetDiagnosticResult(9, 22);
 			VerifyDiagnostic(file, expected);
 		}
 

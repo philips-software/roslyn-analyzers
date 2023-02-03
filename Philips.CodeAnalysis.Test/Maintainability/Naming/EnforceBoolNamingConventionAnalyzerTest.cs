@@ -64,15 +64,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
+				var expected = 
+					new DiagnosticResult
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 15)
-				} }
+						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
+						Message = new Regex(".+"),
+						Severity = DiagnosticSeverity.Error,
+						Locations = new[]
+						{
+						new DiagnosticResultLocation("Test.cs", errorLine, 15)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -138,15 +139,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 14)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 14)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
