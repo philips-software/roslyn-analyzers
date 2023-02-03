@@ -38,9 +38,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			HashSet<string> seenNames = new();
-			foreach (var method in testMethods.Where(method => !seenNames.Add(method.Identifier.ToString())))
+			foreach (var methodIdentifier in testMethods.Select(method => method.Identifier).Where(id => !seenNames.Add(id.ToString())))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodIdentifier.GetLocation(), methodIdentifier));
 			}
 		}
 	}
