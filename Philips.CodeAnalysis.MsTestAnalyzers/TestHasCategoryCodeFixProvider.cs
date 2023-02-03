@@ -61,7 +61,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			SyntaxList<AttributeListSyntax> attributeLists = method.AttributeLists;
 
-			foreach (AttributeListSyntax attributes in attributeLists.Where(a => a.Attributes.Any(attributeSyntax => attributeSyntax.Name.ToString().Contains(@"TestCategory"))))
+			if (attributeLists.Any(list => 
+				    list.Attributes.Any(attributeSyntax => attributeSyntax.Name.ToString().Contains(@"TestCategory"))))
 			{
 				return document;
 			}
