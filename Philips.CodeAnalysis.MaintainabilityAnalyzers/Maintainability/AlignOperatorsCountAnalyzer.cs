@@ -144,7 +144,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.ReportDiagnostic(Diagnostic.Create(ShiftRightAndLeftRule, location));
 			}
 
-			if (visitor.PlusCount != visitor.EqualCount)
+			if ((visitor.PlusCount > 0 || visitor.MinusCount > 0) && visitor.PlusCount != visitor.EqualCount)
 			{
 				var location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(PlusAndEqualRule, location));
