@@ -77,7 +77,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyDiagnostic(givenText, "Test.Designer");
+			VerifySuccessfulCompilation(givenText, "Test.Designer");
 		}
 
 

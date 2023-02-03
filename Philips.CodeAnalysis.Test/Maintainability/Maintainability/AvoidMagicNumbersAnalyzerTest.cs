@@ -204,7 +204,7 @@ namespace DontUseMagicNumbersTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(WrongLocal, filePath);
+			VerifySuccessfulCompilation(WrongLocal, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

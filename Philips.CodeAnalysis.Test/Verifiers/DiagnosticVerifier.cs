@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, string filenamePrefix, params DiagnosticResult[] expected)
+		protected void VerifyDiagnostic(string source, string filenamePrefix, DiagnosticResult[] expected)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
