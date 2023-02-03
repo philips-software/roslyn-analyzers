@@ -96,7 +96,7 @@ AllowedMethodName
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			VerifyDiagnostic(file);
+			Verify(file);
 		}
 
 		[DataTestMethod]
@@ -115,7 +115,7 @@ AllowedMethodName
 				$"namespace {nsName} {{\npublic class {typeName}\n{{\nprivate void {methodName}()\n{{\nreturn;\n}}\n}}\n}}\n";
 		}
 
-		private void VerifyDiagnostic(string file)
+		private void Verify(string file)
 		{
 			VerifyDiagnostic(file,
 				new DiagnosticResult()

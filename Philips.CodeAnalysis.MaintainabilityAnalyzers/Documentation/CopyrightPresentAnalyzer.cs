@@ -15,20 +15,9 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class CopyrightPresentAnalyzer : DiagnosticAnalyzer
+	public class CopyrightPresentAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const string Title = @"Copyright Present";
-		private const string MessageFormat = 
-			@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'.";
-		private const string Description =
-			@"File should start with a comment containing the company name, the year and either © or 'Copyright'.";
-		private const string Category = Categories.Documentation;
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 		private static readonly Regex yearRegex = new(@"\d\d\d\d");
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
 		private readonly Helper _helper;
 
 		public CopyrightPresentAnalyzer()
@@ -36,6 +25,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{ }
 
 		public CopyrightPresentAnalyzer(Helper helper)
+			:base(DiagnosticId.CopyrightPresent,
+					@"Copyright Present",
+					@"File should start with a copyright statement, containing the company name, the year and either © or 'Copyright'.",
+					@"File should start with a comment containing the company name, the year and either © or 'Copyright'.",
+					Categories.Documentation
+				 )
 		{
 			_helper = helper;
 		}
