@@ -42,7 +42,7 @@
 | PH2087  | Do not use spaces in filenames               | Not all tools handle files correctly that have spaces in their names. Homebrew scripts are prone to this for example.|
 | PH2088  | Paths should not exceed 260 characters       | This prevents your code to run correctly on older Windows version.|
 | PH2089  | Avoid assignments in conditions              | Conditions shouldn't have any side effects. Assign a variable outside of the condition instead.|
-| PH2090  |	Log Exception                                | Log any of the caught exceptions. The Log method names are configurable in the .editorconfig using key: 'dotnet_code_quality.PH2090.log_method_names'.|
+| PH2090  |	Log Exception                                | Log any of the caught exceptions. The Log method names are configurable either in the .editorconfig using key: 'dotnet_code_quality.PH2090.log_method_names' or by adding an <AdditionalFiles> named AllowedLogMethods.txt.|
 | PH2091  |	Throw Inner Exception                        | When throwing an exception inside a catch block, include the original exception as arguments. This will show the inner exception also in a Callstack, aiding debugability. |
 | PH2092  | Limit Condition Complexity                   | Limit the number of logical expressions in a single condition. Humans are not very good of keeping track of large logical expressions. The maximum allowed number is configurable in the .editorconfig using key: 'dotnet_code_quality.PH2092.max_operators'.|
 | PH2093  |	Prefer creating tuples with named fields     | When creating or accepting a tuple, provide names for the elements (IE, prefer (DateTime createdAt, int id) rather than (DateTime, int) |

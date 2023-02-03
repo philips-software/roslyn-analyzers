@@ -15,7 +15,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestHasCategoryTest : CodeFixVerifier
+	public class TestHasCategoryAnalyzerTest : CodeFixVerifier
 	{
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
@@ -40,10 +40,7 @@ class Foo
 				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, expectedColumn)
-				}
+				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, expectedColumn) }
 			};
 
 			VerifyDiagnostic(givenText, expected);
@@ -154,25 +151,26 @@ class Foo
 		private void VerifyError(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
+			DiagnosticResult[] results;
 			if (isError)
 			{
-				var results = new[] { new DiagnosticResult()
+				results = new[]
+				{
+					new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
 						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", null, null)
-						}
+						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
 					}
 				};
-				VerifyDiagnostic(givenText, results);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(givenText);
+				results = Array.Empty<DiagnosticResult>();
 			}
+
+			VerifyDiagnostic(givenText, results);
 		}
 
 
@@ -188,9 +186,8 @@ class Foo
 
 		protected override (string name, string content)[] GetAdditionalTexts()
 		{
-			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "Foo.Foo1") };
+			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
 		}
-
 		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var options = new Dictionary<string, string>
