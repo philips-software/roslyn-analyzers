@@ -115,7 +115,7 @@
       * Introduce PH2131: Remove commented code.
       * Introduce PH2133: Unmanaged objects need disposing.
       * Introduce PH2134: Set properties in any order.
-      * PH2090 now uses an AdditionalFile iso .editorconfig to configure allowed methods.
+      * PH2090 now also uses an AdditionalFile on top of the existing .editorconfig option to configure allowed methods.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
