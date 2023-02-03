@@ -38,13 +38,15 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				VerifyDiagnostic(string.Format(template, field), result);
 			}
-
-			VerifyDiagnostic(string.Format(template, field), result);
+			else
+			{
+				VerifySuccessfulCompilation(template);
+			}
 		}
 
 		[DataRow("object foo", false)]
@@ -62,13 +64,15 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				VerifyDiagnostic(string.Format(template, field), result);
 			}
-
-			VerifyDiagnostic(string.Format(template, field), result);
+            else
+            {
+                VerifySuccessfulCompilation(template);
+            }
 		}
 
 		[DataRow("object foo", false)]
@@ -91,13 +95,15 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				VerifyDiagnostic(string.Format(template, field), result);
 			}
-
-			VerifyDiagnostic(string.Format(template, field), result);
+			else
+			{
+				VerifySuccessfulCompilation(template);
+			}
 		}
 
 		[TestMethod]

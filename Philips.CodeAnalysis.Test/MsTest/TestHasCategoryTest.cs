@@ -154,13 +154,12 @@ class Foo
 		private void VerifyError(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var results = new[] { new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
-						Message = new System.Text.RegularExpressions.Regex(TestHasCategoryAnalyzer.MessageFormat),
+						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[]
 						{
@@ -168,12 +167,12 @@ class Foo
 						}
 					}
 				};
+				VerifyDiagnostic(givenText, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
-			VerifyDiagnostic(givenText, results);
 		}
 
 

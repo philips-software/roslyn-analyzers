@@ -61,10 +61,10 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -73,9 +73,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[TestMethod]
@@ -160,9 +163,7 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(template, expectedErrors);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -191,9 +192,7 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(template, expectedErrors);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[TestMethod]
@@ -222,9 +221,7 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(template, expectedErrors);
+			VerifySuccessfulCompilation(template);
 		}
 
 		[DataRow("", false)]
@@ -247,11 +244,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -260,9 +256,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("{ TestProperty = string.Empty }", false)]
@@ -288,11 +287,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -301,9 +299,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("-1, false", false)]
@@ -329,11 +330,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -342,9 +342,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("-1, false", false)]
@@ -372,11 +375,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -385,9 +387,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("", false)]
@@ -413,11 +418,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -426,9 +430,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("", false)]
@@ -451,11 +458,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -464,9 +470,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("Mockable m = Mock.Of<")]
@@ -498,9 +507,7 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			VerifyDiagnostic(string.Format(template, statement), expectedErrors);
+			VerifySuccessfulCompilation(string.Format(template, statement));
 		}
 
 		[DataRow("", false)]
@@ -525,10 +532,10 @@ public static class Bar
 	}}
 }}
 ";
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -537,9 +544,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		[DataRow("string.Empty", false)]
@@ -565,11 +575,10 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
+				var expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -578,9 +587,12 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
+				VerifyDiagnostic(code, expectedErrors);
 			}
-
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 
 		#endregion

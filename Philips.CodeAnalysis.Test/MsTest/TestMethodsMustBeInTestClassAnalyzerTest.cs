@@ -58,7 +58,7 @@ public class DerivedTestMethod : TestMethod
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void TestMethodsMustBeInTestClass(bool isError, string baseClass, string classQualifier, string testType)
 		{
-			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 {0}
 public {2} class Tests : {3}
@@ -67,16 +67,18 @@ public {2} class Tests : {3}
 	public void Foo() {{ }}
 }}";
 
-			VerifySuccessfulCompilation(string.Format(code, "[TestClass]", testType, classQualifier, baseClass));
+			VerifySuccessfulCompilation(string.Format(template, "[TestClass]", testType, classQualifier, baseClass));
 
-			DiagnosticResult[] expectedResult = Array.Empty<DiagnosticResult>();
-
+			var code = string.Format(template, "", testType, classQualifier, baseClass);
 			if (isError)
 			{
-				expectedResult = new[] { DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustBeInTestClass) };
+				var expectedResult = new[] { DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustBeInTestClass) };
+				VerifyDiagnostic(code, expectedResult);
 			}
-
-			VerifyDiagnostic(string.Format(code, "", testType, classQualifier, baseClass), expectedResult);
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 		#endregion
 	}
