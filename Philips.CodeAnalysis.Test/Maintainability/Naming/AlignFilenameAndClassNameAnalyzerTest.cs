@@ -33,7 +33,7 @@ namespace AlignFilenameAndClassName {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string typeKind, string filePath)
 		{
-			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), filePath);
+			VerifySuccessfulCompilation(string.Format(SourceCodeTemplate, typeKind), filePath);
 		}
 
 		/// <summary>
@@ -47,7 +47,7 @@ namespace AlignFilenameAndClassName {{
 		public void WhenNamesDontAlignDiagnosticIsRaised(string typeKind, string filePath)
 		{
 			var expected = DiagnosticResultHelper.Create(DiagnosticId.AlignFilenameAndClassName);
-			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), filePath, expected);
+			VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), expected, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

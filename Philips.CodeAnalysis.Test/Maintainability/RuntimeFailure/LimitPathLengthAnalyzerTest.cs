@@ -63,7 +63,7 @@ namespace PathTooLongUnitTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(Correct, filePath);
+			VerifySuccessfulCompilation(Correct, filePath);
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace PathTooLongUnitTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
 			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitPathLength);
-			VerifyDiagnostic(Correct, filePath, expected);
+			VerifyDiagnostic(Correct, expected, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

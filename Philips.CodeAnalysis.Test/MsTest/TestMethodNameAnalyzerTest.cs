@@ -58,7 +58,7 @@ namespace TestMethodNameAnalyzerTest
 				}
 			}};
 
-			VerifyDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
+			VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
 			VerifyFix(givenText, fixedText);
 		}
 		

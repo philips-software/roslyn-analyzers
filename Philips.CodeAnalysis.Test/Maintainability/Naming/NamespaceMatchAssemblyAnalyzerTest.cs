@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyDiagnostic(code, sanitizedPath, expected);
+			VerifyDiagnostic(code, expected, sanitizedPath);
 		}
 
 		[DataTestMethod]
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
-			VerifyDiagnostic(code, sanitizedPath, Array.Empty<DiagnosticResult>());
+			VerifySuccessfulCompilation(code, sanitizedPath);
 		}
 	}
 	public abstract class NamespaceMatchAssemblyAnalyzerVerifier : DiagnosticVerifier

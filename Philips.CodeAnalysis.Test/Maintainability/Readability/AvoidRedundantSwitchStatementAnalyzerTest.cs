@@ -79,7 +79,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
-			VerifyDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
+			VerifySuccessfulCompilation(SampleMethodWithSwitches, @"Foo.designer");
 		}
 
 		[DataRow("byte", "1")]

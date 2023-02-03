@@ -107,7 +107,7 @@ namespace AvoidUsingParametersTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			VerifyDiagnostic(Wrong, filePath);
+			VerifySuccessfulCompilation(Wrong, filePath);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
