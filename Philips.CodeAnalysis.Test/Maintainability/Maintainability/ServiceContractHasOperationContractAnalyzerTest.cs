@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -28,8 +29,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected override MetadataReference[] GetMetadataReferences()
 		{
-			//JPM yikes.  For some reason the nuget package doesn't work in the semantic analyzer, so we directly reference the full framework DLL
-			return new[] { MetadataReference.CreateFromFile(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll") };
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				//JPM yikes.  For some reason the nuget package doesn't work in the semantic analyzer, so we directly reference the full framework DLL
+				return new[]
+				{
+					MetadataReference.CreateFromFile(
+						@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll")
+				};
+			}
+			else
+			{
+				return Array.Empty<MetadataReference>();
+			}
 		}
 
 		private void VerifyDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
