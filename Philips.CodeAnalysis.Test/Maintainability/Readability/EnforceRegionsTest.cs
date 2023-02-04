@@ -246,7 +246,7 @@ class Foo
 			var result = new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
-				Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
+				Message = new Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
