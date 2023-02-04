@@ -36,6 +36,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			var typeDeclarationSyntax = (BaseTypeDeclarationSyntax)context.Node;
 
+			GeneratedCodeDetector detector = new();
+			if (detector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
+			TestHelper testHelper = new();
+			if (testHelper.IsInTestClass(context))
+			{
+				return;
+			}
+
 			Dictionary<string, Location> usedLiterals = new();
 			foreach (var literal in typeDeclarationSyntax.DescendantTokens()
 				         .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))

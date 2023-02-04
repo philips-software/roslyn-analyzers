@@ -22,12 +22,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string DescriptionFormat =
 			"Overload the {1} operator, when you overload the {0} operator, as they are often used in combination with each other.";
 		private const string Category = Categories.Maintainability;
+		private const string Plus = "+";
 
 		private static readonly DiagnosticDescriptor IncrementAndDecrementRule =
 			GenerateRule("++", "--", DiagnosticId.AlignNumberOfIncrementAndDecrementOperators);
 
 		private static readonly DiagnosticDescriptor PlusMinusRule =
-			GenerateRule("+", "-", DiagnosticId.AlignNumberOfPlusAndMinusOperators);
+			GenerateRule(Plus, "-", DiagnosticId.AlignNumberOfPlusAndMinusOperators);
 
 		private static readonly DiagnosticDescriptor MultiplyDivideRule =
 			GenerateRule("*", "/", DiagnosticId.AlignNumberOfMultiplyAndDivideOperators);
@@ -42,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			GenerateRule(">>", "<<", DiagnosticId.AlignNumberOfShiftRightAndLeftOperators);
 
 		private static readonly DiagnosticDescriptor PlusAndEqualRule =
-			GenerateRule("+", "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
+			GenerateRule(Plus, "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
 
 		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{

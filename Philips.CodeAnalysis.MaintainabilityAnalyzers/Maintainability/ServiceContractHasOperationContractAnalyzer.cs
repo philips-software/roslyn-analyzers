@@ -17,6 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = @"Method '{0}' is not marked [OperationContract]";
 		private const string Description = @"Attribute method with [OperationContract]";
 		private const string Category = Categories.Maintainability;
+		private const string ServiceModelFullyQualified = "System.ServiceModel.ServiceContractAttribute";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
@@ -39,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.ServiceModel.ServiceContractAttribute") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(ServiceModelFullyQualified) == null)
 				{
 					return;
 				}
@@ -52,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			InterfaceDeclarationSyntax interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
 
-			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", "System.ServiceModel.ServiceContractAttribute", out _))
+			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", ServiceModelFullyQualified, out _))
 			{
 				return;
 			}
