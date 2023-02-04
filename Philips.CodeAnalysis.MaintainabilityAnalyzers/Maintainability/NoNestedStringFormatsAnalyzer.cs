@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string Category = Categories.Maintainability;
 
-		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
+		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticId.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticId.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);

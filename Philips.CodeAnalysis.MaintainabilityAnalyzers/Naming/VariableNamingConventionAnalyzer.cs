@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,9 +15,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class VariableNamingConventionAnalyzer : DiagnosticAnalyzer
 	{
-		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline);
-		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline);
-		private static readonly Regex _eventRegex = new(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline);
+		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _eventRegex = new(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
