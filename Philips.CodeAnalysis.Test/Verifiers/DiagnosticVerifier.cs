@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected void VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, fileNamePrefix, analyzer, Array.Empty<DiagnosticResult>());
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
