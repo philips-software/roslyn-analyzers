@@ -57,7 +57,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null)
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
+		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, new[] { expected });
@@ -69,13 +71,15 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null)
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
+		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
 		{
 			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
 			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, analyzer, expected);
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected);
 		}
 
 
@@ -83,10 +87,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source
 		/// </summary>
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
-		protected void VerifySuccessfulCompilation(string source, string fileNamePrefix = null)
+		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
+		protected void VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, fileNamePrefix, analyzer, Array.Empty<DiagnosticResult>());
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
@@ -106,11 +112,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="sources">An array of strings to create source documents from to run the analyzers on</param>
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
+		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
 		{
-			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, analyzer);
+			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 

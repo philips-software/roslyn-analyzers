@@ -1,7 +1,7 @@
 | Rule ID | Title                                        | Description                                                  |
 | ------- | -------------------------------------------- | ------------------------------------------------------------ |
 | PH2001  | Avoid empty XML Summary comments             | Summary XML comments for classes, methods, etc. must be non-empty or non-existent. |
-| PH2006  | Match namespace, path, assembly, and project | The File Path, Assembly, Project, and Namespace must all match. To include folders in the namespace, add `dotnet_code_quality.PH2006.folder_in_namespace = true` to the .editorconfig.|
+| PH2006  | Match namespace and path                     | The File Path and Namespace must match. To include folders in the namespace, add `dotnet_code_quality.PH2006.folder_in_namespace = true` to the .editorconfig.|
 | PH2020  | Avoid Thread.Sleep                           | This method is a code smell.                                 |
 | PH2021  | Avoid inline new                             | Do not inline the constructor call.  Instead, create a local variable or a field for the temporary instance. |
 | PH2026  | Avoid SuppressMessage attribute              | SuppressMessage results in violations of codified coding guidelines.|
@@ -83,5 +83,6 @@
 | PH2130  | Avoid implementing finalizers                | Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.|
 | PH2131  | Align filename and class name                | Name the file after the class, struct or enum it contains. |
 | PH2132  | Remove commented code                        | Remove commented code.|
-| PH2133  | Unmanaged objects need disposing             | Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable |
+| PH2133  | Unmanaged objects need disposing             | Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable. |
 | PH2134  | Set properties in any order                  | Getting other properties in a setter makes this setter dependent on the order in which these properties are set. |
+| PH2135  | Match namespace and Assembly Name            | The Assembly Name and Namespace must match. |

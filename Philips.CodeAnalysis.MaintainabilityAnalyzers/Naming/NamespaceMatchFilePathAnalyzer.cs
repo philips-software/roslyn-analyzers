@@ -12,25 +12,25 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespaceMatchAssemblyAnalyzer : DiagnosticAnalyzer
+	public class NamespaceMatchFilePathAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Namespace matches File Path";
-		private const string MessageFormat = @"Namespace, File Path, Assembly, and Project must all match";
-		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path, Assembly, Project, and Namespace must all match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
+		private const string MessageFormat = @"Namespace and File Path must match";
+		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path and Namespace must match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
 		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchAssembly), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
 		private AdditionalFilesHelper _additionalFilesHelper;
 		private bool _folderInNamespace;
 		private bool _configInitialized;
 
-		public NamespaceMatchAssemblyAnalyzer()
+		public NamespaceMatchFilePathAnalyzer()
 			: this(GeneratedCodeAnalysisFlags.None, null)
 		{ }
 
-		public NamespaceMatchAssemblyAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags, AdditionalFilesHelper additionalFilesHelper)
+		public NamespaceMatchFilePathAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags, AdditionalFilesHelper additionalFilesHelper)
 		{
 			_generatedCodeFlags = generatedCodeFlags;
 			_additionalFilesHelper = additionalFilesHelper;
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			InitializeConfiguration(context);
 
-			if (_folderInNamespace)
+			if(_folderInNamespace)
 			{
 				// Does the namespace exactly match the trailing folders?
 				if (DoesFilePathEndWithNamespace(myNamespace, myFilePath))
@@ -75,8 +75,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return;
 				}
 			}
-
-			// TODO: Check assembly name, see issue #174
 
 			var location = namespaceDeclaration.Name.GetLocation();
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
