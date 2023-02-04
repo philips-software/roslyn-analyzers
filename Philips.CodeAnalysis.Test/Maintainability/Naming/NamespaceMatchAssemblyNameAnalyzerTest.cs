@@ -30,6 +30,8 @@ namespace {0} {{
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.TestFramework")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "Philips.CodeAnalysis.Test.Maintainability.Foo")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "Philips.CodeAnalysis.Test.Maintainability.Foo.Bah")]
+		[DataRow("Philips.CodeAnalysis.Test", "Philips.Test")]
+		[DataRow("Philips.CodeAnalysis.Test", "CodeAnalysis.Test")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void ReportIncorrectNamespaceMatch(string ns, string assemblyName)
 		{
@@ -40,6 +42,7 @@ namespace {0} {{
 		}
 
 		[DataTestMethod]
+		[DataRow("Philips.Test", "")]
 		[DataRow("Philips.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis")]
 		[TestCategory(TestDefinitions.UnitTests)]
