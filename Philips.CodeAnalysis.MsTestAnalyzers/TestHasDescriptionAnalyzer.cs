@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		private const string Title = @"Test must have proper Description Attribute value";
 		public const string MessageFormat = @"Test Description Attribute must not have a literal string and length of the reference value should be less than 25 characters.";
-		private const string Description = @"Test Description Attribute must not have a literal string and length of the reference value should be less than 25 characters.";
+		private const string Description = MessageFormat;
 		private const string Category = Categories.Maintainability;
 		private const int MaxDescriptionLength = 25;
 
