@@ -148,10 +148,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				var loc = method.Identifier.GetLocation();
 				var methodName = method.Identifier.Text;
-				string unhandledStr = string.Join(",", remainingExceptions);
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
 				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", remainingExceptionsString);
-				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, unhandledStr);
+				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

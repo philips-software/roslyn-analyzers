@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = "Use inner exceptions for unhandled exceptions";
 		private const string Message = "Rethrown exception should include caught exception.";
-		private const string Description = "Use inner exceptions for unhandled exceptions";
+		private const string Description = Title;
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =

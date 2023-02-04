@@ -13,8 +13,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	public class EveryLinqStatementOnSeparateLineAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Put every linq statement on a separate line";
-		private const string MessageFormat = @"Put every linq statement on a separate line";
-		private const string Description = @"Put every linq statement on a separate line";
+		private const string MessageFormat = Title;
+		private const string Description = Title;
 		private const string Category = Categories.Readability;
 
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.EveryLinqStatementOnSeparateLine), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

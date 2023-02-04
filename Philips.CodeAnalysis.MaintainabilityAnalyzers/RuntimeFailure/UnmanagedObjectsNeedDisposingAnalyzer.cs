@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Collections.Specialized;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -72,6 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private bool TypeImplementsIDisposable(SyntaxNodeAnalysisContext context, FieldDeclarationSyntax field)
 		{
+			const string IDisposableLiteral = "IDisposable";
 			var type = field.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
@@ -82,7 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			{
 				return false;
 			}
-			return typeSymbol.BaseType.Name == "IDisposable" || typeSymbol.AllInterfaces.Any(face => face.Name == "IDisposable");
+			return typeSymbol.BaseType.Name == IDisposableLiteral || typeSymbol.AllInterfaces.Any(face => face.Name == IDisposableLiteral);
 		}
 	}
 }
