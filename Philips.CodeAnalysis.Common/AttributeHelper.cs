@@ -101,10 +101,7 @@ namespace Philips.CodeAnalysis.Common
 				if (symbolInfo.Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
 					location = attribute.GetLocation();
-					if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
-					{
-						argument = attribute.ArgumentList.Arguments.First();
-					}
+					argument = attribute.ArgumentList?.Arguments.FirstOrDefault();
 					return true;
 				}
 			}
@@ -113,7 +110,8 @@ namespace Philips.CodeAnalysis.Common
 		}
 		public bool IsAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, AttributeDefinition attributeDefinition, out Location location, out AttributeArgumentSyntax argument)
 		{
-			return IsAttribute(attribute, () => { return context.SemanticModel; }, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
+			Func<SemanticModel> getSemanticModel = () => context.SemanticModel;
+			return IsAttribute(attribute, getSemanticModel, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
 		}
 
 		public bool IsDataRowAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context)

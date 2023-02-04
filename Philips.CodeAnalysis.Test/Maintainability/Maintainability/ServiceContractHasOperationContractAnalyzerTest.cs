@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 public interface IFoo { }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessfulCompilation(text);
 		}
 
 		[TestMethod]
@@ -83,7 +83,7 @@ public interface IFoo { }
 public interface IFoo { }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessfulCompilation(text);
 		}
 
 		[TestMethod]
@@ -99,7 +99,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessfulCompilation(text);
 		}
 
 		[TestMethod]
