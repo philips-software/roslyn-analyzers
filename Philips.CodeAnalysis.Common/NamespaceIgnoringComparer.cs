@@ -7,12 +7,14 @@ namespace Philips.CodeAnalysis.Common
 {
 	public sealed class NamespaceIgnoringComparer : IEqualityComparer<string>
 	{
+		private const string Dot = ".";
+
 		public int Compare(string x, string y)
 		{
-			var dotX = Math.Max(x.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
+			var dotX = Math.Max(x.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
 			var comparableX = x.Substring(dotX);
 			
-			var dotY = Math.Max(y.LastIndexOf(".", StringComparison.Ordinal) + 1, 0);
+			var dotY = Math.Max(y.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
 			var comparableY = y.Substring( dotY);
 			
 			return StringComparer.Ordinal.Compare(comparableX, comparableY);
