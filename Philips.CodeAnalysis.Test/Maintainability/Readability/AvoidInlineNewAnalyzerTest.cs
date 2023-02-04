@@ -155,6 +155,14 @@ class Foo
 			Verify(file);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void NoErrorOnAsSpanMethod()
+		{
+			var file = CreateFunction("new string(\"\").AsSpan();");
+			VerifySuccessfulCompilation(file);
+		}
+
 		private void Verify(string file)
 		{
 			VerifyDiagnostic(file, new DiagnosticResult()

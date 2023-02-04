@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string MessageFormat = @"Do not inline the constructor call for class {0}";
 		private const string Description = @"Create a local variable, or a field for the temporary instance of class '{0}'";
 		private const string Category = Categories.Readability;
-		private static readonly HashSet<string> AllowedMethods = new() { "ToString", "ToList", "ToArray" };
+		private static readonly HashSet<string> AllowedMethods = new() { "ToString", "ToList", "ToArray", "AsSpan" };
 
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidInlineNew), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
