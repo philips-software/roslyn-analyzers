@@ -21,7 +21,7 @@ namespace {0} {{
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new NamespaceMatchAssemblyNameAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			return new NamespaceMatchAssemblyNameAnalyzer();
 		}
 
 		[DataTestMethod]
