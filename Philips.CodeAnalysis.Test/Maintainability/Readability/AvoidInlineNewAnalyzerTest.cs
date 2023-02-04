@@ -40,9 +40,17 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DontInlineNewCall()
+		public void NoErrorOnAllowedMethods()
 		{
 			var file = CreateFunction("string str = new object().ToString()");
+			VerifySuccessfulCompilation(file);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DontInlineNewCall()
+		{
+			var file = CreateFunction("int hash = new object().GetHashCode()");
 			Verify(file);
 		}
 
@@ -66,10 +74,20 @@ class Foo
 		[DataRow("(new Foo())")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DontInlineNewCallCustomType(string newVarient)
+		public void DontInlineNewCallCustomType(string newVariant)
 		{
-			var file = CreateFunction($"string str = {newVarient}.ToString()");
+			var file = CreateFunction($"int hash = {newVariant}.GetHashCode()");
 			Verify(file);
+		}
+
+		[DataRow("new Foo()")]
+		[DataRow("(new Foo())")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void NoErrorInlineNewCallCustomTypeAllowedMethod(string newVariant)
+		{
+			var file = CreateFunction($"string str = {newVariant}.ToString()");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
@@ -109,8 +127,16 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void ErrorIfReturned()
 		{
-			var file = CreateFunction("return new object().ToString();");
+			var file = CreateFunction("return new object().GetHashCode();");
 			Verify(file);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void NoErrorIfReturnedAllowedMethod()
+		{
+			var file = CreateFunction("return new object().ToString();");
+			VerifySuccessfulCompilation(file);
 		}
 
 		[TestMethod]
