@@ -20,22 +20,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchAssemblyName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
-
-		public NamespaceMatchAssemblyNameAnalyzer()
-			: this(GeneratedCodeAnalysisFlags.None)
-		{ }
-
-		public NamespaceMatchAssemblyNameAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
-		{
-			_generatedCodeFlags = generatedCodeFlags;
-		}
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
 		}
