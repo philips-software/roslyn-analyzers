@@ -11,14 +11,16 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespaceMatchAssemblyNameAnalyzer : DiagnosticAnalyzer
+	public class NamespaceMatchAssemblyNameAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Namespace matches Assembly Name";
 		private const string MessageFormat = @"Namespace and Assembly Name must match";
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the Assembly Name and Namespace must match.";
 		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchAssemblyName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public NamespaceMatchAssemblyNameAnalyzer() : base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Category)
+		{
+		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
