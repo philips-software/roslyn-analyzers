@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -221,9 +222,9 @@ class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(@"Non-Public Properties/Methods", true)]
+		[DataRow(@"Non-Public Properties/Methods")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DupliateRegionTest(string given, bool isError)
+		public void DupliateRegionTest(string given)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -242,26 +243,17 @@ class Foo
 
 }}";
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
-			if (isError)
+			var result = new DiagnosticResult()
 			{
-				results = new[] { new DiagnosticResult()
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
-						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 8, 3)
-						}
-					}
-				};
-			}
-			else
-			{
-				results = Array.Empty<DiagnosticResult>();
-			}
-			VerifyDiagnostic(givenText, results);
+				Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
+				Message = new Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
+				Severity = DiagnosticSeverity.Error,
+				Locations = new[]
+				{
+					new DiagnosticResultLocation("Test0.cs", 8, 3)
+				}
+			};
+			VerifyDiagnostic(givenText, result);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
@@ -269,18 +261,17 @@ class Foo
 			string givenText = string.Format(baseline, given);
 			if (isError)
 			{
-				var results = new[] { new DiagnosticResult()
+				var result = new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
+					Message = new Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
-						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", line, column)
-						}
+						new DiagnosticResultLocation("Test0.cs", line, column)
 					}
 				};
-				VerifyDiagnostic(givenText, results);
+				VerifyDiagnostic(givenText, result);
 			}
 			else
 			{

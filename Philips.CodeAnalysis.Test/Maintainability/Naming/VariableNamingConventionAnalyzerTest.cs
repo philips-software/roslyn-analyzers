@@ -49,16 +49,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
+				var expected = 
+					new DiagnosticResult
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 13)
-				} }
-				};
+						Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
+						Message = new Regex(".+"),
+						Severity = DiagnosticSeverity.Error,
+						Locations = new[]
+						{
+							new DiagnosticResultLocation("Test.cs", errorLine, 13)
+						}
+					};
 				VerifyDiagnostic(givenText, expected);
 			}
 		}
@@ -271,15 +272,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 18)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 18)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -312,15 +313,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 9)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 9)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -351,7 +352,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -359,7 +360,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					Locations = new[]
 					{
 					new DiagnosticResultLocation("Test.cs", errorLine, 8 + attribute.Length + 2)
-				} }
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -390,15 +391,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, errorColumn)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, errorColumn)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -426,15 +427,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 15)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 15)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -462,15 +463,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 9)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 9)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}

@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -40,13 +41,32 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
 		}
 
+		
 		[DataTestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
+			DiagnosticResult[] expected = new[]
+			{
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				},
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				}
+			};
+			AssertCodeHelper helper = new();
+			var code = helper.GetText(test, string.Empty, string.Empty);
+			VerifyDiagnostic(code, expected);
 		}
+		
 
 		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]
