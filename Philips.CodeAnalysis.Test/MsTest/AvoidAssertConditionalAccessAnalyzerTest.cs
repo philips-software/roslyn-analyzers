@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
 		}
 
-		/*
+		
 		[DataTestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -62,9 +62,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				}
 			};
-			VerifyDiagnostic(test, expected);
+			AssertCodeHelper helper = new();
+			var code = helper.GetText(test, string.Empty, string.Empty);
+			VerifyDiagnostic(code, expected);
 		}
-		*/
+		
 
 		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]

@@ -225,15 +225,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 8)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 8)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -286,15 +286,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 16)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 16)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -320,15 +320,15 @@ class Foo
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 18)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 18)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -357,15 +357,15 @@ class Foo
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 11)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 11)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -393,15 +393,15 @@ class Foo
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 7)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 7)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}
@@ -438,15 +438,15 @@ class Foo
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceBoolNamingConvention),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 14)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 14)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}

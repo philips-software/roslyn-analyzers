@@ -236,8 +236,16 @@ public static class Bar
 			{
 				arguments = $", {args}";
 			}
+			string code = string.Format(template, arguments);
 
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			if (errorCount == 1)
+			{
+				VerifyDiagnostic(code, expectedErrors[0]);
+			}
+			else
+			{
+				VerifyDiagnostic(code, expectedErrors);
+			}
 		}
 
 		[DataRow("", @"PH2054")]

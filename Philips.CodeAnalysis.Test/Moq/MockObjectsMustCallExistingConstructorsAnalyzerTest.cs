@@ -99,15 +99,13 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = new[]
-			{
+			var expectedErrors =
 				new DiagnosticResult()
 				{
-					Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
+					Id = Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 					Location = new DiagnosticResultLocation(12),
 					Severity = DiagnosticSeverity.Error,
-				}
-			};
+				};
 
 			VerifyDiagnostic(template, expectedErrors);
 		}
@@ -245,15 +243,13 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				var expectedErrors = new[]
-				{
+				var expectedErrors =
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
+						Id = Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(10),
 						Severity = DiagnosticSeverity.Error,
-					}
-				};
+					};
 				VerifyDiagnostic(code, expectedErrors);
 			}
 			else
@@ -288,15 +284,13 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				var expectedErrors = new[]
-				{
+				var expectedErrors =
 					new DiagnosticResult()
 					{
 						Id= Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor),
 						Location = new DiagnosticResultLocation(13),
 						Severity = DiagnosticSeverity.Error,
-					}
-				};
+					};
 				VerifyDiagnostic(code, expectedErrors);
 			}
 			else

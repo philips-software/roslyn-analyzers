@@ -300,7 +300,7 @@ public class Baz
 		{
 			if (isError)
 			{
-				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods) };
+				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 				VerifyDiagnostic(template, result);
 			}
 			else
