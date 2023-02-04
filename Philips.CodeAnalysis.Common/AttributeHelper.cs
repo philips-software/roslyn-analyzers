@@ -97,6 +97,11 @@ namespace Philips.CodeAnalysis.Common
 
 			if (attribute.Name.ToString().Contains(name))
 			{
+				if (fullName == null)
+				{
+					// Skip the full namespace check.
+					return true;
+				}
 				SymbolInfo symbolInfo = getSemanticModel().GetSymbolInfo(attribute);
 				if (symbolInfo.Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
@@ -110,8 +115,7 @@ namespace Philips.CodeAnalysis.Common
 		}
 		public bool IsAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context, AttributeDefinition attributeDefinition, out Location location, out AttributeArgumentSyntax argument)
 		{
-			Func<SemanticModel> getSemanticModel = () => context.SemanticModel;
-			return IsAttribute(attribute, getSemanticModel, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
+			return IsAttribute(attribute, () => { return context.SemanticModel; }, attributeDefinition.Name, attributeDefinition.FullName, out location, out argument);
 		}
 
 		public bool IsDataRowAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context)

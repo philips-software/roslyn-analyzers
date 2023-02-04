@@ -27,38 +27,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new ServiceContractHasOperationContractAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
-		{
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				//JPM yikes.  For some reason the nuget package doesn't work in the semantic analyzer, so we directly reference the full framework DLL
-				return new[]
-				{
-					MetadataReference.CreateFromFile(
-						@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll")
-				};
-			}
-			else
-			{
-				return Array.Empty<MetadataReference>();
-			}
-		}
-
-		private void VerifyDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
-		{
-			//if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				if (expected?.Length > 0) 
-				{
-					VerifyDiagnostic(source, expected);
-				}
-				else 
-				{
-					VerifySuccessfulCompilation(source);
-				}
-			}
-		}
-
 		#endregion
 
 		#region Public Interface
@@ -114,8 +82,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text, new[]
-			{
+			VerifyDiagnostic(text, 
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
@@ -125,8 +92,7 @@ public interface IFoo
 					{
 						new DiagnosticResultLocation("Test0.cs", 5, null),
 					}
-				}
-			});
+				});
 		}
 
 		[TestMethod]
@@ -144,8 +110,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text, new[]
-			{
+			VerifyDiagnostic(text,
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
@@ -155,8 +120,7 @@ public interface IFoo
 					{
 						new DiagnosticResultLocation("Test0.cs", 5, null),
 					}
-				}
-			});
+				});
 		}
 
 		#endregion
