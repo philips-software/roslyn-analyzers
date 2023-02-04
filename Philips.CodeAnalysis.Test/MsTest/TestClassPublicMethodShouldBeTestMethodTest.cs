@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -111,7 +112,7 @@ class Foo
 				var result = new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod),
-					Message = new System.Text.RegularExpressions.Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
+					Message = new Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
