@@ -1,6 +1,5 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -16,13 +15,13 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
-	public class NamespaceMatchAssemblyAnalyzerNoFolderTest : NamespaceMatchAssemblyAnalyzerVerifier
+	public class NamespaceMatchFilePathAnalyzerNoFolderTest : NamespaceMatchFilePathAnalyzerVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
-			return new NamespaceMatchAssemblyAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
+			return new NamespaceMatchFilePathAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
 		}
 
 		[DataTestMethod]
@@ -36,10 +35,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		public void ReportIncorrectNamespaceMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
+			string code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchAssembly),
+				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -58,11 +57,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(NamespaceMatchAssemblyAnalyzerUseFolderTest.ClassString, ns);
+			string code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
 			VerifySuccessfulCompilation(code, sanitizedPath);
 		}
 	}
-	public abstract class NamespaceMatchAssemblyAnalyzerVerifier : DiagnosticVerifier
+	public abstract class NamespaceMatchFilePathAnalyzerVerifier : DiagnosticVerifier
 	{
 		private const int BaseColumnErrorLocation = 14;
 		private const int BaseRowErrorLocation = 4;

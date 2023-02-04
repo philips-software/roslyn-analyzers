@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common
 		AssertAreEqual = 2003,
 		ExpectedExceptionAttribute = 2004,
 		TestContext = 2005,
-		NamespaceMatchAssembly = 2006,
+		NamespaceMatchFilePath = 2006,
 		AssertAreEqualTypesMatch = 2008,
 		AssertIsEqual = 2009,
 		AssertIsTrueParenthesis = 2010,
@@ -128,5 +128,6 @@ namespace Philips.CodeAnalysis.Common
 		RemoveCommentedCode = 2132,
 		UnmanagedObjectsNeedDisposing = 2133,
 		SetPropertiesInAnyOrder = 2134,
+		NamespaceMatchAssemblyName = 2135,
 	}
 }

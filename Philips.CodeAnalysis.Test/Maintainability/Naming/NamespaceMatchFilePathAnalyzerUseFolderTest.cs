@@ -1,6 +1,5 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -11,12 +10,11 @@ using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 using Philips.CodeAnalysis.Test.Helpers;
-using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
-	public class NamespaceMatchAssemblyAnalyzerUseFolderTest : NamespaceMatchAssemblyAnalyzerVerifier
+	public class NamespaceMatchFilePathAnalyzerUseFolderTest : NamespaceMatchFilePathAnalyzerVerifier
 	{
 		public const string ClassString = @"
 			using System;
@@ -36,7 +34,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("true");
-			return new NamespaceMatchAssemblyAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
+			return new NamespaceMatchFilePathAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
 		}
 
 		[DataTestMethod]
@@ -52,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string code = string.Format(ClassString, ns);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchAssembly),
+				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
