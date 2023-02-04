@@ -63,13 +63,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 						}
 					}
 				};
+				VerifyDiagnostic(classContent, results);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(classContent);
 			}
-			VerifyDiagnostic(classContent, results);
-
 		}
 
 		#endregion

@@ -30,10 +30,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			const string template = @"""
 class Foo {{ {0} string _foo; }}
 """;
-
-			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticId.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(string.Format(template, modifiers), expected);
+			var code = string.Format(template, modifiers);
+			if (isError)
+			{
+				DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticId.NoProtectedFields) };
+				VerifyDiagnostic(code, expected);
+			}
+			else
+			{
+				VerifySuccessfulCompilation(code);
+			}
 		}
 	}
 }

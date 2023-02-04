@@ -74,6 +74,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
 		{
+			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
+
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected);
 		}
@@ -87,7 +89,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected void VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
 		{
-			VerifyDiagnostic(source, Array.Empty<DiagnosticResult>(), filenamePrefix, assemblyName);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, fileNamePrefix, analyzer, Array.Empty<DiagnosticResult>());
 		}
 
 		/// <summary>
@@ -98,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var content = File.ReadAllText(path);
 			var fileName = Path.GetFileNameWithoutExtension(path);
-			VerifyDiagnostic(content, Array.Empty<DiagnosticResult>(), fileName);
+			VerifySuccessfulCompilation(content, fileName);
 		}
 
 		/// <summary>

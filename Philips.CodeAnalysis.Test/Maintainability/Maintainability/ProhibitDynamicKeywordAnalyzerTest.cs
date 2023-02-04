@@ -42,14 +42,21 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CantBeDynamic(string testCode, int errorCount)
 		{
-			List<DiagnosticResult> results = new();
-			for (int i = 0; i < errorCount; i++)
+			if (errorCount == 0)
 			{
-				results.Add(DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited));
+				VerifySuccessfulCompilation(testCode);
 			}
+			else
+			{
+				List<DiagnosticResult> results = new();
+				for (int i = 0; i < errorCount; i++)
+				{
+					results.Add(DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited));
+				}
 
-			var expected = results.ToArray();
-			VerifyDiagnostic(testCode, expected);
+				var expected = results.ToArray();
+				VerifyDiagnostic(testCode, expected);
+			}
 		}
 
 		#endregion

@@ -43,15 +43,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -61,9 +59,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 13)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foo", true, 3)]
@@ -85,15 +82,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -103,9 +98,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 13)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
@@ -118,10 +112,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -135,9 +126,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -151,9 +140,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -167,9 +154,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -183,9 +168,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -199,9 +182,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -220,9 +201,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 
@@ -238,9 +217,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -254,9 +231,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[TestMethod]
@@ -270,9 +245,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyDiagnostic(givenText, expected);
+			VerifySuccessfulCompilation(givenText);
 		}
 
 		[DataRow("foo", false, 3)]
@@ -292,16 +265,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -311,9 +281,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 18)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("i", true, 5)]
@@ -337,15 +306,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -355,9 +322,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 9)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("Foo", "const", true, 5)]
@@ -379,16 +345,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content, attribute);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -398,9 +361,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 8 + attribute.Length + 2)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("int i; for(i=0;i<5;i++){}", true, 5, 9)]
@@ -422,16 +384,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -441,9 +400,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, errorColumn)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("using(var i = new MemoryStream()){}", true, 5)]
@@ -462,16 +420,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -481,9 +436,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 15)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		[DataRow("foreach(var i in new[] { 1, 2 }){}", true, 5)]
@@ -502,16 +456,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				VerifySuccessfulCompilation(givenText);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new[] { new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
@@ -521,9 +472,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 					new DiagnosticResultLocation("Test.cs", errorLine, 9)
 				} }
 				};
+				VerifyDiagnostic(givenText, expected);
 			}
-
-			VerifyDiagnostic(givenText, expected);
 		}
 
 		#endregion
