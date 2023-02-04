@@ -32,18 +32,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new[] { MetadataReference.CreateFromFile(@"C:\WINDOWS\Microsoft.Net\assembly\GAC_MSIL\System.ServiceModel\v4.0_4.0.0.0__b77a5c561934e089\System.ServiceModel.dll") };
 		}
 
-		private void VerifyDiagnosticOnWindows(string source, params DiagnosticResult[] expected)
+		private void VerifyDiagnosticOnWindows(string source, DiagnosticResult expected)
 		{
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
-				if (expected?.Length > 0) 
-				{
-					VerifyDiagnostic(source, expected);
-				}
-				else 
-				{
-					VerifySuccessfulCompilation(source);
-				}
+				VerifyDiagnostic(source, expected);
+			}
+		}
+
+		private void VerifySuccessOnWindows(string source)
+		{
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				VerifySuccessfulCompilation(source);
 			}
 		}
 
@@ -59,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 public interface IFoo { }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessOnWindows(text);
 		}
 
 		[TestMethod]
@@ -71,7 +72,7 @@ public interface IFoo { }
 public interface IFoo { }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessOnWindows(text);
 		}
 
 		[TestMethod]
@@ -87,7 +88,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text);
+			VerifySuccessOnWindows(text);
 		}
 
 		[TestMethod]
@@ -102,8 +103,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text, new[]
-			{
+			VerifyDiagnosticOnWindows(text,
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
@@ -113,8 +113,7 @@ public interface IFoo
 					{
 						new DiagnosticResultLocation("Test0.cs", 5, null),
 					}
-				}
-			});
+				});
 		}
 
 		[TestMethod]
@@ -132,8 +131,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnosticOnWindows(text, new[]
-			{
+			VerifyDiagnosticOnWindows(text,
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
@@ -143,8 +141,7 @@ public interface IFoo
 					{
 						new DiagnosticResultLocation("Test0.cs", 5, null),
 					}
-				}
-			});
+				});
 		}
 
 		#endregion

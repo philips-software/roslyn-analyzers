@@ -48,21 +48,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 ";
 			string classContent = string.Format(template, modifier, content);
 
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var result = new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyTypeInitializer),
+					Message = new Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyTypeInitializer),
-						Message = new Regex(".*"),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 5, 3)
-						}
+						new DiagnosticResultLocation("Test0.cs", 5, 3)
 					}
 				};
-				VerifyDiagnostic(classContent, results);
+				VerifyDiagnostic(classContent, result);
 			}
 			else
 			{

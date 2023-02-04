@@ -49,21 +49,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			const string template = @"public class C {{    {0}       }}";
 			string classContent = string.Format(template, content);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var result = new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPublicMemberVariables),
+					Message = new Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPublicMemberVariables),
-						Message = new Regex(".*"),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 1, 21)
-						}
+						new DiagnosticResultLocation("Test0.cs", 1, 21)
 					}
 				};
-				VerifyDiagnostic(classContent, results);
+				VerifyDiagnostic(classContent, result);
 			}
 			else
 			{

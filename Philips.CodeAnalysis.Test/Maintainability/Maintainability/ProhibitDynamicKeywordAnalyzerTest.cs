@@ -46,6 +46,11 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 			{
 				VerifySuccessfulCompilation(testCode);
 			}
+			else if (errorCount == 1)
+			{
+				var expected = DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited);
+				VerifyDiagnostic(testCode, expected);
+			}
 			else
 			{
 				List<DiagnosticResult> results = new();
