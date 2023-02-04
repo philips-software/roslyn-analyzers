@@ -54,7 +54,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 
 			if (isError)
 			{
-				DiagnosticResult[] expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch),
 					Message = new Regex(expectedMessage),
@@ -63,8 +63,8 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 					{
 						new DiagnosticResultLocation("Test0.cs", 15, 7)
 					}
-				}};
-				VerifyDiagnostic(givenText, isError ? expected : Array.Empty<DiagnosticResult>(), "Test0");
+				};
+				VerifyDiagnostic(givenText, expected);
 			}
 			else
 			{

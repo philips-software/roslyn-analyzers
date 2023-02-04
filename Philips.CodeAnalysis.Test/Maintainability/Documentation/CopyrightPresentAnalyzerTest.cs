@@ -105,7 +105,6 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
 			int errorEndLine = errorStartLine;
 
 			if (isGood)
@@ -114,17 +113,14 @@ class Foo
 			}
 			else
 			{
-				expected = new[]
-				{ 
-					new DiagnosticResult
+				var expected = new DiagnosticResult
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
+					Message = new Regex(".+"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
-						Message = new Regex(".+"),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
-						}
+						new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
 					}
 				};
 				VerifyDiagnostic(givenText, expected);

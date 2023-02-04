@@ -61,7 +61,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null, string assemblyName = null)
 		{
-			VerifyDiagnostic(source, new[] { expected }, filenamePrefix, assemblyName);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { expected });
 		}
 
 		/// <summary>
@@ -75,6 +76,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
 		{
 			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
+			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
 			var analyzer = GetDiagnosticAnalyzer();
 			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected);
@@ -113,7 +115,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expected)
+		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, DiagnosticResult[] expected)
 		{
 			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
@@ -129,7 +131,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// <param name="actualResults">The Diagnostics found by the compiler after running the analyzer on the source code</param>
         /// <param name="analyzer">The analyzer that was being run on the sources</param>
         /// <param name="expectedResults">Diagnostic Results that should have appeared in the code</param>
-        private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, params DiagnosticResult[] expectedResults)
+        private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, DiagnosticResult[] expectedResults)
 		{
 			int expectedCount = expectedResults.Length;
 			int actualCount = actualResults.Count();

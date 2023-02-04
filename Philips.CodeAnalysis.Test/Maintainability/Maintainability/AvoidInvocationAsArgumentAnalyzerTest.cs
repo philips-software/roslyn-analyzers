@@ -46,19 +46,18 @@ class Foo
   }}
 }}
 ";
-			var results = new[] { new DiagnosticResult()
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument),
-						Message = new Regex(".*"),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 20, 19)
-						}
-					}
-				};
+			var result = new DiagnosticResult()
+			{
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument),
+				Message = new Regex(".*"),
+				Severity = DiagnosticSeverity.Error,
+				Locations = new[]
+				{
+					new DiagnosticResultLocation("Test0.cs", 20, 19)
+				}
+			};
 
-			VerifyDiagnostic(template, results);
+			VerifyDiagnostic(template, result);
 		}
 
 		[TestMethod]
