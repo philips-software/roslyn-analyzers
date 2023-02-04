@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			foreach (var literal in typeDeclarationSyntax.DescendantTokens()
 				         .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))
 			{
-				var literalText = literal.Text;
+				var literalText = literal.Text.Trim('\\', '\"');
 				if (string.IsNullOrWhiteSpace(literalText))
 				{
 					continue;

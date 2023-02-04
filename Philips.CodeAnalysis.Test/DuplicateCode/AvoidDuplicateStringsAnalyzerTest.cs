@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
@@ -17,6 +18,7 @@ namespace Philips.CodeAnalysis.Test.DuplicateCode
 		}
 
 		[DataTestMethod]
+		[DataRow("", "", false)]
 		[DataRow("test123", "test345", true)]
 		[DataRow("test123", "test345", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
