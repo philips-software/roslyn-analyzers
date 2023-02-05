@@ -36,9 +36,7 @@ namespace {0} {{
 		public void ReportIncorrectNamespaceMatch(string ns, string assemblyName)
 		{
 			string code = string.Format(Template, ns);
-			DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticId.NamespaceMatchAssemblyName);
-
-			VerifyDiagnostic(code, expected, null, assemblyName);
+			VerifyDiagnostic(code, null, assemblyName);
 		}
 
 		[DataTestMethod]

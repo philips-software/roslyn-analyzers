@@ -52,14 +52,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsAndEndsInMethodTest()
 		{
-			VerifyDiagnostic(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}", 2);
+			Verify(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}", 2);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsInMethodTest()
 		{
-			VerifyDiagnostic(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
+			Verify(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
 
 	}", 2);
 		}
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionEndsInMethodTest()
 		{
-			VerifyDiagnostic(@"Class C{
+			Verify(@"Class C{
 	#region testRegion
 	public void foo(){
 		int x = 2;
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsInOneMethodEndsInAnotherTest()
 		{
-			VerifyDiagnostic(@"
+			Verify(@"
 Class C{
 	#region 
 	public void foo(){
@@ -134,7 +134,7 @@ Class C{
 
 
 
-		private void VerifyDiagnostic(string file, int line)
+		private void Verify(string file, int line)
 		{
 			VerifyDiagnostic(file, new DiagnosticResult()
 			{
