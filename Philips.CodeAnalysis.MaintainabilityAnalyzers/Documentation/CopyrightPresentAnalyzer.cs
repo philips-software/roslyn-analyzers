@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
-				CreateDiagnostic(Context, location);
+				ReportDiagnostic(location);
 				return;
 			}
 
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxTrivia syntaxTrivia = leadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!CheckCopyrightStatement(Context, syntaxTrivia))
 			{
-				CreateDiagnostic(Context, location);
+				ReportDiagnostic(location);
 			}
 		}
 
@@ -80,12 +80,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var trivia = n.GetLeadingTrivia();
 				return trivia.Any(SyntaxKind.SingleLineCommentTrivia) || trivia.Any(SyntaxKind.RegionDirectiveTrivia);
 			});
-		}
-
-		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
-		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-			context.ReportDiagnostic(diagnostic);
 		}
 
 		private bool CheckCopyrightStatement(SyntaxNodeAnalysisContext context, SyntaxTrivia trivia) {

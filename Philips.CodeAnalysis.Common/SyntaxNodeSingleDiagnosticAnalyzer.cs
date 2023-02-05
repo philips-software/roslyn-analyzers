@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,6 +15,7 @@ namespace Philips.CodeAnalysis.Common
 	{
 		protected SyntaxNodeAnalysisContext Context { get; private set; }
 		protected T Node { get; private set; }
+		protected string FullyQualifiedMetaDataName { get; set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
 											Helper helper = null, DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
@@ -26,7 +28,30 @@ namespace Philips.CodeAnalysis.Common
 			context.EnableConcurrentExecution();
 
 			SyntaxKind syntaxKind = GetSyntaxKind();
-			context.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
+
+			if (string.IsNullOrEmpty(FullyQualifiedMetaDataName))
+			{
+				context.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
+			}
+			else
+			{
+				context.RegisterCompilationStartAction(startContext =>
+				{
+					if (startContext.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
+					{
+						return;
+					}
+
+					startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
+				});
+			}
+
+		}
+
+		public void ReportDiagnostic(Location location = null, params object[] messageArgs)
+		{
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, messageArgs);
+			Context.ReportDiagnostic(diagnostic);
 		}
 
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
@@ -54,6 +79,7 @@ namespace Philips.CodeAnalysis.Common
 				nameof(PropertyDeclarationSyntax) => SyntaxKind.PropertyDeclaration,
 				nameof(ClassDeclarationSyntax) => SyntaxKind.ClassDeclaration,
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
+				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
 				_ => SyntaxKind.None,
 			};
 		}

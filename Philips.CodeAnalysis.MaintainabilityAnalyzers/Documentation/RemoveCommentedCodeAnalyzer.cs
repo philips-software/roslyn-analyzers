@@ -38,8 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location, lineNumber);
-					Context.ReportDiagnostic(diagnostic);
+					ReportDiagnostic(location, lineNumber);
 				}
 				previousViolationLine = lineNumber;
 			}
