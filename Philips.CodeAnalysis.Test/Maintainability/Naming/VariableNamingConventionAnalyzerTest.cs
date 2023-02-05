@@ -89,15 +89,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 13)
-				} }
+						new DiagnosticResultLocation("Test.cs", errorLine, 13)
+					}
 				};
 				VerifyDiagnostic(givenText, expected);
 			}

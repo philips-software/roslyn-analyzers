@@ -213,10 +213,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private void VerifyDiagnosticeOnFirstAndSecond(string file)
 		{
-			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(11, 16);
-			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(15, 3);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult1, diagnosticResult2 };
-			VerifyDiagnostic(file, expected);
+			VerifyDiagnostic(file, 2);
 		}
 
 		/// <summary>

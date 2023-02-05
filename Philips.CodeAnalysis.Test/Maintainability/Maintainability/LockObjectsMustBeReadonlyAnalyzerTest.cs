@@ -66,7 +66,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
 				VerifyDiagnostic(string.Format(template, field), result);
 			}
             else
@@ -97,7 +97,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = new[] { DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly) };
+				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
 				VerifyDiagnostic(string.Format(template, field), result);
 			}
 			else

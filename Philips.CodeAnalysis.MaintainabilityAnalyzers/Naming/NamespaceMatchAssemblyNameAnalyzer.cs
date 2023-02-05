@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespaceMatchAssemblyNameAnalyzer : SingleDiagnosticAnalyzer
+	public class NamespaceMatchAssemblyNameAnalyzer : SingleDiagnosticAnalyzer<NamespaceDeclarationSyntax>
 	{
 		private const string Title = @"Namespace matches Assembly Name";
 		private const string MessageFormat = @"Namespace and Assembly Name must match";
@@ -19,29 +19,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Category = Categories.Naming;
 
 		public NamespaceMatchAssemblyNameAnalyzer() : base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Category)
+		{ }
+
+		protected override void Analyze()
 		{
-		}
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
-			string myNamespace = namespaceDeclaration.Name.ToString();
-			string myAssemblyName = context.Compilation?.AssemblyName;
+			string myNamespace = Node.Name.ToString();
+			string myAssemblyName = Context.Compilation?.AssemblyName;
 
 			if (string.IsNullOrEmpty(myAssemblyName))
 			{
@@ -50,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			if (!IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
 			{
-				ReportDiagnostic(context, namespaceDeclaration);
+				ReportDiagnostic(Context, Node);
 			}
 		}
 
