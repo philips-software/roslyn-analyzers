@@ -31,14 +31,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Verifier wrappers
 
-		protected void VerifyDiagnostic(string source)
+		protected void VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			VerifyDiagnostic(source, analyzer.DiagnosticId);
+			VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName);
 		}
 
-		protected void VerifyDiagnostic(string source, DiagnosticId id)
+		protected void VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null)
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
@@ -47,9 +47,30 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 			};
-			VerifyDiagnostic(source, diagnosticResult);
+			var analyzer = GetDiagnosticAnalyzer();
+			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { diagnosticResult });
 		}
 
+		protected void VerifyDiagnostic(string source, int count)
+		{
+			Assert.IsTrue(count > 1, "Only use this overload when your test expects the same Diagnostic multiple times.");
+			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
+			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
+
+			DiagnosticResult[] diagnosticResults = new DiagnosticResult[count];
+			for (int i = 0; i < count; i++)
+			{
+				var diagnosticResult = new DiagnosticResult()
+				{
+					Id = analyzer.Id,
+					Location = new DiagnosticResultLocation(null),
+					Message = new Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				};
+				diagnosticResults[i] = diagnosticResult;
+			}
+			VerifyDiagnosticsInternal(new[] { source }, null, null, analyzer, diagnosticResults);
+		}
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the single inputted string as a source

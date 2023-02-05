@@ -48,19 +48,11 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 			}
 			else if (errorCount == 1)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited);
-				VerifyDiagnostic(testCode, expected);
+				VerifyDiagnostic(testCode);
 			}
 			else
 			{
-				List<DiagnosticResult> results = new();
-				for (int i = 0; i < errorCount; i++)
-				{
-					results.Add(DiagnosticResultHelper.Create(DiagnosticId.DynamicKeywordProhibited));
-				}
-
-				var expected = results.ToArray();
-				VerifyDiagnostic(testCode, expected);
+				VerifyDiagnostic(testCode, errorCount);
 			}
 		}
 
