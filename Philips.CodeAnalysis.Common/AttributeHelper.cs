@@ -97,14 +97,16 @@ namespace Philips.CodeAnalysis.Common
 
 			if (attribute.Name.ToString().Contains(name))
 			{
+				if (fullName == null)
+				{
+					// Skip the full namespace check.
+					return true;
+				}
 				SymbolInfo symbolInfo = getSemanticModel().GetSymbolInfo(attribute);
 				if (symbolInfo.Symbol is IMethodSymbol memberSymbol && memberSymbol.ToString().StartsWith(fullName))
 				{
 					location = attribute.GetLocation();
-					if (attribute.ArgumentList != null && attribute.ArgumentList.Arguments.Count > 0)
-					{
-						argument = attribute.ArgumentList.Arguments.First();
-					}
+					argument = attribute.ArgumentList?.Arguments.FirstOrDefault();
 					return true;
 				}
 			}
