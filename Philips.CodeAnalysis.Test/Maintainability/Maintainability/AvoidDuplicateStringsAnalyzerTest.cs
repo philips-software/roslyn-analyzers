@@ -2,12 +2,11 @@
 
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
-namespace Philips.CodeAnalysis.Test.DuplicateCode
+namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class AvoidDuplicateStringsAnalyzerTest : DiagnosticVerifier
@@ -21,8 +20,9 @@ namespace Philips.CodeAnalysis.Test.DuplicateCode
 		[DataRow("", "", false)]
 		[DataRow("test123", "test345", true)]
 		[DataRow("test123", "test345", false)]
+		[DataRow("t", "t", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeNoError(string literal1, string literal2, bool isClass)
+		public void AvoidDuplicateStringNoError(string literal1, string literal2, bool isClass)
 		{
 			var testCode = CreateTestCode(literal1, literal2, isClass);
 			VerifySuccessfulCompilation(testCode);
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.DuplicateCode
 		[DataRow("test123", true)]
 		[DataRow("test123", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeError(string literal, bool isClass)
+		public void AvoidDuplicateStringError(string literal, bool isClass)
 		{
 			var testCode = CreateTestCode(literal, literal, isClass);
 			VerifyDiagnostic(testCode);
