@@ -13,8 +13,6 @@ namespace Philips.CodeAnalysis.Common
 {
 	public abstract class SingleDiagnosticAnalyzer<T> : SingleDiagnosticAnalyzer where T : SyntaxNode
 	{
-		protected SyntaxNodeAnalysisContext Context { get; private set; }
-		protected T Node { get; private set; }
 		protected string FullyQualifiedMetaDataName { get; set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
@@ -48,27 +46,24 @@ namespace Philips.CodeAnalysis.Common
 
 		}
 
-		public void ReportDiagnostic(Location location = null, params object[] messageArgs)
+		public void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location = null, params object[] messageArgs)
 		{
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location, messageArgs);
-			Context.ReportDiagnostic(diagnostic);
+			context.ReportDiagnostic(diagnostic);
 		}
 
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
 		{
-			Context = context;
-			Node = (T)context.Node;
-
 			GeneratedCodeDetector generatedCodeDetector = new();
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
 
-			Analyze();
+			Analyze(context, (T)context.Node);
 		}
 
-		protected abstract void Analyze();
+		protected abstract void Analyze(SyntaxNodeAnalysisContext context, T node);
 
 		private SyntaxKind GetSyntaxKind()
 		{

@@ -23,9 +23,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation)
 		{ }
 
-		protected override void Analyze()
+		protected override void Analyze(SyntaxNodeAnalysisContext context, CompilationUnitSyntax node)
 		{
-			var comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			var comments = node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!comments.Any())
 			{
 				return;
@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)
 				{
-					ReportDiagnostic(location, lineNumber);
+					ReportDiagnostic(context, location, lineNumber);
 				}
 				previousViolationLine = lineNumber;
 			}
