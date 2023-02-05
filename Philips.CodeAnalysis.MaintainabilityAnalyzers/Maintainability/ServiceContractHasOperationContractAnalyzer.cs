@@ -17,7 +17,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = @"Method '{0}' is not marked [OperationContract]";
 		private const string Description = @"Attribute method with [OperationContract]";
 		private const string Category = Categories.Maintainability;
-		private const string ServiceModelFullyQualified = "System.ServiceModel.ServiceContractAttribute";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
