@@ -1,6 +1,7 @@
 // © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,12 +15,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class AvoidDuplicateStringsAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Duplicate Strings";
-		private const string MessageFormat = @"Duplicate string found, first location at line {0}. Consider moving '{1}' into a constant.";
+		private const string MessageFormat = @"Duplicate string found, first location in file {0} at line {1}. Consider moving '{2}' into a constant.";
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
-		public AvoidDuplicateStringsAnalyzer() : base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat,
-			Description, Category)
+		public AvoidDuplicateStringsAnalyzer() : base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Category)
 		{
 		}
 
@@ -27,46 +27,61 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
+			context.RegisterCompilationStartAction(compilationContext =>
+			{
+				var compilationAnalyzer = new CompilationAnalyzer(Rule);
+				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
+				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.StructDeclaration);
+			});
 
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.StructDeclaration);
 		}
 
-		public void Analyze(SyntaxNodeAnalysisContext context)
+		private sealed class CompilationAnalyzer
 		{
-			var typeDeclarationSyntax = (BaseTypeDeclarationSyntax)context.Node;
+			private readonly Dictionary<string, Location> _usedLiterals = new();
+			private readonly DiagnosticDescriptor _rule;
 
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
+			public CompilationAnalyzer(DiagnosticDescriptor rule)
 			{
-				return;
+				_rule = rule;
 			}
 
-			TestHelper testHelper = new();
-			if (testHelper.IsInTestClass(context))
+			public void Analyze(SyntaxNodeAnalysisContext context)
 			{
-				return;
-			}
+				var typeDeclarationSyntax = (BaseTypeDeclarationSyntax)context.Node;
 
-			Dictionary<string, Location> usedLiterals = new();
-			foreach (var literal in typeDeclarationSyntax.DescendantTokens()
-				         .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))
-			{
-				var literalText = literal.Text.Trim('\\', '\"');
-				if (string.IsNullOrWhiteSpace(literalText))
+				GeneratedCodeDetector detector = new();
+				if(detector.IsGeneratedCode(context))
 				{
-					continue;
+					return;
 				}
-				var location = literal.GetLocation();
-				if (usedLiterals.TryGetValue(literalText, out Location firstLocation))
+
+				TestHelper testHelper = new();
+				if(testHelper.IsInTestClass(context))
 				{
-					var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-					var diagnostic = Diagnostic.Create(Rule, location, firstLineNumber, literalText);
-					context.ReportDiagnostic(diagnostic);
+					return;
 				}
-				else
+
+				foreach(var literal in typeDeclarationSyntax.DescendantTokens()
+							 .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))
 				{
-					usedLiterals.Add(literalText, location);
+					var literalText = literal.Text.Trim('\\', '\"');
+					if(string.IsNullOrWhiteSpace(literalText))
+					{
+						continue;
+					}
+					var location = literal.GetLocation();
+					if(_usedLiterals.TryGetValue(literalText, out Location firstLocation))
+					{
+						var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
+						var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
+						var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
+						context.ReportDiagnostic(diagnostic);
+					}
+					else
+					{
+						_usedLiterals.Add(literalText, location);
+					}
 				}
 			}
 		}
