@@ -45,9 +45,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CodeCommentsShouldTriggerDiagnostic(string content)
 		{
-			DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticId.RemoveCommentedCode);
-
-			VerifyDiagnostic(content, expected);
+			VerifyDiagnostic(content);
 		}
 	}
 }

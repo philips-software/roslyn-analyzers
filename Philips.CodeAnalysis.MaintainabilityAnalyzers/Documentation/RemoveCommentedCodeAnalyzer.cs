@@ -12,36 +12,20 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class RemoveCommentedCodeAnalyzer : DiagnosticAnalyzer
+	public class RemoveCommentedCodeAnalyzer : SingleDiagnosticAnalyzer<CompilationUnitSyntax>
 	{
 		private const string Title = @"Remove commented code";
 		private const string MessageFormat = @"Remove commented code on line {0}.";
 		private const string Description = @"Remove commented code";
-		private const string Category = Categories.Documentation;
 		private const int InitialCodeLine = -20;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.RemoveCommentedCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public RemoveCommentedCodeAnalyzer()
+			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation)
+		{ }
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
+		protected override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.CompilationUnit);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			CompilationUnitSyntax node = (CompilationUnitSyntax)context.Node;
-
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			var comments = node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			var comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!comments.Any())
 			{
 				return;
@@ -54,8 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location, lineNumber);
-					context.ReportDiagnostic(diagnostic);
+					ReportDiagnostic(location, lineNumber);
 				}
 				previousViolationLine = lineNumber;
 			}
