@@ -82,7 +82,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private Diagnostic CheckComment(string comment, Location location)
 		{
+#if NETCOREAPP
+			if (comment.Contains(@"password", StringComparison.OrdinalIgnoreCase))
+#else
 			if (comment.ToLower(CultureInfo.CurrentCulture).Contains(@"password"))
+#endif
 			{
 				return Diagnostic.Create(Rule, location);
 			}
