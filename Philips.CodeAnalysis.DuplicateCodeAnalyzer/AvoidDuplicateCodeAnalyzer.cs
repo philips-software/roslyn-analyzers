@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
-					if (_generateExceptionsFile)
+					if (_shouldGenerateExceptionsFile)
 					{
 						File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
 					}
