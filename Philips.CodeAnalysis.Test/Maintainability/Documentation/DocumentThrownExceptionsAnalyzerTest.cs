@@ -272,7 +272,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.DocumentThrownExceptions));
+			VerifyDiagnostic(testCode, DiagnosticId.DocumentThrownExceptions);
 			VerifyFix(testCode, fixedCode);
 		}
 

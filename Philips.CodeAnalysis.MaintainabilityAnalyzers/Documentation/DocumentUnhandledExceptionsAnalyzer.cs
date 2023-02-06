@@ -18,13 +18,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Analyzer that checks if the text of the XML code documentation contains a reference to each exception being unhandled in the method or property.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DocumentUnhandledExceptionsAnalyzer : DiagnosticAnalyzer
+	public class DocumentUnhandledExceptionsAnalyzer :  SingleDiagnosticAnalyzer<MethodDeclarationSyntax, DocumentUnhandledExceptionsSyntaxNodeAction>
 	{
 		private const string Title = @"Document unhandled exceptions";
 		private const string MessageFormat = @"Document that this method can throw from {0} the following exceptions: {1}.";
 		private const string Description = @"Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.";
-		private const string Category = Categories.Documentation;
 
+		public DocumentUnhandledExceptionsAnalyzer()
+			: base(DiagnosticId.DocumentUnhandledExceptions, Title, MessageFormat, Description, Categories.Documentation, isEnabled: false)
+		{ }
+	}
+
+	public class DocumentUnhandledExceptionsSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
+	{
 		private static class WellKnownExceptions
 		{
 			public const string Exception = "System.Exception";
@@ -39,25 +45,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			public const string UnauthorizedException = "System.UnauthorizedException";
 		}
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(Helper.ToDiagnosticId(DiagnosticId.DocumentUnhandledExceptions), Title, MessageFormat, Category,
-				DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		private readonly Regex DocumentationRegex = new("exception\\scref=\\\"(.*)\\\"", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		private readonly Helper _helper;
-
-		public DocumentUnhandledExceptionsAnalyzer()
-			: this(new Helper())
-		{ }
-		public DocumentUnhandledExceptionsAnalyzer(Helper helper)
-		{
-			_helper = helper;
-		}
-
-		private static readonly Regex DocumentationRegex = new("exception\\scref=\\\"(.*)\\\"", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-
-		private static readonly Dictionary<string, string[]> ExceptionsMap = new()
+		private readonly Dictionary<string, string[]> ExceptionsMap = new()
 		{
 			{
 				"System.IO.Directory.CreateDirectory",
@@ -110,26 +100,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			},
 		};
 
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.MethodDeclaration);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			var method = (MethodDeclarationSyntax)context.Node;
-
 			// TODO: Read PDB as done in: https://github.com/microsoft/peeker
 
-			var aliases = _helper.GetUsingAliases(method);
+			var aliases = Helper.GetUsingAliases(Node);
 
-			var invocations = method.DescendantNodes().OfType<InvocationExpressionSyntax>();
+			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			List<string> unhandledExceptions = new();
 			foreach (var invocation in invocations)
 			{
-				var newExceptions = GetFromInvocation(context, invocation, aliases);
+				var newExceptions = GetFromInvocation(invocation, aliases);
 				if (newExceptions.Any())
 				{
 					unhandledExceptions.AddRange(newExceptions);
@@ -138,7 +119,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 
 			// List the documented exception types.
-			var docHelper = new DocumentationHelper(method);
+			var docHelper = new DocumentationHelper(Node);
 			var documentedExceptions = docHelper.GetExceptionCrefs();
 			var comparer = new NamespaceIgnoringComparer();
 			var remainingExceptions = 
@@ -146,20 +127,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
 			{
-				var loc = method.Identifier.GetLocation();
-				var methodName = method.Identifier.Text;
+				var loc = Node.Identifier.GetLocation();
+				var methodName = Node.Identifier.Text;
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
 				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", remainingExceptionsString);
 				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
-				context.ReportDiagnostic(diagnostic);
+				Context.ReportDiagnostic(diagnostic);
 			}
 		}
 
-		private IEnumerable<string> GetFromInvocation(SyntaxNodeAnalysisContext context,
-			InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases)
+		private IEnumerable<string> GetFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases)
 		{
 			var expectedExceptions = Array.Empty<string>();
-			var invokedSymbol = context.SemanticModel.GetSymbolInfo(invocation).Symbol;
+			var invokedSymbol = Context.SemanticModel.GetSymbolInfo(invocation).Symbol;
 			if (invokedSymbol is IMethodSymbol or IPropertySymbol)
 			{
 				var invokedName = GetFullName(invokedSymbol);

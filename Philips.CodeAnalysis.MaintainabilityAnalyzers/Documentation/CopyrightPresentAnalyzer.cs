@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return location;
 		}
 
-		private static SyntaxNodeOrToken FindFirstWithLeadingTrivia(SyntaxNode root)
+		private SyntaxNodeOrToken FindFirstWithLeadingTrivia(SyntaxNode root)
 		{
 			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n =>
 			{

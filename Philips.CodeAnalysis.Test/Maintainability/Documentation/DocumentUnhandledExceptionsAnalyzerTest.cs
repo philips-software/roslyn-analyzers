@@ -239,7 +239,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.DocumentUnhandledExceptions));
+			VerifyDiagnostic(testCode);
 			VerifyFix(testCode, fixedCode);
 		}
 	}

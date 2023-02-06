@@ -12,19 +12,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class OrderPropertyAccessorsAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new OrderPropertyAccessorsAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow(@"{ get; set; }")]
 		[DataRow(@"{ get; }")]
@@ -59,10 +50,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticId.OrderPropertyAccessors));
+			VerifyDiagnostic(text);
 		}
-
-
-		#endregion
 	}
 }
