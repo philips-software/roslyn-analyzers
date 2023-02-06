@@ -9,12 +9,17 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 	public static class Program
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
+		private static string _filter = string.Empty;
 
 		public static void Main(string[] args)
 		{
 			if (args.Length == 0)
 			{
 				Console.Error.WriteLine(@"Please specify a .binlog file.");
+			}
+			if (args.Length == 2)
+			{
+				_filter = args[1];
 			}
 
 			Build buildRoot = BinaryLog.ReadBuild(args[0]);
@@ -33,9 +38,12 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
-				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Philips.CodeAnalysis"))
+				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder)
 				{
-					AnalyzerItems(namedAnalyzerPackageFolder);
+					if (string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter))
+					{
+						AnalyzerItems(namedAnalyzerPackageFolder);
+					}
 				}
 			}
 			OutputResults();
