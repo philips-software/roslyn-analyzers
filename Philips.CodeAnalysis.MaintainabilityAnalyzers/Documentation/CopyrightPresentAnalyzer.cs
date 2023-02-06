@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -28,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class CopyrightPresentSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
-		private static readonly Regex yearRegex = new(@"\d\d\d\d");
+		private static readonly Regex yearRegex = new(@"\d\d\d\d", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		public override void Analyze()
 		{
