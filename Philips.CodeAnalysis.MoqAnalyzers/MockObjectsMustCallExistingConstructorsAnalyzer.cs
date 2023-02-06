@@ -17,10 +17,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string MessageFormat = @"Could not find a matching constructor for {0}";
 		private const string Description = @"Could not find a constructor that matched the given arguments";
 		private const string Category = Categories.RuntimeFailure;
+		private const string MockName = "Mock";
+		private const string MockBehavior = "MockBehavior";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -56,7 +58,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			switch (genericNameSyntax.Identifier.Value)
 			{
 				case @"Create": AnalyzeInvocation(context, invocationExpressionSyntax, "MockFactory", true, true); break;
-				case @"Of": AnalyzeInvocation(context, invocationExpressionSyntax, "Mock", false, false); break;
+				case @"Of": AnalyzeInvocation(context, invocationExpressionSyntax, MockName, false, false); break;
 				default:
 					return;
 			}
@@ -101,7 +103,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			if (genericNameSyntax.Identifier.ValueText != "Mock")
+			if (genericNameSyntax.Identifier.ValueText != MockName)
 			{
 				return;
 			}
@@ -114,7 +116,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 
-			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol typeSymbol || !typeSymbol.IsGenericType)
+			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol { IsGenericType: true } typeSymbol)
 			{
 				return;
 			}
@@ -128,7 +130,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			if (argumentList?.Arguments[0].Expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
-				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text == "MockBehavior")
+				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax { Identifier.Text: MockBehavior })
 				{
 					return true;
 				}
@@ -156,7 +158,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					typeSymbol = fieldSymbol.Type;
 				}
 
-				if (typeSymbol != null && typeSymbol.Name == "MockBehavior")
+				if (typeSymbol != null && typeSymbol.Name == MockBehavior)
 				{
 					return true;
 				}

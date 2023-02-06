@@ -129,5 +129,6 @@ namespace Philips.CodeAnalysis.Common
 		UnmanagedObjectsNeedDisposing = 2133,
 		SetPropertiesInAnyOrder = 2134,
 		NamespaceMatchAssemblyName = 2135,
+		AvoidDuplicateStrings = 2136,
 	}
 }

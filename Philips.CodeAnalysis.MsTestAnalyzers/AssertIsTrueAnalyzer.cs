@@ -15,8 +15,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string IsEqualTitle = @"Assert.IsTrue/IsFalse Usage";
 		private const string IsEqualMessageFormat = @"Do not call IsTrue/IsFalse if AreEqual/AreNotEqual will suffice";
 		private const string IsEqualDescription = @"Assert.IsTrue(<actual> == <expected>) => Assert.AreEqual(<expected>, <actual>)";
-
 		private const string Category = Categories.Maintainability;
+		private const string EqualsName = "Equals";
 
 		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
 
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static bool CheckForEqualityFunction(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax test)
 		{
-			if (test.Expression is not MemberAccessExpressionSyntax member || member.Name.ToString() != "Equals")
+			if (test.Expression is not MemberAccessExpressionSyntax member || member.Name.ToString() != EqualsName)
 			{
 				//they called something that wasn't a member function.  Maybe a static method.
 				return false;
@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			//would love to check if the types are actually IComparable<> here.  Speaks to intent.
-			return sym.Name == "Equals";
+			return sym.Name == EqualsName;
 		}
 	}
 }

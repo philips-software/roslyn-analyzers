@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const string Title = @"Remove commented code";
 		private const string MessageFormat = @"Remove commented code on line {0}.";
-		private const string Description = @"Remove commented code";
+		private const string Description = Title;
 		private const int InitialCodeLine = -20;
 
 		public RemoveCommentedCodeAnalyzer()

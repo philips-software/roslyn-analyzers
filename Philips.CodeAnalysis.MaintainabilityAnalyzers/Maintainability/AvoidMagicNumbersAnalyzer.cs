@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidMagicNumbersAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid inline magic numbers";
-		private const string MessageFormat = @"Avoid inline magic numbers";
+		private const string MessageFormat = Title;
 		private const string Description = @"Avoid inline magic number, define them as constant or include in an enumeration instead.";
 		private const string Category = Categories.Maintainability;
 		private const long FirstInvalidNumber = 3L;
