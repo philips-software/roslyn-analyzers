@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Title = "Limit the number of clauses in a condition";
 		private const string Message =
 			"Found {0} clauses in the condition statement. Limit the number of clauses in the condition statement, to not more than {1} (or define max_operators in .editorconfig to customize).";
-		private const string Description = "Limit the number of clauses in a condition";
+		private const string Description = Title;
 		private const string Category = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor Rule =

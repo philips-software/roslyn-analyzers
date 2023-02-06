@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = @"Avoid Pragma Warning";
 		public const string MessageFormat = @"Do not use #pragma warning";
-		private const string Description = @"Do not use #pragma warning";
+		private const string Description = MessageFormat;
 		private const string Category = Categories.Maintainability;
 
 		public static readonly DiagnosticDescriptor Rule =

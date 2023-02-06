@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
 					var loc = throwStatement.ThrowKeyword.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "implicit cast operator");
+					Diagnostic diagnostic = Diagnostic.Create(LocationsRule, loc, "constructor of an Exception derived type");
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

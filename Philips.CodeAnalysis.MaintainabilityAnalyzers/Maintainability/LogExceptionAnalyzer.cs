@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string Title = "Log caught exceptions.";
 		private const string Message = "Exception that is caught is not logged.";
-		private const string Description = "Log caught exceptions.";
+		private const string Description = Title;
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =

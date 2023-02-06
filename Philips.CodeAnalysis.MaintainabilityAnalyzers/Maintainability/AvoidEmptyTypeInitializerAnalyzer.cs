@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,11 +10,11 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidEmptyTypeInitializer : DiagnosticAnalyzer
+	public class AvoidEmptyTypeInitializerAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Empty Type Initializer";
 		public const string MessageFormat = @"Remove empty type initializer";
-		private const string Description = @"Remove empty type initializer";
+		private const string Description = MessageFormat;
 		private const string Category = Categories.Maintainability;
 
 		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyTypeInitializer), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

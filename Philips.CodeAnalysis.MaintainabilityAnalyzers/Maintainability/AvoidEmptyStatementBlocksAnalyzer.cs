@@ -17,16 +17,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private const string BlockTitle = @"Avoid empty statement blocks";
-		public const string BlockMessageFormat = @"Avoid empty statement blocks";
-		private const string BlockDescription = @"Avoid empty statement blocks";
+		public const string BlockMessageFormat = BlockTitle;
+		private const string BlockDescription = BlockTitle;
 
 		private const string CatchBlockTitle = @"Avoid empty catch blocks";
-		public const string CatchBlockMessageFormat = @"Avoid empty catch blocks";
-		private const string CatchBlockDescription = @"Avoid empty catch blocks";
+		public const string CatchBlockMessageFormat = CatchBlockTitle;
+		private const string CatchBlockDescription = CatchBlockTitle;
 
 		private const string StatementTitle = @"Avoid empty statements";
-		public const string StatementMessageFormat = @"Avoid empty statements";
-		private const string StatementDescription = @"Avoid empty statements";
+		public const string StatementMessageFormat = StatementTitle;
+		private const string StatementDescription = StatementTitle;
 
 
 		public DiagnosticDescriptor BlockRule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyStatementBlock), BlockTitle, BlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: BlockDescription);

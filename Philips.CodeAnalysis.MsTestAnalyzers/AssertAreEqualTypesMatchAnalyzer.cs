@@ -16,6 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Assert.AreEqual parameter types must match";
 		private const string Description = @"The types of the parameters of Are[Not]Equal must match.";
 		private const string Category = Categories.Maintainability;
+		private const string AssertFullyQualifiedName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -27,7 +28,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(AssertFullyQualifiedName) == null)
 				{
 					return;
 				}
@@ -54,7 +55,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(AssertFullyQualifiedName))
 			{
 				return;
 			}
