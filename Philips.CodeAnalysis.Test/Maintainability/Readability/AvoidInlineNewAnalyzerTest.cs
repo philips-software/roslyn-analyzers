@@ -165,16 +165,7 @@ class Foo
 
 		private void Verify(string file)
 		{
-			VerifyDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidInlineNewAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, -1),
-				}
-			});
+			VerifyDiagnostic(file);
 		}
 	}
 }

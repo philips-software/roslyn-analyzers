@@ -11,62 +11,51 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreventUnnecessaryRangeChecksAnalyzer : DiagnosticAnalyzer
+	public class PreventUnnecessaryRangeChecksAnalyzer : SingleDiagnosticAnalyzer<IfStatementSyntax, PreventUnnecessaryRangeChecksSyntaxNodeAction>
 	{
 		private const string Title = @"Unnecessary Range Checks";
 		public const string MessageFormat = @"Do not check the length of a list/array before iterating over it";
-		private const string Description = @"";
-		private const string Category = Categories.Readability;
-
-		public DiagnosticDescriptor Rule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		private const string Description = MessageFormat;
 
 		public PreventUnnecessaryRangeChecksAnalyzer()
+			: base(DiagnosticId.PreventUncessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
 		{ }
+	}
 
-		public override void Initialize(AnalysisContext context)
+	public class PreventUnnecessaryRangeChecksSyntaxNodeAction : SyntaxNodeAction<IfStatementSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
+			if (Node.Else != null)
+			{
+				return;
+			}
 
-			context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
+			if (Node.Condition == null)
+			{
+				return;
+			}
+
+			if (!TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax))
+			{
+				return;
+			}
+
+			if (!IsCountGreaterThanZero(Node.Condition, forEachStatementSyntax.Expression, Context.SemanticModel))
+			{
+				return;
+			}
+
+			ReportDiagnostic(Node.IfKeyword.GetLocation());
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
-		{
-			IfStatementSyntax ifStatementSyntax = (IfStatementSyntax)context.Node;
-
-			if (ifStatementSyntax.Else != null)
-			{
-				return;
-			}
-
-			if (ifStatementSyntax.Condition == null)
-			{
-				return;
-			}
-
-			if (!TryFindForeach(ifStatementSyntax, out ForEachStatementSyntax forEachStatementSyntax))
-			{
-				return;
-			}
-
-			if (!IsCountGreaterThanZero(ifStatementSyntax.Condition, forEachStatementSyntax.Expression, context.SemanticModel))
-			{
-				return;
-			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, ifStatementSyntax.IfKeyword.GetLocation()));
-		}
-
-		private bool TryFindForeach(IfStatementSyntax ifStatementSyntax, out ForEachStatementSyntax forEachStatementSyntax)
+		private bool TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax)
 		{
 			forEachStatementSyntax = null;
 
-			if (ifStatementSyntax.Statement is not BlockSyntax block)
+			if (Node.Statement is not BlockSyntax block)
 			{
-				forEachStatementSyntax = ifStatementSyntax.Statement as ForEachStatementSyntax;
+				forEachStatementSyntax = Node.Statement as ForEachStatementSyntax;
 
 				return forEachStatementSyntax != null;
 			}
