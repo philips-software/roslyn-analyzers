@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DocumentThrownExceptionsCodeFixProvider)), Shared]
 	public class DocumentThrownExceptionsCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Document thorwn exceptions";
+		private const string Title = "Document thrown exceptions";
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.DocumentThrownExceptions), Helper.ToDiagnosticId(DiagnosticId.DocumentUnhandledExceptions));
 
