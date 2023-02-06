@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// Bail out early.
-			if(!typeSyntax.ToString().Contains("Regex"))
+			if (!typeSyntax.ToString().Contains("Regex"))
 			{
 				return;
 			}

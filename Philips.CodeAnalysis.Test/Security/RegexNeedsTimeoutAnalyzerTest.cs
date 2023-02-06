@@ -53,6 +53,8 @@ namespace RegexNeedsTimeoutTest
 		}
 
 		[DataTestMethod]
+		[DataRow(@"Object()")]
+		[DataRow(@"("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
 		[DataRow(@"Regex("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
 		[DataRow(@"Regex("".*"", RegexOptions.NonBacktracking)")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
