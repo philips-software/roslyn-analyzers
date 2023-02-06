@@ -11,8 +11,8 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
 		private static string _filter = string.Empty;
-		private const int MaxPackageNameLength = 25;
-		private const int MaxAnalyzerNameLength = 55;
+		private const int MaxPackageNameLength = 24;
+		private const int MaxAnalyzerNameLength = 45;
 
 		public static void Main(string[] args)
 		{
