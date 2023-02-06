@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax>
+	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax, ProbhibitedDynamicKeywordSyntaxNodeAction>
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
 		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
@@ -19,8 +19,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public ProhibitDynamicKeywordAnalyzer()
 			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
+	}
 
-		protected override void Analyze()
+	public class ProbhibitedDynamicKeywordSyntaxNodeAction : SyntaxNodeAction<IdentifierNameSyntax>
+	{
+		public override void Analyze()
 		{
 			if (IsIdentifierDynamicType())
 			{

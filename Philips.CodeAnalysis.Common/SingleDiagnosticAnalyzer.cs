@@ -16,17 +16,22 @@ namespace Philips.CodeAnalysis.Common
 	{
 		public DiagnosticId DiagnosticId { get; }
 		public string Id { get; }
-		protected Helper Helper { get; }
 		protected DiagnosticDescriptor Rule { get; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											Helper helper = null, DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
-			Id = Helper.ToDiagnosticId(id);
+			Id = ToDiagnosticId();
 			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description);
-			Helper = helper;
 		}
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+		public string ToDiagnosticId()
+		{
+			return @"PH" + ((int)DiagnosticId).ToString();
+		}
+
 	}
 }

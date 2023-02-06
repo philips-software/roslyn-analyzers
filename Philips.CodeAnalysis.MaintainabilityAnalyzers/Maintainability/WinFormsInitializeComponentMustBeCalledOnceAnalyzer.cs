@@ -12,24 +12,22 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : SingleDiagnosticAnalyzer<ClassDeclarationSyntax>
+	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : SingleDiagnosticAnalyzer<ClassDeclarationSyntax, WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction>
 	{
 		private const string Title = @"Check for UserControl constructor chains calls to InitializeComponent()";
 		public static readonly string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
 
-		private readonly TestHelper _testHelper;
-
 		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer()
-			:this(new TestHelper(), new Helper())
-		{ }
-
-		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer(TestHelper testHelper, Helper helper)
-			: base(DiagnosticId.InitializeComponentMustBeCalledOnce, Title, MessageFormat, Description, Categories.Maintainability, helper)
+			: base(DiagnosticId.InitializeComponentMustBeCalledOnce, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			_testHelper = testHelper;
 			FullyQualifiedMetaDataName = "System.Windows.Forms.ContainerControl";
 		}
+	}
+
+	public class WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction : SyntaxNodeAction<ClassDeclarationSyntax>
+	{
+		private readonly TestHelper _testHelper = new();
 
 		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
@@ -91,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 
 
-		protected override void Analyze()
+		public override void Analyze()
 		{
 			if (!Node.Modifiers.Any(SyntaxKind.PartialKeyword) && !Node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{

@@ -11,17 +11,21 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespaceMatchAssemblyNameAnalyzer : SingleDiagnosticAnalyzer<NamespaceDeclarationSyntax>
+	public class NamespaceMatchAssemblyNameAnalyzer : SingleDiagnosticAnalyzer<NamespaceDeclarationSyntax, NamespaceMatchAssemblyNameSyntaxNodeAction>
 	{
 		private const string Title = @"Namespace matches Assembly Name";
 		private const string MessageFormat = @"Namespace and Assembly Name must match";
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the Assembly Name and Namespace must match.";
 		private const string Category = Categories.Naming;
 
-		public NamespaceMatchAssemblyNameAnalyzer() : base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Category)
+		public NamespaceMatchAssemblyNameAnalyzer()
+			: base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Category)
 		{ }
+	}
 
-		protected override void Analyze()
+	public class NamespaceMatchAssemblyNameSyntaxNodeAction : SyntaxNodeAction<NamespaceDeclarationSyntax>
+	{
+		public override void Analyze()
 		{
 			string myNamespace = Node.Name.ToString();
 			string myAssemblyName = Context.Compilation?.AssemblyName;

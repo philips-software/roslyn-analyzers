@@ -12,18 +12,22 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class RemoveCommentedCodeAnalyzer : SingleDiagnosticAnalyzer<CompilationUnitSyntax>
+	public class RemoveCommentedCodeAnalyzer : SingleDiagnosticAnalyzer<CompilationUnitSyntax, RemoveCommentedCodeSyntaxNodeAction>
 	{
 		private const string Title = @"Remove commented code";
 		private const string MessageFormat = @"Remove commented code on line {0}.";
 		private const string Description = @"Remove commented code";
-		private const int InitialCodeLine = -20;
 
 		public RemoveCommentedCodeAnalyzer()
 			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation)
 		{ }
+	}
 
-		protected override void Analyze()
+	public class RemoveCommentedCodeSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
+	{
+		private const int InitialCodeLine = -20;
+
+		public override void Analyze()
 		{
 			var comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!comments.Any())
