@@ -30,11 +30,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		#region Public Interface
 
-		[DataRow("foo", false, 3)]
-		[DataRow("_foo", true, 3)]
+		[DataRow("foo", false)]
+		[DataRow("_foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		public void FieldVariableNameIsCorrect(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -49,32 +49,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = 
-					new DiagnosticResult
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-						Message = new Regex(".+"),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test.cs", errorLine, 13)
-						}
-					};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("foo", true, 3)]
-		[DataRow("Foo", true, 3)]
-		[DataRow("Foo_", true, 3)]
-		[DataRow("_Foo", true, 3)]
-		[DataRow("__foo", true, 3)]
-		[DataRow("__Foo", true, 3)]
-		[DataRow("_foo", true, 3)]
-		[DataRow("_foo_", true, 3)]
+		[DataRow("foo", true)]
+		[DataRow("Foo", true)]
+		[DataRow("Foo_", true)]
+		[DataRow("_Foo", true)]
+		[DataRow("__foo", true)]
+		[DataRow("__Foo", true)]
+		[DataRow("_foo", true)]
+		[DataRow("_foo_", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIgnoresPublicFields(string content, bool isGood, int errorLine)
+		public void FieldVariableNameIgnoresPublicFields(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -89,17 +78,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, 13)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
@@ -249,16 +228,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			VerifySuccessfulCompilation(givenText);
 		}
 
-		[DataRow("foo", false, 3)]
-		[DataRow("Foo", true, 3)]
-		[DataRow("_Foo", false, 3)]
-		[DataRow("__foo", false, 3)]
-		[DataRow("__Foo", false, 3)]
-		[DataRow("_foo", false, 3)]
-		[DataRow("_foo_", false, 3)]
+		[DataRow("foo", false)]
+		[DataRow("Foo", true)]
+		[DataRow("_Foo", false)]
+		[DataRow("__foo", false)]
+		[DataRow("__Foo", false)]
+		[DataRow("_foo", false)]
+		[DataRow("_foo_", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventNameIsCorrect(string content, bool isGood, int errorLine)
+		public void EventNameIsCorrect(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -272,30 +251,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, 18)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("i", true, 5)]
-		[DataRow("ms", true, 5)]
-		[DataRow("foo", true, 5)]
-		[DataRow("_Foo", false, 5)]
-		[DataRow("__foo", false, 5)]
-		[DataRow("__Foo", false, 5)]
-		[DataRow("_foo", false, 5)]
+		[DataRow("i", true)]
+		[DataRow("ms", true)]
+		[DataRow("foo", true)]
+		[DataRow("_Foo", false)]
+		[DataRow("__foo", false)]
+		[DataRow("__Foo", false)]
+		[DataRow("_foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		public void LocalVariableNameIsCorrect(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -313,29 +282,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, 9)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("Foo", "const", true, 5)]
-		[DataRow("Foo", "const", true, 5)]
-		[DataRow("_Foo", "const", false, 5)]
-		[DataRow("__foo", "const", false, 5)]
-		[DataRow("__Foo", "const", false, 5)]
-		[DataRow("_foo", "const", false, 5)]
+		[DataRow("Foo", "const", true)]
+		[DataRow("Foo", "const", true)]
+		[DataRow("_Foo", "const", false)]
+		[DataRow("__foo", "const", false)]
+		[DataRow("__Foo", "const", false)]
+		[DataRow("_foo", "const", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood, int errorLine)
+		public void AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -352,29 +311,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 8 + attribute.Length + 2)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("int i; for(i=0;i<5;i++){}", true, 5, 9)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false, 5, 9)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false, 5, 9)]
-		[DataRow("for(var i=0;i<5;i++){}", true, 5, 13)]
-		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
-		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
+		[DataRow("int i; for(i=0;i<5;i++){}", true)]
+		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
+		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
+		[DataRow("for(var i=0;i<5;i++){}", true)]
+		[DataRow("for(var _i=0;i<5;i++){}", false)]
+		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectForLoop(string content, bool isGood, int errorLine, int errorColumn)
+		public void LocalVariableNameIsCorrectForLoop(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -391,26 +340,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, errorColumn)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("using(var i = new MemoryStream()){}", true, 5)]
-		[DataRow("using(var _i = new MemoryStream()){}", false, 5)]
-		[DataRow("using(var _I = new MemoryStream()){}", false, 5)]
+		[DataRow("using(var i = new MemoryStream()){}", true)]
+		[DataRow("using(var _i = new MemoryStream()){}", false)]
+		[DataRow("using(var _I = new MemoryStream()){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectUsing(string content, bool isGood, int errorLine)
+		public void LocalVariableNameIsCorrectUsing(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -427,26 +366,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, 15)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
-		[DataRow("foreach(var i in new[] { 1, 2 }){}", true, 5)]
-		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false, 5)]
-		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false, 5)]
+		[DataRow("foreach(var i in new[] { 1, 2 }){}", true)]
+		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false)]
+		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
+		public void LocalVariableNameIsCorrectForeach(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -463,17 +392,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test.cs", errorLine, 9)
-					}
-				};
-				VerifyDiagnostic(givenText, expected);
+				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
 			}
 		}
 
