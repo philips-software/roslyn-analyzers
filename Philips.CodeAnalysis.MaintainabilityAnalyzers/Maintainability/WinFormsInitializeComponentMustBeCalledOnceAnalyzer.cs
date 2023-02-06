@@ -29,16 +29,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly TestHelper _testHelper = new();
 
-		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
+		private void IsInitializeComponentInConstructors(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax node, ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
 			{
-				ReportDiagnostic(Node.Identifier.GetLocation(), Node.Identifier.ToString(), 0);
+				ReportDiagnostic(context, node.Identifier.GetLocation(), node.Identifier.ToString(), 0);
 				return;
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			var mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
+			var mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					{
 						location = ctor.Initializer.GetLocation();
 					}
-					ReportDiagnostic(location, ctor.Identifier, count);
+					ReportDiagnostic(context, location, ctor.Identifier, count);
 				}
 			}
 		}
@@ -91,26 +91,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			if (!Node.Modifiers.Any(SyntaxKind.PartialKeyword) && !Node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
+			if (!node.Modifiers.Any(SyntaxKind.PartialKeyword) && !node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{
 				return;
 			}
 
 			// If we're in a TestClass, let it go.
-			if (_testHelper.IsInTestClass(Context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
 
 			// If we're not within a Control/Form, let it go.
-			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
+			INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(node);
 			if (!Helper.IsUserControl(type))
 			{
 				return;
 			}
 
-			ConstructorDeclarationSyntax[] constructors = Node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
-			IsInitializeComponentInConstructors(constructors);
+			ConstructorDeclarationSyntax[] constructors = node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
+			IsInitializeComponentInConstructors(context, node, constructors);
 		}
 	}
 }
