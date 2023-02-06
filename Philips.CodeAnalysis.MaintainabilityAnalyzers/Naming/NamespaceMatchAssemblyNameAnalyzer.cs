@@ -21,10 +21,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public NamespaceMatchAssemblyNameAnalyzer() : base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Category)
 		{ }
 
-		protected override void Analyze()
+		protected override void Analyze(SyntaxNodeAnalysisContext context, NamespaceDeclarationSyntax node)
 		{
-			string myNamespace = Node.Name.ToString();
-			string myAssemblyName = Context.Compilation?.AssemblyName;
+			string myNamespace = node.Name.ToString();
+			string myAssemblyName = context.Compilation?.AssemblyName;
 
 			if (string.IsNullOrEmpty(myAssemblyName))
 			{
@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			if (!IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
 			{
-				ReportDiagnostic(Context, Node);
+				ReportDiagnostic(context, node);
 			}
 		}
 
@@ -42,8 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return ns.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext context,
-			NamespaceDeclarationSyntax namespaceDeclaration)
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, NamespaceDeclarationSyntax namespaceDeclaration)
 		{
 			var location = namespaceDeclaration.Name.GetLocation();
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location);

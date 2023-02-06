@@ -20,27 +20,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		protected override void Analyze()
+		protected override void Analyze(SyntaxNodeAnalysisContext context, IdentifierNameSyntax node)
 		{
-			if (IsIdentifierDynamicType())
+			if (IsIdentifierDynamicType(context, node))
 			{
-				ReportDiagnostic(Node.GetLocation());
+				ReportDiagnostic(context, node.GetLocation());
 			}
 		}
 
-		private bool IsIdentifierDynamicType()
+		private bool IsIdentifierDynamicType(SyntaxNodeAnalysisContext context, IdentifierNameSyntax node)
 		{
 			if (
-				Node.Identifier.ValueText == "dynamic" &&
-				!Node.Parent.IsKind(SyntaxKind.Argument) &&
-				!Node.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+				node.Identifier.ValueText == "dynamic" &&
+				!node.Parent.IsKind(SyntaxKind.Argument) &&
+				!node.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
 			{
 				return true;
 			}
 
-			if (Node.IsVar)
+			if (node.IsVar)
 			{
-				SymbolInfo symbol = Context.SemanticModel.GetSymbolInfo(Node);
+				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(node);
 
 				if (symbol.Symbol is IDynamicTypeSymbol)
 				{
