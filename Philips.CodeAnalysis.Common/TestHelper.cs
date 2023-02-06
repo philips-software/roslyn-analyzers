@@ -54,17 +54,17 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsTestMethod(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, out Location location, out bool isDataTestMethod)
 		{
 			isDataTestMethod = false;
-			bool returnValue = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.TestMethodAttribute, out location);
-			if (!returnValue)
+			bool hasAttribute = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.TestMethodAttribute, out location);
+			if (!hasAttribute)
 			{
-				returnValue = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.DataTestMethodAttribute, out location);
+				hasAttribute = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.DataTestMethodAttribute, out location);
 
-				if (returnValue)
+				if (hasAttribute)
 				{
 					isDataTestMethod = true;
 				}
 			}
-			return returnValue;
+			return hasAttribute;
 		}
 	}
 }
