@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			_records.Sort();
 			foreach (var record in _records)
 			{
-				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.DisplayTime} |");
+				Console.WriteLine($"| {record.Id} | {record.Package.Substring(0, 25)} | {record.Analyzer.Substring(0,55)} | {record.DisplayTime} |");
 			}
 		}
 
