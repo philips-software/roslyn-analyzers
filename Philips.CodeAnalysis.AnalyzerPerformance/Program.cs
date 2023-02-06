@@ -38,12 +38,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
-				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder)
+				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder &&
+					(string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter)))
 				{
-					if (string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter))
-					{
-						AnalyzerItems(namedAnalyzerPackageFolder);
-					}
+					AnalyzerItems(namedAnalyzerPackageFolder);
 				}
 			}
 			OutputResults();
