@@ -11,22 +11,21 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MoqAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class MockObjectsMustCallExistingConstructorsAnalyzer : DiagnosticAnalyzer
+	public class MockObjectsMustCallExistingConstructorsAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const string Title = @"Mock<T> construction must call an existing constructor";
-		private const string MessageFormat = @"Could not find a matching constructor for {0}";
-		private const string Description = @"Could not find a constructor that matched the given arguments";
-		private const string Category = Categories.RuntimeFailure;
 		private const string MockName = "Mock";
 		private const string MockBehavior = "MockBehavior";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		private const string Title = @"Mock<T> construction must call an existing constructor";
+		private const string MessageFormat = @"Could not find a matching constructor for {0}";
+		private const string Description = @"Could not find a constructor that matched the given arguments";
+		public MockObjectsMustCallExistingConstructorsAnalyzer()
+			: base(DiagnosticId.MockArgumentsMustMatchConstructor, Title, MessageFormat, Description, Categories.RuntimeFailure)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterCompilationStartAction(startContext =>

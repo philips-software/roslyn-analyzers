@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public abstract class SingleDiagnosticAnalyzer<T, U> : SingleDiagnosticAnalyzer where T : SyntaxNode where U : SyntaxNodeAction<T>, new()
 	{
-		protected string FullyQualifiedMetaDataName { get; set; }
+		public string FullyQualifiedMetaDataName { get; protected set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
@@ -89,6 +89,9 @@ namespace Philips.CodeAnalysis.Common
 				nameof(DestructorDeclarationSyntax) => SyntaxKind.DestructorDeclaration,
 				nameof(ExpressionSyntax) => SyntaxKind.AsExpression,
 				nameof(FieldDeclarationSyntax) => SyntaxKind.FieldDeclaration,
+				nameof(InvocationExpressionSyntax) => SyntaxKind.InvocationExpression,
+				nameof(UsingStatementSyntax) => SyntaxKind.UsingStatement,
+				nameof(AttributeListSyntax) => SyntaxKind.AttributeList,
 				_ => SyntaxKind.None,
 			};
 		}

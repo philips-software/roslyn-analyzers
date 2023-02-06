@@ -42,7 +42,7 @@ class Foo
 		public void AvoidMsFakesTest()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
-			Verify(file);
+			VerifyDiagnostic(file);
 		}
 
 		[TestMethod]
@@ -51,21 +51,6 @@ class Foo
 		{
 			var file = CreateFunction("using (new MemoryStream()) {}");
 			VerifySuccessfulCompilation(file);
-		}
-
-
-		private void Verify(string file)
-		{
-			VerifyDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidMsFakesAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, -1),
-				}
-			});
 		}
 	}
 }
