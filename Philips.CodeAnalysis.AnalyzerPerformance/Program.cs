@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Build.Logging;
 using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
@@ -10,6 +11,8 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
 		private static string _filter = string.Empty;
+		private const int MaxPackageNameLength = 25;
+		private const int MaxAnalyzerNameLength = 55;
 
 		public static void Main(string[] args)
 		{
@@ -56,7 +59,9 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			_records.Sort();
 			foreach (var record in _records)
 			{
-				Console.WriteLine($"| {record.Id} | {record.Package.Substring(0, 25)} | {record.Analyzer.Substring(0,55)} | {record.DisplayTime} |");
+				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "...": record.Package;
+				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Package.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
+				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
 
