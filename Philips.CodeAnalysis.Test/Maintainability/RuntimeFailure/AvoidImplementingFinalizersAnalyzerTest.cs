@@ -3,7 +3,6 @@
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -89,7 +88,7 @@ namespace FinalizerTest {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidImplementingFinalizers));
+			VerifyDiagnostic(testCode);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
