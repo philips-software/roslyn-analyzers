@@ -22,16 +22,10 @@ namespace Philips.CodeAnalysis.Common
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
-			Id = ToDiagnosticId();
+			Id = Helper.ToDiagnosticId(id);
 			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description);
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public string ToDiagnosticId()
-		{
-			return @"PH" + ((int)DiagnosticId).ToString();
-		}
-
 	}
 }
