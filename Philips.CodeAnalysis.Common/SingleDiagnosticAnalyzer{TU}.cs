@@ -73,6 +73,7 @@ namespace Philips.CodeAnalysis.Common
 				nameof(ClassDeclarationSyntax) => SyntaxKind.ClassDeclaration,
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
 				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
+				nameof(TupleTypeSyntax) => SyntaxKind.TupleType,
 				_ => SyntaxKind.None,
 			};
 		}
