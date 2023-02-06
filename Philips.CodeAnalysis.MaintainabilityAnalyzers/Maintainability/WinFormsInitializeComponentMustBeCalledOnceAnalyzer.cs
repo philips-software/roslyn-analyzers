@@ -12,35 +12,33 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : SingleDiagnosticAnalyzer<ClassDeclarationSyntax>
+	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : SingleDiagnosticAnalyzer<ClassDeclarationSyntax, WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction>
 	{
 		private const string Title = @"Check for UserControl constructor chains calls to InitializeComponent()";
 		public static readonly string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
 
-		private readonly TestHelper _testHelper;
-
 		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer()
-			:this(new TestHelper(), new Helper())
-		{ }
-
-		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer(TestHelper testHelper, Helper helper)
-			: base(DiagnosticId.InitializeComponentMustBeCalledOnce, Title, MessageFormat, Description, Categories.Maintainability, helper)
+			: base(DiagnosticId.InitializeComponentMustBeCalledOnce, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			_testHelper = testHelper;
 			FullyQualifiedMetaDataName = "System.Windows.Forms.ContainerControl";
 		}
+	}
 
-		private void IsInitializeComponentInConstructors(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax node, ConstructorDeclarationSyntax[] constructors)
+	public class WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction : SyntaxNodeAction<ClassDeclarationSyntax>
+	{
+		private readonly TestHelper _testHelper = new();
+
+		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
 			{
-				ReportDiagnostic(context, node.Identifier.GetLocation(), node.Identifier.ToString(), 0);
+				ReportDiagnostic(Node.Identifier.GetLocation(), Node.Identifier.ToString(), 0);
 				return;
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			var mapping = constructorSyntaxHelper.CreateMapping(context, constructors);
+			var mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
@@ -57,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					{
 						location = ctor.Initializer.GetLocation();
 					}
-					ReportDiagnostic(context, location, ctor.Identifier, count);
+					ReportDiagnostic(location, ctor.Identifier, count);
 				}
 			}
 		}
@@ -91,28 +89,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 
 
-		protected override void Analyze(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax node)
+		public override void Analyze()
 		{
-			if (!node.Modifiers.Any(SyntaxKind.PartialKeyword) && !node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
+			if (!Node.Modifiers.Any(SyntaxKind.PartialKeyword) && !Node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{
 				return;
 			}
 
 			// If we're in a TestClass, let it go.
-			if (_testHelper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(Context))
 			{
 				return;
 			}
 
 			// If we're not within a Control/Form, let it go.
-			INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(node);
+			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
 			if (!Helper.IsUserControl(type))
 			{
 				return;
 			}
 
-			ConstructorDeclarationSyntax[] constructors = node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
-			IsInitializeComponentInConstructors(context, node, constructors);
+			ConstructorDeclarationSyntax[] constructors = Node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
+			IsInitializeComponentInConstructors(constructors);
 		}
 	}
 }

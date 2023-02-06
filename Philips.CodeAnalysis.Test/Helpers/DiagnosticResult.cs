@@ -57,16 +57,5 @@ namespace Philips.CodeAnalysis.Test.Helpers
 				Severity = DiagnosticSeverity.Error,
 			};
 		}
-
-		public static DiagnosticResult[] Create(params DiagnosticId[] diagnosticIds)
-		{
-			List<DiagnosticResult> diagnosticResults = new();
-			foreach(DiagnosticId diagnosticId in diagnosticIds)
-			{
-				DiagnosticResult dr = Create(diagnosticId);
-				diagnosticResults.Add(dr);
-			}
-			return diagnosticResults.ToArray();
-		}
 	}
 }

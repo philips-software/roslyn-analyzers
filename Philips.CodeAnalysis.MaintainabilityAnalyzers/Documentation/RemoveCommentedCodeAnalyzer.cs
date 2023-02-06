@@ -12,20 +12,24 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class RemoveCommentedCodeAnalyzer : SingleDiagnosticAnalyzer<CompilationUnitSyntax>
+	public class RemoveCommentedCodeAnalyzer : SingleDiagnosticAnalyzer<CompilationUnitSyntax, RemoveCommentedCodeSyntaxNodeAction>
 	{
 		private const string Title = @"Remove commented code";
 		private const string MessageFormat = @"Remove commented code on line {0}.";
 		private const string Description = Title;
-		private const int InitialCodeLine = -20;
 
 		public RemoveCommentedCodeAnalyzer()
 			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation)
 		{ }
+	}
 
-		protected override void Analyze(SyntaxNodeAnalysisContext context, CompilationUnitSyntax node)
+	public class RemoveCommentedCodeSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
+	{
+		private const int InitialCodeLine = -20;
+
+		public override void Analyze()
 		{
-			var comments = node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			var comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!comments.Any())
 			{
 				return;
@@ -38,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)
 				{
-					ReportDiagnostic(context, location, lineNumber);
+					ReportDiagnostic(location, lineNumber);
 				}
 				previousViolationLine = lineNumber;
 			}
