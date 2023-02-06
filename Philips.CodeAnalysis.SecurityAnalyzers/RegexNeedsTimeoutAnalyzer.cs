@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -35,26 +36,37 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			var creation = (ObjectCreationExpressionSyntax)context.Node;
 			
+			TypeSyntax typeSyntax = creation.Type;
+			if (typeSyntax is TupleTypeSyntax)
+			{
+				// Implicit object creation, get to variable declaration to get the type.
+				var declaration = creation.Ancestors().OfType<VariableDeclarationSyntax>().FirstOrDefault();
+				if (declaration != null)
+				{
+					typeSyntax = declaration.Type;
+				}
+			}
+
 			// Bail out early.
-			if (!creation.Type.ToString().Contains("Regex"))
+			if(!typeSyntax.ToString().Contains("Regex"))
 			{
 				return;
 			}
 
-			var type = context.SemanticModel.GetTypeInfo(creation).Type;
-			if (type == null)
+			var typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+			if (typeSymbol == null)
 			{
 				return;
 			}
 
 			// Double check if the is a Regex constructor.
-			if (type.ToString() != "System.Text.RegularExpressions.Regex")
+			if (typeSymbol.ToString() != "System.Text.RegularExpressions.Regex")
 			{
 				return;
 			}
 
 			// We require to use the constructor with the Timeout argument.
-			if (creation.ArgumentList.Arguments.Count == 3)
+			if (creation.ArgumentList is not { Arguments.Count: not 3 })
 			{
 				return;
 			}
