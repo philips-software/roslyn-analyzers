@@ -29,6 +29,13 @@ jobs:
       - name: Prepare to eat Dogfood
         run: |
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
+          cat > ./.editorconfig << EOF
+          root = true
+          [*.cs]
+          dotnet_analyzer_diagnostic.severity = warn
+          dotnet_diagnostic.severity = warn 
+          EOF
+          
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
