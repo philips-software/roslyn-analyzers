@@ -13,33 +13,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	/// Report when a multi line condition statement (if or ?), does not include a newline on its logical operators.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class SplitMultiLineConditionOnLogicalOperatorAnalyzer : DiagnosticAnalyzer
+	public class SplitMultiLineConditionOnLogicalOperatorAnalyzer : SingleDiagnosticAnalyzer
 	{
 		/// <summary>
 		/// Diagnostic Id for this analyzer.
 		/// </summary>
 		private const string Title = "Avoid multiple conditions on the same line.";
-		private const string Message =
+		private const string MessageFormat =
 			"Split multiline conditions around line {0} such that the logical operators are at the end " +
 			"of the line.";
 		private const string Description = "Avoid multiple conditions on the same line of a multi-line condition statement. Instead, break lines right after the logical operators.";
-		private const string Category = "Readability";
 
-		private static readonly DiagnosticDescriptor Rule =
-			new (
-				Helper.ToDiagnosticId(DiagnosticId.SplitMultiLineConditionOnLogicalOperator),
-				Title,
-				Message,
-				Category,
-				DiagnosticSeverity.Warning,
-				isEnabledByDefault: true,
-				description: Description);
-
-		/// <summary>
-		/// <inheritdoc cref="DiagnosticAnalyzer.SupportedDiagnostics"/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Rule);
+		public SplitMultiLineConditionOnLogicalOperatorAnalyzer()
+			: base(DiagnosticId.SplitMultiLineConditionOnLogicalOperator, Title, MessageFormat, Description, Categories.Readability, DiagnosticSeverity.Warning)
+		{ }
 
 		/// <summary>
 		/// <inheritdoc/>

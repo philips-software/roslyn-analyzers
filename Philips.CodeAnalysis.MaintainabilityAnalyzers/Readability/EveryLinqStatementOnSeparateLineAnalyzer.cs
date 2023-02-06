@@ -10,45 +10,32 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EveryLinqStatementOnSeparateLineAnalyzer : DiagnosticAnalyzer
+	public class EveryLinqStatementOnSeparateLineAnalyzer : SingleDiagnosticAnalyzer<QueryExpressionSyntax, EveryLinqStatementOnSeparateLineSyntaxNodeAction>
 	{
 		private const string Title = @"Put every linq statement on a separate line";
 		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private const string Category = Categories.Readability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.EveryLinqStatementOnSeparateLine), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public EveryLinqStatementOnSeparateLineAnalyzer()
+			: base(DiagnosticId.EveryLinqStatementOnSeparateLine, Title, MessageFormat, Description, Categories.Readability)
+		{ }
+	}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+	public class EveryLinqStatementOnSeparateLineSyntaxNodeAction : SyntaxNodeAction<QueryExpressionSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.QueryExpression);
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			QueryExpressionSyntax query = (QueryExpressionSyntax)context.Node;
-
-			FromClauseSyntax from = query.FromClause;
+			FromClauseSyntax from = Node.FromClause;
 			if (!EndsWithNewline(from))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, from.GetLocation()));
+				ReportDiagnostic(from.GetLocation());
 			}
 
-			foreach (var clause in query.Body.Clauses)
+			foreach (var clause in Node.Body.Clauses)
 			{
 				if(!EndsWithNewline(clause))
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Rule, clause.GetLocation()));
+					ReportDiagnostic(clause.GetLocation());
 				}
 			}
 		}
