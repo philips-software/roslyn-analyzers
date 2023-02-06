@@ -12,52 +12,36 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespaceMatchFilePathAnalyzer : DiagnosticAnalyzer
+	public class NamespaceMatchFilePathAnalyzer : SingleDiagnosticAnalyzer<NamespaceDeclarationSyntax, NamespaceMatchFilePathSyntaxNodeAction>
 	{
+		public AdditionalFilesHelper AdditionalFilesHelper { get; }
+
 		private const string Title = @"Namespace matches File Path";
 		private const string MessageFormat = @"Namespace and File Path must match";
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path and Namespace must match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
-		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public NamespaceMatchFilePathAnalyzer()
+			: this(null)
+		{ }
 
-		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
-		private AdditionalFilesHelper _additionalFilesHelper;
+		public NamespaceMatchFilePathAnalyzer(AdditionalFilesHelper additionalFilesHelper)
+			: base(DiagnosticId.NamespaceMatchFilePath, Title, MessageFormat, Description, Categories.Naming)
+		{
+			AdditionalFilesHelper = additionalFilesHelper;
+		}
+	}
+
+	public class NamespaceMatchFilePathSyntaxNodeAction : SyntaxNodeAction<NamespaceDeclarationSyntax>
+	{
 		private bool _folderInNamespace;
 		private bool _configInitialized;
 
-		public NamespaceMatchFilePathAnalyzer()
-			: this(GeneratedCodeAnalysisFlags.None, null)
-		{ }
-
-		public NamespaceMatchFilePathAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags, AdditionalFilesHelper additionalFilesHelper)
+		public override void Analyze()
 		{
-			_generatedCodeFlags = generatedCodeFlags;
-			_additionalFilesHelper = additionalFilesHelper;
-		}
+			string myNamespace = Node.Name.ToString();
+			string myFilePath = Context.Node.SyntaxTree.FilePath;
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
-			string myNamespace = namespaceDeclaration.Name.ToString();
-			string myFilePath = context.Node.SyntaxTree.FilePath;
-
-			InitializeConfiguration(context);
+			InitializeConfiguration();
 
 			if(_folderInNamespace)
 			{
@@ -76,9 +60,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 			}
 
-			var location = namespaceDeclaration.Name.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-			context.ReportDiagnostic(diagnostic);
+			var location = Node.Name.GetLocation();
+			ReportDiagnostic(location);
 		}
 
 		private bool IsNamespacePartOfPath(string ns, string path)
@@ -101,12 +84,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return allowedNamespace.EndsWith(ns, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private void InitializeConfiguration(SyntaxNodeAnalysisContext context)
+		private void InitializeConfiguration()
 		{
 			if (!_configInitialized)
 			{
-				_additionalFilesHelper ??= new AdditionalFilesHelper(context.Options, context.Compilation);
-				string folderInNamespace = _additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
+				var additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
+				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
+				string folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
 				_ = bool.TryParse(folderInNamespace, out _folderInNamespace);
 				_configInitialized = true;
 			}

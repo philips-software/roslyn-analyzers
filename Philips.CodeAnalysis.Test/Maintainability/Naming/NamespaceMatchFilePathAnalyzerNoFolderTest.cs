@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
-			return new NamespaceMatchFilePathAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
+			return new NamespaceMatchFilePathAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
 		[DataTestMethod]

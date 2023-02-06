@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class VariableNamingConventionAnalyzer : DiagnosticAnalyzer
+	public class VariableNamingConventionAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline);
 		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline);
@@ -22,7 +22,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
 		private const string Description = @"";
-		private const string Category = Categories.Naming;
 
 		private readonly bool _checkLocalVariables;
 		private readonly bool _checkFieldVariables;
@@ -30,15 +29,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public VariableNamingConventionAnalyzer() : this(true, true) { }
 
 		public VariableNamingConventionAnalyzer(bool checkLocalVariables, bool checkFieldVariables)
+			: base(DiagnosticId.VariableNamingConventions, Title, MessageFormat, Description, Categories.Naming, isEnabled:false)
 		{
 			_checkLocalVariables = checkLocalVariables;
 			_checkFieldVariables = checkFieldVariables;
 		}
-
-		public static readonly DiagnosticDescriptor Rule = 
-			new(Helper.ToDiagnosticId(DiagnosticId.VariableNamingConventions), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{

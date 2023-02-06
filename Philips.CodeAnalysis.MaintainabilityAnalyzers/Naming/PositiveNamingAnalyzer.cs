@@ -11,17 +11,13 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PositiveNamingAnalyzer : DiagnosticAnalyzer
+	public class PositiveNamingAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Positive Naming";
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
 		private const string Description = MessageFormat;
-		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.PositiveNaming), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 		private static readonly string[] negativeWords = { "disable", "ignore", "missing", "absent" };
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private readonly TestHelper _testHelper;
 
@@ -30,10 +26,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{ }
 
 		public PositiveNamingAnalyzer(TestHelper testHelper)
+			: base(DiagnosticId.PositiveNaming, Title, MessageFormat, Description, Categories.Naming)
 		{
 			_testHelper = testHelper;
 		}
-
 
 		public override void Initialize(AnalysisContext context)
 		{
