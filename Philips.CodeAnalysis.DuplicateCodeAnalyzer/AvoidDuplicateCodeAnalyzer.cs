@@ -113,13 +113,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
 			private readonly AllowedSymbols _allowedSymbols;
-			private readonly bool _generateExceptionsFile;
+			private readonly bool _shouldGenerateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, AllowedSymbols allowed, bool generateExceptionsFile, Diagnostic configurationError)
+			public CompilationAnalyzer(int duplicateTokenThreshold, AllowedSymbols allowed, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
 				_allowedSymbols = allowed;
-				_generateExceptionsFile = generateExceptionsFile;
+				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 				if (configurationError != null)
 				{
 					_diagnostics.Add(configurationError);
