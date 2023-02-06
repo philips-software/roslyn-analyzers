@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,9 +15,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class EnforceBoolNamingConventionAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private static readonly Regex _privateFieldRegex = new(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline);
-		private static readonly Regex _publicFieldRegex = new(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline);
-		private static readonly Regex _localRegex = new(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline);
+		private static readonly Regex _privateFieldRegex = new(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _publicFieldRegex = new(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _localRegex = new(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
