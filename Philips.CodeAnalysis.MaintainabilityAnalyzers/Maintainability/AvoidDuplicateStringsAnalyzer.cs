@@ -17,11 +17,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Avoid Duplicate Strings";
 		private const string MessageFormat = @"Duplicate string found, first location in file {0} at line {1}. Consider moving '{2}' into a constant.";
 		private const string Description = @"Duplicate strings are less maintainable";
-		private const string Category = Categories.Maintainability;
 
-		public AvoidDuplicateStringsAnalyzer() : base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Category)
-		{
-		}
+		public AvoidDuplicateStringsAnalyzer()
+			: base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
