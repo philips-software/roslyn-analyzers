@@ -126,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				@"SuppressMessage is not allowed.",
 				@"SuppressMessage results in violations of codified coding guidelines.",
 				DiagnosticId.AvoidSuppressMessage,
-				canBeSuppressed: false,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 		}
 	}
