@@ -1,5 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Linq;
+using System.Text.RegularExpressions;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -15,6 +18,14 @@ namespace Philips.CodeAnalysis.Test.Security
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new RegexNeedsTimeoutAnalyzer();
+		}
+
+		protected override MetadataReference[] GetMetadataReferences()
+		{
+			string regexReference = typeof(Regex).Assembly.Location;
+			MetadataReference reference = MetadataReference.CreateFromFile(regexReference);
+
+			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
 		}
 
 		private string GetTemplate()
@@ -36,11 +47,11 @@ namespace RegexNeedsTimeoutTest
 		}
 
 		[DataTestMethod]
-		// TODO: Figure out why fully qualified names are required.
+		// TODO: Figure out why implicit names are not found.
 		//[DataRow(@"("".*"", RegexOptions.Compiled)")]
 		//[DataRow(@"("".*"")")]
-		//[DataRow(@"Regex("".*"", RegexOptions.Compiled)")]
-		//[DataRow(@"Regex("".*"")")]
+		[DataRow(@"Regex("".*"", RegexOptions.Compiled)")]
+		[DataRow(@"Regex("".*"")")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled)")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"")")]
 		[TestCategory(TestDefinitions.UnitTests)]

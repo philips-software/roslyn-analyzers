@@ -35,20 +35,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var creation = (ObjectCreationExpressionSyntax)context.Node;
-			
-			TypeSyntax typeSyntax = creation.Type;
-			if (typeSyntax is TupleTypeSyntax)
-			{
-				// Implicit object creation, get to variable declaration to get the type.
-				var declaration = creation.Ancestors().OfType<VariableDeclarationSyntax>().FirstOrDefault();
-				if (declaration != null)
-				{
-					typeSyntax = declaration.Type;
-				}
-			}
+
 
 			// Bail out early.
-			if (!typeSyntax.ToString().Contains("Regex"))
+			TypeSyntax typeSyntax = creation.Type;
+			if(!typeSyntax.ToString().Contains("Regex"))
 			{
 				return;
 			}
