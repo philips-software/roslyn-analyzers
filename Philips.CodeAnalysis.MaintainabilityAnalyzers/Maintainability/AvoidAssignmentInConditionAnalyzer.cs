@@ -20,8 +20,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidAssignmentInConditionAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = "Assignment in condition.";
-		private const string Message = "Assignment within condition.";
-		private const string Description = "Assignment in condition.";
+		private const string Message = Title;
+		private const string Description = Title;
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor Rule =

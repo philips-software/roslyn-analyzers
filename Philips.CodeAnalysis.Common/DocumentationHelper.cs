@@ -10,6 +10,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class DocumentationHelper
 	{
+		private const string ExceptionElementName = "exception";
 		private readonly List<XmlElementSyntax> xmlElements = new();
 	
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
@@ -54,7 +55,7 @@ namespace Philips.CodeAnalysis.Common
 			var crefAttribute = SyntaxFactory.XmlCrefAttribute(cref);
 			var attributesList = new SyntaxList<XmlAttributeSyntax>();
 			attributesList = attributesList.Add(crefAttribute);
-			var exceptionXmlName = SyntaxFactory.XmlName("exception");
+			var exceptionXmlName = SyntaxFactory.XmlName(ExceptionElementName);
 			var exceptionStart = SyntaxFactory.XmlElementStartTag(exceptionXmlName, attributesList);
 			var exceptionEnd = SyntaxFactory.XmlElementEndTag(exceptionXmlName);
 			var xmlException = SyntaxFactory.XmlElement(exceptionStart, exceptionEnd);
@@ -89,7 +90,7 @@ namespace Philips.CodeAnalysis.Common
 		}
 		private static bool IsExceptionElement(XmlElementSyntax element)
 		{
-			return element.StartTag.Name.LocalName.Text == "exception";
+			return element.StartTag.Name.LocalName.Text == ExceptionElementName;
 		}
 
 		private static string GetCrefAttributeValue(XmlElementSyntax element)

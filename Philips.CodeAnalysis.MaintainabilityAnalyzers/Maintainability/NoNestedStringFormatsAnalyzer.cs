@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string NestedStringFormatTitle = @"Don't nest string.Format (or similar) methods";
 		private const string NestedStringFormatMessageFormat = @"Don't nest a call to {0} inside a call to {1}";
-		private const string NestedStringFormatDescription = @"Don't nest string.Format (or similar) methods";
+		private const string NestedStringFormatDescription = NestedStringFormatTitle;
 
 		private const string UnnecessaryStringFormatTitle = @"Don't call string.Format unnecessarily";
 		private const string UnnecessaryStringFormatMessageFormat = UnnecessaryStringFormatTitle;

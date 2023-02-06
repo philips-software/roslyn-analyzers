@@ -12,8 +12,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class PreventUseOfGotoAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Do not use goto";
-		private const string MessageFormat = @"Do not use goto";
-		private const string Description = @"Do not use goto";
+		private const string MessageFormat = Title;
+		private const string Description = Title;
 
 		public PreventUseOfGotoAnalyzer()
 			: base(DiagnosticId.GotoNotAllowed, Title, MessageFormat, Description, Categories.Maintainability)

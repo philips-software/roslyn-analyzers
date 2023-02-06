@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
 
 		private const string TitleFormat = "Merge If Statements";
-		private const string MessageFormat = "Merge If Statements";
+		private const string MessageFormat = TitleFormat;
 		private const string DescriptionFormat = "Merging If statement with outer If statement to reduce cognitive load";
 		private const string Category = Categories.Maintainability;
 

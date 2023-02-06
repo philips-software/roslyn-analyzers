@@ -17,6 +17,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Test Method names unhelpful prefix'";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
 		private const string Category = Categories.Naming;
+		private const string TestLiteral = @"Test";
+		private const string EnsureLiteral = @"Ensure";
+		private const string VerifyLiteral = @"Verify";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
@@ -34,7 +37,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			// Only interested in TestMethod attributes
-			if(!attributesNode.Attributes.Any(attr => attr.Name.ToString() == @"TestMethod"))
+			if(attributesNode.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
 			{
 				return;
 			}
@@ -52,17 +55,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
 				{
-					if (token.ValueText.StartsWith(@"Test"))
+					if (token.ValueText.StartsWith(TestLiteral))
 					{
-						invalidPrefix = @"Test";
+						invalidPrefix = TestLiteral;
 					}
-					else if (token.ValueText.StartsWith(@"Ensure"))
+					else if (token.ValueText.StartsWith(EnsureLiteral))
 					{
-						invalidPrefix = @"Ensure";
+						invalidPrefix = EnsureLiteral;
 					}
-					else if (token.ValueText.StartsWith(@"Verify"))
+					else if (token.ValueText.StartsWith(VerifyLiteral))
 					{
-						invalidPrefix = @"Verify";
+						invalidPrefix = VerifyLiteral;
 					}
 
 					if (!string.IsNullOrEmpty(invalidPrefix))

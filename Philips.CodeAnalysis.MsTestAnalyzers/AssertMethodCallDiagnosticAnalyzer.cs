@@ -12,6 +12,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class AssertMethodCallDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
+		private const string AssertFullyQualifiedName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
+
 		protected Helper Helper { get; set; }
 
 		protected AssertMethodCallDiagnosticAnalyzer()
@@ -34,7 +36,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression))
 				{
-					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(AssertFullyQualifiedName))
 					{
 						return;
 					}
@@ -53,7 +55,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(AssertFullyQualifiedName) == null)
 				{
 					return;
 				}

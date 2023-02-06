@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 
 		private const string Title = @"Avoid putting multiple Lambda expressions on the same line";
-		public const string MessageFormat = @"Avoid putting multiple Lambda expressions on the same line";
+		public const string MessageFormat = Title;
 		private const string Description = @"Avoid putting multiple Lambda expressions on the same line. To improve readability, split them into separate lines.";
 		private const string Category = Categories.Readability;
 

@@ -16,8 +16,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class NoProtectedFieldsAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Do not use protected fields";
-		private const string MessageFormat = @"Do not use protected fields";
-		private const string Description = @"";
+		private const string MessageFormat = Title;
+		private const string Description = Title;
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor _rule = new(Helper.ToDiagnosticId(DiagnosticId.NoProtectedFields), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

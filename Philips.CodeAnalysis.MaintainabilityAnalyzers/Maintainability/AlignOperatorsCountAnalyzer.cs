@@ -17,17 +17,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AlignOperatorsCountAnalyzer : DiagnosticAnalyzer
 	{
-		private const string TitleFormat = "Align number of {0} and {1} operators.";
-		private const string MessageFormat = "Align number of {0} and {1} operators.";
+		private const string Title = "Align number of {0} and {1} operators.";
+		private const string MessageFormat = Title;
 		private const string DescriptionFormat =
 			"Overload the {1} operator, when you overload the {0} operator, as they are often used in combination with each other.";
 		private const string Category = Categories.Maintainability;
+		private const string Plus = "+";
 
 		private static readonly DiagnosticDescriptor IncrementAndDecrementRule =
 			GenerateRule("++", "--", DiagnosticId.AlignNumberOfIncrementAndDecrementOperators);
 
 		private static readonly DiagnosticDescriptor PlusMinusRule =
-			GenerateRule("+", "-", DiagnosticId.AlignNumberOfPlusAndMinusOperators);
+			GenerateRule(Plus, "-", DiagnosticId.AlignNumberOfPlusAndMinusOperators);
 
 		private static readonly DiagnosticDescriptor MultiplyDivideRule =
 			GenerateRule("*", "/", DiagnosticId.AlignNumberOfMultiplyAndDivideOperators);
@@ -42,13 +43,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			GenerateRule(">>", "<<", DiagnosticId.AlignNumberOfShiftRightAndLeftOperators);
 
 		private static readonly DiagnosticDescriptor PlusAndEqualRule =
-			GenerateRule("+", "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
+			GenerateRule(Plus, "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
 
 		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{
 			return new(
 				Helper.ToDiagnosticId(diagnosticId),
-				string.Format(TitleFormat, first, second),
+				string.Format(Title, first, second),
 				string.Format(MessageFormat, first, second),
 				Category,
 				DiagnosticSeverity.Error,

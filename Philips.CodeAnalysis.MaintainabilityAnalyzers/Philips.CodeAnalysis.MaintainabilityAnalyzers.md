@@ -86,3 +86,4 @@
 | PH2133  | Unmanaged objects need disposing             | Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable. |
 | PH2134  | Set properties in any order                  | Getting other properties in a setter makes this setter dependent on the order in which these properties are set. |
 | PH2135  | Match namespace and Assembly Name            | The Assembly Name and Namespace must match. |
+| PH2136  | Avoid duplicate strings                      | Duplicate strings are less maintainable. |

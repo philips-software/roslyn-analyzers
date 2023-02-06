@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -106,7 +106,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (regionName.StartsWith(RegionTag))
 			{
-				regionName = regionName.Replace(RegionTag + " ", "");
+				regionName = regionName.Replace(RegionTag + " ", string.Empty);
 			}
 			return regionName;
 		}
@@ -145,7 +145,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				{
 					var location = region.GetLocation();
 					value.EndLine = GetMemberLineNumber(location);
-					regionStartName = "";
+					regionStartName = string.Empty;
 				}
 			}
 		}
