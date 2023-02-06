@@ -57,11 +57,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				if (options.UseExceptionsFile)
+				if (options.ShouldUseExceptionsFile)
 				{
 					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.GenerateExceptionsFile, configurationError);
+				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 			});
@@ -76,8 +76,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
 			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
-			options.UseExceptionsFile = exceptionsOptions.IsUsingExceptionsFile;
-			options.GenerateExceptionsFile = exceptionsOptions.IsGeneratingExceptionsFile;
+			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
+			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
 			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
@@ -409,8 +409,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		}
 
 		public int TokenCount { get; set; }
-		public bool UseExceptionsFile { get; set; }
-		public bool GenerateExceptionsFile { get; set; }
+		public bool ShouldUseExceptionsFile { get; set; }
+		public bool ShouldGenerateExceptionsFile { get; set; }
 	}
 
 	public class DuplicateDetector
