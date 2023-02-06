@@ -107,7 +107,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
-			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticId.EveryLinqStatementOnSeparateLine));
+			VerifyDiagnostic(input);
 			VerifyFix(input, Correct);
 		}
 

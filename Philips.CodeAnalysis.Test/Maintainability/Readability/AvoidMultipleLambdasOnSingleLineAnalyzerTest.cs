@@ -154,7 +154,7 @@ public static class Foo
 		public void FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
-			VerifyDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticId.AvoidMultipleLambdasOnSingleLine));
+			VerifyDiagnostic(input, DiagnosticId.AvoidMultipleLambdasOnSingleLine);
 			VerifyFix(input, fixedCode);
 		}
 

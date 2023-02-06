@@ -13,12 +13,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class PreventUnnecessaryRangeChecksAnalyzerTest : CodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreventUnnecessaryRangeChecksAnalyzer();
@@ -28,10 +22,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		{
 			return new PreventUnnecessaryRangeChecksCodeFixProvider();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("int[] data = new int[0]", "Length")]
 		[DataRow("int[] data = new int[0]", "Count()")]
@@ -78,8 +68,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticId.PreventUncessaryRangeChecks));
-
+			VerifyDiagnostic(errorCode);
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
@@ -171,8 +160,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticId.PreventUncessaryRangeChecks));
-
+			VerifyDiagnostic(errorCode);
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
@@ -330,8 +318,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticId.PreventUncessaryRangeChecks));
-
+			VerifyDiagnostic(errorCode);
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
@@ -374,8 +361,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode, DiagnosticResultHelper.Create(DiagnosticId.PreventUncessaryRangeChecks));
-
+			VerifyDiagnostic(errorCode);
 			VerifyFix(errorCode, string.Format(fixedTemplate, declaration));
 		}
 
@@ -438,7 +424,7 @@ public void test()
 }}
 ";
 
-			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod), DiagnosticResultHelper.Create(DiagnosticId.PreventUncessaryRangeChecks));
+			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -472,7 +458,5 @@ public void test()
 
 			VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod));
 		}
-
-		#endregion
 	}
 }

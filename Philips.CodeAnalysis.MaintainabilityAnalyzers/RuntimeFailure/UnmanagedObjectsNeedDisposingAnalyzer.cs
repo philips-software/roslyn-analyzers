@@ -2,13 +2,11 @@
 
 using System;
 using System.Collections.Immutable;
-using System.Collections.Specialized;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
@@ -17,54 +15,32 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	/// Report on type with unmanaged fields that is not <see cref="IDisposable"/>.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class UnmanagedObjectsNeedDisposingAnalyzer : DiagnosticAnalyzer
+	public class UnmanagedObjectsNeedDisposingAnalyzer : SingleDiagnosticAnalyzer<FieldDeclarationSyntax, UnmanagedObjectsNeedDisposingSyntaxNodeAction>
 	{
 		private const string Title = "Unmanaged object need disposing";
-		private const string Message = "The field {0} is refering to an unmanaged object and needs to be declared in a class that implements IDisposable.";
+		private const string MessageFormat = "The field {0} is refering to an unmanaged object and needs to be declared in a class that implements IDisposable.";
 		private const string Description = "Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable.";
-		private const string Category = Categories.RuntimeFailure;
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(
-				Helper.ToDiagnosticId(DiagnosticId.UnmanagedObjectsNeedDisposing),
-				Title,
-				Message,
-				Category,
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
-				description: Description
-			);
+		public UnmanagedObjectsNeedDisposingAnalyzer()
+			: base(DiagnosticId.UnmanagedObjectsNeedDisposing, Title, MessageFormat, Description, Categories.RuntimeFailure)
+		{ }
+	}
 
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		public override void Initialize(AnalysisContext context)
+	public class UnmanagedObjectsNeedDisposingSyntaxNodeAction : SyntaxNodeAction<FieldDeclarationSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.FieldDeclaration);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			var field = (FieldDeclarationSyntax)context.Node;
-
-			var typeDeclaration = field.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			var typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (typeDeclaration is StructDeclarationSyntax)
 			{
 				return;
 			}
 
-			if (IsUnmanaged(field.Declaration.Type) && !TypeImplementsIDisposable(context, field))
+			if (IsUnmanaged(Node.Declaration.Type) && !TypeImplementsIDisposable())
 			{
-				var variableName = field.Declaration.Variables[0].Identifier.Text;
-				var loc = field.Declaration.Variables[0].Identifier.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, variableName));
+				var variableName = Node.Declaration.Variables[0].Identifier.Text;
+				var loc = Node.Declaration.Variables[0].Identifier.GetLocation();
+				ReportDiagnostic(loc, variableName);
 			}
 		}
 
@@ -77,15 +53,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return isIntPtr || isPointer || isHandle;
 		}
 
-		private bool TypeImplementsIDisposable(SyntaxNodeAnalysisContext context, FieldDeclarationSyntax field)
+		private bool TypeImplementsIDisposable()
 		{
 			const string IDisposableLiteral = "IDisposable";
-			var type = field.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			var type = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
 				return false;
 			}
-			var typeSymbol = context.SemanticModel.GetDeclaredSymbol(type);
+			var typeSymbol = Context.SemanticModel.GetDeclaredSymbol(type);
 			if (typeSymbol == null)
 			{
 				return false;

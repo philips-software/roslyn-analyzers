@@ -15,33 +15,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	/// Analyzer class that verifies that after the 'as' keyword, the variable is checked for null before being used. This prevents an <see cref="System.NullReferenceException"/> being thrown at runtime.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DereferenceNullAnalyzer : DiagnosticAnalyzer
+	public class DereferenceNullAnalyzer : SingleDiagnosticAnalyzer<ExpressionSyntax, DereferenceNullSyntaxNodeAction>
 	{
 		private const string Title = @"Dereference Null after As";
 		public const string MessageFormat = @"Using the 'as' expression means '{0}' could be null. Either check before dereferencing, or cast if you definitively know it will be this type in this context.";
 		private const string Description = @"Using the 'as' expression means a check should be made before dereferencing, or cast if you definitively know it will be this type in this context.";
-		private const string Category = Categories.RuntimeFailure;
 
-		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticId.DereferenceNull),
-			Title, MessageFormat, Category,
-			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public DereferenceNullAnalyzer()
+			: base(DiagnosticId.DereferenceNull, Title, MessageFormat, Description, Categories.RuntimeFailure)
+		{ }
+	}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AsExpression);
-		}
-
-		private static void Report(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifier)
+	public class DereferenceNullSyntaxNodeAction : SyntaxNodeAction<ExpressionSyntax>
+	{
+		private void Report(IdentifierNameSyntax identifier)
 		{
 			var location = identifier.GetLocation();
-			var diagnostic = Diagnostic.Create(Rule, location, identifier.Identifier.ValueText);
-			context.ReportDiagnostic(diagnostic);
+			ReportDiagnostic(location, identifier.Identifier.ValueText);
 		}
 
 		/// <summary>
@@ -146,21 +136,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return false;
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		public override void Analyze()
 		{
-			if (!IsCaseWeUnderstand(context.Node))
+			if (!IsCaseWeUnderstand(Node))
 			{
 				return;
 			}
 
 			// Collect some items we'll use repeatedly
-			if (context.Node.Parent?.Parent is not VariableDeclaratorSyntax variableDeclarationSyntax)
+			if (Node.Parent?.Parent is not VariableDeclaratorSyntax variableDeclarationSyntax)
 			{
 				return;
 			}
 
 			BlockSyntax blockOfInterest = variableDeclarationSyntax.Ancestors().OfType<BlockSyntax>().First();
-			var model = context.SemanticModel;
+			var model = Context.SemanticModel;
 			ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclarationSyntax);
 
 			//  Identify where y is first used (ie., MemberAccessExpression)
@@ -178,7 +168,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
 			(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
-			if (CheckStatements(context, lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
+			if (CheckStatements(lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
 			{
 				return;
 			}
@@ -186,7 +176,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			bool ourSymbolIsReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
 			if (!ourSymbolIsReadOrWritten)
 			{
-				Report(context, identifierNameSyntax);
+				Report(identifierNameSyntax);
 			}
 		}
 
@@ -220,7 +210,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return ourSymbolIsReadOrWritten;
 		}
 
-		private bool CheckStatements(SyntaxNodeAnalysisContext context, int lastStatementOfAnalysisIndex,
+		private bool CheckStatements(int lastStatementOfAnalysisIndex,
 			int firstStatementOfAnalysisIndex, StatementSyntax firstStatementOfAnalysis,
 			IdentifierNameSyntax identifierNameSyntax)
 		{
@@ -256,7 +246,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 					return true;
 				}
 
-				Report(context, identifierNameSyntax);
+				Report(identifierNameSyntax);
 				return true;
 			}
 
