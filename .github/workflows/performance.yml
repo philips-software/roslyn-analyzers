@@ -63,7 +63,5 @@ jobs:
         
       - name: Analyze Performance
         run: |
-          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog >> PerformanceSummary.txt
-          cat PerformanceSummary.txt
-          cat PerformanceSummary.txt >> $GITHUB_STEP_SUMMARY
+          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog
 
