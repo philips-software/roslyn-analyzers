@@ -51,6 +51,25 @@ namespace MyNamespace
 		}
 
 		/// <summary>
+		/// No diagnostics expected to show up.
+		/// </summary>
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void NoDiagnosticIsTriggeredForStructs()
+		{
+			string source = @"
+namespace MyNamespace
+{{
+  struct FooStruct
+  {{
+    private IntPtr f;
+  }}
+}}
+";
+			VerifySuccessfulCompilation(source);
+		}
+
+		/// <summary>
 		/// Diagnostic is expected to show up.
 		/// </summary>
 		[DataTestMethod]

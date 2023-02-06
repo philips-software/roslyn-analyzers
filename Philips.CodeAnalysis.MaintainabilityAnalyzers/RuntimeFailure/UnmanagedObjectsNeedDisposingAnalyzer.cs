@@ -53,6 +53,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			var field = (FieldDeclarationSyntax)context.Node;
 
+			var typeDeclaration = field.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			if (typeDeclaration is StructDeclarationSyntax)
+			{
+				return;
+			}
+
 			if (IsUnmanaged(field.Declaration.Type) && !TypeImplementsIDisposable(context, field))
 			{
 				var variableName = field.Declaration.Variables[0].Identifier.Text;
