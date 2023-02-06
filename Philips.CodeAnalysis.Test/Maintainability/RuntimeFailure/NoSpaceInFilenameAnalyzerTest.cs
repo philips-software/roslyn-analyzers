@@ -54,12 +54,13 @@ namespace PathTooLongUnitTest {
 		 DataRow(SpaceAbsolutePath, 1, 1, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.NoSpaceInFilename);
-			VerifyDiagnostic(Correct, expected, filePath);
+		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column)
+		{
+			VerifyDiagnostic(Correct, DiagnosticId.NoSpaceInFilename, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new NoSpaceInFilenameAnalyzer();
 		}
 	}

@@ -20,12 +20,20 @@ namespace Philips.CodeAnalysis.Common
 			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
+		/// <summary>
+		/// Boilerplate initialization for the Analyzer
+		/// </summary>
+		/// <exception cref="InvalidDataException">When an Analyzer with a new type of SyntaxKind is added.</exception>
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			SyntaxKind syntaxKind = GetSyntaxKind();
+			if (syntaxKind == SyntaxKind.None)
+			{
+				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(T)}");
+			}
 
 			if (string.IsNullOrEmpty(FullyQualifiedMetaDataName))
 			{
@@ -75,6 +83,9 @@ namespace Philips.CodeAnalysis.Common
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
 				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
 				nameof(TupleTypeSyntax) => SyntaxKind.TupleType,
+				nameof(DestructorDeclarationSyntax) => SyntaxKind.DestructorDeclaration,
+				nameof(ExpressionSyntax) => SyntaxKind.AsExpression,
+				nameof(FieldDeclarationSyntax) => SyntaxKind.FieldDeclaration,
 				_ => SyntaxKind.None,
 			};
 		}

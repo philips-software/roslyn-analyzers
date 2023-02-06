@@ -1,9 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -67,8 +65,7 @@ Instruction i = method.Body.Instructions[0];
 		}
 }}
 ";
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 		}
 		
 		/// <summary>
@@ -87,8 +84,7 @@ Instruction i = method.Body.Instructions[0];
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -154,8 +150,7 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 		}
 
 		[TestMethod]
@@ -347,8 +342,7 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.DereferenceNull);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 		}
 
 
