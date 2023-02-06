@@ -59,6 +59,7 @@ namespace Philips.CodeAnalysis.Common
 				Context = context,
 				Node = (T)context.Node,
 				Rule = Rule,
+				Analyzer = this,
 			};
 			syntaxNodeAction.Analyze();
 		}

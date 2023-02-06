@@ -1,11 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -13,18 +11,15 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AlignFilenameAndClassNameAnalyzer : DiagnosticAnalyzer
+	public class AlignFilenameAndClassNameAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Align filename and class name";
 		private const string MessageFormat = @"Name the file {0}.cs to align with the name of the {1} it contains.";
 		private const string Description = @"Name the file after the class, struct or enum it contains";
-		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AlignFilenameAndClassName),
-			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
-			description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		public AlignFilenameAndClassNameAnalyzer()
+			: base(DiagnosticId.AlignFilenameAndClassName, Title, MessageFormat, Description, Categories.Naming)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
