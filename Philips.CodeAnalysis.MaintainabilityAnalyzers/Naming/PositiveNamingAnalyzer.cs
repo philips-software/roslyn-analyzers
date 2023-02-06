@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		private const string Title = @"Positive Naming";
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
-		private const string Description = @"Properties and variables should be named using positive wording.";
+		private const string Description = MessageFormat;
 		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.PositiveNaming), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

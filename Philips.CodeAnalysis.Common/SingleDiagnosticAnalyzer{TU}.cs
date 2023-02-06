@@ -11,13 +11,13 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer<T> : SingleDiagnosticAnalyzer where T : SyntaxNode
+	public abstract class SingleDiagnosticAnalyzer<T, U> : SingleDiagnosticAnalyzer where T : SyntaxNode where U : SyntaxNodeAction<T>, new()
 	{
 		protected string FullyQualifiedMetaDataName { get; set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											Helper helper = null, DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
-			: base(id, title, messageFormat, description, category, helper, severity, isEnabled)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
 		public override void Initialize(AnalysisContext context)
@@ -46,12 +46,6 @@ namespace Philips.CodeAnalysis.Common
 
 		}
 
-		public void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location = null, params object[] messageArgs)
-		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, messageArgs);
-			context.ReportDiagnostic(diagnostic);
-		}
-
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
@@ -60,10 +54,14 @@ namespace Philips.CodeAnalysis.Common
 				return;
 			}
 
-			Analyze(context, (T)context.Node);
+			U syntaxNodeAction = new()
+			{
+				Context = context,
+				Node = (T)context.Node,
+				Rule = Rule,
+			};
+			syntaxNodeAction.Analyze();
 		}
-
-		protected abstract void Analyze(SyntaxNodeAnalysisContext context, T node);
 
 		private SyntaxKind GetSyntaxKind()
 		{
@@ -75,6 +73,7 @@ namespace Philips.CodeAnalysis.Common
 				nameof(ClassDeclarationSyntax) => SyntaxKind.ClassDeclaration,
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
 				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
+				nameof(TupleTypeSyntax) => SyntaxKind.TupleType,
 				_ => SyntaxKind.None,
 			};
 		}

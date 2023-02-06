@@ -20,8 +20,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class NoHardCodedPathsAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid hardcoded absolute paths";
-		private const string MessageFormat = @"Avoid hardcoded absolute paths";
-		private const string Description = @"Avoid hardcoded absolute paths";
+		private const string MessageFormat = Title;
+		private const string Description = Title;
 		private const string Category = Categories.Maintainability;
 		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 

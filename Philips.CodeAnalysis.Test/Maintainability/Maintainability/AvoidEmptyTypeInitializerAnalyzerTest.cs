@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerPartialDoesntCrash()
+		public void AvoidEmptyTypeInitializerPartialDoesNotCrash()
 		{
 			const string template = @"public class Foo 
 {{
@@ -97,7 +97,7 @@ static Foo() {{ }}", summaryComment));
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new AvoidEmptyTypeInitializer();
+			return new AvoidEmptyTypeInitializerAnalyzer();
 		}
 	}
 }

@@ -21,17 +21,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class ReturnImmutableCollectionsCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Return immutable collections";
+		private const string ReadonlyCollection = "IReadOnlyCollection";
+		private const string ReadonlyDictionary = "IReadOnlyDictionary";
+		private const string ReadonlyList = "IReadOnlyList";
 
 		private static readonly IReadOnlyDictionary<string, string> CollectionsMap = new Dictionary<string, string>()
 		{
-			{"List", "IReadOnlyList"},
-			{"Queue", "IReadOnlyCollection"},
-			{"SortedList", "IReadOnlyDictionary"},
-			{"Stack", "IReadOnlyCollection"},
-			{"Dictionary", "IReadOnlyDictionary"},
-			{"IList", "IReadOnlyList"},
-			{"ICollection", "IReadOnlyCollection"},
-			{"IDictionary", "IReadOnlyDictionary" }
+			{"List", ReadonlyList},
+			{"Queue", ReadonlyCollection},
+			{"SortedList", ReadonlyDictionary},
+			{"Stack", ReadonlyCollection},
+			{"Dictionary", ReadonlyDictionary},
+			{"IList", ReadonlyList},
+			{"ICollection", ReadonlyCollection},
+			{"IDictionary", ReadonlyDictionary}
 		};
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ReturnImmutableCollections));

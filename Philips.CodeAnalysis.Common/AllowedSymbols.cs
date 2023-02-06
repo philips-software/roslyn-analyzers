@@ -18,6 +18,7 @@ namespace Philips.CodeAnalysis.Common
 		private const int NamespaceIndexDelta = 3;
 		private const int TypeIndexDelta = 2;
 		private const int MethodIndexDelta = 1;
+		private const string Wildcard = "*";
 		private readonly Compilation _compilation;
 		private readonly HashSet<IMethodSymbol> _allowedMethods;
 		private readonly HashSet<ITypeSymbol> _allowedTypes;
@@ -149,7 +150,7 @@ namespace Philips.CodeAnalysis.Common
 				}
 				else if (parts.Length == 2)
 				{
-					return (parts[0] == "*") ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
+					return (parts[0] == Wildcard) ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
 				} else
 				{
 					return MatchesFullNamespace(parts, nsName, typeName, method);
@@ -171,18 +172,18 @@ namespace Philips.CodeAnalysis.Common
 				typeIndex = length - MethodIndexDelta;
 			}
 
-			if (parts[nsIndex] != "*")
+			if (parts[nsIndex] != Wildcard)
 			{
 				var fullNs = string.Join(".", parts, 0, nsIndex + 1);
 				result &= fullNs == nsName;
 			}
 
-			if (parts[typeIndex] != "*")
+			if (parts[typeIndex] != Wildcard)
 			{
 				result &= parts[typeIndex] == typeName;
 			}
 
-			if (method != null && parts[methodIndex] != "*")
+			if (method != null && parts[methodIndex] != Wildcard)
 			{
 				result &= parts[methodIndex] == methodName;
 			}

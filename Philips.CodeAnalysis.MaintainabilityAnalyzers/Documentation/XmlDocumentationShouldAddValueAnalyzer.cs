@@ -164,12 +164,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static string GetContent(XmlElementSyntax xmlElement)
 		{
+			const string Space = " ";
 			return xmlElement.Content.ToString()
-				.Replace("\r", "")
-				.Replace("/", " ")
-				.Replace("\n", " ")
-				.Replace("\t", " ")
-				.Replace("///", "");
+				.Replace("\r", string.Empty)
+				.Replace("/", Space)
+				.Replace("\n", Space)
+				.Replace("\t", Space)
+				.Replace("///", string.Empty);
 		}
 
 		private static IEnumerable<string> SplitFromConfig(string line)

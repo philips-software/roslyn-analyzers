@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax>
+	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax, ProbhibitedDynamicKeywordSyntaxNodeAction>
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
 		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
@@ -19,28 +19,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public ProhibitDynamicKeywordAnalyzer()
 			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
+	}
 
-		protected override void Analyze(SyntaxNodeAnalysisContext context, IdentifierNameSyntax node)
+	public class ProbhibitedDynamicKeywordSyntaxNodeAction : SyntaxNodeAction<IdentifierNameSyntax>
+	{
+		public override void Analyze()
 		{
-			if (IsIdentifierDynamicType(context, node))
+			if (IsIdentifierDynamicType())
 			{
-				ReportDiagnostic(context, node.GetLocation());
+				ReportDiagnostic(Node.GetLocation());
 			}
 		}
 
-		private bool IsIdentifierDynamicType(SyntaxNodeAnalysisContext context, IdentifierNameSyntax node)
+		private bool IsIdentifierDynamicType()
 		{
 			if (
-				node.Identifier.ValueText == "dynamic" &&
-				!node.Parent.IsKind(SyntaxKind.Argument) &&
-				!node.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+				Node.Identifier.ValueText == "dynamic" &&
+				!Node.Parent.IsKind(SyntaxKind.Argument) &&
+				!Node.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
 			{
 				return true;
 			}
 
-			if (node.IsVar)
+			if (Node.IsVar)
 			{
-				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(node);
+				SymbolInfo symbol = Context.SemanticModel.GetSymbolInfo(Node);
 
 				if (symbol.Symbol is IDynamicTypeSymbol)
 				{
