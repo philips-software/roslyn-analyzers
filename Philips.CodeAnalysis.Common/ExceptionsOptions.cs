@@ -4,7 +4,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class ExceptionsOptions
 	{
-		public bool UseExceptionsFile { get; set; } = true;
-		public bool GenerateExceptionsFile { get; set; } = false;
+		public bool IsUsingExceptionsFile { get; set; } = true;
+		public bool IsGeneratingExceptionsFile { get; set; } = false;
 	}
 }
