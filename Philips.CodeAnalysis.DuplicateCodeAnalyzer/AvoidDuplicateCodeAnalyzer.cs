@@ -76,8 +76,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
 			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
-			options.UseExceptionsFile = exceptionsOptions.UseExceptionsFile;
-			options.GenerateExceptionsFile = exceptionsOptions.GenerateExceptionsFile;
+			options.UseExceptionsFile = exceptionsOptions.IsUsingExceptionsFile;
+			options.GenerateExceptionsFile = exceptionsOptions.IsGeneratingExceptionsFile;
 
 			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
