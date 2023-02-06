@@ -59,7 +59,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -73,7 +73,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -90,7 +90,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -105,7 +105,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -120,7 +120,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -135,7 +135,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[TestMethod]
@@ -150,7 +150,7 @@ public enum TestEnumeration
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments);
 		}
 
 		[DataRow("foo")]
@@ -169,7 +169,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -209,7 +209,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -252,7 +252,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -293,7 +293,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -330,7 +330,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("Raised when Foo happens")]
@@ -362,7 +362,7 @@ public enum Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("When it is Foo")]
@@ -394,7 +394,7 @@ public enum TestEnumeration
 	Foo = 1,
 }}
 ";
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 
 		[DataRow("When it is Foo")]
@@ -438,7 +438,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.EmptyXmlComments));
+			VerifyDiagnostic(errorContent, DiagnosticId.EmptyXmlComments);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -465,7 +465,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(errorContent, DiagnosticId.XmlDocumentationShouldAddValue);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -523,7 +523,7 @@ public class Foo
 }}
 ";
 
-			VerifyDiagnostic(content, DiagnosticResultHelper.Create(DiagnosticId.XmlDocumentationShouldAddValue));
+			VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue);
 		}
 		#endregion
 	}
