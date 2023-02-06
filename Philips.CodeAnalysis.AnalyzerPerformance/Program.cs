@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Build.Logging;
 using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
@@ -9,12 +10,19 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 	public static class Program
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
+		private static string _filter = string.Empty;
+		private const int MaxPackageNameLength = 24;
+		private const int MaxAnalyzerNameLength = 45;
 
 		public static void Main(string[] args)
 		{
 			if (args.Length == 0)
 			{
 				Console.Error.WriteLine(@"Please specify a .binlog file.");
+			}
+			if (args.Length == 2)
+			{
+				_filter = args[1];
 			}
 
 			Build buildRoot = BinaryLog.ReadBuild(args[0]);
@@ -33,7 +41,8 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
-				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder && namedAnalyzerPackageFolder.Name.Contains(@"Philips.CodeAnalysis"))
+				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder &&
+					(string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter)))
 				{
 					AnalyzerItems(namedAnalyzerPackageFolder);
 				}
@@ -50,7 +59,9 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			_records.Sort();
 			foreach (var record in _records)
 			{
-				Console.WriteLine($"| {record.Id} | {record.Package} | {record.Analyzer} | {record.DisplayTime} |");
+				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "...": record.Package;
+				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
+				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
 
