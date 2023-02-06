@@ -37,6 +37,24 @@ namespace AlignFilenameAndClassName {{
 		}
 
 		/// <summary>
+		/// No diagnostics expected to show up
+		/// </summary>
+		[DataTestMethod]
+		[DataRow("Program"),
+		 DataRow("Program{T}")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void WhenGenericTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
+		{
+			const string sourceCode = @"
+namespace AlignFilenameAndClassName {{
+    class Program<T> {{
+    }}
+}}";
+			VerifySuccessfulCompilation(sourceCode, filePath);
+		}
+
+
+		/// <summary>
 		/// Diagnostics should show up hare.
 		/// </summary>
 		[DataTestMethod]
