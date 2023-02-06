@@ -32,8 +32,8 @@ jobs:
           cat > ./.editorconfig << EOF
           root = true
           [*.cs]
-          dotnet_analyzer_diagnostic.severity = warn
-          dotnet_diagnostic.severity = warn 
+          dotnet_analyzer_diagnostic.severity = warning
+          dotnet_diagnostic.severity = warning
           EOF
           
           rm -f ./Directory.Build.props
