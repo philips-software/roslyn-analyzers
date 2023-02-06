@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			foreach (var record in _records)
 			{
 				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "...": record.Package;
-				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Package.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
+				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
 				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
