@@ -29,6 +29,13 @@ jobs:
       - name: Prepare to eat Dogfood
         run: |
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
+          cat > ./.editorconfig << EOF
+          root = true
+          [*.cs]
+          dotnet_analyzer_diagnostic.severity = warning
+          dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
+          EOF
+          
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
@@ -63,5 +70,7 @@ jobs:
         
       - name: Analyze Performance
         run: |
-          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog  >> $GITHUB_STEP_SUMMARY
+          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog Philips.CodeAnalysis >> PerformanceSummary.txt
+          cat ./PerformanceSummary.txt
+          cat ./PerformanceSummary.txt >> $GITHUB_STEP_SUMMARY
 
