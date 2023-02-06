@@ -36,30 +36,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.ServiceModel.ServiceContractAttribute") == null)
-				{
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InterfaceDeclaration);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InterfaceDeclaration);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			InterfaceDeclarationSyntax interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
 
-			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", "System.ServiceModel.ServiceContractAttribute", out _))
+			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", null, out _))
 			{
 				return;
 			}
 
 			foreach (MethodDeclarationSyntax method in interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>())
 			{
-				if (!_attributeHelper.HasAttribute(method.AttributeLists, context, "OperationContract", "System.ServiceModel.OperationContractAttribute", out _))
+				if (!_attributeHelper.HasAttribute(method.AttributeLists, context, "OperationContract", null, out _))
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
 				}
