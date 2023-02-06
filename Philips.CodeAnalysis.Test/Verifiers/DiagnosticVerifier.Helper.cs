@@ -227,9 +227,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return CreateProject(new[] { source }).Documents.First();
 		}
 
-		protected virtual MetadataReference[] GetMetadataReferences()
+		protected virtual ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			return Array.Empty<MetadataReference>();
+			return ImmutableArray<MetadataReference>.Empty;
 		}
 
 		protected virtual (string name, string content)[] GetAdditionalTexts()

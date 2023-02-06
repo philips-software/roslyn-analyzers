@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -45,10 +46,10 @@ namespace UnitTestApplication
 			return string.Format(TestTemplate, otherClass, attributes, methodBody);
 		}
 
-		public MetadataReference[] GetMetaDataReferences()
+		public ImmutableArray<MetadataReference> GetMetaDataReferences()
 		{
 			//add symbols for assert
-			return new[] { MetadataReference.CreateFromFile(typeof(Assert).Assembly.Location), MetadataReference.CreateFromFile(typeof(TimeoutAttribute).Assembly.Location) };
+			return ImmutableArray.Create<MetadataReference>(MetadataReference.CreateFromFile(typeof(Assert).Assembly.Location)).Add(MetadataReference.CreateFromFile(typeof(TimeoutAttribute).Assembly.Location));
 		}
 
 		#endregion
