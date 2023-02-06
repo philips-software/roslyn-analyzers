@@ -11,11 +11,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public abstract class SyntaxNodeAction<T> where T : SyntaxNode
 	{
-		public SyntaxNodeAnalysisContext Context { get; set; } // todo: init
-		public T Node { get; set; }
-		public DiagnosticDescriptor Rule { get; set; }
+		public SyntaxNodeAnalysisContext Context { get; init; }
+		public T Node { get; init; }
+		public DiagnosticDescriptor Rule { get; init; }
 
-		protected Helper Helper { get; } = new Helper();
+		protected Helper Helper { get; init; } = new Helper();
 
 		public abstract void Analyze();
 
@@ -25,4 +25,10 @@ namespace Philips.CodeAnalysis.Common
 			Context.ReportDiagnostic(diagnostic);
 		}
 	}
+}
+
+// In order to use init above: https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
+namespace System.Runtime.CompilerServices
+{
+	internal static class IsExternalInit { }
 }
