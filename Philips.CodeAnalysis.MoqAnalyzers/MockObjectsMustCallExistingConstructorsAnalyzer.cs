@@ -166,7 +166,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			return false;
 		}
 
-		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool canHaveMockBehavior)
+		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool hasMockBehavior)
 		{
 			if (mockedClass is IErrorTypeSymbol)
 			{
@@ -180,7 +180,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				arguments = argumentList.Arguments.ToImmutableArray();
 			}
 
-			if (canHaveMockBehavior && arguments.Length > 0 && IsFirstArgumentMockBehavior(context, argumentList))
+			if (hasMockBehavior && arguments.Length > 0 && IsFirstArgumentMockBehavior(context, argumentList))
 			{
 				//they passed a mock behavior as the first argument.  ignore this one, mock swallows it.
 				arguments = arguments.RemoveAt(0);
