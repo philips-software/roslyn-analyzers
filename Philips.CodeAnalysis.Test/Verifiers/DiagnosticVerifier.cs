@@ -4,12 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -21,6 +19,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	/// </summary>
 	public abstract partial class DiagnosticVerifier
 	{
+		private static readonly Regex WildcardRegex =
+			new (".*", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 		#region To be implemented by Test classes
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			{
 				Id = Helper.ToDiagnosticId(id),
 				Location = new DiagnosticResultLocation(null),
-				Message = new Regex(regex),
+				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
 			};
 			var analyzer = GetDiagnosticAnalyzer();
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				{
 					Id = analyzer.Id,
 					Location = new DiagnosticResultLocation(null),
-					Message = new Regex(".*"),
+					Message = WildcardRegex,
 					Severity = DiagnosticSeverity.Error,
 				};
 				diagnosticResults[i] = diagnosticResult;
@@ -176,14 +176,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					VerifyDiagnosticLocation(analyzer, actual, actual.Location, first);
 					var additionalLocations = actual.AdditionalLocations.ToArray();
 
-					Assert.AreEqual(expected.Locations.Length - 1, additionalLocations.Length,
+					Assert.AreEqual(expected.Locations.Count - 1, additionalLocations.Length,
 							string.Format("Expected {0} additional locations but got {1} for Diagnostic:\r\n    {2}\r\n",
-								expected.Locations.Length - 1, additionalLocations.Length,
+								expected.Locations.Count - 1, additionalLocations.Length,
 								FormatDiagnostics(analyzer, actual)));
 
 					for (int j = 0; j < additionalLocations.Length; ++j)
 					{
-						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations[j + 1]);
+						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations.ElementAt(j + 1));
 					}
 				}
 

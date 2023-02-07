@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Collections.Generic;
 
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,13 +33,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			return new XmlDocumentationCodeFixProvider();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue) }.additional_useless_words", configuredAdditionalUselessWords  }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue)}.additional_useless_words", configuredAdditionalUselessWords);
 		}
 
 		#endregion

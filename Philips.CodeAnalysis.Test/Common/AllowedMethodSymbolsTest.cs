@@ -38,9 +38,9 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 			return new AllowedSymbolsTestAnalyzer(true);
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new [] { ("NotFile.txt", "data"), (AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedSymbolsContent) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedSymbolsContent));
 		}
 
 		[DataTestMethod]

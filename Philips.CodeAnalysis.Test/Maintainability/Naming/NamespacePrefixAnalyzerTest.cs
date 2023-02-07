@@ -1,6 +1,6 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -38,14 +38,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id }.namespace_prefix", ConfiguredPrefix  }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id}.namespace_prefix", ConfiguredPrefix);
 		}
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();

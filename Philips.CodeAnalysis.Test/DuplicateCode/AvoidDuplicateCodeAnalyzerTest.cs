@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -31,18 +32,14 @@ Foo.WhitelistedFunction";
 			return new AvoidDuplicateCodeFixProvider();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			var options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.token_count", @"20");
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName));
 		}
 
 		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)

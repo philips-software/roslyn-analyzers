@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -20,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using System;
@@ -34,7 +35,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		string GetDisplayName(MethodInfo methodInfo, object[] data) => string.Empty;
 }
 ";
-			return new[] { ("DerivedDataSourceAttribute.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedDataSourceAttribute.cs", code));
 		}
 
 
