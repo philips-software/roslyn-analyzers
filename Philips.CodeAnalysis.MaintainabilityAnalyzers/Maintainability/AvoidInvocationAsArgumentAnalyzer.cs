@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
 			string methodName = (argumentExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
-			if (methodName is "ToString" or "ToArray" or "ToList")
+			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
 				return;
 			}

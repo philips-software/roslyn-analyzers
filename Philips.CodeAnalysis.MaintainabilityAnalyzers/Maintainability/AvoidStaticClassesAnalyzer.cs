@@ -55,12 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidStaticClassesCompilationAnalyzer
 	{
 		private readonly AllowedSymbols _allowedSymbols;
-		private readonly bool _generateExceptionsFile;
+		private readonly bool _shouldGenerateExceptionsFile;
 
-		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
+		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
 		{
 			_allowedSymbols = allowedSymbols;
-			_generateExceptionsFile = generateExceptionsFile;
+			_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 		}
 
 		public void Analyze(SyntaxNodeAnalysisContext context)
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (_generateExceptionsFile)
+			if (_shouldGenerateExceptionsFile)
 			{
 				var exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 				if (exceptionSymbol != null)

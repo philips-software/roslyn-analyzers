@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (!diagnostic.Properties.TryGetValue("missing", out string missingExceptionTypeName))
+			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out string missingExceptionTypeName))
 			{
 				return;
 			}

@@ -183,7 +183,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
 			StatementSyntax lastStatementOfAnalysis, ISymbol ourSymbol)
 		{
-			bool ourSymbolIsReadOrWritten = false;
+			bool isOurSymbolReadOrWritten = false;
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
 			{
@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
 					{
 						// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-						ourSymbolIsReadOrWritten = true;
+						isOurSymbolReadOrWritten = true;
 						break;
 					}
 				}
@@ -201,13 +201,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				{
 					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
 					{
-						ourSymbolIsReadOrWritten = true;
+						isOurSymbolReadOrWritten = true;
 						break;
 					}
 				}
 			}
 
-			return ourSymbolIsReadOrWritten;
+			return isOurSymbolReadOrWritten;
 		}
 
 		private bool CheckStatements(int lastStatementOfAnalysisIndex,

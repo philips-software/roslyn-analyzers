@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -23,16 +22,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
 		private const string Description = @"";
 
-		private readonly bool _checkLocalVariables;
-		private readonly bool _checkFieldVariables;
+		private readonly bool _shouldCheckLocalVariables;
+		private readonly bool _shouldCheckFieldVariables;
 
 		public VariableNamingConventionAnalyzer() : this(true, true) { }
 
-		public VariableNamingConventionAnalyzer(bool checkLocalVariables, bool checkFieldVariables)
+		public VariableNamingConventionAnalyzer(bool shouldCheckLocalVariables, bool shouldCheckFieldVariables)
 			: base(DiagnosticId.VariableNamingConventions, Title, MessageFormat, Description, Categories.Naming, isEnabled:false)
 		{
-			_checkLocalVariables = checkLocalVariables;
-			_checkFieldVariables = checkFieldVariables;
+			_shouldCheckLocalVariables = shouldCheckLocalVariables;
+			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
 
 		public override void Initialize(AnalysisContext context)
@@ -84,12 +83,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				{
 					case SyntaxKind.ForStatement:
 					case SyntaxKind.UsingStatement:
-						shouldCheck = _checkLocalVariables;
+						shouldCheck = _shouldCheckLocalVariables;
 						validator = _localRegex;
 						break;
 					case SyntaxKind.LocalDeclarationStatement:
 						{
-							shouldCheck = _checkLocalVariables;
+							shouldCheck = _shouldCheckLocalVariables;
 							validator = _localRegex;
 							break;
 						}
@@ -102,13 +101,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 								continue;
 							}
 
-							shouldCheck = _checkFieldVariables;
+							shouldCheck = _shouldCheckFieldVariables;
 
 							validator = _fieldRegex;
 							break;
 						}
 					case SyntaxKind.EventFieldDeclaration:
-						shouldCheck = _checkFieldVariables;
+						shouldCheck = _shouldCheckFieldVariables;
 						validator = _eventRegex;
 						break;
 					default:

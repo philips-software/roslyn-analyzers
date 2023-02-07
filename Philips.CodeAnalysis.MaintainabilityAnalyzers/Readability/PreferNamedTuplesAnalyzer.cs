@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		public PreferNamedTuplesAnalyzer()
 			: base(DiagnosticId.PreferTuplesWithNamedFields, Title, MessageFormat, Description, Categories.Readability)
 		{
-			FullyQualifiedMetaDataName = "System.ValueTuple";
+			FullyQualifiedMetaDataName = StringConstants.TupleFullyQualifiedName;
 		}
 	}
 
