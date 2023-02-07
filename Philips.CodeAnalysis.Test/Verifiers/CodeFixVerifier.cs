@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         {
             var document = CreateDocument(oldSource);
             var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
-            var compilerDiagnostics = GetCompilerDiagnostics(document);
+            var compilerDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
 
             // Check if the found analyzer diagnostics are to be fixed by the given CodeFixProvider.
             var analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
@@ -108,12 +108,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     if (codeFixIndex != null)
                     {
                         var codeAction1 = actions.ElementAt((int)codeFixIndex);
-                        document = ApplyFix(document, codeAction1);
+                        document = await ApplyFix(document, codeAction1).ConfigureAwait(false);
                         break;
                     }
 
                     var codeAction2 = actions.ElementAt(0);
-                    document = ApplyFix(document, codeAction2);
+                    document = await ApplyFix(document, codeAction2).ConfigureAwait(false);
                 }
                 else
                 {
@@ -121,12 +121,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     FixAllProvider fixAllProvider = codeFixProvider.GetFixAllProvider();
                     FixAllContext fixAllContext = new(document, codeFixProvider, scope, actions[0].EquivalenceKey, analyzerDiagnosticIds, diagnosticProvider, CancellationToken.None);
                     CodeAction fixAllAction = await fixAllProvider.GetFixAsync(fixAllContext).ConfigureAwait(false);
-                    document = ApplyFix(document, fixAllAction);
+                    document = await ApplyFix(document, fixAllAction).ConfigureAwait(false);
                 }
 
                 analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
 
-                var newDiagnostics = GetCompilerDiagnostics(document);
+                var newDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);
 
                 //check if applying the code fix introduced any new compiler diagnostics
@@ -135,7 +135,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
 					document = document.WithSyntaxRoot(Formatter.Format(syntaxRoot, Formatter.Annotation, document.Project.Solution.Workspace));
-                    var newDiagnostics2 = GetCompilerDiagnostics(document);
+                    var newDiagnostics2 = await GetCompilerDiagnostics(document).ConfigureAwait(false);
                     newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
                     Assert.Fail(
@@ -151,7 +151,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
             Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
-            string actualSource = GetStringFromDocument(document);
+            string actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
             string[] actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             string[] expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
             Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
