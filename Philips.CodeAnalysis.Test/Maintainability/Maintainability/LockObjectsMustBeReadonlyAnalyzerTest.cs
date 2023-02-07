@@ -40,8 +40,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				VerifyDiagnostic(string.Format(template, field));
 			}
 			else
 			{
@@ -66,8 +65,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				VerifyDiagnostic(string.Format(template, field));
 			}
             else
             {
@@ -97,8 +95,7 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				VerifyDiagnostic(string.Format(template, field));
 			}
 			else
 			{

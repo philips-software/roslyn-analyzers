@@ -49,7 +49,7 @@ class FooClass
 
 			if (hasDiagnostic)
 			{
-				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.EnforceFileVersionIsSameAsPackageVersion));
+				VerifyDiagnostic(code, DiagnosticId.EnforceFileVersionIsSameAsPackageVersion);
 			}
 			else
 			{

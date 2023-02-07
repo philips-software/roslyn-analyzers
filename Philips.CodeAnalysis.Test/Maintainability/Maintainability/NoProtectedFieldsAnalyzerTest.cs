@@ -33,8 +33,7 @@ class Foo {{ {0} string _foo; }}
 			var code = string.Format(template, modifiers);
 			if (isError)
 			{
-				DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticId.NoProtectedFields);
-				VerifyDiagnostic(code, expected);
+				VerifyDiagnostic(code);
 			}
 			else
 			{

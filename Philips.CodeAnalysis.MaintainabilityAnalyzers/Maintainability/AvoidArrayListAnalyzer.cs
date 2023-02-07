@@ -6,39 +6,30 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidArrayListAnalyzer : DiagnosticAnalyzer
+	public class AvoidArrayListAnalyzer : SingleDiagnosticAnalyzer<VariableDeclarationSyntax, AvoidArrayListSyntaxNodeAction>
 	{
 		private const string Title = @"Don't use ArrayList, use List<T> instead";
 		private const string MessageFormat = @"Don't use ArrayList for variable {0}, use List<T> instead";
 		private const string Description = @"Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead.";
-		private const string Category = Categories.Maintainability;
-
+		public AvoidArrayListAnalyzer()
+			: base(DiagnosticId.AvoidArrayList, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
+	public class AvoidArrayListSyntaxNodeAction : SyntaxNodeAction<VariableDeclarationSyntax>
+	{
 		private const string ArrayListTypeName = "System.Collections.ArrayList";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidArrayList),
-			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
-			description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.VariableDeclaration);
-		}
-		
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			var variable = (VariableDeclarationSyntax)context.Node;
-			if (variable.Type is not SimpleNameSyntax typeName)
+			if (Node.Type is not SimpleNameSyntax typeName)
 			{
 				// Full (or partial) namespace syntax, check right-most entry only.
-				if (variable.Type is QualifiedNameSyntax qualifiedName)
+				if (Node.Type is QualifiedNameSyntax qualifiedName)
 				{
 					typeName = qualifiedName.Right;
 				}
@@ -55,11 +46,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Sanity check if we got ArrayList from the correct namespace.
-			var typeSymbol = context.SemanticModel.GetSymbolInfo(variable.Type).Symbol as INamedTypeSymbol;
+			var typeSymbol = Context.SemanticModel.GetSymbolInfo(Node.Type).Symbol as INamedTypeSymbol;
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
-				var variableName = variable.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
-				context.ReportDiagnostic(Diagnostic.Create(Rule, typeName.GetLocation(), variableName));
+				var variableName = Node.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
+				ReportDiagnostic(typeName.GetLocation(), variableName);
 			}
 		}
 	}

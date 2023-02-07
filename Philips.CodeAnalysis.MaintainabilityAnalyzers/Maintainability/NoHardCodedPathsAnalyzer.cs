@@ -17,13 +17,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	 * For example: c:\users\Bin\example.xml - Windows & /home/kt/abc.sql - Linux
 	 */
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoHardCodedPathsAnalyzer : DiagnosticAnalyzer
+	public class NoHardCodedPathsAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid hardcoded absolute paths";
 		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private const string Category = Categories.Maintainability;
 		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+
+		public NoHardCodedPathsAnalyzer()
+			: base(DiagnosticId.NoHardcodedPaths, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
@@ -51,11 +55,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.NoHardcodedPaths), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-		{
-			get { return ImmutableArray.Create(Rule); }
-		}
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();

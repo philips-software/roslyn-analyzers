@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodNameAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, TestMethodNameSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Test Method must not start with '{0}'";
-		private const string Title = @"Test Method names unhelpful prefix'";
+		private const string Title = @"Test Method names unhelpful prefix";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
 
 		public TestMethodNameAnalyzer()
@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
 						var location = token.GetLocation();
-						ReportDiagnostic(location);
+						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}
 				}

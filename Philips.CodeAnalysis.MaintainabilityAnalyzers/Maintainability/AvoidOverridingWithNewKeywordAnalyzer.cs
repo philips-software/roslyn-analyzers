@@ -15,28 +15,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Diagnostic of overriding methods or properties with the new keyword.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidOverridingWithNewKeywordAnalyzer : DiagnosticAnalyzer
+	public class AvoidOverridingWithNewKeywordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = "Avoid overriding methods or properties with the new keyword.";
 		private const string MessageFormat = "Avoid overriding {0} with the new keyword.";
 		private const string Description = "Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property.";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(
-				Helper.ToDiagnosticId(DiagnosticId.AvoidOverridingWithNewKeyword),
-				Title,
-				MessageFormat,
-				Category,
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
-				description: Description
-			);
-
-		/// <summary>
-		/// <inheritdoc cref="DiagnosticAnalyzer"/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		public AvoidOverridingWithNewKeywordAnalyzer()
+			: base(DiagnosticId.AvoidOverridingWithNewKeyword, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>

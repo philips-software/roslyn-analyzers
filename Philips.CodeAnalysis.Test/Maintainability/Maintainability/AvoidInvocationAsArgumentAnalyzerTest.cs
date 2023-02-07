@@ -90,7 +90,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -122,7 +122,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -154,7 +154,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -188,7 +188,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -222,7 +222,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -254,7 +254,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -286,7 +286,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -318,7 +318,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -352,7 +352,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -387,7 +387,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -422,7 +422,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -453,7 +453,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -493,7 +493,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			VerifyFix(errorContent, fixedContent);
 		}
 
@@ -511,7 +511,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
+			VerifyDiagnostic(errorContent);
 			//VerifyFix(errorContent, fixedContent);
 		}
 

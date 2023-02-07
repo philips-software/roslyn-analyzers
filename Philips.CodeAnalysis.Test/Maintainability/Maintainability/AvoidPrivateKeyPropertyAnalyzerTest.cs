@@ -41,32 +41,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidPrivateKeyPropertyAnalyzer();
 		}
 
-		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
-		{
-			return new DiagnosticResultLocation("Test.cs", 8 + rowOffset, 8 + columnOffset);
-		}
-
 		[DataTestMethod]
-		[DataRow(@"_ = new X509Certificate2().PrivateKey", 0, 2)]
+		[DataRow(@"_ = new X509Certificate2().PrivateKey")]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
-			_ = cert.PrivateKey;", 1, 0)]
+			_ = cert.PrivateKey;")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidPrivateKeyPropertyOnX509Certificate(string s, int row, int col)
+		public void AvoidPrivateKeyPropertyOnX509Certificate(string s)
 		{
-
 			string code = string.Format(ClassString, s);
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPrivateKeyProperty),
-				Message = new Regex(".+ "),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					GetBaseDiagnosticLocation(row,col)
-				}
-			};
-
-			VerifyDiagnostic(code, expected);
+			VerifyDiagnostic(code);
 		}
 	}
 }

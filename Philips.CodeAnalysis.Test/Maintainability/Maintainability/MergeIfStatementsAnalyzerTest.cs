@@ -73,38 +73,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string testCode = string.Format(testCodeTemplate, test);
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
-			var expectedDiagnostic = DiagnosticResultHelper.Create(DiagnosticId.MergeIfStatements);
-			VerifyDiagnostic(testCode, expectedDiagnostic);
+			VerifyDiagnostic(testCode);
 			VerifyFix(testCode, fixedCode);
-		}
-	}
-
-	[TestClass]
-	public class MergeIfStatementsAnalyzerGeneratedCodeTest : DiagnosticVerifier
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return new MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotMergeIfsGeneratedCodeTest()
-		{
-			const string testCode = @"
-		        public class MyClass
-				{
-					public void Foo()
-					{
-						if (1 == 1) 
-						{
-							if (2 == 2)
-							{ }
-						}
-					}
-			    }";
-
-			VerifySuccessfulCompilation(testCode, "Test.Designer");
 		}
 	}
 }

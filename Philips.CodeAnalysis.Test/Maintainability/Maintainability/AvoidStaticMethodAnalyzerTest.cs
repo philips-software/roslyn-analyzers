@@ -112,7 +112,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string template = CreateFunction("static", localMethodModifier: "static");
 			// should still catch the local static method being used
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.AvoidStaticMethods));
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -120,7 +120,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void CatchIfUsesForeignStaticMethod()
 		{
 			string template = CreateFunction("static", foreignMethodModifier: "static");
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.AvoidStaticMethods));
+			VerifyDiagnostic(template);
 		}
 
 		[TestMethod]
@@ -144,7 +144,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void CatchPlainStaticMethod()
 		{
 			string template = CreateFunction("static");
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.AvoidStaticMethods));
+			VerifyDiagnostic(template);
 
 			string fixedCode = CreateFunction(@"");
 			VerifyFix(template, fixedCode);
