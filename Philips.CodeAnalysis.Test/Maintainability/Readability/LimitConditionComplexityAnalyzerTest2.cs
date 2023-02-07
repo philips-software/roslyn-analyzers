@@ -62,8 +62,7 @@ namespace ComplexConditionUnitTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitConditionComplexity);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity);
 		}
 
 

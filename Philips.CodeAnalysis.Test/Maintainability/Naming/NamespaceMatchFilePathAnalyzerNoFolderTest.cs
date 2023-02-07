@@ -54,6 +54,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[DataRow("Philips.CodeAnalysis.Common", "C:\\Philips.CodeAnalysis.Common\\SingleDiagnosticAnalyzer{TU}.cs", DisplayName = "Generic filename")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
+		[DataRow("System.Runtime.CompilerServices", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Built-in exceptions")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{

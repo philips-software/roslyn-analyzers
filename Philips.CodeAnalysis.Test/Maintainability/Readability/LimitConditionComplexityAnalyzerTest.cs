@@ -79,8 +79,7 @@ namespace ComplexConditionUnitTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitConditionComplexity);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity);
 		}
 
 		/// <summary>

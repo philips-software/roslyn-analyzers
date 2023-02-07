@@ -24,7 +24,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-
 			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
 			string expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
@@ -38,6 +37,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
 			{
+				if (Helper.IsNamespaceExempt(myNamespace))
+				{
+					return;
+				}
+
 				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
 				context.ReportDiagnostic(diagnostic);
 			}
