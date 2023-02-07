@@ -31,7 +31,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 				if (info.Symbol is IFieldSymbol field && !field.IsReadOnly)
 				{
-					ReportDiagnostic(identifier.GetLocation(), identifier.ToString());
+					var location = identifier.GetLocation();
+					ReportDiagnostic(location, identifier.ToString());
 				}
 			}
 		}
