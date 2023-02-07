@@ -191,7 +191,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
-			builder["Microsoft.VisualStudio.TestTools.UnitTesting.Assert"] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
+			builder[StringConstants.AssertFullyQualifiedName] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
 
 			return builder.ToImmutable();
 		}

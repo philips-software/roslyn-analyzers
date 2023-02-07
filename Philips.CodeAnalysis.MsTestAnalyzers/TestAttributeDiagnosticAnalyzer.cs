@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
 				{
 					return;
 				}

@@ -31,12 +31,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				SimpleNameSyntax name => name.ToString()
 			};
 
-			if (memberName is not @"AreEqual" and not @"AreNotEqual")
+			if (memberName is not @"AreEqual" and not StringConstants.AreNotEqualMethodName)
 			{
 				return Array.Empty<Diagnostic>();
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
 				return Array.Empty<Diagnostic>();
 			}
@@ -44,21 +44,21 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			bool arg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
-			bool arg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
-			bool arg0Null = IsNull(argumentList.Arguments[0].Expression);
+			bool isArg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			bool isArg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			bool isArg0Null = IsNull(argumentList.Arguments[0].Expression);
 
-			if (!arg0Literal && !arg1Literal)
+			if (!isArg0Literal && !isArg1Literal)
 			{
 				return Array.Empty<Diagnostic>();
 			}
 
-			if (arg0Literal && !arg0Null)
+			if (isArg0Literal && !isArg0Null)
 			{
 				return Array.Empty<Diagnostic>();
 			}
 
-			if (arg1Literal || arg0Null)
+			if (isArg1Literal || isArg0Null)
 			{
 				var location = invocationExpressionSyntax.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(Rule, location);

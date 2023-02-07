@@ -19,9 +19,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class TestMethodNameCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Remove invalid prefix";
-		private const string TestLiteral = @"Test";
-		private const string EnsureLiteral = @"Ensure";
-		private const string VerifyLiteral = @"Verify";
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestMethodName));
 
@@ -62,20 +59,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Compute new name.
 			string name = methodDeclaration.Identifier.Text;
 
-			while (name.Contains(TestLiteral))
+			while (name.Contains(StringConstants.TestAttributeName))
 			{
-				name = name.Replace(TestLiteral, string.Empty);
+				name = name.Replace(StringConstants.TestAttributeName, string.Empty);
 			}
-			while (name.Contains(EnsureLiteral))
+			while (name.Contains(StringConstants.EnsureAttributeName))
 			{
-				name = name.Replace(EnsureLiteral, string.Empty);
+				name = name.Replace(StringConstants.EnsureAttributeName, string.Empty);
 			}
-			while (name.Contains(VerifyLiteral))
+			while (name.Contains(StringConstants.VerifyAttributeName))
 			{
-				name = name.Replace(VerifyLiteral, string.Empty);
+				name = name.Replace(StringConstants.VerifyAttributeName, string.Empty);
 			}
 
-			name += TestLiteral;
+			name += StringConstants.TestAttributeName;
 
 			// Get the symbol representing the type to be renamed.
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken);

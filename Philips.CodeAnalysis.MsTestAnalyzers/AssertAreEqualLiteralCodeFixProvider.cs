@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			bool isLiteralTrue = GetMethod(literalExpected);
 
-			if (calledMethod.ToString() == @"AreNotEqual")
+			if (calledMethod.ToString() == StringConstants.AreNotEqualMethodName)
 			{
 				isLiteralTrue = !isLiteralTrue;
 			}

@@ -16,11 +16,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Assert.AreEqual parameter types must match";
 		private const string Description = @"The types of the parameters of Are[Not]Equal must match.";
 		private const string Category = Categories.Maintainability;
-		private const string AssertFullyQualifiedName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -28,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(AssertFullyQualifiedName) == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
 				{
 					return;
 				}
@@ -50,12 +49,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			string memberName = maes.Name.ToString();
-			if (memberName is not @"AreEqual" and not @"AreNotEqual")
+			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				return;
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(AssertFullyQualifiedName))
+			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
 				return;
 			}
@@ -72,7 +71,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			// Our <actual> is of type object.  If it matches the type of <expected>, then AreEqual will pass, so we wouldn't want to fail here.
 			// However, if the types differ, it will be a runtime Assert fail, so the early notice is advantageous.  The code is also clearer.
-			// Moreover, if it were "AreNotEqual", that is particularly insidious, because the Assert would pass due to the type difference
+			// Moreover, if it were AreNotEqual, that is particularly insidious, because the Assert would pass due to the type difference
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
 			if (!context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
