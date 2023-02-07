@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
 			var exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
-			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.IsGeneratingExceptionsFile);
+			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 

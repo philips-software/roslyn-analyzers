@@ -161,7 +161,7 @@ namespace Philips.CodeAnalysis.Common
 		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
 		{
 			string methodName = method?.Name;
-			bool result = true;
+			bool isMatch = true;
 			int length = parts.Length;
 			int nsIndex = length - NamespaceIndexDelta;
 			int typeIndex = length - TypeIndexDelta;
@@ -175,20 +175,20 @@ namespace Philips.CodeAnalysis.Common
 			if (parts[nsIndex] != Wildcard)
 			{
 				var fullNs = string.Join(".", parts, 0, nsIndex + 1);
-				result &= fullNs == nsName;
+				isMatch &= fullNs == nsName;
 			}
 
 			if (parts[typeIndex] != Wildcard)
 			{
-				result &= parts[typeIndex] == typeName;
+				isMatch &= parts[typeIndex] == typeName;
 			}
 
 			if (method != null && parts[methodIndex] != Wildcard)
 			{
-				result &= parts[methodIndex] == methodName;
+				isMatch &= parts[methodIndex] == methodName;
 			}
 
-			return result;
+			return isMatch;
 		}
 
 
