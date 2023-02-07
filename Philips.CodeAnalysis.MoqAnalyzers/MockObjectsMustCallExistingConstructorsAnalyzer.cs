@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 		}
 
-		private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, string expectedClassName, bool returnsMock, bool canHaveMockBehavior)
+		private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, string expectedClassName, bool hasReturnedMock, bool hasMockBehavior)
 		{
 			//by now we know they are calling foo.Create<T>/foo.Of.  Drop to the semantic model, is this MockRepository.Create<T> or Mock.Of<T>?
 			SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax);
@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			ITypeSymbol returnType = method.ReturnType;
-			if (returnsMock)
+			if (hasReturnedMock)
 			{
 				if (returnType is not INamedTypeSymbol typeSymbol || !typeSymbol.IsGenericType)
 				{
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			//they are calling MockRepository.Create<T>.
-			VerifyMockAttempt(context, returnType, invocationExpressionSyntax.ArgumentList, canHaveMockBehavior);
+			VerifyMockAttempt(context, returnType, invocationExpressionSyntax.ArgumentList, hasMockBehavior);
 		}
 
 		private void AnalyzeNewObject(SyntaxNodeAnalysisContext context)
@@ -239,7 +239,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			foreach (IMethodSymbol constructor in bestFitConstructors)
 			{
-				bool didFindAll = true;
+				bool hasFoundAll = true;
 
 				for (int i = 0; i < arguments.Length; i++)
 				{
@@ -259,12 +259,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					}
 					if (!c.Exists)
 					{
-						didFindAll = false;
+						hasFoundAll = false;
 						break;
 					}
 				}
 
-				if (didFindAll)
+				if (hasFoundAll)
 				{
 					return true;
 				}
