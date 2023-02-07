@@ -31,20 +31,20 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Verifier wrappers
 
-		protected void VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null)
+		protected void VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
 			VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName);
 		}
 
-		protected void VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null)
+		protected void VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(id),
 				Location = new DiagnosticResultLocation(null),
-				Message = new Regex(".*"),
+				Message = new Regex(regex),
 				Severity = DiagnosticSeverity.Error,
 			};
 			var analyzer = GetDiagnosticAnalyzer();
