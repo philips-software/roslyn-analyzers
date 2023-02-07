@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.Simplification;
@@ -22,9 +23,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="document">The Document to apply the fix on</param>
 		/// <param name="codeAction">A CodeAction that will be applied to the Document.</param>
 		/// <returns>A Document with the changes from the CodeAction</returns>
-		private static Document ApplyFix(Document document, CodeAction codeAction)
+		private async Task<Document> ApplyFix(Document document, CodeAction codeAction)
 		{
-			var operations = codeAction.GetOperationsAsync(CancellationToken.None).Result;
+			var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
 			var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
 			return solution.GetDocument(document.Id);
 		}
@@ -37,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="diagnostics">The Diagnostics that existed in the code before the CodeFix was applied</param>
 		/// <param name="newDiagnostics">The Diagnostics that exist in the code after the CodeFix was applied</param>
 		/// <returns>A list of Diagnostics that only surfaced in the code after the CodeFix was applied</returns>
-		private static IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
+		private IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
 		{
 			var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 			var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
@@ -64,9 +65,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="document">The Document to run the compiler diagnostic analyzers on</param>
 		/// <returns>The compiler diagnostics that were found in the code</returns>
-		private static IEnumerable<Diagnostic> GetCompilerDiagnostics(Document document)
+		private async Task<IEnumerable<Diagnostic>> GetCompilerDiagnostics(Document document)
 		{
-			return document.GetSemanticModelAsync().Result.GetDiagnostics();
+			var model = await document.GetSemanticModelAsync().ConfigureAwait(false);
+			return model.GetDiagnostics();
 		}
 
 		/// <summary>
@@ -74,10 +76,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="document">The Document to be converted to a string</param>
 		/// <returns>A string containing the syntax of the Document after formatting</returns>
-		private static string GetStringFromDocument(Document document)
+		private async Task<string> GetStringFromDocument(Document document)
 		{
-			var simplifiedDoc = Simplifier.ReduceAsync(document, Simplifier.Annotation).Result;
-			var root = simplifiedDoc.GetSyntaxRootAsync().Result;
+			var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
+			var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
 			var v = root.GetText().ToString();
 			return v;
 		}
