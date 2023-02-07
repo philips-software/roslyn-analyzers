@@ -29,19 +29,7 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma),
-				Message = new Regex(AvoidPragmaAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test.cs", 6, expectedColumn)
-				}
-			};
-
-			VerifyDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText);
 		}
 
 		[TestMethod]
@@ -76,7 +64,6 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
 			VerifySuccessfulCompilation(givenText, "Test.Designer");
 		}
 

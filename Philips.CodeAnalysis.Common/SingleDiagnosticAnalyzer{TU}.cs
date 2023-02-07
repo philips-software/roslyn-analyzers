@@ -13,11 +13,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public abstract class SingleDiagnosticAnalyzer<T, U> : SingleDiagnosticAnalyzer where T : SyntaxNode where U : SyntaxNodeAction<T>, new()
 	{
-		protected string FullyQualifiedMetaDataName { get; set; }
+		public string FullyQualifiedMetaDataName { get; protected set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
-			: base(id, title, messageFormat, description, category, severity, isEnabled)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true, string helpUri = null)
+			: base(id, title, messageFormat, description, category, severity, isEnabled, helpUri)
 		{ }
 
 		/// <summary>
@@ -89,6 +89,22 @@ namespace Philips.CodeAnalysis.Common
 				nameof(DestructorDeclarationSyntax) => SyntaxKind.DestructorDeclaration,
 				nameof(ExpressionSyntax) => SyntaxKind.AsExpression,
 				nameof(FieldDeclarationSyntax) => SyntaxKind.FieldDeclaration,
+				nameof(InvocationExpressionSyntax) => SyntaxKind.InvocationExpression,
+				nameof(UsingStatementSyntax) => SyntaxKind.UsingStatement,
+				nameof(AttributeListSyntax) => SyntaxKind.AttributeList,
+				nameof(VariableDeclarationSyntax) => SyntaxKind.VariableDeclaration,
+				nameof(ConstructorDeclarationSyntax) => SyntaxKind.ConstructorDeclaration,
+				nameof(ArgumentSyntax) => SyntaxKind.Argument,
+				nameof(LiteralExpressionSyntax) => SyntaxKind.NumericLiteralExpression,
+				nameof(PragmaWarningDirectiveTriviaSyntax) => SyntaxKind.PragmaWarningDirectiveTrivia,
+				nameof(MemberAccessExpressionSyntax) => SyntaxKind.SimpleMemberAccessExpression,
+				nameof(ThrowStatementSyntax) => SyntaxKind.ThrowStatement,
+				nameof(ConversionOperatorDeclarationSyntax) => SyntaxKind.ConversionOperatorDeclaration,
+				nameof(LockStatementSyntax) => SyntaxKind.LockStatement,
+				nameof(EventFieldDeclarationSyntax) => SyntaxKind.EventFieldDeclaration,
+				nameof(InterfaceDeclarationSyntax) => SyntaxKind.InterfaceDeclaration,
+				nameof(AccessorDeclarationSyntax) => SyntaxKind.SetAccessorDeclaration,
+				nameof(CatchClauseSyntax) => SyntaxKind.CatchClause,
 				_ => SyntaxKind.None,
 			};
 		}

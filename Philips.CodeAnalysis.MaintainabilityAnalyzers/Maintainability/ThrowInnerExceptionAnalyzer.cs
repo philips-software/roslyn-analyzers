@@ -16,59 +16,35 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Include the original exception when rethrowing.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ThrowInnerExceptionAnalyzer : DiagnosticAnalyzer
+	public class ThrowInnerExceptionAnalyzer : SingleDiagnosticAnalyzer<CatchClauseSyntax, ThrowInnerExceptionSyntaxNodeAction>
 	{
 		private const string Title = "Use inner exceptions for unhandled exceptions";
-		private const string Message = "Rethrown exception should include caught exception.";
+		private const string MessageFormat = "Rethrown exception should include caught exception.";
 		private const string Description = Title;
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(
-				Helper.ToDiagnosticId(DiagnosticId.ThrowInnerException),
-				Title,
-				Message,
-				Category,
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: false,
-				description: Description
-			);
+		public ThrowInnerExceptionAnalyzer()
+			: base(DiagnosticId.ThrowInnerException, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+		{ }
+	}
 
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		public override void Initialize(AnalysisContext context)
+	public class ThrowInnerExceptionSyntaxNodeAction : SyntaxNodeAction<CatchClauseSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(
-				AnalyzeCatchException,
-				SyntaxKind.CatchClause
-			);
-		}
-
-		private void AnalyzeCatchException(SyntaxNodeAnalysisContext context)
-		{
-			var catchNode = (CatchClauseSyntax)context.Node;
 			// Look for throw statements and check them.
-			var hasBadThrowNodes = catchNode.DescendantNodes()
-				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(context, node));
+			var hasBadThrowNodes = Node.DescendantNodes()
+				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(node));
 			if (hasBadThrowNodes)
 			{
-				var location = catchNode.CatchKeyword.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
+				var location = Node.CatchKeyword.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 
 		// Throw should rethrow same exception, or include original exception
 		// when creating new Exception.
 		// Alternatively, also allow the HttpResponseException method using in ASP .NET Core.
-		private bool IsCorrectThrow(SyntaxNodeAnalysisContext context, ThrowStatementSyntax node)
+		private bool IsCorrectThrow(ThrowStatementSyntax node)
 		{
 			bool isOk = true;
 			var newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
@@ -81,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					if (!isOk)
 					{
 						// The HttpResponseException has only a single argument.
-						var typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+						var typeSymbol = Context.SemanticModel.GetTypeInfo(creation).Type;
 						if (typeSymbol.Name == "HttpResponseException")
 						{
 							isOk = true;

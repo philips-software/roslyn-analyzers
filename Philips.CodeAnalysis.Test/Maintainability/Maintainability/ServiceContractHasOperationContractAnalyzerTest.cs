@@ -16,20 +16,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class ServiceContractHasOperationContractAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ServiceContractHasOperationContractAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -82,17 +72,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text, 
-				new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
-					Message = new Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", 5, null),
-					}
-				});
+			VerifyDiagnostic(text);
 		}
 
 		[TestMethod]
@@ -110,19 +90,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text,
-				new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
-					Message = new Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", 5, null),
-					}
-				});
+			VerifyDiagnostic(text);
 		}
-
-		#endregion
 	}
 }

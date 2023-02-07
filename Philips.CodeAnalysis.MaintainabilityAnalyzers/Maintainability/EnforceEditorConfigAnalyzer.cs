@@ -10,15 +10,15 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceEditorConfigAnalyzer : DiagnosticAnalyzer
+	public class EnforceEditorConfigAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Missing .editorconfig";
 		private const string MessageFormat = @"The project does not have a local .editorconfig file.";
 		private const string Description = @".editorconfig files help enforce and configure Analyzers";
-		private const string Category = Categories.Maintainability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.EnforceEditorConfig), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public EnforceEditorConfigAnalyzer()
+			: base(DiagnosticId.EnforceEditorConfig, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{

@@ -2,8 +2,6 @@
 
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -60,9 +58,9 @@ namespace CastCompleteTests {
 		[DataTestMethod]
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.CastCompleteObject);
-			VerifyDiagnostic(testCode, expected);
+		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode)
+		{
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -76,7 +74,8 @@ namespace CastCompleteTests {
 			VerifySuccessfulCompilation(WrongMulipleFields, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new CastCompleteObjectAnalyzer();
 		}
 	}

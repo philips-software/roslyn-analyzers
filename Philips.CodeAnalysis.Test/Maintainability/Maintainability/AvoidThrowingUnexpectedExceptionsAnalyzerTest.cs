@@ -185,7 +185,7 @@ public class FooException
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidExceptionsFromUnexpectedLocations));
+			VerifyDiagnostic(testCode);
 		}
 	}
 }

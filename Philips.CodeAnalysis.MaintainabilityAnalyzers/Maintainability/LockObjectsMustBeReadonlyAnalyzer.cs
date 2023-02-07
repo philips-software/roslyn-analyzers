@@ -10,39 +10,30 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LockObjectsMustBeReadonlyAnalyzer : DiagnosticAnalyzer
+	public class LockObjectsMustBeReadonlyAnalyzer : SingleDiagnosticAnalyzer<LockStatementSyntax, LockObjectsMustBeReadonlySyntaxNodeAction>
 	{
 		private const string Title = @"Objects used as locks should be readonly";
 		private const string MessageFormat = @"'{0}' should be readonly";
 		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.LocksShouldBeReadonly), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public LockObjectsMustBeReadonlyAnalyzer()
+			: base(DiagnosticId.LocksShouldBeReadonly, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+	public class LockObjectsMustBeReadonlySyntaxNodeAction : SyntaxNodeAction<LockStatementSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.LockStatement);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext obj)
-		{
-			LockStatementSyntax lockStatementSyntax = (LockStatementSyntax)obj.Node;
-
-			if (lockStatementSyntax.Expression is IdentifierNameSyntax identifier)
+			if (Node.Expression is IdentifierNameSyntax identifier)
 			{
-				SymbolInfo info = obj.SemanticModel.GetSymbolInfo(identifier);
+				SymbolInfo info = Context.SemanticModel.GetSymbolInfo(identifier);
 
 				if (info.Symbol is IFieldSymbol field && !field.IsReadOnly)
 				{
-					obj.ReportDiagnostic(Diagnostic.Create(Rule, identifier.GetLocation(), identifier.ToString()));
+					ReportDiagnostic(identifier.GetLocation(), identifier.ToString());
 				}
 			}
-
-
 		}
 	}
 }

@@ -13,10 +13,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class NoRegionsInMethodAnalyzerTest : DiagnosticVerifier
 	{
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-
 			return new NoRegionsInMethodAnalyzer();
 		}
 
@@ -52,29 +50,29 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsAndEndsInMethodTest()
 		{
-			Verify(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}", 2);
+			VerifyDiagnostic(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}");
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsInMethodTest()
 		{
-			Verify(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
+			VerifyDiagnostic(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
 
-	}", 2);
+	}");
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionEndsInMethodTest()
 		{
-			Verify(@"Class C{
+			VerifyDiagnostic(@"Class C{
 	#region testRegion
 	public void foo(){
 		int x = 2;
 		#endregion
 	}
-	}", 5);
+	}");
 		}
 
 		[TestMethod]
@@ -102,7 +100,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RegionStartsInOneMethodEndsInAnotherTest()
 		{
-			Verify(@"
+			VerifyDiagnostic(@"
 Class C{
 	#region 
 	public void foo(){
@@ -113,7 +111,7 @@ Class C{
 
 	}
 
-	}", 8);
+	}");
 		}
 
 
@@ -129,23 +127,6 @@ Class C{
 		public void EmptyStringTest()
 		{
 			VerifySuccessfulCompilation("");
-		}
-
-
-
-
-		private void Verify(string file, int line)
-		{
-			VerifyDiagnostic(file, new DiagnosticResult()
-			{
-				Id = NoRegionsInMethodAnalyzer.Rule.Id,
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", line, -1), //6,-1
-				}
-			});
 		}
 	}
 }
