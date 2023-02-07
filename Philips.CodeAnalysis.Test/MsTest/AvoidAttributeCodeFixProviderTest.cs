@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -35,54 +36,54 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("[TestInitialize]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTestInitializeCodeFixProviderTest(string testMethod)
+		public async Task AvoidTestInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestInitializeMethod);
 			VerifyDiagnostic(givenText, expected);
 
-			VerifyFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow("[ClassInitialize]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidClassInitializeCodeFixProviderTest(string testMethod)
+		public async Task AvoidClassInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassInitializeMethod);
 			VerifyDiagnostic(givenText, expected);
 
-			VerifyFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestCleanup]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTestCleanupCodeFixProviderTest(string testMethod)
+		public async Task AvoidTestCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestCleanupMethod);
 			VerifyDiagnostic(givenText, expected);
 
-			VerifyFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[ClassCleanup]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidClassCleanupCodeFixProviderTest(string testMethod)
+		public async Task AvoidClassCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassCleanupMethod);
 			VerifyDiagnostic(givenText, expected);
 
-			VerifyFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		private DiagnosticResult GetExpectedDiagnostic(DiagnosticId id)

@@ -9,6 +9,7 @@ using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -305,7 +306,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongLastTokenDot, null, 11, 18, DisplayName = nameof(WrongLastTokenDot))]
 		[DataRow(WrongReturnStatement, CorrectReturnStatement, 11, 22, DisplayName = nameof(WrongReturnStatement))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
+		public async Task WhenMultiLineConditionIsIncorrectDiagnosticIsTriggered(
 			string testCode,
 			string fixedCode,
 			int line,
@@ -324,7 +325,7 @@ namespace MultiLineConditionUnitTests
 			VerifyDiagnostic(testCode, expected);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
-				VerifyFix(testCode, fixedCode);
+				await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 			}
 		}
 

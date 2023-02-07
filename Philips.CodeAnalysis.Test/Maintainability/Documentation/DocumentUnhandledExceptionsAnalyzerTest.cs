@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -237,10 +238,10 @@ public class Foo
 		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, DisplayName = nameof(WrongEnumerateFiles)),
 		 DataRow(WrongDangerous, FixedDangerous, DisplayName = nameof(WrongDangerous))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
+		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
 			VerifyDiagnostic(testCode);
-			VerifyFix(testCode, fixedCode);
+			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 	}
 }

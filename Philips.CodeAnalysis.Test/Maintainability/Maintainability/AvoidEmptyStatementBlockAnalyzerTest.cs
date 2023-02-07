@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,7 +50,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesEmptyStatementMethod()
+		public async Task CatchesEmptyStatementMethod()
 		{
 			const string template = @"
 using System;
@@ -73,7 +74,7 @@ class Foo
 ";
 
 			VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatement);
-			VerifyFix(template, fixedCode);
+			await VerifyFix(template, fixedCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]

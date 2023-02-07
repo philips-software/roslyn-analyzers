@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -43,21 +44,21 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
+		protected async Task VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
-			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, FixAllScope.Custom);
+			await VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, FixAllScope.Custom).ConfigureAwait(false);
 		}
 
-		protected void VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
+		protected async Task VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
 
-			foreach (FixAllScope scope in new FixAllScope[] { FixAllScope.Solution, FixAllScope.Project, FixAllScope.Document})
+			foreach (FixAllScope scope in new FixAllScope[] { FixAllScope.Solution, FixAllScope.Project, FixAllScope.Document })
 			{
-				VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, scope);
+				await VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, scope).ConfigureAwait(false);
 			}
 		}
 
@@ -73,7 +74,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
         /// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
+        private async Task VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
         {
             var document = CreateDocument(oldSource);
             var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
@@ -119,7 +120,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     FixAllContext.DiagnosticProvider diagnosticProvider = new TestDiagnosticProvider(analyzerDiagnostics, document);
                     FixAllProvider fixAllProvider = codeFixProvider.GetFixAllProvider();
                     FixAllContext fixAllContext = new(document, codeFixProvider, scope, actions[0].EquivalenceKey, analyzerDiagnosticIds, diagnosticProvider, CancellationToken.None);
-                    CodeAction fixAllAction = fixAllProvider.GetFixAsync(fixAllContext).Result;
+                    CodeAction fixAllAction = await fixAllProvider.GetFixAsync(fixAllContext).ConfigureAwait(false);
                     document = ApplyFix(document, fixAllAction);
                 }
 
@@ -131,15 +132,16 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 //check if applying the code fix introduced any new compiler diagnostics
                 if (!shouldAllowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
                 {
-                    // Format and get the compiler diagnostics again so that the locations make sense in the output
-                    document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
+					var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+					// Format and get the compiler diagnostics again so that the locations make sense in the output
+					document = document.WithSyntaxRoot(Formatter.Format(syntaxRoot, Formatter.Annotation, document.Project.Solution.Workspace));
                     var newDiagnostics2 = GetCompilerDiagnostics(document);
                     newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
                     Assert.Fail(
                         string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
                             string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-                            document.GetSyntaxRootAsync().Result.ToFullString()));
+                            syntaxRoot.ToFullString()));
                 }
             }
 

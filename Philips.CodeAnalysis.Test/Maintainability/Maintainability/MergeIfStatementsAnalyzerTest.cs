@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -56,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"if(1==1) { if (2==2) {} }", @"if (1 == 1 && 2 == 2)")]
 		[DataRow(@"if (3==3) if (4==4) {}", @"if (3 == 3 && 4 == 4)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MergeIfsTest(string test, string fixedTest)
+		public async Task MergeIfsTest(string test, string fixedTest)
 		{
 			fixedTest += Environment.NewLine + "{ }";
 			const string testCodeTemplate = @"
@@ -74,7 +75,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
 			VerifyDiagnostic(testCode);
-			VerifyFix(testCode, fixedCode);
+			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 	}
 }

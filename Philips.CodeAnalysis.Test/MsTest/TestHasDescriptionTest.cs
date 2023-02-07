@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -25,9 +26,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("[TestMethod, Description(TestDescriptions.longDescription)]", "[TestMethod]")]
 		[DataRow("[TestMethod, Description(\"asdfasdkfasdfkasd\")]", "[TestMethod]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IncorrectDescriptionAttribute(string methodAttributes, string expectedMethodAttributes)
+		public async Task IncorrectDescriptionAttribute(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 
@@ -35,21 +36,21 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("[TestMethod][Description(TestDescriptions.shortDescription)]")]
 		[DataRow("[TestMethod, Description(TestDescriptions.shortDescription)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectDescriptionAttribute(string methodAttributes)
+		public async Task CorrectDescriptionAttribute(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AttributesInMethodsDontCauseCrash()
+		public async Task AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"
 [TestMethod, Description(TestDescriptions.shortDescription)]
 var foo = 4;
 ";
 
-			VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod]");
+			await VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod]").ConfigureAwait(false);
 		}
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)

@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -97,11 +98,11 @@ namespace AvoidArrayListTests {
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
 			VerifyDiagnostic(testCode);
 			if (fixedCode != null)
 			{
-				VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true);
+				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
 			}
 		}
 

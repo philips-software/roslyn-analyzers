@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -141,13 +142,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchPlainStaticMethod()
+		public async Task CatchPlainStaticMethod()
 		{
 			string template = CreateFunction("static");
 			VerifyDiagnostic(template);
 
 			string fixedCode = CreateFunction(@"");
-			VerifyFix(template, fixedCode);
+			await VerifyFix(template, fixedCode).ConfigureAwait(false);
 		}
 	}
 }

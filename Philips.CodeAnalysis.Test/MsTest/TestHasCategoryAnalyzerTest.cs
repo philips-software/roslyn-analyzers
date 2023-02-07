@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -115,7 +116,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FixAddsCategoryAttributeTest()
+		public async Task FixAddsCategoryAttributeTest()
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -144,7 +145,7 @@ class Foo
     }
 }
 ";
-			VerifyFix(baseline, fixedText);
+			await VerifyFix(baseline, fixedText).ConfigureAwait(false);
 		}
 
 		private void VerifyError(string baseline, string given, bool isError)
