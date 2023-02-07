@@ -1,6 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,12 +26,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class MergeIfStatementsSyntaxNodeAction : SyntaxNodeAction<IfStatementSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			// Node has an else clause
 			if (Node.Else != null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			SyntaxNode parent = Node.Parent;
@@ -38,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				// Has multiple statements in the block
 				if (parentBlockSyntax.Statements.Count > 1)
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 
 				parent = parentBlockSyntax.Parent;
@@ -47,29 +50,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Parent is not an If statement
 			if (parent is not IfStatementSyntax parentIfSyntax)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Parent has an else clause
 			if (parentIfSyntax.Else != null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Has ||
 			if (IfConditionHasLogicalAnd(Node))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Parent has ||
 			if (IfConditionHasLogicalAnd(parentIfSyntax))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.IfKeyword.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 
 		private bool IfConditionHasLogicalAnd(IfStatementSyntax ifStatement)

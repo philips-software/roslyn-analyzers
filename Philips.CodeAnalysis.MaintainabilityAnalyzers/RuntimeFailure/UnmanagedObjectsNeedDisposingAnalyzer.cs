@@ -1,7 +1,10 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,20 +30,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 	public class UnmanagedObjectsNeedDisposingSyntaxNodeAction : SyntaxNodeAction<FieldDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			BaseTypeDeclarationSyntax typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (typeDeclaration is StructDeclarationSyntax)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (IsUnmanaged(Node.Declaration.Type) && !TypeImplementsIDisposable())
 			{
 				var variableName = Node.Declaration.Variables[0].Identifier.Text;
 				Location loc = Node.Declaration.Variables[0].Identifier.GetLocation();
-				ReportDiagnostic(loc, variableName);
+				return PrepareDiagnostic(loc, variableName).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 
 		private bool IsUnmanaged(TypeSyntax type)

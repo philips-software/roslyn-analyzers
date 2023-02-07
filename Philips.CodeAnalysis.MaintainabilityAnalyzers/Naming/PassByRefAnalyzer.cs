@@ -1,5 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,14 +24,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 	public class PassByRefSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.ParameterList is null || Node.ParameterList.Parameters.Count == 0)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			bool? isInterfaceMethod = null;
+
+			var errors = new List<Diagnostic>();
+
 			foreach (ParameterSyntax parameterSyntax in Node.ParameterList.Parameters)
 			{
 				if (!parameterSyntax.Modifiers.Any(SyntaxKind.RefKeyword))
@@ -49,12 +54,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 				if (isInterfaceMethod.Value)
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 
 				Location location = parameterSyntax.GetLocation();
-				ReportDiagnostic(location, parameterSyntax.Identifier);
+				errors.Add(PrepareDiagnostic(location, parameterSyntax.Identifier));
 			}
+			return errors;
 		}
 
 		private bool IsInterfaceOrBaseClassMethod()

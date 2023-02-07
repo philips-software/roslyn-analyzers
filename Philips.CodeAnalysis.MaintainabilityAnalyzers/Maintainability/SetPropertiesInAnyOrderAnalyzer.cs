@@ -3,6 +3,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,18 +28,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class SetPropertiesInAnyOrderSyntaxNodeAction : SyntaxNodeAction<AccessorDeclarationSyntax>
 	{
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			PropertyDeclarationSyntax prop = Node.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
 			if (Node.Body == null || prop == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			BaseTypeDeclarationSyntax type = prop.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			IEnumerable<string> propertiesInType = GetProperties(type);
@@ -47,8 +49,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var propertyName = prop.Identifier.Text;
 				Location loc = Node.GetLocation();
-				ReportDiagnostic(loc, propertyName);
+				return PrepareDiagnostic(loc, propertyName).ToSome();
 			}
+
+			return Option<Diagnostic>.None;
 		}
 
 		private static IEnumerable<string> GetProperties(BaseTypeDeclarationSyntax type)

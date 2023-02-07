@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -26,25 +27,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const int InitialCodeLine = -20;
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
-			System.Collections.Generic.IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
-			if (!comments.Any())
-			{
-				return;
-			}
-
-			var previousViolationLine = InitialCodeLine;
-			foreach (Location location in comments.Where(comment => comment.ToString().EndsWith(";"))
-											 .Select(node => node.GetLocation()))
-			{
-				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
-				if (lineNumber - previousViolationLine > 1)
+			return Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+				.Where(comment => comment.ToString().EndsWith(";"))
+				.Select(node => node.GetLocation())
+				.Fold<(List<Diagnostic> Diagnostics, int Line), Location>((new List<Diagnostic>(), InitialCodeLine),
+				(prevStep, location) =>
 				{
-					ReportDiagnostic(location, lineNumber);
-				}
-				previousViolationLine = lineNumber;
-			}
+					var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
+					if (lineNumber - prevStep.Line > 1)
+					{
+						prevStep.Diagnostics.Add(PrepareDiagnostic(location, lineNumber));
+					}
+					return (prevStep.Diagnostics, lineNumber);
+				}).Diagnostics;
 		}
 	}
 }

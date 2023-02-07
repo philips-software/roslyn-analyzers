@@ -1,5 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,13 +27,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class NoProtectedFieldsSyntaxNodeAction : SyntaxNodeAction<FieldDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Modifiers.Any(SyntaxKind.ProtectedKeyword))
 			{
 				Location location = Node.GetLocation();
-				ReportDiagnostic(location);
+				return PrepareDiagnostic(location).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

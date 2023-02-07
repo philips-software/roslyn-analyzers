@@ -1,10 +1,14 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -39,26 +43,23 @@ namespace Philips.CodeAnalysis.Common
 					return;
 				}
 
-				startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
+				startContext.RegisterSyntaxNodeAction(RunAnalysis, syntaxKind);
 			});
 		}
 
-		private void StartAnalysis(SyntaxNodeAnalysisContext context)
+		private void RunAnalysis(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			TSyntaxNodeAction syntaxNodeAction = new()
-			{
-				Context = context,
-				Node = (T)context.Node,
-				Rule = Rule,
-				Analyzer = this,
-			};
-			syntaxNodeAction.Analyze();
+			_ = new List<GeneratedCodeDetector> { new() }
+				.Filter((g) => !g.IsGeneratedCode(context))
+				.Select((g) => new TSyntaxNodeAction()
+				{
+					Context = context,
+					Node = (T)context.Node,
+					Rule = Rule,
+					Analyzer = this,
+				})
+				.SelectMany((s) => s.Analyze())
+				.Iter(context.ReportDiagnostic);
 		}
 
 		protected virtual SyntaxKind GetSyntaxKind()

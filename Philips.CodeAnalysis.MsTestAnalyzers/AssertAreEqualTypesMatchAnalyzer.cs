@@ -1,5 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,28 +26,28 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 	public class AssertAreEqualTypesMatchSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Expression is not MemberAccessExpressionSyntax maes)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			var memberName = maes.Name.ToString();
 			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If it resolved to Are[Not]Equal<T>, then we know the types are the same.
 			if (memberSymbol.IsGenericMethod)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			ArgumentListSyntax argumentList = Node.ArgumentList;
@@ -58,8 +61,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (!Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
 				Location location = Node.GetLocation();
-				ReportDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString());
+				return PrepareDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString()).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

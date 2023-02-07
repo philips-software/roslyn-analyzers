@@ -1,7 +1,10 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -23,16 +26,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 	public class AvoidImplementingFinalizersSyntaxNodeAction : SyntaxNodeAction<DestructorDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			BlockSyntax body = Node.Body;
-			System.Collections.Generic.IEnumerable<SyntaxNode> children = body != null ? body.ChildNodes() : Array.Empty<SyntaxNode>();
+			IEnumerable<SyntaxNode> children = body != null ? body.ChildNodes() : Array.Empty<SyntaxNode>();
 			if (children.Any() && children.All(IsDisposeCall))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 			Location loc = Node.GetLocation();
-			ReportDiagnostic(loc);
+			return PrepareDiagnostic(loc).ToSome();
 		}
 
 		private static bool IsDisposeCall(SyntaxNode node)

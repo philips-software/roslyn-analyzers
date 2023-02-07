@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -23,13 +24,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 
 	public class AvoidVoidReturnSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
-			_ = Optional(Node)
+			return Optional(Node)
 				.Filter((m) => m.ReturnsVoid())
 				.Filter((m) => !m.IsOverridden())
-				.Select((m) => m.CreateDiagnostic(Rule))
-				.Iter(Context.ReportDiagnostic);
+				.Select((m) => m.CreateDiagnostic(Rule));
 		}
 	}
 }

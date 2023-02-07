@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 using static LanguageExt.Prelude;
+using LanguageExt;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 {
@@ -26,12 +27,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 
 	public class AvoidEnumParametersSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
-			_ = List(Node)
+			return List(Node)
 				.Filter((m) => !m.IsOverridden())
-				.SelectMany(AnalyzeMethodParameters)
-				.Iter(Context.ReportDiagnostic);
+				.SelectMany(AnalyzeMethodParameters);
 		}
 
 		private IEnumerable<Diagnostic> AnalyzeMethodParameters(MethodDeclarationSyntax m)

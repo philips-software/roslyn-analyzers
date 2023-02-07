@@ -1,13 +1,16 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
-
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 using Philips.CodeAnalysis.Common;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -28,16 +31,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class ThrowInnerExceptionSyntaxNodeAction : SyntaxNodeAction<CatchClauseSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			// Look for throw statements and check them.
-			var hasBadThrowNodes = Node.DescendantNodes()
-				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(node));
-			if (hasBadThrowNodes)
+			var hasOnlyCorrectThrow = Node.DescendantNodes()
+				.OfType<ThrowStatementSyntax>().ForAll(IsCorrectThrow);
+			if (hasOnlyCorrectThrow)
 			{
-				Location location = Node.CatchKeyword.GetLocation();
-				ReportDiagnostic(location);
+				return Option<Diagnostic>.None;
 			}
+			Location location = Node.CatchKeyword.GetLocation();
+			return Optional(PrepareDiagnostic(location));
 		}
 
 		// Throw should rethrow same exception, or include original exception
@@ -46,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private bool IsCorrectThrow(ThrowStatementSyntax node)
 		{
 			var isOk = true;
-			System.Collections.Generic.IEnumerable<ObjectCreationExpressionSyntax> newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
+			IEnumerable<ObjectCreationExpressionSyntax> newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
 			if (newNodes.Any())
 			{
 				foreach (ObjectCreationExpressionSyntax creation in newNodes)

@@ -1,7 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,47 +26,47 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	}
 	public class AvoidStaticMethodSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			// Only analyzing static method declarations
 			if (!Node.Modifiers.Any(SyntaxKind.StaticKeyword))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If the method is marked "extern", let it go.
 			if (Node.Modifiers.Any(SyntaxKind.ExternKeyword))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If the class is static, we need to let it go.
 			ClassDeclarationSyntax classDeclarationSyntax = Context.Node.FirstAncestorOrSelf<ClassDeclarationSyntax>();
 			if (classDeclarationSyntax == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 			if (classDeclarationSyntax.Modifiers.Any(SyntaxKind.StaticKeyword))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// The Main entrypoint to the program must be static
 			if (Node.Identifier.ValueText == @"Main")
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Hunt for static members
 			INamedTypeSymbol us = Context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 			if (us == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (ReferencesAnotherStatic(us, Context))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Hunt for evidence that this is a factory method
@@ -72,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				ISymbol objectCreationSymbol = Context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax).Symbol;
 				if (SymbolEqualityComparer.Default.Equals(objectCreationSymbol?.ContainingType, us))
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 			}
 
@@ -80,11 +83,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var returnType = Node.ReturnType.ToString();
 			if (string.Equals(returnType, "IEnumerable<object[]>", StringComparison.OrdinalIgnoreCase))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 
 		private bool ReferencesAnotherStatic(INamedTypeSymbol us, SyntaxNodeAnalysisContext context)

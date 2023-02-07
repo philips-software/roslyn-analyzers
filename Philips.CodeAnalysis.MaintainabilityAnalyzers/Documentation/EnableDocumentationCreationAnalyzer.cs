@@ -1,9 +1,13 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
@@ -21,12 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class EnableDocumentationCreationAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.SyntaxTree.Options.DocumentationMode == DocumentationMode.None)
 			{
-				ReportDiagnostic();
+				return Optional(PrepareDiagnostic());
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

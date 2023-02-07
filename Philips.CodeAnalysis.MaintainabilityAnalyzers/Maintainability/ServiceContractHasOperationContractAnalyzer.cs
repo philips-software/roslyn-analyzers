@@ -1,6 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -24,21 +26,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly AttributeHelper _attributeHelper = new();
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (!_attributeHelper.HasAttribute(Node.AttributeLists, Context, "ServiceContract", null, out _))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
+
+			var errors = new List<Diagnostic>();
 
 			foreach (MethodDeclarationSyntax method in Node.Members.OfType<MethodDeclarationSyntax>())
 			{
 				if (!_attributeHelper.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
 				{
 					Location location = method.Identifier.GetLocation();
-					ReportDiagnostic(location, method.Identifier);
+					errors.Add(PrepareDiagnostic(location, method.Identifier));
 				}
 			}
+
+			return errors;
 		}
 	}
 }

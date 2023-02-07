@@ -1,8 +1,11 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,45 +30,45 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const long FirstInvalidNumber = 3L;
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			TestHelper helper = new();
 			if (helper.IsInTestClass(Context))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (!Node.Token.IsKind(SyntaxKind.NumericLiteralToken))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (IsAllowedNumber(Node.Token.Text))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Magic number are allowed in enumerations, as they give meaning to the number.
 			if (Node.Ancestors().OfType<EnumMemberDeclarationSyntax>().Any())
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If in a field, the magic number should be defined in a static field.
 			FieldDeclarationSyntax field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
 			if (field != null && IsStaticOrConst(field))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			LocalDeclarationStatementSyntax local = Node.Ancestors().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
 			if (local != null && local.Modifiers.Any(SyntaxKind.ConstKeyword))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 
 		private static bool IsAllowedNumber(string text)

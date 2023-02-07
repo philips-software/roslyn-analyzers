@@ -1,7 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -34,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool _isFolderInNamespace;
 		private bool _isConfigInitialized;
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			var myNamespace = Node.Name.ToString();
 			var myFilePath = Context.Node.SyntaxTree.FilePath;
@@ -46,7 +49,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				// Does the namespace exactly match the trailing folders?
 				if (DoesFilePathEndWithNamespace(myNamespace, myFilePath))
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 			}
 			else
@@ -54,17 +57,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				// Does the namespace exactly match one of the folders in the path?
 				if (IsNamespacePartOfPath(myNamespace, myFilePath))
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 			}
 
 			if (Helper.IsNamespaceExempt(myNamespace))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.Name.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 		private bool IsNamespacePartOfPath(string ns, string path)
 		{

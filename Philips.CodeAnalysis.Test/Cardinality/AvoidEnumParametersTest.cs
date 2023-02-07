@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
     namespace ConsoleApplication1
     {
         class MyClass
-        {   
+        {
             public bool Foo(bool b) { return true; }
         }
     }";
@@ -60,10 +60,10 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
     namespace ConsoleApplication1
     {
-        enum Day { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };  
+        enum Day { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };
 
         class MyClass
-        {   
+        {
             public void Foo(Day d) {}
         }
     }";
@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 
         class MyClass
-        {   
+        {
             public void Foo(IEnumerable<string> d) {}
         }
     }";

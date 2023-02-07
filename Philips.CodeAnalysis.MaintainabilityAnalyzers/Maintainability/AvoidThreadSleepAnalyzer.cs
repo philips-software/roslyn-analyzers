@@ -1,5 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -32,11 +35,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			_attributeHelper = attributeHelper;
 		}
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			var memberName = memberAccessExpression.Expression.ToString();
@@ -50,9 +53,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
 					Location location = Node.GetLocation();
-					ReportDiagnostic(location);
+					return PrepareDiagnostic(location).ToSome();
 				}
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

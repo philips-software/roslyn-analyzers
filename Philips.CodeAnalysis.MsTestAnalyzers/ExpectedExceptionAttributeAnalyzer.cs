@@ -1,6 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -23,13 +26,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	}
 	public class ExpectedExceptionAttributeSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Attributes.Any(attr => attr.Name.ToString().Contains(@"ExpectedException")))
 			{
 				var location = Location.Create(Node.SyntaxTree, Node.Attributes.FullSpan);
-				ReportDiagnostic(location);
+				return PrepareDiagnostic(location).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }
