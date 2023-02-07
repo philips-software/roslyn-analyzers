@@ -32,7 +32,7 @@ jobs:
           cat > ./.editorconfig << EOF
           root = true
           [*.cs]
-          dotnet_analyzer_diagnostic.severity = warning
+          dotnet_analyzer_diagnostic.severity = suggestion
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           EOF
           
