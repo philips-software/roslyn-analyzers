@@ -42,6 +42,7 @@ namespace {0} {{
 		[DataRow("Philips.Test", "")]
 		[DataRow("Philips.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis")]
+		[DataRow("System.Runtime.CompilerServices", "Philips.CodeAnalysis")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void DoNotReportANamespaceSupersetMatch(string ns, string assemblyName)
 		{

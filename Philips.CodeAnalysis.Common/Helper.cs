@@ -114,6 +114,13 @@ namespace Philips.CodeAnalysis.Common
 			return fileName.EndsWith("AssemblyInfo.cs", StringComparison.OrdinalIgnoreCase);
 		}
 
+		public static bool IsNamespaceExempt(string myNamespace)
+		{
+			// https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
+			List<string> exceptions = new() { "System.Runtime.CompilerServices" };
+			return exceptions.Any(e => e == myNamespace);
+		}
+
 		public bool IsInheritingFromClass(INamedTypeSymbol inputType, string classTypeName)
 		{
 			INamedTypeSymbol type = inputType;
