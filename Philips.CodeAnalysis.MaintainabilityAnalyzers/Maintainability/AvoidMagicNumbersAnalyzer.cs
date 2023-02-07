@@ -55,7 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
 			if (field == null || !IsStaticOrConst(field))
 			{
-				ReportDiagnostic(Node.GetLocation());
+				var location = Node.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 

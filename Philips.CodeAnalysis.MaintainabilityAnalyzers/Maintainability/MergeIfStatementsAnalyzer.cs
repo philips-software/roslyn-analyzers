@@ -73,7 +73,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			ReportDiagnostic(Node.IfKeyword.GetLocation());
+			var location = Node.IfKeyword.GetLocation();
+			ReportDiagnostic(location);
 		}
 
 		private bool IfConditionHasLogicalAnd(IfStatementSyntax ifStatement)
