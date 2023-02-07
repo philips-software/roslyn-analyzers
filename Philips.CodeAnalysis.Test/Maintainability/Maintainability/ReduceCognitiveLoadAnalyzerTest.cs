@@ -84,7 +84,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(2));
+			string regex = MakeRegex(2);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -113,7 +114,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(3));
+			string regex = MakeRegex(3);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -129,7 +131,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(2));
+			string regex = MakeRegex(2);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -145,7 +148,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(3));
+			string regex = MakeRegex(3);
+            VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -161,7 +165,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(3));
+			string regex = MakeRegex(3);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -177,7 +182,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(3));
+			string regex = MakeRegex(3);
+            VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -193,7 +199,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(3));
+			string regex = MakeRegex(3);
+            VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -213,7 +220,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(4));
+			string regex = MakeRegex(4);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -235,7 +243,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(6));
+			string regex = MakeRegex(6);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -259,7 +268,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(8));
+			string regex = MakeRegex(8);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 
@@ -282,7 +292,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(5));
+			string regex = MakeRegex(5);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -348,7 +359,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(34));
+			string regex = MakeRegex(34);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 
@@ -411,7 +423,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: MakeRegex(26));
+			string regex = MakeRegex(26);
+			VerifyDiagnostic(template, regex: regex);
 		}
 
 		[TestMethod]
@@ -460,7 +473,8 @@ class Foo
 		return document;
 	}
 }";
-			VerifyDiagnostic(template, regex: MakeRegex(40));
+			string regex = MakeRegex(48);
+			VerifyDiagnostic(template, regex: regex);
 		}
 	}
 

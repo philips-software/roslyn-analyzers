@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Moq.MockRepository") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 				{
 					return;
 				}

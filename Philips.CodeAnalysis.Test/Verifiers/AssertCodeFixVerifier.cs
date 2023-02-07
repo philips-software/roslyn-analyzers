@@ -31,12 +31,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			VerifyFix(test, fixtest);
 		}
 
-		protected void VerifyChange(string methodBody, string expectedBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool allowNewCompilerDiagnostics = false)
+		protected void VerifyChange(string methodBody, string expectedBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
-			VerifyChange(methodBody, expectedBody, DefaultMethodAttributes, DefaultMethodAttributes, expectedErrorLineOffset, expectedErrorColumnOffset, allowNewCompilerDiagnostics);
+			VerifyChange(methodBody, expectedBody, DefaultMethodAttributes, DefaultMethodAttributes, expectedErrorLineOffset, expectedErrorColumnOffset, shouldAllowNewCompilerDiagnostics);
 		}
 
-		protected void VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool allowNewCompilerDiagnostics = false)
+		protected void VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
-			VerifyFix(test, fixtest, null, allowNewCompilerDiagnostics);
+			VerifyFix(test, fixtest, null, shouldAllowNewCompilerDiagnostics);
 		}
 
 		protected void VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)

@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			string memberName = memberAccessExpression.Name.ToString();
-			if (memberName is not "IsTrue" and not "IsFalse")
+			if (memberName is not StringConstants.IsTrue and not StringConstants.IsFalse)
 			{
 				return;
 			}
@@ -45,7 +45,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (arg0.Expression.Kind() == SyntaxKind.ParenthesizedExpression)
 			{
-				ReportDiagnostic(arg0.GetLocation());
+				var location = arg0.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 	}

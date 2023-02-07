@@ -23,10 +23,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			var comparer = new NamespaceIgnoringComparer();
 			// Act
 			int compareResult = comparer.Compare(left, right);
-			bool equalsResult = comparer.Equals(left, right);
+			bool isEqual = comparer.Equals(left, right);
 			// Assert
 			Assert.AreEqual(0, compareResult);
-			Assert.IsTrue(equalsResult);
+			Assert.IsTrue(isEqual);
 		}
 
 		[DataTestMethod]
@@ -40,9 +40,9 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Arrange
 			var comparer = new NamespaceIgnoringComparer();
 			// Act
-			bool equalsResult = comparer.Equals(left, right);
+			bool isEqual = comparer.Equals(left, right);
 			// Assert
-			Assert.IsFalse(equalsResult);
+			Assert.IsFalse(isEqual);
 		}
 
 		[DataTestMethod]

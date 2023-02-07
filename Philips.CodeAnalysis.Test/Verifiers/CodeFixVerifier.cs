@@ -42,22 +42,22 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
 		/// <param name="newSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-		/// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-		protected void VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+		/// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
+		protected void VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
-			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, FixAllScope.Custom);
+			VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, FixAllScope.Custom);
 		}
 
-		protected void VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool allowNewCompilerDiagnostics = false)
+		protected void VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
 			var codeFixProvider = GetCodeFixProvider();
 
 			foreach (FixAllScope scope in new FixAllScope[] { FixAllScope.Solution, FixAllScope.Project, FixAllScope.Document})
 			{
-				VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, allowNewCompilerDiagnostics, scope);
+				VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, scope);
 			}
 		}
 
@@ -72,8 +72,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// <param name="oldSource">A class in the form of a string before the CodeFix was applied to it</param>
         /// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
         /// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
-        /// <param name="allowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
-        private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool allowNewCompilerDiagnostics, FixAllScope scope)
+        /// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
+        private void VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
         {
             var document = CreateDocument(oldSource);
             var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
@@ -128,7 +128,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);
 
                 //check if applying the code fix introduced any new compiler diagnostics
-                if (!allowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
+                if (!shouldAllowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
                 {
                     // Format and get the compiler diagnostics again so that the locations make sense in the output
                     document = document.WithSyntaxRoot(Formatter.Format(document.GetSyntaxRootAsync().Result, Formatter.Annotation, document.Project.Solution.Workspace));
@@ -144,7 +144,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
             //after applying all of the code fixes, there shouldn't be any problems remaining
             Helper helper = new();
-            Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
+            Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
             string actualSource = GetStringFromDocument(document);
