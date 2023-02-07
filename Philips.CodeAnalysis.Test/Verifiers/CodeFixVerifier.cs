@@ -88,11 +88,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     $"CodeFixProvider {codeFixProvider.GetType().Name} is not registered to fix the reported diagnostics: {string.Join(',', analyzerDiagnosticIds)}.");
             }
 
-            var attempts = analyzerDiagnostics.Length;
+            var attempts = analyzerDiagnostics.Count();
             for (int i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
             {
                 var actions = new List<CodeAction>();
-                var context = new CodeFixContext(document, analyzerDiagnostics[0], (a, d) => actions.Add(a), CancellationToken.None);
+                var context = new CodeFixContext(document, analyzerDiagnostics.First(), (a, d) => actions.Add(a), CancellationToken.None);
                 codeFixProvider.RegisterCodeFixesAsync(context).Wait();
 
                 if (!actions.Any())
@@ -144,7 +144,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
             //after applying all of the code fixes, there shouldn't be any problems remaining
             Helper helper = new();
-            Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Length} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
+            Assert.IsTrue(allowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Count()} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
             string actualSource = GetStringFromDocument(document);

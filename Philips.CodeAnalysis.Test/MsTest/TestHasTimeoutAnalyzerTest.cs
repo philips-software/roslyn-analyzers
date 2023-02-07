@@ -1,6 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -35,14 +35,12 @@ class TestDefinitions
 }";
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return new()
-			{
-				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
-			};
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable")
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration")
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke");
 		}
 
 		[DataTestMethod]

@@ -4,12 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -21,6 +19,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	/// </summary>
 	public abstract partial class DiagnosticVerifier
 	{
+		private static readonly Regex WildcardRegex =
+			new (".*", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 		#region To be implemented by Test classes
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			{
 				Id = Helper.ToDiagnosticId(id),
 				Location = new DiagnosticResultLocation(null),
-				Message = new Regex(regex),
+				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
 			};
 			var analyzer = GetDiagnosticAnalyzer();
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				{
 					Id = analyzer.Id,
 					Location = new DiagnosticResultLocation(null),
-					Message = new Regex(".*"),
+					Message = WildcardRegex,
 					Severity = DiagnosticSeverity.Error,
 				};
 				diagnosticResults[i] = diagnosticResult;

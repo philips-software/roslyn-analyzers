@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private Diagnostic[] GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
+		private IEnumerable<Diagnostic> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
 		{
 			var documents = GetDocuments(sources, filenamePrefix, assemblyName);
 			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
@@ -74,9 +74,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 		{
-			private readonly Dictionary<string, string> _options;
+			private readonly ImmutableDictionary<string, string> _options;
 
-			public TestAnalyzerConfigOptions(Dictionary<string, string> options)
+			public TestAnalyzerConfigOptions(ImmutableDictionary<string, string> options)
 			{
 				_options = options;
 			}
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			private readonly TestAnalyzerConfigOptions _configOptions;
 
-			internal TestAnalyzerConfigOptionsProvider(Dictionary<string, string> options)
+			internal TestAnalyzerConfigOptionsProvider(ImmutableDictionary<string, string> options)
 			{
 				_configOptions = new TestAnalyzerConfigOptions(options);
 			}
@@ -115,7 +115,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// <param name="analyzer">The analyzer to run on the documents</param>
         /// <param name="documents">The Documents that the analyzer will be run on</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        protected Diagnostic[] GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, Document[] documents)
+        protected IEnumerable<Diagnostic> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
         {
             var projects = new HashSet<Project>();
             foreach (var document in documents)
@@ -155,7 +155,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
                 var diags = compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().Result;
-                List<Diagnostic> ourDiagnostics = CollectOurDiagnostics(diags, documents);
+                var ourDiagnostics = CollectOurDiagnostics(diags, documents);
                 diagnostics.AddRange(ourDiagnostics);
             }
 
@@ -164,7 +164,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
             return results;
         }
 
-        private List<Diagnostic> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, Document[] documents)
+        private IReadOnlyList<Diagnostic> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
         {
             List<Diagnostic> diagnostics = new();
             foreach (var diag in diags)
@@ -175,9 +175,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 }
                 else
                 {
-                    for (int i = 0; i < documents.Length; i++)
+                    foreach (var document in documents)
                     {
-                        var document = documents[i];
                         var tree = document.GetSyntaxTreeAsync().Result;
                         if (tree == diag.Location.SourceTree)
                         {
@@ -194,7 +193,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// </summary>
         /// <param name="diagnostics">The list of Diagnostics to be sorted</param>
         /// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-        private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
+        private static IEnumerable<Diagnostic> SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
 		{
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}
@@ -209,7 +208,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private Document[] GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
+		private IEnumerable<Document> GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
 		{
 			var project = CreateProject(sources, filenamePrefix, assemblyName);
 			var documents = project.Documents.ToArray();
@@ -258,9 +257,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return Array.Empty<(string name, string content)>();
 		}
 
-		protected virtual Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected virtual ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return new Dictionary<string, string>();
+			return ImmutableDictionary<string, string>.Empty;
 		}
 
 		/// <summary>
