@@ -22,9 +22,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerTest : DiagnosticVerifier
 	{
-		private Regex MakeRegex(int expectedLoad)
+		private string MakeRegex(int expectedLoad)
 		{
-			return new Regex($"Load of {expectedLoad} ");
+			return $"Load of {expectedLoad} ";
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -84,7 +84,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, regex: MakeRegex(2));
 		}
 
 		[TestMethod]
@@ -113,7 +113,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, regex: MakeRegex(3));
 		}
 
 		[TestMethod]
@@ -129,7 +129,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
+			VerifyDiagnostic(template, regex: MakeRegex(2));
 		}
 
 		[TestMethod]
@@ -145,7 +145,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, regex: MakeRegex(3));
 		}
 
 		[TestMethod]
@@ -161,7 +161,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, regex: MakeRegex(3));
 		}
 
 		[TestMethod]
@@ -177,7 +177,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, regex: MakeRegex(3));
 		}
 
 		[TestMethod]
@@ -193,7 +193,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			VerifyDiagnostic(template, regex: MakeRegex(3));
 		}
 
 		[TestMethod]
@@ -213,7 +213,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(4)));
+			VerifyDiagnostic(template, regex: MakeRegex(4));
 		}
 
 		[TestMethod]
@@ -235,7 +235,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(6)));
+			VerifyDiagnostic(template, regex: MakeRegex(6));
 		}
 
 		[TestMethod]
@@ -259,7 +259,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(8)));
+			VerifyDiagnostic(template, regex: MakeRegex(8));
 		}
 
 
@@ -282,7 +282,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(5)));
+			VerifyDiagnostic(template, regex: MakeRegex(5));
 		}
 
 		[TestMethod]
@@ -348,7 +348,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(34)));
+			VerifyDiagnostic(template, regex: MakeRegex(34));
 		}
 
 
@@ -411,7 +411,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(26)));
+			VerifyDiagnostic(template, regex: MakeRegex(26));
 		}
 
 		[TestMethod]
@@ -460,7 +460,7 @@ class Foo
 		return document;
 	}
 }";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(40)));
+			VerifyDiagnostic(template, regex: MakeRegex(40));
 		}
 	}
 
@@ -475,73 +475,6 @@ class Foo
 			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-	}
-}
-";
-			VerifySuccessfulCompilation(template);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {} // over the threshold
-	}
-}
-";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
-		}
-
-	}
-
-	[TestClass]
-	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest2 : DiagnosticVerifier
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			const string InvalidMaxLoad = @"0";
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
-		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -595,9 +528,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			VerifyDiagnostic(template, regex: "Load of 27 ");
 		}
-
 	}
 
 	[TestClass]
@@ -634,35 +566,5 @@ class Foo
 ";
 			VerifySuccessfulCompilation(template);
 		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {} // over the threshold
 	}
-}
-";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
-		}
-
-	}
-
 }
