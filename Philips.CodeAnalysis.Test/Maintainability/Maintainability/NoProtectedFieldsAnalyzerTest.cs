@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -25,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("internal", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ProtectedFieldsRaiseError(string modifiers, bool isError)
+		public async Task ProtectedFieldsRaiseErrorAsync(string modifiers, bool isError)
 		{
 			const string template = @"""
 class Foo {{ {0} string _foo; }}
@@ -33,11 +34,11 @@ class Foo {{ {0} string _foo; }}
 			var code = string.Format(template, modifiers);
 			if (isError)
 			{
-				VerifyDiagnostic(code);
+				await VerifyDiagnostic(code).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 	}

@@ -59,11 +59,11 @@ namespace TestMethodNameAnalyzerTest
 						new DiagnosticResultLocation("Test0.cs", 7, 17)
 					}
 				};
-				VerifyDiagnostic(givenText, expected);
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);

@@ -58,9 +58,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreNotEqual(false, true)")]
 		[DataRow("Assert.AreNotEqual(true, false)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckLiteral(string given)
+		public async Task CheckLiteralAsync(string given)
 		{
-			VerifyError(given);
+			await VerifyErrorAsync(given).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]

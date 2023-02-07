@@ -47,7 +47,7 @@ class Foo
 }
 ";
 			string givenText = string.Format(baseline, test);
-			VerifyDiagnostic(givenText);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 

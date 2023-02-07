@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,14 +32,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Verifier wrappers
 
-		protected void VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName);
+			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName).ConfigureAwait(false);
 		}
 
-		protected void VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
@@ -48,10 +49,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				Severity = DiagnosticSeverity.Error,
 			};
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { diagnosticResult });
+			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { diagnosticResult }).ConfigureAwait(false);
 		}
 
-		protected void VerifyDiagnostic(string source, int count)
+		protected async Task VerifyDiagnostic(string source, int count)
 		{
 			Assert.IsTrue(count > 1, "Only use this overload when your test expects the same Diagnostic multiple times.");
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
@@ -69,7 +70,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				};
 				diagnosticResults[i] = diagnosticResult;
 			}
-			VerifyDiagnosticsInternal(new[] { source }, null, null, analyzer, diagnosticResults);
+			await VerifyDiagnosticsInternal(new[] { source }, null, null, analyzer, diagnosticResults).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -80,10 +81,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null, string assemblyName = null)
+		protected async Task VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { expected });
+			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { expected }).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -94,13 +95,13 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expected"> DiagnosticResults that should appear after the analyzer is run on the source</param>
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
-		protected void VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
+		protected async Task VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
 		{
 			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
 			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected);
+			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected).ConfigureAwait(false);
 		}
 
 
@@ -110,21 +111,21 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="source">A class in the form of a string to run the analyzer on</param>
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
-		protected void VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
+		protected async Task VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer();
-			VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, Array.Empty<DiagnosticResult>());
+			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, Array.Empty<DiagnosticResult>()).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Called to test a C# DiagnosticAnalyzer when applied on the inputted file as a source
 		/// </summary>
 		/// <param name="path">The file on disk to run the analyzer on</param>
-		protected void VerifySuccessfulCompilationFromFile(string path)
+		protected async Task VerifySuccessfulCompilationFromFile(string path)
 		{
 			var content = File.ReadAllText(path);
 			var fileName = Path.GetFileNameWithoutExtension(path);
-			VerifySuccessfulCompilation(content, fileName);
+			await VerifySuccessfulCompilation(content, fileName).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -136,9 +137,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the source code</param>
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
-		private void VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, DiagnosticResult[] expected)
+		private async Task VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, DiagnosticResult[] expected)
 		{
-			var diagnostics = GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer);
+			var diagnostics = await GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer).ConfigureAwait(false);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 

@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -75,9 +76,9 @@ namespace FinalizerTest {
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenFinalizerHasOnlyDisposeNoDiagnosticIsTriggered()
+		public async Task WhenFinalizerHasOnlyDisposeNoDiagnosticIsTriggeredAsync()
 		{
-			VerifySuccessfulCompilation(CorrectWithDispose);
+			await VerifySuccessfulCompilation(CorrectWithDispose).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -86,9 +87,9 @@ namespace FinalizerTest {
 		 DataRow(WrongFieldAssignment, DisplayName = nameof(WrongFieldAssignment)),
 		 DataRow(WrongOtherMethod, DisplayName = nameof(WrongOtherMethod))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenFinalizerMissesDisposeNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenFinalizerMissesDisposeNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

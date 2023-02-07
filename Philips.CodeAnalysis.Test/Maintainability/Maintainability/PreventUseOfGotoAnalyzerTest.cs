@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoLabeledStatements()
+		public async Task NoLabeledStatementsAsync()
 		{
 			const string template = @"
 using System;
@@ -32,12 +33,12 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoLabeledStatementsWithGoto()
+		public async Task NoLabeledStatementsWithGotoAsync()
 		{
 			const string template = @"
 using System;
@@ -52,12 +53,12 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, 2);
+			await VerifyDiagnostic(template, 2).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoGotoCase()
+		public async Task NoGotoCaseAsync()
 		{
 			const string template = @"
 using System;
@@ -74,12 +75,12 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoGotoDefault()
+		public async Task NoGotoDefaultAsync()
 		{
 			const string template = @"
 using System;
@@ -96,7 +97,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template);
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -52,16 +53,16 @@ class Foo
 		[DataRow("data.num", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NamedTuplesDontCauseErrors(string argument, bool isError)
+		public async Task NamedTuplesDontCauseErrorsAsync(string argument, bool isError)
 		{
 			var source = CreateFunction(argument);
 			if (isError)
 			{
-				VerifyDiagnostic(source, DiagnosticId.PreferUsingNamedTupleField);
+				await VerifyDiagnostic(source, DiagnosticId.PreferUsingNamedTupleField).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(source);
+				await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 			}
 		}
 

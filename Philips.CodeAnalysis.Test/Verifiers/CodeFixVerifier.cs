@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         private async Task VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
         {
             var document = CreateDocument(oldSource);
-            var analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+            var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
             var compilerDiagnostics = GetCompilerDiagnostics(document);
 
             // Check if the found analyzer diagnostics are to be fixed by the given CodeFixProvider.
@@ -124,7 +124,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                     document = ApplyFix(document, fixAllAction);
                 }
 
-                analyzerDiagnostics = GetSortedDiagnosticsFromDocuments(analyzer, new[] { document });
+                analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
 
                 var newDiagnostics = GetCompilerDiagnostics(document);
                 var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);

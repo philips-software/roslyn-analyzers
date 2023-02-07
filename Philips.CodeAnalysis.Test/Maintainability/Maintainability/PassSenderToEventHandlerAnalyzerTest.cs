@@ -58,9 +58,9 @@ namespace PassSenderTests {
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -72,7 +72,7 @@ namespace PassSenderTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
 		}
 
@@ -82,9 +82,9 @@ namespace PassSenderTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongSender, filePath);
+			await VerifySuccessfulCompilation(WrongSender, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() 

@@ -10,6 +10,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using System.CodeDom.Compiler;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -26,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("string")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SwitchWithOnlyDefaultCaseIsFlagged(string type)
+		public async Task SwitchWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
 			string input = $@"
 public static class Foo
@@ -43,7 +44,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases);
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 
@@ -68,18 +69,18 @@ public class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
+		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
+		public async Task GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
-			VerifySuccessfulCompilation(SampleMethodWithSwitches, @"Foo.designer");
+			await VerifySuccessfulCompilation(SampleMethodWithSwitches, @"Foo.designer").ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
@@ -87,7 +88,7 @@ public class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SwitchWithMultipleCasesIsFlagged(string type, string value)
+		public async Task SwitchWithMultipleCasesIsFlaggedAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -105,7 +106,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases);
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
@@ -113,7 +114,7 @@ public static class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SwitchWithMultipleCasesIsIgnored(string type, string value)
+		public async Task SwitchWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -132,7 +133,7 @@ public static class Foo
 }}
 ";
 
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
@@ -141,7 +142,7 @@ public static class Foo
 		[DataRow("string")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SwitchExpressionWithOnlyDefaultCaseIsFlagged(string type)
+		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
 			string input = $@"
 public static class Foo
@@ -156,7 +157,7 @@ public static class Foo
 }}
 ";
 
-			VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases);
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
@@ -164,7 +165,7 @@ public static class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SwitchExpressionWithMultipleCasesIsIgnored(string type, string value)
+		public async Task SwitchExpressionWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -180,7 +181,7 @@ public static class Foo
 }}
 ";
 
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 	}

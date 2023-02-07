@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerPartialDoesNotCrash()
+		public async Task AvoidEmptyTypeInitializerPartialDoesNotCrashAsync()
 		{
 			const string template = @"public class Foo 
 {{
@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 }}
 ";
 			string classContent = template;
-			VerifySuccessfulCompilation(classContent);
+			await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 		}
 
 		[DataRow("static", "", true)]
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("static", "int x = 4;", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerStatic(string modifier, string content, bool isError)
+		public async Task AvoidEmptyTypeInitializerStaticAsync(string modifier, string content, bool isError)
 		{
 			const string template = @"public class Foo 
 {{
@@ -51,11 +51,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			if (isError)
 			{
-				VerifyDiagnostic(classContent);
+				await VerifyDiagnostic(classContent).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(classContent);
+				await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 			}
 		}
 

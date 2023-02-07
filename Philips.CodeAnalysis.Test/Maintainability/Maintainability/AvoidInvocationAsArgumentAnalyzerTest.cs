@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentTest()
+		public async Task AvoidInvocationAsArgumentTestAsync()
 		{
 			string template = @"
 class Foo
@@ -58,7 +58,7 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(template, result);
+			await VerifyDiagnostic(template, result).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -91,7 +91,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -123,7 +123,7 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -155,7 +155,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -189,7 +189,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -223,7 +223,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -255,7 +255,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -287,7 +287,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -319,7 +319,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -353,7 +353,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -388,7 +388,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -423,7 +423,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -454,7 +454,7 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
@@ -494,13 +494,13 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixExpressionTest()
+		public async Task AvoidInvocationAsArgumentFixExpressionTestAsync()
 		{
 			string errorContent = @"
 class Meow { public Meow(string x) {} }
@@ -512,7 +512,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

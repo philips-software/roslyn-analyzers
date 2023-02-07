@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -53,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("test")]
 		[DataRow("Philips.Test")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReportIncorrectNamespacePrefix(string prefix)
+		public async Task ReportIncorrectNamespacePrefixAsync(string prefix)
 		{
 
 			string code = string.Format(ClassString, prefix);
@@ -68,26 +69,26 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyDiagnostic(code, expected);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
 
 		[DataRow(ConfiguredPrefix + ".")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotReportANamespacePrefixError(string ns)
+		public async Task DoNotReportANamespacePrefixErrorAsync(string ns)
 		{
 			string code = string.Format(ClassString, ns);
-			VerifySuccessfulCompilation(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		[DataRow("System.Runtime.CompilerServices")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotReportANamespaceOnExemptList(string ns)
+		public async Task DoNotReportANamespaceOnExemptListAsync(string ns)
 		{
 			string template = @"namespace {0} {{ class Foo {{ }} }}";
 			string code = string.Format(template, ns);
-			VerifySuccessfulCompilation(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 	}
 }

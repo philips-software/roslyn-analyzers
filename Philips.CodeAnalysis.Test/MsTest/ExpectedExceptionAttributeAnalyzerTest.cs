@@ -1,6 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExpectedExceptionAttributeTest()
+		public async Task ExpectedExceptionAttributeTestAsync()
 		{
 			string givenText = @"
 namespace ExpectedAnalyzerAttributeTest
@@ -31,7 +32,7 @@ namespace ExpectedAnalyzerAttributeTest
   }
 }
 ";
-			VerifyDiagnostic(givenText);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

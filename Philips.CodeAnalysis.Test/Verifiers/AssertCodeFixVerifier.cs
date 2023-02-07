@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
-			VerifySuccessfulCompilation(test);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 
 			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
@@ -43,14 +43,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
-			VerifyDiagnostic(test, expected);
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 
 			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
 			await VerifyFix(test, fixtest, null, shouldAllowNewCompilerDiagnostics).ConfigureAwait(false);
 		}
 
-		protected void VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
+		protected async Task VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
@@ -60,19 +60,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				expected.Message = new Regex(error, RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 			}
 
-			VerifyDiagnostic(test, expected);
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
 
-		protected void VerifyError(string methodBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
+		protected async Task VerifyErrorAsync(string methodBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
 		{
-			VerifyError(methodBody, string.Empty, expectedErrorLineOffset, expectedErrorColumnOffset, error);
+			await VerifyError(methodBody, string.Empty, expectedErrorLineOffset, expectedErrorColumnOffset, error).ConfigureAwait(false);
 		}
 
-		protected void VerifyNoError(string methodBody)
+		protected async Task VerifyNoError(string methodBody)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
 
-			VerifySuccessfulCompilation(test);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 	}
 }

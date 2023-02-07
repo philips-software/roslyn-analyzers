@@ -1,6 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReportEmptyNamespacePrefix()
+		public async Task ReportEmptyNamespacePrefixAsync()
 		{
 
 			string code = string.Format(ClassString, "");
@@ -56,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyDiagnostic(code, expected);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
 	}
 }

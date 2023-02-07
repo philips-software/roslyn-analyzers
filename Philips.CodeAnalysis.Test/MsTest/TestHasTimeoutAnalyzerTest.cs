@@ -76,9 +76,9 @@ class TestDefinitions
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributeWrong(string methodAttributes)
+		public async Task TimeoutAttributeWrongAsync(string methodAttributes)
 		{
-			VerifyError(string.Empty, methodAttributes);
+			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]

@@ -1,6 +1,7 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -65,9 +66,9 @@ namespace ComplexConditionUnitTests {
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -76,9 +77,9 @@ namespace ComplexConditionUnitTests {
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
+		public async Task WhenConditionIsTooComplexDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity);
+			await VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -87,9 +88,9 @@ namespace ComplexConditionUnitTests {
 		[DataTestMethod]
 		[DataRow(Wrong, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>

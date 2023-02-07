@@ -228,9 +228,9 @@ public class Foo
 		 DataRow(CorrectEnumerateFiles, DisplayName = nameof(CorrectEnumerateFiles)),
 		 DataRow(CorrectEnumerateDirectories, DisplayName = nameof(CorrectEnumerateDirectories))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
+		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -240,7 +240,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 	}

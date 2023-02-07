@@ -36,16 +36,16 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckDefaultBehavior()
+		public async Task CheckDefaultBehaviorAsync()
 		{
-			VerifyNoError(@"
+			await VerifyNoError(@"
 string GetValue()
 {
 	return string.Empty;
 }
 
 Assert.AreEqual(default, GetValue());
-");
+").ConfigureAwait(false);
 		}
 
 		[DataRow(true, null, "-1", true)]
@@ -112,12 +112,12 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 
 			if (isError)
 			{
-				VerifyError(template);
+				await VerifyErrorAsync(template).ConfigureAwait(false);
 				await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyNoError(template);
+				await VerifyNoError(template).ConfigureAwait(false);
 			}
 		}
 
@@ -164,16 +164,16 @@ Assert.IsNotNull({arg});
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckWillIgnoreTypeArgument()
+		public async Task CheckWillIgnoreTypeArgumentAsync()
 		{
-			VerifyError(@"
+			await VerifyErrorAsync(@"
 string GetValue()
 {
 	return string.Empty;
 }
 
 Assert.AreEqual<string>(GetValue(), null);
-");
+").ConfigureAwait(false);
 		}
 	}
 }

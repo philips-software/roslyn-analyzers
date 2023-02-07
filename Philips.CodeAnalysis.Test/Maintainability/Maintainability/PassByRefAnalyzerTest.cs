@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -17,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenTo(bool isWrittenTo)
+		public async Task ParameterNotWrittenToAsync(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
 {{
@@ -31,11 +32,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 ";
 			if (isWrittenTo)
 			{
-				VerifySuccessfulCompilation(content);
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(content);
+				await VerifyDiagnostic(content).ConfigureAwait(false);
 			}
 		}
 
@@ -43,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenToStruct(bool isWrittenTo)
+		public async Task ParameterNotWrittenToStructAsync(bool isWrittenTo)
 		{
 			string content = $@"
 public struct FooStruct
@@ -64,11 +65,11 @@ public class TestClass
 
 			if (isWrittenTo)
 			{
-				VerifySuccessfulCompilation(content);
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(content);
+				await VerifyDiagnostic(content).ConfigureAwait(false);
 			}
 		}
 
@@ -76,7 +77,7 @@ public class TestClass
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenToButRequiredForInterface(bool isExplicit)
+		public async Task ParameterNotWrittenToButRequiredForInterfaceAsync(bool isExplicit)
 		{
 			string content = $@"
 public interface IData
@@ -93,12 +94,12 @@ public class TestClass : IData
 }}
 ";
 
-			VerifySuccessfulCompilation(content);
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenToButRequiredForBaseClass()
+		public async Task ParameterNotWrittenToButRequiredForBaseClassAsync()
 		{
 			string content = $@"
 public abstract class Data
@@ -115,14 +116,14 @@ public class TestClass : Data
 }}
 ";
 
-			VerifySuccessfulCompilation(content);
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenToExpressionMethod(bool isWrittenTo)
+		public async Task ParameterNotWrittenToExpressionMethodAsync(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
 {{
@@ -133,17 +134,17 @@ public class TestClass : Data
 
 			if (isWrittenTo)
 			{
-				VerifySuccessfulCompilation(content);
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(content);
+				await VerifyDiagnostic(content).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParameterNotWrittenToNestedMethod()
+		public async Task ParameterNotWrittenToNestedMethodAsync()
 		{
 			string content = $@"public class TestClass
 {{
@@ -162,14 +163,14 @@ public class TestClass : Data
 }}
 ";
 
-			VerifySuccessfulCompilation(content);
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[DataRow(": Foo", false)]
 		[DataRow("", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EmptyStatementMethodBody(string baseClass, bool isError)
+		public async Task EmptyStatementMethodBodyAsync(string baseClass, bool isError)
 		{
 			string content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -182,11 +183,11 @@ public class TestClass {baseClass}
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(content);
+				await VerifyDiagnostic(content).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(content);
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 			}
 		}
 
@@ -196,7 +197,7 @@ public class TestClass {baseClass}
 		[DataRow("", "_ = i.ToString()", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SingleStatementMethodBody(string baseClass, string statement, bool isError)
+		public async Task SingleStatementMethodBodyAsync(string baseClass, string statement, bool isError)
 		{
 			string content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -210,11 +211,11 @@ public class TestClass {baseClass}
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(content);
+				await VerifyDiagnostic(content).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(content);
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 			}
 		}
 
