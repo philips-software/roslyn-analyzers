@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				SimpleNameSyntax name => name.ToString()
 			};
 
-			if (memberName is not @"AreEqual" and not StringConstants.AreNotEqualMethodName)
+			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				return Array.Empty<Diagnostic>();
 			}
