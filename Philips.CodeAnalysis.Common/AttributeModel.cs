@@ -6,7 +6,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class AttributeModel
 	{
-		public AttributeModel(string name, string fullName, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
+		public AttributeModel(string name, string fullName, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool isSuppressible, bool isEnabledByDefault)
 		{
 			Name = name;
 			FullName = fullName;
@@ -15,11 +15,11 @@ namespace Philips.CodeAnalysis.Common
 			Description = description;
 			DiagnosticId = diagnosticId;
 			Rule = CreateRule(isEnabledByDefault);
-			CanBeSuppressed = canBeSuppressed;
+			IsSuppressible = isSuppressible;
 		}
 
-		public AttributeModel(AttributeDefinition attribute, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool canBeSuppressed, bool isEnabledByDefault)
-			: this(attribute.Name, attribute.FullName, title, messageFormat, description, diagnosticId, canBeSuppressed, isEnabledByDefault)
+		public AttributeModel(AttributeDefinition attribute, string title, string messageFormat, string description, DiagnosticId diagnosticId, bool isSuppressible, bool isEnabledByDefault)
+			: this(attribute.Name, attribute.FullName, title, messageFormat, description, diagnosticId, isSuppressible, isEnabledByDefault)
 		{ }
 
 		public string Name { get; }
@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public DiagnosticDescriptor Rule { get; }
 
-		public bool CanBeSuppressed { get; }
+		public bool IsSuppressible { get; }
 
 		private const string Category = Categories.Maintainability;
 

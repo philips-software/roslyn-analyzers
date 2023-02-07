@@ -2,8 +2,6 @@
 
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -78,12 +76,12 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaised(string fieldType)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.UnmanagedObjectsNeedDisposing);
 			var source = CreateClass(fieldType, false);
-			VerifyDiagnostic(source, expected);
+			VerifyDiagnostic(source);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new UnmanagedObjectsNeedDisposingAnalyzer();
 		}
 	}

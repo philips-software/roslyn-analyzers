@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			ExceptionsOptions = LoadExceptionsOptions(diagnosticId);
 			HashSet<string> exceptions = new();
-			if (ExceptionsOptions.UseExceptionsFile)
+			if (ExceptionsOptions.ShouldUseExceptionsFile)
 			{
 				exceptions = LoadExceptions(exceptionsFile);
 			}
@@ -70,10 +70,10 @@ namespace Philips.CodeAnalysis.Common
 			ExceptionsOptions options = new();
 
 			string valueFromEditorConfig = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
-			options.UseExceptionsFile = string.IsNullOrWhiteSpace(valueFromEditorConfig);
+			options.ShouldUseExceptionsFile = string.IsNullOrWhiteSpace(valueFromEditorConfig);
 
 			string generateExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"generate_exceptions_file");
-			options.GenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
+			options.ShouldGenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
 			return options;
 		}
 

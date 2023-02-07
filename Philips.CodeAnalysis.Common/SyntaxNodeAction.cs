@@ -1,9 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -29,6 +26,7 @@ namespace Philips.CodeAnalysis.Common
 }
 
 // In order to use init above: https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
+#pragma warning disable PH2029, PH2135, PH2006, PH2079
 namespace System.Runtime.CompilerServices
 {
 	internal static class IsExternalInit { }

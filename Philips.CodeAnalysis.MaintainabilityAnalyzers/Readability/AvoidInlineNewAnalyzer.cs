@@ -7,34 +7,29 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidInlineNewAnalyzer : DiagnosticAnalyzer
+	public class AvoidInlineNewAnalyzer : SingleDiagnosticAnalyzer<ObjectCreationExpressionSyntax, AvoidInlineNewSyntaxNodeAction>
 	{
 		private const string Title = @"Do not inline new T() calls";
 		private const string MessageFormat = @"Do not inline the constructor call for class {0}";
 		private const string Description = @"Create a local variable, or a field for the temporary instance of class '{0}'";
-		private const string Category = Categories.Readability;
+
+		public AvoidInlineNewAnalyzer()
+			: base(DiagnosticId.AvoidInlineNew, Title, MessageFormat, Description, Categories.Readability)
+		{ }
+	}
+
+	public class AvoidInlineNewSyntaxNodeAction : SyntaxNodeAction<ObjectCreationExpressionSyntax>
+	{
 		private static readonly HashSet<string> AllowedMethods = new() { "ToString", "ToList", "ToArray", "AsSpan" };
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidInlineNew), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ObjectCreationExpression);
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			ObjectCreationExpressionSyntax oce = (ObjectCreationExpressionSyntax)context.Node;
-
-			SyntaxNode parent = oce.Parent;
+			SyntaxNode parent = Node.Parent;
 
 			if (!IsInlineNew(parent))
 			{
@@ -46,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, oce.GetLocation(), oce.Type.ToString()));
+			ReportDiagnostic(Node.GetLocation(), Node.Type.ToString());
 		}
 
 		private static bool IsInlineNew(SyntaxNode node)

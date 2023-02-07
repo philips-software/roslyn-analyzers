@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 
 				string id = null;
-				if (attribute.CanBeSuppressed && IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out id))
+				if (attribute.IsSuppressible && IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out id))
 				{
 					continue;
 				}
@@ -145,7 +145,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not use the Owner attribute.",
 				@"The Owner attribute is no more relevant.",
 				DiagnosticId.AvoidOwnerAttribute,
-				canBeSuppressed: false,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 
 			var removedAttribute = new AttributeModel(@"Ignore",
@@ -154,7 +154,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not use the Ignore attribute.",
 				@"The Ignore attribute creates dead code and build warnings.  Rather than ignoring a test, fix it or remove it.  (Rely on Version Control to save it.)",
 				DiagnosticId.AvoidIgnoreAttribute,
-				canBeSuppressed: false,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 
 			var testInitializeAttribute = new AttributeModel(MsTestFrameworkDefinitions.TestInitializeAttribute,
@@ -162,7 +162,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not have any TestInitialize methods. ({0})",
 				@"TestInitialize methods are not deterministic and can create unexpected test results.",
 				DiagnosticId.AvoidTestInitializeMethod,
-				canBeSuppressed: true,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var classInitializeAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassInitializeAttribute,
@@ -170,7 +170,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not have any ClassInitialize methods. ({0})",
 				@"ClassInitialize methods are not deterministic and can create unexpected test results.",
 				DiagnosticId.AvoidClassInitializeMethod,
-				canBeSuppressed: true,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var classCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassCleanupAttribute,
@@ -178,7 +178,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not have any ClassCleanup methods. ({0})",
 				@"ClassCleanup methods are not deterministic and can create unexpected test results.",
 				DiagnosticId.AvoidClassCleanupMethod,
-				canBeSuppressed: true,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var testCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.TestCleanupAttribute,
@@ -186,7 +186,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Tests may not have any TestCleanup methods. ({0})",
 				@"TestCleanup methods are not deterministic and can create unexpected test results.",
 				DiagnosticId.AvoidTestCleanupMethod,
-				canBeSuppressed: true,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();

@@ -67,7 +67,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				filename = filename.Substring(0,indexOfDot);
 			}
-			if (StringComparer.OrdinalIgnoreCase.Compare(identifier.Text, filename) != 0)
+			int indexOfCurly = filename.IndexOf('{');
+			if(indexOfCurly != -1)
+			{
+				filename = filename.Substring(0, indexOfCurly);
+			}
+			if(StringComparer.OrdinalIgnoreCase.Compare(identifier.Text, filename) != 0)
 			{
 				var location = identifier.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.Text, typeKind);
