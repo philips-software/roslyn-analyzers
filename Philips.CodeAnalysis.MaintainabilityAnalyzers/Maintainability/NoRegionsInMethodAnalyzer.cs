@@ -27,16 +27,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			// Specifying Span instead of FullSpan correctly excludes trivia before or after the method
 			var descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>();
-			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
+			foreach (var candidate in descendants)
 			{
-				var location = regionDirective.GetLocation();
-				ReportDiagnostic(location);
-			}
-
-			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
-			{
-				var location = endRegionDirective.GetLocation();
-				ReportDiagnostic(location);
+				if (candidate is RegionDirectiveTriviaSyntax)
+				{
+					var location = candidate.GetLocation();
+					ReportDiagnostic(location);
+				}
+				else if (candidate is EndRegionDirectiveTriviaSyntax)
+				{
+					var location = candidate.GetLocation();
+					ReportDiagnostic(location);
+				}
 			}
 		}
 	}
