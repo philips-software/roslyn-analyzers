@@ -35,6 +35,7 @@ jobs:
           dotnet_analyzer_diagnostic.severity = none
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
+          dotnet_analyzer_diagnostic.category-Style.severity = none
           EOF
           
           rm -f ./Directory.Build.props
