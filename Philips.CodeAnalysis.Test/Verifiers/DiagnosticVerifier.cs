@@ -183,7 +183,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 					for (int j = 0; j < additionalLocations.Length; ++j)
 					{
-						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations.ElementAt(j + 1));
+						var expectedLocation = expected.Locations.ElementAt(j + 1);
+						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expectedLocation);
 					}
 				}
 
