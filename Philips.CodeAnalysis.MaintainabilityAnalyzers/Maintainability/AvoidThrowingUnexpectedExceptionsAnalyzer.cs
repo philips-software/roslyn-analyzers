@@ -1,8 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	}
 	public class AvoidThrowingUnexpectedExceptionsSyntaxNodeAction : SyntaxNodeAction<ThrowStatementSyntax>
 	{
-		private static readonly Dictionary<string, string> specialMethods = new()
+		private static readonly Dictionary<string, string> SpecialMethods = new()
 		{
 			{ "Equals", "Equals method" },
 			{ "GetHashCode", "GetHashCode method" },
@@ -48,44 +46,65 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			// Check if the Parent is an unexpected location.
-			if (methodDeclaration is MethodDeclarationSyntax method)
+			AnalyzeMethod(methodDeclaration);
+			AnalyzeEqualityOperator(methodDeclaration);
+			AnalyzeConversionOperator(methodDeclaration);
+			AnalyzeConstructor(methodDeclaration);
+			AnalyzeDestructor(methodDeclaration);
+		}
+
+		private void AnalyzeMethod(SyntaxNode node)
+		{
+			// Check overriden methods of Object.
+			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 			{
-				// Check overriden methods of Object.
-				if (specialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
-				{
-					var loc = Node.ThrowKeyword.GetLocation();
-					ReportDiagnostic(loc, specialMethodKind);
-				}
-			}
-			else if (methodDeclaration is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
-			{
-				// Check == and != operators.
 				var loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, "equality comparison operator");
+				ReportDiagnostic(loc, specialMethodKind);
 			}
-			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" })
-			{
-				// Check implicit cast operators.
-				var loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, "implicit cast operator");
-			}
-			else if (methodDeclaration is ConstructorDeclarationSyntax constructorDeclaration)
+		}
+
+		private void AnalyzeConstructor(SyntaxNode node)
+		{
+			if(node is ConstructorDeclarationSyntax constructorDeclaration)
 			{
 				// Check constructors of an Exception.
 				bool? withinExceptionClass =
-					(methodDeclaration.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
-				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
+					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
+				if((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
 					var loc = Node.ThrowKeyword.GetLocation();
 					ReportDiagnostic(loc, "constructor of an Exception derived type");
 				}
 			}
-			else if (methodDeclaration is DestructorDeclarationSyntax)
+		}
+
+		private void AnalyzeDestructor(SyntaxNode node)
+		{
+			if(node is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
 				var loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, "finalizer");
+			}
+		}
+
+		private void AnalyzeEqualityOperator(SyntaxNode node)
+		{
+			if (node is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
+			{
+				// Check == and != operators.
+				var loc = Node.ThrowKeyword.GetLocation();
+				ReportDiagnostic(loc, "equality comparison operator");
+			}
+		}
+
+		private void AnalyzeConversionOperator(SyntaxNode methodDeclaration)
+		{
+			if(methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
+			{
+				// Check implicit cast operators.
+				var loc = Node.ThrowKeyword.GetLocation();
+				ReportDiagnostic(loc, "implicit cast operator");
 			}
 		}
 	}
