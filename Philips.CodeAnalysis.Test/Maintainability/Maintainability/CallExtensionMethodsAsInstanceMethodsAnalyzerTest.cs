@@ -1,6 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Linq;
+
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -25,11 +25,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			return new CallExtensionMethodsAsInstanceMethodsCodeFixProvider();
 		}
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		[DataRow(true, "Foo.Bar(new object())", true, "new object().Bar()")]

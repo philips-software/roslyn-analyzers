@@ -1,15 +1,10 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Serialization;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -20,11 +15,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestContextAnalyzerTest : CodeFixVerifier
 	{
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string testContextReference = typeof(TestContext).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(testContextReference);
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		[TestMethod]

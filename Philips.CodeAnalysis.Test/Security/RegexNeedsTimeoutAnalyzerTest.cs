@@ -1,6 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Linq;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -20,12 +20,12 @@ namespace Philips.CodeAnalysis.Test.Security
 			return new RegexNeedsTimeoutAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string regexReference = typeof(Regex).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(regexReference);
 
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		private string GetTemplate()

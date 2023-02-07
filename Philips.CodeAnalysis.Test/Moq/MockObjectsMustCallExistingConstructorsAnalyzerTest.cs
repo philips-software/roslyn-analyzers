@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Linq;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,11 +25,11 @@ namespace Philips.CodeAnalysis.Test.Moq
 			return new MockObjectsMustCallExistingConstructorsAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		#endregion

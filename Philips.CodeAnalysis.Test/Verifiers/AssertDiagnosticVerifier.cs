@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Test.Helpers;
 
@@ -29,13 +28,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
 			VerifySuccessfulCompilation(test);
-		}
-
-
-
-		protected override MetadataReference[] GetMetadataReferences()
-		{
-			return _helper.GetMetaDataReferences();
 		}
 	}
 }
