@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsPublicSetter(AccessorDeclarationSyntax accessor)
 		{
-			return accessor.Keyword.Text == "set" && !accessor.Modifiers.Any(SyntaxKind.PrivateKeyword);
+			return accessor.Keyword.Text == StringConstants.Set && !accessor.Modifiers.Any(SyntaxKind.PrivateKeyword);
 		}
 
 		private static bool ReferencesOtherProperties(StatementSyntax statement, IEnumerable<string> otherProperties)

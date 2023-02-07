@@ -53,7 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (setIndex < getIndex)
 			{
-				ReportDiagnostic(accessors.GetLocation());
+				var location = accessors.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 	}

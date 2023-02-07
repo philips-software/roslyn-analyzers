@@ -74,8 +74,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					{
 						var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
 						var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-						var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
-						context.ReportDiagnostic(diagnostic);
+						var currentLineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
+						if (currentLineNumber > firstLineNumber)
+						{
+							var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber,
+								literalText);
+							context.ReportDiagnostic(diagnostic);
+						}
 					}
 					else
 					{

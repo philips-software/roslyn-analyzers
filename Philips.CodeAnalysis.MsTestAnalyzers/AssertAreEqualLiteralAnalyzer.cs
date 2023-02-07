@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			switch (memberAccessExpression.Name.ToString())
 			{
 				case @"AreEqual":
-				case @"AreNotEqual":
+				case StringConstants.AreNotEqualMethodName:
 					break;
 				default:
 					return Array.Empty<Diagnostic>();

@@ -19,7 +19,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public AssertAreEqualTypesMatchAnalyzer()
 			: base(DiagnosticId.AssertAreEqualTypesMatch, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 		}
 	}
 
@@ -33,12 +32,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			string memberName = maes.Name.ToString();
-			if (memberName is not @"AreEqual" and not @"AreNotEqual")
+			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				return;
 			}
 
-			if ((Context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith((Analyzer as AssertAreEqualTypesMatchAnalyzer).FullyQualifiedMetaDataName))
+			if (Context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
 				return;
 			}
@@ -55,7 +54,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			// Our <actual> is of type object.  If it matches the type of <expected>, then AreEqual will pass, so we wouldn't want to fail here.
 			// However, if the types differ, it will be a runtime Assert fail, so the early notice is advantageous.  The code is also clearer.
-			// Moreover, if it were "AreNotEqual", that is particularly insidious, because the Assert would pass due to the type difference
+			// Moreover, if it were AreNotEqual, that is particularly insidious, because the Assert would pass due to the type difference
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
 			if (!Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{

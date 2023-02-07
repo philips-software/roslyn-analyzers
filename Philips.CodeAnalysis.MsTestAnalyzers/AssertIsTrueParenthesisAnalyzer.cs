@@ -18,7 +18,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public AssertIsTrueParenthesisAnalyzer()
 			: base(DiagnosticId.AssertIsTrueParenthesis, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 		}
 	}
 

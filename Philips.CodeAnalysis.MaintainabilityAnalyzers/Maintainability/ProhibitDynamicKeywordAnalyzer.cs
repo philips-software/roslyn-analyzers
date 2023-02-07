@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,7 +9,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax, ProbhibitedDynamicKeywordSyntaxNodeAction>
+	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax, ProhibitDynamicKeywordSyntaxNodeAction>
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
 		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
@@ -21,13 +20,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{ }
 	}
 
-	public class ProbhibitedDynamicKeywordSyntaxNodeAction : SyntaxNodeAction<IdentifierNameSyntax>
+	public class ProhibitDynamicKeywordSyntaxNodeAction : SyntaxNodeAction<IdentifierNameSyntax>
 	{
 		public override void Analyze()
 		{
 			if (IsIdentifierDynamicType())
 			{
-				ReportDiagnostic(Node.GetLocation());
+				var location = Node.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 

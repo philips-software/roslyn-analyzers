@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
 				newName = parameterSymbol.Name;
 				identifier = SyntaxFactory.Identifier(newName).WithAdditionalAnnotations(RenameAnnotation.Create());
-				if (identifier.Text == "value")
+				if (identifier.Text == StringConstants.Value)
 				{
 					newName = NiceVariableName(argumentSyntax);
 					identifier = SyntaxFactory.Identifier(newName);

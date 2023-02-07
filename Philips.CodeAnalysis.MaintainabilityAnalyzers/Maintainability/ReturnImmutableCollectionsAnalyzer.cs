@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.ReturnImmutableCollections, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", "Queue", "SortedList", "Stack", "Dictionary", "IList", "IDictionary" };
+		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { "List", StringConstants.QueueClassName, StringConstants.SortedListClassName, StringConstants.StackClassName, StringConstants.DictionaryClassName, StringConstants.IListInterfaceName, StringConstants.IDictionaryInterfaceName };
 
 		private static readonly Helper _helper = new();
 
