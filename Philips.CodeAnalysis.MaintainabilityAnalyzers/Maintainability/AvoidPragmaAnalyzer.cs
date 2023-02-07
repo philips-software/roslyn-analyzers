@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			CSharpSyntaxNode violation = Node;
 			var location = violation.GetLocation();
-			ReportDiagnostic(violation.GetLocation());
+			ReportDiagnostic(location);
 		}
 	}
 }
