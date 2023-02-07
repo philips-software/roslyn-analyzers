@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
+			if (Context.SemanticModel.GetSymbolInfo(maes).Symbol is not IMethodSymbol memberSymbol || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
 				return;
 			}

@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,10 +23,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	}
 	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
 	{
-		private const string TestLiteral = @"Test";
-		private const string EnsureLiteral = @"Ensure";
-		private const string VerifyLiteral = @"Verify";
-
 		public override void Analyze()
 		{
 			// Only interested in TestMethod attributes
