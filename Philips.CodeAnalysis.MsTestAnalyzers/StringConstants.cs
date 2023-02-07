@@ -11,7 +11,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public const string TestAttributeName = @"Test";
 		public const string EnsureAttributeName = @"Ensure";
 		public const string VerifyAttributeName = @"Verify";
-
+		public const string IsTrue = @"IsTrue";
+		public const string IsFalse = @"IsFalse";
+		public const string Assert = "Assert";
 		public const string AssertFullyQualifiedName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 	}
 }

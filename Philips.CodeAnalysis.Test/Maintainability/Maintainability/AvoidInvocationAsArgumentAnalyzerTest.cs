@@ -512,7 +512,6 @@ class Foo
 ";
 
 			VerifyDiagnostic(errorContent);
-			//VerifyFix(errorContent, fixedContent);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

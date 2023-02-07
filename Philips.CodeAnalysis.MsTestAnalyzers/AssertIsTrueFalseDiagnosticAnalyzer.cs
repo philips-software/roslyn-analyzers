@@ -16,10 +16,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			string memberName = memberAccessExpression.Name.ToString();
 			switch (memberName)
 			{
-				case "IsTrue":
+				case StringConstants.IsTrue:
 					isIsTrue = true;
 					break;
-				case "IsFalse":
+				case StringConstants.IsFalse:
 					isIsTrue = false;
 					break;
 				default:

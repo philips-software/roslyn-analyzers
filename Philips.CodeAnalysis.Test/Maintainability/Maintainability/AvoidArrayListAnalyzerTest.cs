@@ -101,7 +101,7 @@ namespace AvoidArrayListTests {
 			VerifyDiagnostic(testCode);
 			if (fixedCode != null)
 			{
-				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+				VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true);
 			}
 		}
 
