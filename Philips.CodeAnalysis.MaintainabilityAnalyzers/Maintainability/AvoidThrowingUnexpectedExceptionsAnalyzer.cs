@@ -55,14 +55,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeMethod(SyntaxNode node)
 		{
-			if(node is MethodDeclarationSyntax method)
+			// Check overriden methods of Object.
+			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 			{
-				// Check overriden methods of Object.
-				if(SpecialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
-				{
-					var loc = Node.ThrowKeyword.GetLocation();
-					ReportDiagnostic(loc, specialMethodKind);
-				}
+				var loc = Node.ThrowKeyword.GetLocation();
+				ReportDiagnostic(loc, specialMethodKind);
 			}
 		}
 
