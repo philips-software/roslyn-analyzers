@@ -44,18 +44,4 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public int? Column => Locations.Length > 0 ? Locations[0].Column : -1;
 	}
-
-	internal static class DiagnosticResultHelper
-	{
-		public static DiagnosticResult Create(DiagnosticId diagnosticId)
-		{
-			return new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(diagnosticId),
-				Location = new DiagnosticResultLocation(null),
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-			};
-		}
-	}
 }

@@ -91,8 +91,7 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
-				VerifyDiagnostic(code, expected);
+				VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows);
 			}
 			else
 			{
@@ -120,8 +119,7 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
-				VerifyDiagnostic(code, expected);
+				VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows);
 			}
 			else
 			{

@@ -59,8 +59,7 @@ namespace RegexNeedsTimeoutTest
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content);
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.RegexNeedsTimeout);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout);
 		}
 
 		[DataTestMethod]

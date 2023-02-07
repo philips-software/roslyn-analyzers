@@ -70,9 +70,9 @@ namespace AvoidUsingParametersTest {
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidChangingLoopVariables);
-			VerifyDiagnostic(testCode, expected);
+		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) 
+		{
+			VerifyDiagnostic(testCode, DiagnosticId.AvoidChangingLoopVariables);
 		}
 
 		/// <summary>

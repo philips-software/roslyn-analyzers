@@ -174,7 +174,7 @@ public class Tests
 			}
 			else
 			{
-				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments));
+				VerifyDiagnostic(code, DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments);
 			}
 		}
 	}

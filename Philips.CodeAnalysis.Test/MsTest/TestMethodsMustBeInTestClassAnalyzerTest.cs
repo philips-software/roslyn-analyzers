@@ -72,8 +72,7 @@ public {2} class Tests : {3}
 			var code = string.Format(template, "", testType, classQualifier, baseClass);
 			if (isError)
 			{
-				var expectedResult = DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustBeInTestClass);
-				VerifyDiagnostic(code, expectedResult);
+				VerifyDiagnostic(code, DiagnosticId.TestMethodsMustBeInTestClass);
 			}
 			else
 			{
