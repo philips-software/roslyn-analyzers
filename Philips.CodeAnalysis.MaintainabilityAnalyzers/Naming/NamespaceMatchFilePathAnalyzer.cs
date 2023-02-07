@@ -1,7 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -58,10 +60,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 			}
 
+			if (Helper.IsNamespaceExempt(myNamespace))
+			{
+				return;
+			}
+
 			var location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
-
 		private bool IsNamespacePartOfPath(string ns, string path)
 		{
 			string[] nodes = path.Split(Path.DirectorySeparatorChar);

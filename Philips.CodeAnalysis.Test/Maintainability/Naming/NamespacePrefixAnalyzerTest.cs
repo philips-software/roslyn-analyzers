@@ -16,8 +16,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	public class NamespacePrefixAnalyzerTest : DiagnosticVerifier
 	{
 
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
 			using System.Globalization;
@@ -32,11 +30,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}}
 			";
 
-		private const string configuredPrefix = @"Philips.iX";
+		private const string ConfiguredPrefix = @"Philips.iX";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
 		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
 		{
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
@@ -47,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		{
 			Dictionary<string, string> options = new()
 			{
-				{ $@"dotnet_code_quality.{ NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id }.namespace_prefix", configuredPrefix  }
+				{ $@"dotnet_code_quality.{ NamespacePrefixAnalyzer.RuleForIncorrectNamespace.Id }.namespace_prefix", ConfiguredPrefix  }
 			};
 			return options;
 		}
@@ -56,10 +51,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return new NamespacePrefixAnalyzer();
 		}
 
-		#endregion
-
-
-		#region Test Methods
 		[DataTestMethod]
 		[DataRow("")]
 		[DataRow("test")]
@@ -83,14 +74,23 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			VerifyDiagnostic(code, expected);
 		}
 
-		[TestMethod]
+		[DataRow(ConfiguredPrefix + ".")]
+		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotReportANamespacePrefixError()
+		public void DoNotReportANamespacePrefixError(string ns)
 		{
-			string code = string.Format(ClassString, configuredPrefix + ".");
+			string code = string.Format(ClassString, ns);
 			VerifySuccessfulCompilation(code);
 		}
 
-		#endregion
+		[DataRow("System.Runtime.CompilerServices")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DoNotReportANamespaceOnExemptList(string ns)
+		{
+			string template = @"namespace {0} {{ class Foo {{ }} }}";
+			string code = string.Format(template, ns);
+			VerifySuccessfulCompilation(code);
+		}
 	}
 }
