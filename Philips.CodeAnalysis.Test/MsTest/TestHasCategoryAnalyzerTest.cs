@@ -179,9 +179,9 @@ class Foo
 			return new TestHasCategoryCodeFixProvider();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
+			return base.GetAdditionalTexts().Add((@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1"));
 		}
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{

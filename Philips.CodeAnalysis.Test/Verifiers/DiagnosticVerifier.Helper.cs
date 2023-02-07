@@ -231,9 +231,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return ImmutableArray<MetadataReference>.Empty;
 		}
 
-		protected virtual (string name, string content)[] GetAdditionalTexts()
+		protected virtual ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return Array.Empty<(string name, string content)>();
+			return ImmutableArray<(string name, string content)>.Empty;
 		}
 
 

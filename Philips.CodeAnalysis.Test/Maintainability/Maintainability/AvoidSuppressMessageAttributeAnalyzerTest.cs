@@ -1,5 +1,6 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -17,9 +18,9 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName));
 		}
 		
 		[TestMethod]

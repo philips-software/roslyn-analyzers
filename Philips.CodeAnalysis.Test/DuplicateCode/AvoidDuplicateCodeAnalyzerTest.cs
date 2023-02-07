@@ -37,9 +37,9 @@ Foo.WhitelistedFunction";
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.token_count", @"20");
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName));
 		}
 
 		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)

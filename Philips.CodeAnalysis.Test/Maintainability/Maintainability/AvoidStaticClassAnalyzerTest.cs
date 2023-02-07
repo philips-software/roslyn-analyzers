@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -38,9 +38,9 @@ AllowedEnumeration";
 			return new AvoidStaticClassesCodeFixProvider();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { (AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes) };
+			return base.GetAdditionalTexts().Add((AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes));
 		}
 
 		private string CreateField(string modifiers, string name)
