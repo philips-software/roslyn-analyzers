@@ -17,6 +17,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
 		private const int CorrectConstructorArgumentCount = 3;
+		private readonly TestHelper _helper = new();
 
 		public static readonly DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout), 
@@ -36,6 +37,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			var creation = (ObjectCreationExpressionSyntax)context.Node;
 
+			if(_helper.IsInTestClass(context))
+			{
+				return;
+			}
 
 			// Bail out early.
 			TypeSyntax typeSyntax = creation.Type;
