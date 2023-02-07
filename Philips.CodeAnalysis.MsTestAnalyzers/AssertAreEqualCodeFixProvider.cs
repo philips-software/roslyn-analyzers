@@ -3,8 +3,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -34,10 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Title = "Refactor equality assertion";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual)); }
-		}
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -137,13 +132,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			NameSyntax identifier;
 			MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
 			string memberName = memberAccess.Name.ToString();
-			if (memberName == @"AreEqual")
+			if (memberName == StringConstants.AreEqualMethodName)
 			{
-				identifier = SyntaxFactory.ParseName(@"IsNull");
+				identifier = SyntaxFactory.ParseName(StringConstants.IsNullMethodName);
 			}
 			else
 			{
-				identifier = SyntaxFactory.ParseName(@"IsNotNull");
+				identifier = SyntaxFactory.ParseName(StringConstants.IsNotNullMethodName);
 			}
 
 			MemberAccessExpressionSyntax newMemberAccess = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, memberAccess.Expression, (SimpleNameSyntax)identifier);
