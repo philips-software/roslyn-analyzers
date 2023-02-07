@@ -137,8 +137,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidAssignmentInCondition);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -152,7 +151,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			VerifySuccessfulCompilation(Violation, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidAssignmentInConditionAnalyzer();
 		}
 	}

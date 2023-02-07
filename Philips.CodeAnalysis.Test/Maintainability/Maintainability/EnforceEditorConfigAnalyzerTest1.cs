@@ -27,8 +27,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AbsenceOfEditorConfigShouldTriggerDiagnostics()
 		{
-			var diagnostic = DiagnosticResultHelper.Create(DiagnosticId.EnforceEditorConfig);
-			VerifyDiagnostic(TestCode, diagnostic);
+			VerifyDiagnostic(TestCode, DiagnosticId.EnforceEditorConfig);
 		}
 	}
 }

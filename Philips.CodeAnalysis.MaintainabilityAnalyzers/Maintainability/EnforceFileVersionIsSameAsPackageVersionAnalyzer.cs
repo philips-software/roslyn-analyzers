@@ -10,14 +10,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : DiagnosticAnalyzer
+	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Ensure FileVersion is the same as PackageVersion";
 		public const string MessageFormat = @"The FileVersion ({0}) must be the same as the PackageVersion ({1}).";
-		private const string Category = Categories.Maintainability;
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.EnforceFileVersionIsSameAsPackageVersion), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public EnforceFileVersionIsSameAsPackageVersionAnalyzer()
+			: base(DiagnosticId.EnforceFileVersionIsSameAsPackageVersion, Title, MessageFormat, Title, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{

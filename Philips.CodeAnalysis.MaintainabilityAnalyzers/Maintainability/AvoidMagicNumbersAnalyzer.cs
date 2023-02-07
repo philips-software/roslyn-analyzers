@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -13,64 +12,50 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidMagicNumbersAnalyzer : DiagnosticAnalyzer
+	public class AvoidMagicNumbersAnalyzer : SingleDiagnosticAnalyzer<LiteralExpressionSyntax, AvoidMagicNumbersSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid inline magic numbers";
 		private const string MessageFormat = Title;
 		private const string Description = @"Avoid inline magic number, define them as constant or include in an enumeration instead.";
-		private const string Category = Categories.Maintainability;
+
+		public AvoidMagicNumbersAnalyzer()
+			: base(DiagnosticId.AvoidMagicNumbers, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
+
+	public class AvoidMagicNumbersSyntaxNodeAction : SyntaxNodeAction<LiteralExpressionSyntax>
+	{
 		private const long FirstInvalidNumber = 3L;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidMagicNumbers),
-			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
-			description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NumericLiteralExpression);
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			var literal = (LiteralExpressionSyntax)context.Node;
-
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
 			TestHelper helper = new();
-			if (helper.IsInTestClass(context))
+			if (helper.IsInTestClass(Context))
 			{
 				return;
 			}
 
-			if (!literal.Token.IsKind(SyntaxKind.NumericLiteralToken))
+			if (!Node.Token.IsKind(SyntaxKind.NumericLiteralToken))
 			{
 				return;
 			}
 
-			if (IsAllowedNumber(literal.Token.Text))
+			if (IsAllowedNumber(Node.Token.Text))
 			{
 				return;
 			}
 
 			// Magic number are allowed in enumerations, as they give meaning to the number.
-			if (literal.Ancestors().OfType<EnumMemberDeclarationSyntax>().Any())
+			if (Node.Ancestors().OfType<EnumMemberDeclarationSyntax>().Any())
 			{
 				return;
 			}
 
 			// The magic number should be defined in a static field.
-			var field = literal.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
+			var field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
 			if (field == null || !IsStaticOrConst(field))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, literal.GetLocation()));
+				ReportDiagnostic(Node.GetLocation());
 			}
 		}
 

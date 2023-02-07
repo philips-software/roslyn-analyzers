@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
 		[TestMethod]
@@ -472,7 +472,7 @@ class Foo
 			const string InvalidMaxLoad = @"1000";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
 		[TestMethod]
@@ -540,7 +540,7 @@ class Foo
 			const string InvalidMaxLoad = @"0";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
 		[TestMethod]

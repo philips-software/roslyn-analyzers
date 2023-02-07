@@ -15,54 +15,28 @@ using System.Linq;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class MergeIfStatementsAnalyzer : DiagnosticAnalyzer
+	public class MergeIfStatementsAnalyzer : SingleDiagnosticAnalyzer<IfStatementSyntax, MergeIfStatementsSyntaxNodeAction>
 	{
-		private readonly GeneratedCodeAnalysisFlags _generatedCodeFlags;
-
-		private const string TitleFormat = "Merge If Statements";
-		private const string MessageFormat = TitleFormat;
-		private const string DescriptionFormat = "Merging If statement with outer If statement to reduce cognitive load";
-		private const string Category = Categories.Maintainability;
-
-		private static readonly DiagnosticDescriptor Rule = new(
-				Helper.ToDiagnosticId(DiagnosticId.MergeIfStatements), TitleFormat, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, DescriptionFormat);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		private const string Title = "Merge If Statements";
+		private const string MessageFormat = Title;
+		private const string Description = "Merging If statement with outer If statement to reduce cognitive load";
 
 		public MergeIfStatementsAnalyzer()
-			: this(GeneratedCodeAnalysisFlags.None)
+			: base(DiagnosticId.MergeIfStatements, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
+	}
 
-		public MergeIfStatementsAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
+	public class MergeIfStatementsSyntaxNodeAction : SyntaxNodeAction<IfStatementSyntax>
+	{
+		public override void Analyze()
 		{
-			_generatedCodeFlags = generatedCodeFlags;
-		}
-
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.IfStatement);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			IfStatementSyntax ifStatementSyntax = (IfStatementSyntax)context.Node;
-
 			// Node has an else clause
-			if (ifStatementSyntax.Else != null)
+			if (Node.Else != null)
 			{
 				return;
 			}
 
-			var parent = ifStatementSyntax.Parent;
+			var parent = Node.Parent;
 
 			if (parent is BlockSyntax parentBlockSyntax)
 			{
@@ -88,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Has ||
-			if (IfConditionHasLogicalAnd(ifStatementSyntax))
+			if (IfConditionHasLogicalAnd(Node))
 			{
 				return;
 			}
@@ -99,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, ifStatementSyntax.IfKeyword.GetLocation()));
+			ReportDiagnostic(Node.IfKeyword.GetLocation());
 		}
 
 		private bool IfConditionHasLogicalAnd(IfStatementSyntax ifStatement)
