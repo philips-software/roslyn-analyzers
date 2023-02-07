@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, "equality comparison operator");
 			}
-			else if (methodDeclaration is ConversionOperatorDeclarationSyntax { ImplicitOrExplicitKeyword.Text: "implicit" })
+			else if (methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
 			{
 				// Check implicit cast operators.
 				var loc = Node.ThrowKeyword.GetLocation();
