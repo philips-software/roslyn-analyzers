@@ -47,7 +47,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 			VerifyDiagnostic(givenText);
-			VerifyFix(givenText, fixedText, allowNewCompilerDiagnostics: true);
+			VerifyFix(givenText, fixedText, shouldAllowNewCompilerDiagnostics: true);
 		}
 
 

@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			Assert.IsTrue(count > 1, "Only use this overload when your test expects the same Diagnostic multiple times.");
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
-			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
+			Assert.IsNotNull(analyzer, @"This overload is only for Analyzers that support a single DiagnosticId");
 
 			DiagnosticResult[] diagnosticResults = new DiagnosticResult[count];
 			for (int i = 0; i < count; i++)

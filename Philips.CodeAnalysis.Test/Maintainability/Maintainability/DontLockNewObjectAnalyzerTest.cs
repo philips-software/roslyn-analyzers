@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("new object().ToString()", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PreventLockOnUncapturedVariable(string lockText, bool expectedError)
+		public void PreventLockOnUncapturedVariable(string lockText, bool isExpectedError)
 		{
 			string text = @$"
 public class Foo
@@ -41,7 +41,7 @@ public class Foo
 
 			";
 
-			if (expectedError)
+			if (isExpectedError)
 			{
 				VerifyDiagnostic(text, DiagnosticId.DontLockNewObject);
 			}

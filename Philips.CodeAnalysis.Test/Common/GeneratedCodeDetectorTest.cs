@@ -107,12 +107,12 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, false, false, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NonGeneratedCodeIsFlagged(bool tree, bool structStatement, bool constructor, bool switchStatement)
+		public void NonGeneratedCodeIsFlagged(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = structStatement;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = constructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = switchStatement;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = shouldAnalyzeStruct;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
 			string input = @"
 public class Foo
@@ -189,11 +189,11 @@ public class Foo
 		[DataRow(@"Foo.g", false, false, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedFilesNamesAreNotFlagged(string fileNamePrefix, bool tree, bool constructor, bool switchStatement)
+		public void GeneratedFilesNamesAreNotFlagged(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = constructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = switchStatement;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
 			VerifySuccessfulCompilation(input, fileNamePrefix);

@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidStaticMethodCodeFixProvider();
 		}
 
-		protected string CreateFunction(string methodStaticModifier, string classStaticModifier = "", string externKeyword = "", string methodName = "GoodTimes", string returnType = "void", string localMethodModifier = "", string foreignMethodModifier = "", bool factoryMethod = false)
+		protected string CreateFunction(string methodStaticModifier, string classStaticModifier = "", string externKeyword = "", string methodName = "GoodTimes", string returnType = "void", string localMethodModifier = "", string foreignMethodModifier = "", bool isFactoryMethod = false)
 		{
 			if (!string.IsNullOrWhiteSpace(methodStaticModifier))
 			{
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string useLocalMethod = (localMethodModifier == "static") ? $@"BaBaBummmm(""testing"")" : string.Empty;
 			string useForeignMethod = (foreignMethodModifier == "static") ? $@"BaBaBa(""testing"")" : string.Empty;
 
-			string objectDeclaration = factoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
+			string objectDeclaration = isFactoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
 
 			return $@"
 			namespace Sweet {{
@@ -127,7 +127,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void AllowStaticFactoryMethod()
 		{
-			string template = CreateFunction("static", factoryMethod: true);
+			string template = CreateFunction("static", isFactoryMethod: true);
 			VerifySuccessfulCompilation(template);
 		}
 

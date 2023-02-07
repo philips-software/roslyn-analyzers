@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		public void NestedParenthesisAreRemoved(string given, string expected)
 		{
 			// This will fix one set of paranetheses, but will re-trip on the next layer
-			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1, allowNewCompilerDiagnostics: true);
+			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1, shouldAllowNewCompilerDiagnostics: true);
 		}
 	}
 }

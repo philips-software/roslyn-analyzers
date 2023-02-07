@@ -72,7 +72,7 @@ namespace PassSenderTests {
 		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
 		{
 			VerifyDiagnostic(testCode);
-			VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+			VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true);
 		}
 
 		/// <summary>
