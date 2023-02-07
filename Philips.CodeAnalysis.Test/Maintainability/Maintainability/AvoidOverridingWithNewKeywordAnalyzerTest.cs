@@ -94,9 +94,7 @@ namespace MultiLineConditionUnitTests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void OverrideWithNewKeywordTriggersDiagnostics(string input)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidOverridingWithNewKeyword,
-				new Regex("Avoid overriding Virtual.* with the new keyword."));
-			VerifyDiagnostic(input, expected);
+			VerifyDiagnostic(input, DiagnosticId.AvoidOverridingWithNewKeyword, regex: "Avoid overriding Virtual.* with the new keyword.");
 		}
 
 		/// <summary>

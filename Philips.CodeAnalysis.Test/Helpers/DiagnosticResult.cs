@@ -47,13 +47,13 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 	internal static class DiagnosticResultHelper
 	{
-		public static DiagnosticResult Create(DiagnosticId diagnosticId, Regex message = null)
+		public static DiagnosticResult Create(DiagnosticId diagnosticId)
 		{
 			return new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(diagnosticId),
 				Location = new DiagnosticResultLocation(null),
-				Message = message ?? new Regex(".*"),
+				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 			};
 		}
