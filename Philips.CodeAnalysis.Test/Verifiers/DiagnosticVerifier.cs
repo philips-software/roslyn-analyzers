@@ -176,14 +176,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					VerifyDiagnosticLocation(analyzer, actual, actual.Location, first);
 					var additionalLocations = actual.AdditionalLocations.ToArray();
 
-					Assert.AreEqual(expected.Locations.Length - 1, additionalLocations.Length,
+					Assert.AreEqual(expected.Locations.Count - 1, additionalLocations.Length,
 							string.Format("Expected {0} additional locations but got {1} for Diagnostic:\r\n    {2}\r\n",
-								expected.Locations.Length - 1, additionalLocations.Length,
+								expected.Locations.Count - 1, additionalLocations.Length,
 								FormatDiagnostics(analyzer, actual)));
 
 					for (int j = 0; j < additionalLocations.Length; ++j)
 					{
-						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations[j + 1]);
+						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expected.Locations.ElementAt(j + 1));
 					}
 				}
 

@@ -92,7 +92,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
             for (int i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
             {
                 var actions = new List<CodeAction>();
-                var context = new CodeFixContext(document, analyzerDiagnostics.First(), (a, d) => actions.Add(a), CancellationToken.None);
+                var firstDiagnostic = analyzerDiagnostics.First();
+                var context = new CodeFixContext(document, firstDiagnostic, (a, d) => actions.Add(a), CancellationToken.None);
                 codeFixProvider.RegisterCodeFixesAsync(context).Wait();
 
                 if (!actions.Any())
@@ -144,7 +145,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
             //after applying all of the code fixes, there shouldn't be any problems remaining
             Helper helper = new();
-            Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {analyzerDiagnostics.Count()} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
+            var numberOfDiagnostics = analyzerDiagnostics.Count();
+            Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
             //after applying all of the code fixes, compare the resulting string to the inputted one
             string actualSource = GetStringFromDocument(document);
