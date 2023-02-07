@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -48,19 +49,19 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsTrue((1 == 2))", "Assert.IsTrue(1 == 2)")]
 		[DataRow("Assert.IsFalse((1 == 2))", "Assert.IsFalse(1 == 2)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ParenthesisAreRemoved(string given, string expected)
+		public async Task ParenthesisAreRemoved(string given, string expected)
 		{
-			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1);
+			await VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue(((1 == 2)))", "Assert.IsTrue((1 == 2))")]
 		[DataRow("Assert.IsFalse(((1 == 2)))", "Assert.IsFalse((1 == 2))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NestedParenthesisAreRemoved(string given, string expected)
+		public async Task NestedParenthesisAreRemoved(string given, string expected)
 		{
 			// This will fix one set of paranetheses, but will re-trip on the next layer
-			VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1, shouldAllowNewCompilerDiagnostics: true);
+			await VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 	}
 }

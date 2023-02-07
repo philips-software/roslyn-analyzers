@@ -1,7 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -419,7 +419,7 @@ public enum TestEnumeration
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CodeFixEmptyTests(string text)
+		public async Task CodeFixEmptyTests(string text)
 		{
 			string errorContent = $@"
 public class TestClass
@@ -439,7 +439,7 @@ public class TestClass
 ";
 
 			VerifyDiagnostic(errorContent, DiagnosticId.EmptyXmlComments);
-			VerifyFix(errorContent, fixedContent);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[DataRow("event System.EventHandler Foo;")]
@@ -448,7 +448,7 @@ public class TestClass
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CodeFixValueTests(string text)
+		public async Task CodeFixValueTests(string text)
 		{
 			string errorContent = $@"
 public class TestClass
@@ -466,7 +466,7 @@ public class TestClass
 ";
 
 			VerifyDiagnostic(errorContent, DiagnosticId.XmlDocumentationShouldAddValue);
-			VerifyFix(errorContent, fixedContent);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]

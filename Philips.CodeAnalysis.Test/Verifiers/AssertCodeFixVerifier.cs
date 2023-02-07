@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Verifiers
@@ -15,12 +16,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected abstract DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0);
 
 
-		protected void VerifyNoChange(string methodBody)
+		protected async Task VerifyNoChange(string methodBody)
 		{
-			VerifyNoChange(methodBody, DefaultMethodAttributes);
+			await VerifyNoChange(methodBody, DefaultMethodAttributes).ConfigureAwait(false);
 		}
 
-		protected void VerifyNoChange(string methodBody, string methodAttributes)
+		protected async Task VerifyNoChange(string methodBody, string methodAttributes)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
@@ -28,15 +29,15 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
-			VerifyFix(test, fixtest);
+			await VerifyFix(test, fixtest).ConfigureAwait(false);
 		}
 
-		protected void VerifyChange(string methodBody, string expectedBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
+		protected async Task VerifyChange(string methodBody, string expectedBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
-			VerifyChange(methodBody, expectedBody, DefaultMethodAttributes, DefaultMethodAttributes, expectedErrorLineOffset, expectedErrorColumnOffset, shouldAllowNewCompilerDiagnostics);
+			await VerifyChange(methodBody, expectedBody, DefaultMethodAttributes, DefaultMethodAttributes, expectedErrorLineOffset, expectedErrorColumnOffset, shouldAllowNewCompilerDiagnostics).ConfigureAwait(false);
 		}
 
-		protected void VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
+		protected async Task VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
@@ -45,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
-			VerifyFix(test, fixtest, null, shouldAllowNewCompilerDiagnostics);
+			await VerifyFix(test, fixtest, null, shouldAllowNewCompilerDiagnostics).ConfigureAwait(false);
 		}
 
 		protected void VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)

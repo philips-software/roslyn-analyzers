@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -151,11 +152,11 @@ public static class Foo
 		 DataRow(WrongDistinct, CorrectDistinct, DisplayName = nameof(WrongDistinct)),
 		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagWhen2LambdasOnSameLine(string input, string fixedCode)
+		public async Task FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
 			VerifyDiagnostic(input, DiagnosticId.AvoidMultipleLambdasOnSingleLine);
-			VerifyFix(input, fixedCode);
+			await VerifyFix(input, fixedCode).ConfigureAwait(false);
 		}
 
 

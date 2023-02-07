@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -205,12 +206,12 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) 
 		{
 			VerifyDiagnostic(testCode, DiagnosticId.ReturnImmutableCollections);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
-				VerifyFix(testCode, fixedCode);
+				await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 			}
 		}
 

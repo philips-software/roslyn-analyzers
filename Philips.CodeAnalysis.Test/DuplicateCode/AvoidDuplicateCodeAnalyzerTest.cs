@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -306,11 +307,11 @@ Foo.WhitelistedFunction";
 		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeError(string method1, string method2)
+		public async Task AvoidDuplicateCodeError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifyFix(file, file);
-			VerifyFixAll(file, file);
+			await VerifyFix(file, file).ConfigureAwait(false);
+			await VerifyFixAll(file, file).ConfigureAwait(false);
 		}
 
 

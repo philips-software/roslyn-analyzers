@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -39,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false, "Foo.Bar", false, "")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
+		public async Task ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
 		{
 			const string Template = @"
 using System;
@@ -73,13 +74,13 @@ public static class Program
 			if (!string.IsNullOrEmpty(fixedText))
 			{
 				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
-				VerifyFix(text, newText);
+				await VerifyFix(text, newText).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodCallSelfErrors()
+		public async Task ExtensionMethodCallSelfErrors()
 		{
 			const string Template = @"
 using System;
@@ -100,12 +101,12 @@ public static class Foo
 			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
-			VerifyFix(text, newText);
+			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodCallSelfErrors2()
+		public async Task ExtensionMethodCallSelfErrors2()
 		{
 			const string Template = @"
 using System;
@@ -131,7 +132,7 @@ public static class Foo
 			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
-			VerifyFix(text, newText);
+			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 
 		[DataRow(@"

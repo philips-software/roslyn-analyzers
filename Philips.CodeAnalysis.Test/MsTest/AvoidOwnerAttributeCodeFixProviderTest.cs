@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
+		public async Task AvoidOwnerAttributeTest(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -57,7 +58,7 @@ class Foo
 			};
 
 			VerifyDiagnostic(givenText, expected);
-			VerifyFix(givenText, fixedText);
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -63,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
   </summary> */")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
+		public async Task AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
 		{
 			const string template = @"public class Foo 
 {{
@@ -77,7 +78,7 @@ static Foo() {{ }}", summaryComment));
 
 			string expected = string.Format(template, "  \r\n");
 
-			VerifyFix(classContent, expected);
+			await VerifyFix(classContent, expected).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

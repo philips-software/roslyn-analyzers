@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,13 +82,13 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreNotEqual(!true, !Get())", "Assert.IsTrue(!Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())", "Assert.IsFalse(!Get())")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckLiteralChanged(string given, string expected)
+		public async Task CheckLiteralChanged(string given, string expected)
 		{
 			OtherClassSyntax = @"
 static bool Get() { return true; }
 ";
 
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -109,13 +110,13 @@ static bool Get() { return true; }
 		[DataRow("Assert.AreNotEqual(!true, !Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckLiteralNoChange(string given)
+		public async Task CheckLiteralNoChange(string given)
 		{
 			OtherClassSyntax = @"
 static bool? Get() { return true; }
 ";
 
-			VerifyNoChange(given);
+			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
 		[TestMethod]

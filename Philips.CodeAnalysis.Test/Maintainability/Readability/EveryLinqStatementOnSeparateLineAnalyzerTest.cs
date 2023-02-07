@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -105,10 +106,10 @@ public static class Foo
 		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)), 
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MultipleStatementsOnSameLineTriggersDiagnostics(string input)
+		public async Task MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
 			VerifyDiagnostic(input);
-			VerifyFix(input, Correct);
+			await VerifyFix(input, Correct).ConfigureAwait(false);
 		}
 
 		/// <summary>

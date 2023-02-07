@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -26,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("VerifySomething", true)]
 		[DataRow("SomethingToVerify", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AreEqualTypesMatchTest(string name, bool isError)
+		public async Task AreEqualTypesMatchTest(string name, bool isError)
 		{
 			string baseline = @"
 namespace TestMethodNameAnalyzerTest
@@ -65,7 +66,7 @@ namespace TestMethodNameAnalyzerTest
 				VerifySuccessfulCompilation(givenText);
 			}
 
-			VerifyFix(givenText, fixedText);
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

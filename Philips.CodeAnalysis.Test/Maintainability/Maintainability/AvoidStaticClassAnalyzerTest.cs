@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -184,13 +185,13 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
+		public async Task AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
 			VerifySuccessfulCompilation(noDiagnostic);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
 			Verify(methodHavingDiagnostic);
-			VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic);
+			await VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic).ConfigureAwait(false);
 		}
 
 		[TestMethod]

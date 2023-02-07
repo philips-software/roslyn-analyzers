@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -73,7 +74,7 @@ Assert.AreEqual(default, GetValue());
 		[DataRow(false, "0u", null, false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
+		public async Task CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
 		{
 			string expectedParameter = arg0 ?? "GetValue()";
 			string actualParameter = arg1 ?? "GetValue()";
@@ -112,7 +113,7 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 			if (isError)
 			{
 				VerifyError(template);
-				VerifyChange(template, fixTemplate);
+				await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 			}
 			else
 			{
@@ -128,7 +129,7 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 		[DataRow("0u")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNull(string arg)
+		public async Task CheckNull(string arg)
 		{
 			string template = @$"
 Assert.AreEqual(null, {arg});
@@ -137,7 +138,7 @@ Assert.AreEqual(null, {arg});
 Assert.IsNull({arg});
 ";
 
-			VerifyChange(template, fixTemplate);
+			await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 		}
 
 		[DataRow("-1")]
@@ -148,7 +149,7 @@ Assert.IsNull({arg});
 		[DataRow("0u")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNotNull(string arg)
+		public async Task CheckNotNull(string arg)
 		{
 			string template = @$"
 Assert.AreNotEqual(null, {arg});
@@ -157,7 +158,7 @@ Assert.AreNotEqual(null, {arg});
 Assert.IsNotNull({arg});
 ";
 
-			VerifyChange(template, fixTemplate);
+			await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 		}
 
 

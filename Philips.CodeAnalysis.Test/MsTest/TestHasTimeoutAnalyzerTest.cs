@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -51,25 +52,25 @@ class TestDefinitions
 		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n    [Timeout(TestTimeouts.CiAppropriate)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
+		public async Task TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
+		public async Task TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
+		public async Task TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -88,9 +89,9 @@ class TestDefinitions
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.Smoke)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributeCorrect(string methodAttributes)
+		public async Task TimeoutAttributeCorrect(string methodAttributes)
 		{
-			VerifyNoChange(string.Empty, methodAttributes);
+			await VerifyNoChange(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
 
@@ -102,9 +103,9 @@ class TestDefinitions
 		[DataRow("[DataTestMethod, Timeout(1)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n [Timeout(TestTimeouts.CiAppropriate)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TimeoutAttributePresent(string methodAttributes)
+		public async Task TimeoutAttributePresent(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -113,21 +114,21 @@ class TestDefinitions
 		[DataRow("[AssemblyInitialize]")]
 		[DataRow("[DataRow]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotApplyToNonTestMethods(string methodAttributes)
+		public async Task DoesNotApplyToNonTestMethods(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AttributesInMethodsDontCauseCrash()
+		public async Task AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"
 [TestMethod, Timeout(1)]
 var foo = 4;
 ";
 
-			VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod, Timeout(1)]");
+			await VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod, Timeout(1)]").ConfigureAwait(false);
 		}
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)

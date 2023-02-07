@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -69,10 +70,10 @@ namespace PassSenderTests {
 		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
+		public async Task WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
 		{
 			VerifyDiagnostic(testCode);
-			VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true);
+			await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
 		}
 
 		/// <summary>
