@@ -40,7 +40,6 @@ namespace TestMethodNameAnalyzerTest
   }}
 }}
 ";
-
 			string givenText = string.Format(baseline, name);
 			var prefix = GetPrefix(name);
 			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);

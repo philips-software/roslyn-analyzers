@@ -9,16 +9,15 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DontLockNewObjectAnalyzer : DiagnosticAnalyzer
+	public class DontLockNewObjectAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Don't lock new object";
 		private const string MessageFormat = @"Poor choice of lock object '{0}'";
 		private const string Description = @"Lock objects must be sharable between threads";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.DontLockNewObject), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public DontLockNewObjectAnalyzer()
+			: base(DiagnosticId.DontLockNewObject, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -31,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			});
 		}
 
-		private static void Analyze(OperationAnalysisContext context)
+		private void Analyze(OperationAnalysisContext context)
 		{
 			ILockOperation lockOperation = (ILockOperation)context.Operation;
 

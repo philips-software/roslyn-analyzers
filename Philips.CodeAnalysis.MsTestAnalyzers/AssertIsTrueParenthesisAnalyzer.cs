@@ -10,37 +10,23 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AssertIsTrueParenthesisAnalyzer : DiagnosticAnalyzer
+	public class AssertIsTrueParenthesisAnalyzer : SingleDiagnosticAnalyzer<InvocationExpressionSyntax, AssertIsTrueParenthesisSyntaxNodeAction>
 	{
 		private const string Title = @"Assert.IsTrue/IsFalse Should not be in parenthesis";
 		private const string MessageFormat = @"Do not call IsTrue/IsFalse with parenthesis around the argument";
 		private const string Description = @"Assert.IsTrue((<actual> == <expected>)) => Assert.IsTrue(<expected> == <actual>)";
-		private const string Category = Categories.Maintainability;
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueParenthesis), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public AssertIsTrueParenthesisAnalyzer()
+			: base(DiagnosticId.AssertIsTrueParenthesis, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
-				{
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
-			});
+			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 		}
+	}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+	public class AssertIsTrueParenthesisSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
+	{
+		public override void Analyze()
 		{
-			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
-			if (invocationExpression.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
+			if (Node.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
 				return;
 			}
@@ -51,16 +37,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (invocationExpression.ArgumentList.Arguments.Count == 0)
+			if (Node.ArgumentList.Arguments.Count == 0)
 			{
 				return;
 			}
 
-			ArgumentSyntax arg0 = invocationExpression.ArgumentList.Arguments[0];
+			ArgumentSyntax arg0 = Node.ArgumentList.Arguments[0];
 
 			if (arg0.Expression.Kind() == SyntaxKind.ParenthesizedExpression)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, arg0.GetLocation()));
+				ReportDiagnostic(arg0.GetLocation());
 			}
 		}
 	}

@@ -81,9 +81,9 @@ namespace PropertiesinOrderTests {
 		[DataTestMethod]
 		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenReferencingOtherPropertiesDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.SetPropertiesInAnyOrder);
-			VerifyDiagnostic(testCode, expected);
+		public void WhenReferencingOtherPropertiesDiagnosticIsRaised(string testCode) 
+		{
+			VerifyDiagnostic(testCode);
 		}
 
 		/// <summary>
@@ -97,7 +97,8 @@ namespace PropertiesinOrderTests {
 			VerifySuccessfulCompilation(WrongInAssignment, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() 
+		{
 			return new SetPropertiesInAnyOrderAnalyzer();
 		}
 	}

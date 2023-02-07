@@ -29,7 +29,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
-
 			return base.GetMetadataReferences().Add(reference);
 		}
 
@@ -64,8 +63,7 @@ public static class Program
 			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-				VerifyDiagnostic(text, result);
+				VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 			}
 			else
 			{
@@ -99,8 +97,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "Bar(obj, null)");
-			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-			VerifyDiagnostic(text, result);
+			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
 			VerifyFix(text, newText);
@@ -131,8 +128,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "RemoveByKeys(dict, items)");
-			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-			VerifyDiagnostic(text, result);
+			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
 			VerifyFix(text, newText);
@@ -300,8 +296,7 @@ public class Baz
 		{
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-				VerifyDiagnostic(template, result);
+				VerifyDiagnostic(template, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
 			}
 			else
 			{

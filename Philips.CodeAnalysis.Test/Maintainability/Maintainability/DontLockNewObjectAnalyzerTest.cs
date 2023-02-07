@@ -15,20 +15,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class DontLockNewObjectAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DontLockNewObjectAnalyzer();
 		}
 
-		#endregion
-
-		#region Public Interface
-
+	
 		[DataRow("this", false)]
 		[DataRow("lockObj", false)]
 		[DataRow("new object()", true)]
@@ -51,7 +43,7 @@ public class Foo
 
 			if (expectedError)
 			{
-				VerifyDiagnostic(text, DiagnosticResultHelper.Create(DiagnosticId.DontLockNewObject));
+				VerifyDiagnostic(text, DiagnosticId.DontLockNewObject);
 			}
 			else
 			{
@@ -59,6 +51,5 @@ public class Foo
 			}
 		}
 
-		#endregion
 	}
 }

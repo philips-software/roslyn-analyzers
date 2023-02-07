@@ -11,22 +11,21 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class CallExtensionMethodsAsInstanceMethodsAnalyzer : DiagnosticAnalyzer
+	public class CallExtensionMethodsAsInstanceMethodsAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Call extension methods as if they were instance methods";
 		private const string MessageFormat = @"Call extension method {0} as an instance method";
-		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
+		private const string Description = Title;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public CallExtensionMethodsAsInstanceMethodsAnalyzer()
+			: base(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
 			context.RegisterOperationAction(OnInvoke, OperationKind.Invocation);
 		}
 

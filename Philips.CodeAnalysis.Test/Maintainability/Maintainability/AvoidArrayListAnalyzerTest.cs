@@ -98,8 +98,7 @@ namespace AvoidArrayListTests {
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidArrayList);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode);
 			if (fixedCode != null)
 			{
 				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);

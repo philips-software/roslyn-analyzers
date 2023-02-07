@@ -69,9 +69,9 @@ namespace PassSenderTests {
 		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.PassSenderToEventHandler);
-			VerifyDiagnostic(testCode, expected);
+		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
+		{
+			VerifyDiagnostic(testCode);
 			VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
 		}
 
@@ -86,7 +86,8 @@ namespace PassSenderTests {
 			VerifySuccessfulCompilation(WrongSender, filePath);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() 
+		{
 			return new PassSenderToEventHandlerAnalyzer();
 		}
 

@@ -31,18 +31,7 @@ namespace ExpectedAnalyzerAttributeTest
   }
 }
 ";
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.ExpectedExceptionAttribute),
-				Message = new Regex(ExpectedExceptionAttributeAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, 6)
-				}
-			};
-
-			VerifyDiagnostic(givenText, expected);
+			VerifyDiagnostic(givenText);
 		}
 		
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -16,8 +16,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidTryParseWithoutCultureAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
 			using System.Globalization;
@@ -54,27 +52,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				public static void TryParse() {{}}
 			}}";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidTryParseWithoutCultureAnalyzer();
 		}
 
-		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
-		{
-			return new DiagnosticResultLocation("Test.cs", 8 + rowOffset, 6 + columnOffset);
-		}
-
-		#endregion
-
-		#region Public Interface
-
-		#endregion
-
-		#region Test Methods
 
 		[DataTestMethod]
 		[DataRow("int.TryParse(\"3\", out int i);")]
@@ -84,18 +67,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public void AvoidTryParseWithoutCultureForValueTypes(string s)
 		{
 			string code = string.Format(ClassString, s);
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture),
-				Message = new Regex(".+ "),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					GetBaseDiagnosticLocation()
-				}
-			};
-
-			VerifyDiagnostic(code, expected);
+			VerifyDiagnostic(code);
 		}
 
 		[DataTestMethod]
@@ -117,18 +89,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			string editorCode = string.Format(ClassString, s);
 			string code = string.Concat(editorCode, TestParserDefinition);
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture),
-				Message = new Regex(".+ "),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					GetBaseDiagnosticLocation()
-				}
-			};
-
-			VerifyDiagnostic(code, expected);
+			VerifyDiagnostic(code);
 		}
 
 		[DataTestMethod]
@@ -141,7 +102,5 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string code = string.Concat(editorCode, TestParserDefinition);
 			VerifySuccessfulCompilation(code);
 		}
-
-		#endregion
 	}
 }

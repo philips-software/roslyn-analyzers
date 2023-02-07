@@ -12,13 +12,18 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidTryParseWithoutCultureAnalyzer : DiagnosticAnalyzer
+	public class AvoidTryParseWithoutCultureAnalyzer : SingleDiagnosticAnalyzer<InvocationExpressionSyntax, AvoidTryParseWithoutCultureSyntaxNodeAction>
 	{
 		private const string Title = @"Do not use TryParse without specifying a culture";
 		private const string MessageFormat = @"Do not use TryParse without specifying a culture if such an overload exists.";
 		private const string Description = @"Do not use TryParse without specifying a culture if such an overload exists. Failure to do so may result in code not correctly handling localized delimiters (such as commas instead of decimal points).";
-		private const string Category = Categories.Maintainability;
 
+		public AvoidTryParseWithoutCultureAnalyzer()
+			: base(DiagnosticId.AvoidTryParseWithoutCulture, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
+	public class AvoidTryParseWithoutCultureSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
+	{
 		private const string TryParseMethodName = @"TryParse";
 		private static readonly HashSet<string> _cultureParameterTypes = new()
 		{
@@ -26,28 +31,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			@"CultureInfo"
 		};
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		public override void Analyze()
 		{
-			InvocationExpressionSyntax invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
-			if (invocationExpressionSyntax == null)
-			{
-				return;
-			}
-
 			// Ignore any methods not named TryParse.
-			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax || memberAccessExpressionSyntax.Name.ToString() != TryParseMethodName)
+			if (Node.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax || memberAccessExpressionSyntax.Name.ToString() != TryParseMethodName)
 			{
 				return;
 			}
 
 			// If the invoked method contains an IFormatProvider parameter, stop analyzing.
-			if (context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol is not IMethodSymbol invokedMethod || HasCultureParameter(invokedMethod))
+			if (Context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol is not IMethodSymbol invokedMethod || HasCultureParameter(invokedMethod))
 			{
 				return;
 			}
 
 			// Only display an error if the class implements an overload of TryParse that accepts IFormatProvider.
-			if (context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax).Symbol is not IMethodSymbol methodSymbol)
+			if (Context.SemanticModel.GetSymbolInfo(Node).Symbol is not IMethodSymbol methodSymbol)
 			{
 				return;
 			}
@@ -58,9 +57,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (tryParseOverloads.Any(m => m is IMethodSymbol method && HasCultureParameter(method)))
 			{
 				// There is an overload that can accept culture as a parameter. Display an error.
-				var location = invocationExpressionSyntax.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-				context.ReportDiagnostic(diagnostic);
+				var location = Node.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
 
@@ -75,18 +73,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			return false;
-		}
-
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTryParseWithoutCulture), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 		}
 	}
 }

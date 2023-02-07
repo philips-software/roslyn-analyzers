@@ -11,38 +11,33 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestMethodNameAnalyzer : DiagnosticAnalyzer
+	public class TestMethodNameAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, TestMethodNameSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Test Method must not start with '{0}'";
-		private const string Title = @"Test Method names unhelpful prefix'";
+		private const string Title = @"Test Method names unhelpful prefix";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
-		private const string Category = Categories.Naming;
+
+		public TestMethodNameAnalyzer()
+			: base(DiagnosticId.TestMethodName, Title, MessageFormat, Description, Categories.Naming)
+		{
+			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute";
+		}
+	}
+	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
+	{
 		private const string TestLiteral = @"Test";
 		private const string EnsureLiteral = @"Ensure";
 		private const string VerifyLiteral = @"Verify";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AttributeList);
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
-
 			// Only interested in TestMethod attributes
-			if(attributesNode.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
+			if(Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
 			{
 				return;
 			}
 
-			SyntaxNode methodNode = attributesNode.Parent;
+			SyntaxNode methodNode = Node.Parent;
 
 			// Confirm this is actually a method...
 			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
@@ -71,8 +66,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
 						var location = token.GetLocation();
-						Diagnostic diagnostic = Diagnostic.Create(Rule, location, invalidPrefix);
-						context.ReportDiagnostic(diagnostic);
+						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}
 				}

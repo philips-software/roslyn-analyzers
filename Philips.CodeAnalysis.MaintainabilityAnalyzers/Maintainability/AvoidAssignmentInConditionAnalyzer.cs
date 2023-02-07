@@ -17,29 +17,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Diagnostic for variable assignment inside an if condition.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidAssignmentInConditionAnalyzer : DiagnosticAnalyzer
+	public class AvoidAssignmentInConditionAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = "Assignment in condition.";
-		private const string Message = Title;
+		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(
-				Helper.ToDiagnosticId(DiagnosticId.AvoidAssignmentInCondition),
-				Title,
-				Message,
-				Category,
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
-				description: Description
-			);
-
-		/// <summary>
-		/// <inheritdoc cref="DiagnosticAnalyzer"/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Rule);
+		public AvoidAssignmentInConditionAnalyzer()
+			: base(DiagnosticId.AvoidAssignmentInCondition, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>

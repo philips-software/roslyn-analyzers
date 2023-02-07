@@ -42,8 +42,7 @@ class Foo
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidPasswordField);
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField);
 		}
 
 		[DataTestMethod]
