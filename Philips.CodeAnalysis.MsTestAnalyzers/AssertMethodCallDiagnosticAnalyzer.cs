@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith("Assert"))
+			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith(StringConstants.Assert))
 			{
 				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression))
 				{
