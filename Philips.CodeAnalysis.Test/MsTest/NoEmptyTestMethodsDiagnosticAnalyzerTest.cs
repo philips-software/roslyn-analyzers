@@ -48,7 +48,7 @@ public class DerivedTestMethod : TestMethodAttribute
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass] public class Foo {{ [{0}] public void Method() {{ }} }}";
 
-			VerifyDiagnostic(string.Format(template, attribute), DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustNotBeEmpty));
+			VerifyDiagnostic(string.Format(template, attribute), DiagnosticId.TestMethodsMustNotBeEmpty);
 		}
 	}
 }

@@ -136,8 +136,7 @@ public class Program {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LogException); 
-			VerifyDiagnostic(testCode, expected);
+			VerifyDiagnostic(testCode, DiagnosticId.LogException);
 		}
 
 		/// <summary>

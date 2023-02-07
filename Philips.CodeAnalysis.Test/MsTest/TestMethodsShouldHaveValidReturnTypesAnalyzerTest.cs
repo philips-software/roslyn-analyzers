@@ -53,8 +53,7 @@ public class Tests
 
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustHaveValidReturnType);
-				VerifyDiagnostic(code, expected);
+				VerifyDiagnostic(code, DiagnosticId.TestMethodsMustHaveValidReturnType);
 			}
 			else
 			{
