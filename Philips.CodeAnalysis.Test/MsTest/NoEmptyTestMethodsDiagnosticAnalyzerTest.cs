@@ -1,7 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -14,21 +12,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class NoEmptyTestMethodsDiagnosticAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoEmptyTestMethodsDiagnosticAnalyzer();
 		}
 
-		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
-		{
-			return base.GetMetadataReferences().Add(MetadataReference.CreateFromFile(typeof(TimeoutAttribute).Assembly.Location));
-		}
 		protected override (string name, string content)[] GetAdditionalSourceCode()
 		{
 			string code = @"
@@ -42,10 +30,6 @@ public class DerivedTestMethod : TestMethodAttribute
 
 			return new[] { ("DerivedTestMethod.cs", code) };
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("DerivedTestMethod")]
 		[DataRow("TestMethod")]
@@ -66,7 +50,5 @@ public class DerivedTestMethod : TestMethodAttribute
 
 			VerifyDiagnostic(string.Format(template, attribute), DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustNotBeEmpty));
 		}
-
-		#endregion
 	}
 }

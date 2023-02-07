@@ -1,8 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Verifiers
@@ -73,11 +71,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
 
 			VerifySuccessfulCompilation(test);
-		}
-
-		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
-		{
-			return _helper.GetMetaDataReferences();
 		}
 	}
 }
