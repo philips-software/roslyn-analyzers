@@ -293,9 +293,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticId.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
 		 DataRow(WrongNumberOfPlusEqual, DiagnosticId.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticId diagnosticId) {
-			var expected = DiagnosticResultHelper.Create(diagnosticId);
-			VerifyDiagnostic(testCode, expected);
+		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticId diagnosticId) 
+		{
+			VerifyDiagnostic(testCode, diagnosticId);
 		}
 
 		/// <summary>

@@ -207,8 +207,7 @@ public class Foo
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
-			DiagnosticResult expected = DiagnosticResultHelper.Create(DiagnosticId.TestMethodName);
-			VerifyDiagnostic(input, expected, fileNamePrefix);
+			VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix);
 		}
 	}
 }

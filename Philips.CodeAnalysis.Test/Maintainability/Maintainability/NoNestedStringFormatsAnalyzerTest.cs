@@ -18,6 +18,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new NoNestedStringFormatsAnalyzer();
 		}
 
+		private void VerifyNoNested(string code)
+		{
+			VerifyDiagnostic(code, DiagnosticId.NoNestedStringFormats);
+		}
+		private void VerifyNoUnnecessary(string code)
+		{
+			VerifyDiagnostic(code, DiagnosticId.NoUnnecessaryStringFormats);
+		}
+
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CatchesNestedStringFormat()
@@ -32,8 +42,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
+			VerifyNoNested(template);
 		}
 
 		[TestMethod]
@@ -50,8 +59,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
+			VerifyNoNested(template);
 		}
 
 		[TestMethod]
@@ -73,8 +81,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoNestedStringFormats));
+			VerifyNoNested(template);
 		}
 
 		[TestMethod]
@@ -92,8 +99,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -122,8 +128,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[DataRow("{0}")]
@@ -152,8 +157,7 @@ class Foo
 	}}
 }}
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -171,8 +175,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -217,8 +220,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 
@@ -238,8 +240,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -265,8 +266,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -296,8 +296,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -323,8 +322,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -350,8 +348,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -378,8 +375,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -405,8 +401,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[TestMethod]
@@ -438,8 +433,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[DataRow("\"{0}\"", ", errorMessage", true)]
@@ -482,8 +476,7 @@ class Foo
 			var code = string.Format(template, format, args);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats);
-				VerifyDiagnostic(code, expected);
+				VerifyNoUnnecessary(code);
 			}
 			else
 			{
@@ -620,8 +613,7 @@ class Foo
 	}}
 }}
 ";
-
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoUnnecessaryStringFormats));
+			VerifyNoUnnecessary(template);
 		}
 
 		[DataRow(@"$""{Test()}""")]

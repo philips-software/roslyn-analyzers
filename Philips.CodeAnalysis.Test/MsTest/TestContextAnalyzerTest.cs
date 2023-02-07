@@ -57,7 +57,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticId.TestContext));
+			VerifyDiagnostic(givenText, DiagnosticId.TestContext);
 			VerifyFix(givenText, fixedText);
 		}
 

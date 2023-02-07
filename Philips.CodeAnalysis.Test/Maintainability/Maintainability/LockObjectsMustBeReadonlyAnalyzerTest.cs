@@ -154,9 +154,7 @@ class Foo
 	}}
 }}
 ";
-			var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-			result.Message = new Regex("'_foo'");
-			VerifyDiagnostic(template, result);
+			VerifyDiagnostic(template, DiagnosticId.LocksShouldBeReadonly, regex: "'_foo'");
 		}
 	}
 }
