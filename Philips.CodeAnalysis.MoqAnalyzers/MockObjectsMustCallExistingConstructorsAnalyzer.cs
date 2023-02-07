@@ -15,6 +15,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 	{
 		private const string MockName = "Mock";
 		private const string MockBehavior = "MockBehavior";
+		private const string MockType = "Moq.MockRepository";
 
 		private const string Title = @"Mock<T> construction must call an existing constructor";
 		private const string MessageFormat = @"Could not find a matching constructor for {0}";
@@ -30,7 +31,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Moq.MockRepository") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(MockType) == null)
 				{
 					return;
 				}
