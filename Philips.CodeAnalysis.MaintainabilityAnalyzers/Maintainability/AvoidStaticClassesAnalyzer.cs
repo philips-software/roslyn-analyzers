@@ -24,9 +24,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
+		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
 		{
-			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, generateExceptionsFile);
+			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, shouldGenerateExceptionsFile);
 		}
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)

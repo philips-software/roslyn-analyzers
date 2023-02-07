@@ -53,7 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return;
 				}
 
-				ReportDiagnostic(parameterSyntax.GetLocation(), parameterSyntax.Identifier);
+				var location = parameterSyntax.GetLocation();
+				ReportDiagnostic(location, parameterSyntax.Identifier);
 			}
 		}
 

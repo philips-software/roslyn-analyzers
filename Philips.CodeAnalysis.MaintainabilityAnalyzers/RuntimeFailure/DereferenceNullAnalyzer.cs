@@ -173,8 +173,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				return;
 			}
 
-			bool ourSymbolIsReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
-			if (!ourSymbolIsReadOrWritten)
+			bool isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
+			if (!isOurSymbolReadOrWritten)
 			{
 				Report(identifierNameSyntax);
 			}

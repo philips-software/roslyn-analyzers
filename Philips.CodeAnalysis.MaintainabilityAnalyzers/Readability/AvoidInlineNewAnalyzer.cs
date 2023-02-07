@@ -38,7 +38,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			ReportDiagnostic(Node.GetLocation(), Node.Type.ToString());
+			var location = Node.GetLocation();
+			ReportDiagnostic(location, Node.Type.ToString());
 		}
 
 		private static bool IsInlineNew(SyntaxNode node)

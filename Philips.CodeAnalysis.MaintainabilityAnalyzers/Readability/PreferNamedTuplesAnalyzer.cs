@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,7 +30,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				if (element.Identifier.Kind() == SyntaxKind.None)
 				{
-					ReportDiagnostic(element.GetLocation());
+					var location = element.GetLocation();
+					ReportDiagnostic(location);
 				}
 			}
 		}

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -32,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords = 
-			new( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
+			new( new[]{ "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
