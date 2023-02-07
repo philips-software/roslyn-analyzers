@@ -1,7 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -74,15 +73,11 @@ namespace ComplexConditionUnitTests {
 			return new LimitConditionComplexityAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
 				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new()
-			{
-				{ key, "not a number" }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add(key, "not a number");
 		}
 	}
 }

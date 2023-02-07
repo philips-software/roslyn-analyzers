@@ -1,6 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -158,9 +158,9 @@ public class Program {
 			return new LogExceptionAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new [] {(LogExceptionAnalyzer.AllowedFileName, configuredLogMethods)};
+			return base.GetAdditionalTexts().Add((LogExceptionAnalyzer.AllowedFileName, configuredLogMethods));
 		}
 	}
 }

@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -23,6 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = Title;
 		private const string Description = Title;
 		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private readonly TestHelper _helper = new();
 
 		public NoHardCodedPathsAnalyzer()
 			: base(DiagnosticId.NoHardcodedPaths, Title, MessageFormat, Description, Categories.Maintainability)
@@ -32,6 +32,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			LiteralExpressionSyntax stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
+			
+			if (_helper.IsInTestClass(context))
+			{
+				return;
+			}
+			
 			// Get the text value of the string literal expression.
 			string pathValue = stringLiteralExpressionNode.Token.ValueText;
 

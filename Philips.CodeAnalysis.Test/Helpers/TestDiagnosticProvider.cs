@@ -11,9 +11,9 @@ namespace Philips.CodeAnalysis.Test.Helpers
 {
 	public class TestDiagnosticProvider : FixAllContext.DiagnosticProvider
 	{
-		private readonly IReadOnlyList<Diagnostic> _diagnostics;
+		private readonly IEnumerable<Diagnostic> _diagnostics;
 
-		public TestDiagnosticProvider(IReadOnlyList<Diagnostic> diagnostics, Document document)
+		public TestDiagnosticProvider(IEnumerable<Diagnostic> diagnostics, Document document)
 		{
 			_diagnostics = diagnostics;
 			Document = document;
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public override Task<IEnumerable<Diagnostic>> GetAllDiagnosticsAsync(Project project, CancellationToken cancellationToken)
 		{
-			return Task.FromResult((IEnumerable<Diagnostic>)_diagnostics);
+			return Task.FromResult(_diagnostics);
 		}
 
 		public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync(Document document, CancellationToken cancellationToken)

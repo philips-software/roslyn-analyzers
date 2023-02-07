@@ -76,5 +76,27 @@ namespace RegexNeedsTimeoutTest
 			string testCode = string.Format(format, content);
 			VerifySuccessfulCompilation(testCode);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DoesNotTriggerDiagnosticInTestCode()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	[TestMethod]
+    public void Test()
+	{
+		Regex myRegex = new RegEx("".*"");
+	}
+}
+";
+			VerifySuccessfulCompilation(template);
+
+		}
+
 	}
 }

@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -181,17 +180,15 @@ class Foo
 			return new TestHasCategoryCodeFixProvider();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { (@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1") };
+			return base.GetAdditionalTexts().Add((@"TestsWithUnsupportedCategory.Allowed.txt", "*.Foo.Foo1"));
 		}
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			var options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories", @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests" }
-			};
-			return options;
+			var key = $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories";
+			var value = @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests";
+			return base.GetAdditionalAnalyzerConfigOptions().Add(key, value);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -56,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			if (error != null)
 			{
-				expected.Message = new Regex(error);
+				expected.Message = new Regex(error, RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 			}
 
 			VerifyDiagnostic(test, expected);
