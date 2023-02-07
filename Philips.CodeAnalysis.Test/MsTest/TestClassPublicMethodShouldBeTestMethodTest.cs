@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestClassPublicMethodShouldBeTestMethodTest : DiagnosticVerifier
 	{
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +26,7 @@ public class DerivedTestMethod : TestMethodAttribute
 
 ";
 
-			return new[] { ("DerivedTestMethod.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
 		[DataTestMethod]

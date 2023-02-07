@@ -252,9 +252,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return ImmutableArray.Create(list.ToArray());
 		}
 
-		protected virtual (string name, string content)[] GetAdditionalSourceCode()
+		protected virtual ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			return Array.Empty<(string name, string content)>();
+			return ImmutableArray<(string name, string content)>.Empty;
 		}
 
 		protected virtual ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()

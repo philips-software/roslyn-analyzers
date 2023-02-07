@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new TestMethodsMustBeInTestClassAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,7 +34,7 @@ public class DerivedTestMethod : TestMethod
 
 ";
 
-			return new[] { ("DerivedTestMethod.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
 		#endregion
