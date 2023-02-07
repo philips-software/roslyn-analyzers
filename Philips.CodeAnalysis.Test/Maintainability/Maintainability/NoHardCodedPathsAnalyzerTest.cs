@@ -214,7 +214,7 @@ class foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesnotCatchPathsInComments()
+		public void DoesNotCatchPathsInComments()
 		{
 			const string template = @"
 using System;
@@ -233,5 +233,25 @@ class Foo
 
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DoesNotCatchPathsInTestCode()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	[TestMethod]
+    public void Test()
+	{
+		string path = @""c:\users\Bin\example.xml"";
+	}
+}
+";
+			VerifySuccessfulCompilation(template);
+
+		}
 	}
 }
