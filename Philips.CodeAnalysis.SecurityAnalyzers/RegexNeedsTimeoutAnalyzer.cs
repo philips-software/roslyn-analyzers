@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,7 +16,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public const string MessageFormat = @"When constructing a new Regex instance, provide a timeout.";
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
-		
+		private const int CorrectConstructorArgumentCount = 3;
+
 		public static readonly DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout), 
 			Title, MessageFormat, Category, 
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// We require to use the constructor with the Timeout argument.
-			if (creation.ArgumentList is not { Arguments.Count: not 3 })
+			if (creation.ArgumentList is not { Arguments.Count: not CorrectConstructorArgumentCount })
 			{
 				return;
 			}

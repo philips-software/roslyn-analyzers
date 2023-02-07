@@ -1,13 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
@@ -25,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class AvoidInlineNewSyntaxNodeAction : SyntaxNodeAction<ObjectCreationExpressionSyntax>
 	{
-		private static readonly HashSet<string> AllowedMethods = new() { "ToString", "ToList", "ToArray", "AsSpan" };
+		private static readonly HashSet<string> AllowedMethods = new() { StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan" };
 
 		public override void Analyze()
 		{
@@ -41,7 +38,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			ReportDiagnostic(Node.GetLocation(), Node.Type.ToString());
+			var location = Node.GetLocation();
+			ReportDiagnostic(location, Node.Type.ToString());
 		}
 
 		private static bool IsInlineNew(SyntaxNode node)

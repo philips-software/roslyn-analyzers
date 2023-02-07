@@ -58,10 +58,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, 
-												out bool anyCustomDataSources, out bool anyDynamicData, out HashSet<int> dataRowParameters)
+												out bool hasAnyCustomDataSources, out bool hasAnyDynamicData, out HashSet<int> dataRowParameters)
 			{
-				anyCustomDataSources = false;
-				anyDynamicData = false;
+				hasAnyCustomDataSources = false;
+				hasAnyDynamicData = false;
 				dataRowParameters = new();
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
-						anyDynamicData = true;
+						hasAnyDynamicData = true;
 						continue;
 					}
 
@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					{
 						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
 						{
-							anyCustomDataSources = true;
+							hasAnyCustomDataSources = true;
 						}
 
 						continue;

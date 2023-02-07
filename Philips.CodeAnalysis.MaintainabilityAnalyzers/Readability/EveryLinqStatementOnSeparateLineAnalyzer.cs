@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,14 +27,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			FromClauseSyntax from = Node.FromClause;
 			if (!EndsWithNewline(from))
 			{
-				ReportDiagnostic(from.GetLocation());
+				var fromLocation = from.GetLocation();
+				ReportDiagnostic(fromLocation);
 			}
 
 			foreach (var clause in Node.Body.Clauses)
 			{
 				if(!EndsWithNewline(clause))
 				{
-					ReportDiagnostic(clause.GetLocation());
+					var clauseLocation = clause.GetLocation(); 
+					ReportDiagnostic(clauseLocation);
 				}
 			}
 		}

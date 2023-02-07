@@ -28,13 +28,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly IReadOnlyDictionary<string, string> CollectionsMap = new Dictionary<string, string>()
 		{
 			{"List", ReadonlyList},
-			{"Queue", ReadonlyCollection},
-			{"SortedList", ReadonlyDictionary},
-			{"Stack", ReadonlyCollection},
-			{"Dictionary", ReadonlyDictionary},
-			{"IList", ReadonlyList},
+			{StringConstants.QueueClassName, ReadonlyCollection},
+			{StringConstants.SortedListClassName, ReadonlyDictionary},
+			{StringConstants.StackClassName, ReadonlyCollection},
+			{StringConstants.DictionaryClassName, ReadonlyDictionary},
+			{StringConstants.IListInterfaceName, ReadonlyList},
 			{"ICollection", ReadonlyCollection},
-			{"IDictionary", ReadonlyDictionary}
+			{StringConstants.IDictionaryInterfaceName, ReadonlyDictionary}
 		};
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ReturnImmutableCollections));

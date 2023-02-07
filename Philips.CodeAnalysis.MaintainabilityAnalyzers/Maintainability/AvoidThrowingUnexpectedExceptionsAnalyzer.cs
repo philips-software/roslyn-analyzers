@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{ "Equals", "Equals method" },
 			{ "GetHashCode", "GetHashCode method" },
 			{ "Dispose", "Dispose method" },
-			{ "ToString", "ToString method" }
+			{ StringConstants.ToStringMethodName, "ToString method" }
 		};
 
 		public override void Analyze()

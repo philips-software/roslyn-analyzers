@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -23,16 +22,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
 		private const string Description = @"";
 
-		private readonly bool _checkLocalVariables;
-		private readonly bool _checkFieldVariables;
+		private readonly bool _shouldCheckLocalVariables;
+		private readonly bool _shouldCheckFieldVariables;
 
 		public EnforceBoolNamingConventionAnalyzer() : this(true, true) { }
 
-		public EnforceBoolNamingConventionAnalyzer(bool checkLocalVariables, bool checkFieldVariables)
+		public EnforceBoolNamingConventionAnalyzer(bool shouldCheckLocalVariables, bool shouldCheckFieldVariables)
 			: base(DiagnosticId.EnforceBoolNamingConvention, Title, MessageFormat, Description, Categories.Naming)
 		{
-			_checkLocalVariables = checkLocalVariables;
-			_checkFieldVariables = checkFieldVariables;
+			_shouldCheckLocalVariables = shouldCheckLocalVariables;
+			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
 
 		public override void Initialize(AnalysisContext context)
@@ -114,7 +113,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 							return false;
 						}
 
-						shouldCheck = _checkLocalVariables;
+						shouldCheck = _shouldCheckLocalVariables;
 						validator = _localRegex;
 						break;
 					}
@@ -127,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 							return false;
 						}
 
-						shouldCheck = _checkFieldVariables;
+						shouldCheck = _shouldCheckFieldVariables;
 
 						if (IsFieldPublic(fieldDeclaration) || IsFieldConst(fieldDeclaration))
 						{

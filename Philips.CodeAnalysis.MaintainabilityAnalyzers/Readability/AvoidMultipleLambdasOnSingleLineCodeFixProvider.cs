@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidMultipleLambdasOnSingleLineCodeFixProvider)), Shared]
 	public class AvoidMultipleLambdasOnSingleLineCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Put every linq statement on a separate line";
+		private const string Title = "Put every lambda on a separate line";
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidMultipleLambdasOnSingleLine));
 

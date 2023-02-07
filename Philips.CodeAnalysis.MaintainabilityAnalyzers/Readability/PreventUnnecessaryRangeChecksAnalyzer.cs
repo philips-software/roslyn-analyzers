@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -46,7 +45,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			ReportDiagnostic(Node.IfKeyword.GetLocation());
+			var location = Node.IfKeyword.GetLocation();
+			ReportDiagnostic(location);
 		}
 
 		private bool TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax)
@@ -72,18 +72,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private bool IsCountGreaterThanZero(ExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
-			bool result;
+			bool isGreaterThanZero;
 			if (condition is ParenthesizedExpressionSyntax parenthesized)
 			{
-				result = IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
+				isGreaterThanZero = IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
 			} 
 			else 
 			{
-				result = condition is BinaryExpressionSyntax binaryExpressionSyntax &&
+				isGreaterThanZero = condition is BinaryExpressionSyntax binaryExpressionSyntax &&
 				         IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
 			}
 
-			return result;
+			return isGreaterThanZero;
 		}
 
 		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)

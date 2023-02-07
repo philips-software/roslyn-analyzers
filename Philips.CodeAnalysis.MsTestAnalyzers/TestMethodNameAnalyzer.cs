@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,7 +15,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public const string MessageFormat = @"Test Method must not start with '{0}'";
 		private const string Title = @"Test Method names unhelpful prefix";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
-
 		public TestMethodNameAnalyzer()
 			: base(DiagnosticId.TestMethodName, Title, MessageFormat, Description, Categories.Naming)
 		{
@@ -25,10 +23,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	}
 	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
 	{
-		private const string TestLiteral = @"Test";
-		private const string EnsureLiteral = @"Ensure";
-		private const string VerifyLiteral = @"Verify";
-
 		public override void Analyze()
 		{
 			// Only interested in TestMethod attributes
@@ -50,17 +44,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
 				{
-					if (token.ValueText.StartsWith(TestLiteral))
+					if (token.ValueText.StartsWith(StringConstants.TestAttributeName))
 					{
-						invalidPrefix = TestLiteral;
+						invalidPrefix = StringConstants.TestAttributeName;
 					}
-					else if (token.ValueText.StartsWith(EnsureLiteral))
+					else if (token.ValueText.StartsWith(StringConstants.EnsureAttributeName))
 					{
-						invalidPrefix = EnsureLiteral;
+						invalidPrefix = StringConstants.EnsureAttributeName;
 					}
-					else if (token.ValueText.StartsWith(VerifyLiteral))
+					else if (token.ValueText.StartsWith(StringConstants.VerifyAttributeName))
 					{
-						invalidPrefix = VerifyLiteral;
+						invalidPrefix = StringConstants.VerifyAttributeName;
 					}
 
 					if (!string.IsNullOrEmpty(invalidPrefix))

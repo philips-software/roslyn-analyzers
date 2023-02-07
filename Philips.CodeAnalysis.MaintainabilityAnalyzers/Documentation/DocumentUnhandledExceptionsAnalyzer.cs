@@ -130,7 +130,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var loc = Node.Identifier.GetLocation();
 				var methodName = Node.Identifier.Text;
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
-				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", remainingExceptionsString);
+				var properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
 				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
 				Context.ReportDiagnostic(diagnostic);
 			}

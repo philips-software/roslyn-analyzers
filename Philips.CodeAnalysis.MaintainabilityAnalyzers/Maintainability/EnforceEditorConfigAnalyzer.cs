@@ -27,8 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationAction(compilationContext =>
 			{
-				bool result = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
-				if (!result)
+				bool isPresent = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
+				if (!isPresent)
 				{
 					Diagnostic diagnostic = Diagnostic.Create(Rule, Location.None);
 					compilationContext.ReportDiagnostic(diagnostic);

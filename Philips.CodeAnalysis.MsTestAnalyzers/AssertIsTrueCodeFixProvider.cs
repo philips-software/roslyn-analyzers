@@ -206,24 +206,19 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			//Assert.IsFalse(x == y) -> Assert.AreNotEqual(x, y)	(false, false) (if null, IsNotNull)
 			//Assert.IsFalse(x != y) -> Assert.AreEqual(x, y)		(false, true) (if null, IsNull)
 
-			const string AreEqual = "AreEqual";
-			const string AreNotEqual = "AreNotEqual";
-			const string IsNull = "IsNull";
-			const string IsNotNull = "IsNotNull";
-
 			if (isIsTrue)
 			{
 				if (isNotEquals)
 				{
-					return isNullArgument ? IsNotNull : AreNotEqual;
+					return isNullArgument ? StringConstants.IsNotNullMethodName : StringConstants.AreNotEqualMethodName;
 				}
-				return isNullArgument ? IsNull : AreEqual;
+				return isNullArgument ? StringConstants.IsNullMethodName : StringConstants.AreEqualMethodName;
 			}
 			if (isNotEquals)
 			{
-				return isNullArgument ? IsNull : AreEqual;
+				return isNullArgument ? StringConstants.IsNullMethodName : StringConstants.AreEqualMethodName;
 			}
-			return isNullArgument ? IsNotNull : AreNotEqual;
+			return isNullArgument ? StringConstants.IsNotNullMethodName : StringConstants.AreNotEqualMethodName;
 		}
 
 		private ArgumentListSyntax DecomposeEqualsFunction(ArgumentListSyntax argumentList, out bool isNotEquals)
