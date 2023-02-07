@@ -44,7 +44,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			ReportDiagnostic(Node.GetLocation());
+			var location = Node.GetLocation();
+			ReportDiagnostic(location);
 		}
 	}
 }
