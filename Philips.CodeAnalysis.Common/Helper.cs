@@ -17,6 +17,11 @@ namespace Philips.CodeAnalysis.Common
 			return @"PH" + ((int)id).ToString();
 		}
 
+		public static string ToHelpLinkUrl(string id)
+		{
+			return $"https://github.com/philips-software/roslyn-analyzers/tree/master/Documentation/Diagnostics/{id}.md";
+		}
+
 		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
 		{
 			var values = diagnostics.Select(diagnostic => diagnostic.Id);

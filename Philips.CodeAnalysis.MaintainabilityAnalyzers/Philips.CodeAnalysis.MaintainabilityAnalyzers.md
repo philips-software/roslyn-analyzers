@@ -66,7 +66,7 @@
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
 | PH2114  | Avoid empty statement                        | Avoid empty statements. |
 | PH2115  | Every Lambda expression on separate line     | Avoid putting multiple lambda statements on a single line for readability. |
-| PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| [PH2116](../Documentation/Diagnostics/PH2116.md)  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
 | PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
 | PH2119  | Cast complete object                         | A cast should include all information from the previous type. By casting to a type of one of the fields, the cast is losing information. Use an AsType() or ToType() method instead. |
