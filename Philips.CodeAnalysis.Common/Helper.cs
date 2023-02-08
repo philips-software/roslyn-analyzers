@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public static string ToHelpLinkUrl(string id)
 		{
-			return $"https://github.com/philips-software/roslyn-analyzers/tree/master/Documentation/Diagnostics/{id}.md";
+			return $"https://github.com/philips-software/roslyn-analyzers/blob/master/Documentation/Diagnostics/{id}.md";
 		}
 
 		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
