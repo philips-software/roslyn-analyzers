@@ -137,7 +137,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaisedAsync(string testCode) {
+		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaisedAsync(string testCode)
+		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 

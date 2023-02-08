@@ -122,7 +122,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var modifiers = field.Modifiers;
 			return modifiers.Any(SyntaxKind.ConstKeyword) ||
-			       (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
+				   (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
 		}
 	}
 }

@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreferNamedTuplesAnalyzer :  SingleDiagnosticAnalyzer<TupleTypeSyntax, PreferNamedTuplesSyntaxNodeAction>
+	public class PreferNamedTuplesAnalyzer : SingleDiagnosticAnalyzer<TupleTypeSyntax, PreferNamedTuplesSyntaxNodeAction>
 	{
 		private const string Title = @"Prefer tuples that have names";
 		private const string MessageFormat = @"Name this tuple field";

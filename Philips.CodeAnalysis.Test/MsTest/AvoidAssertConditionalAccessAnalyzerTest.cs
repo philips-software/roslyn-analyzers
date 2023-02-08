@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
 		}
 
-		
+
 		[DataTestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			var code = helper.GetText(test, string.Empty, string.Empty);
 			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
-		
+
 
 		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]

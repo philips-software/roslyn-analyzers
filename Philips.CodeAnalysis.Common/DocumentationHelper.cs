@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Common
 	{
 		private const string ExceptionElementName = "exception";
 		private readonly List<XmlElementSyntax> xmlElements = new();
-	
+
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
 			return node.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor is BaseMethodDeclarationSyntax or PropertyDeclarationSyntax or TypeDeclarationSyntax);
@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Common
 		public DocumentationHelper(SyntaxNode node)
 		{
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
-			if(doc == default)
+			if (doc == default)
 			{
 				if (node is MethodDeclarationSyntax method)
 				{
@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Common
 				{
 					doc = prop.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
-				else if(node is TypeDeclarationSyntax type)
+				else if (node is TypeDeclarationSyntax type)
 				{
 					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 				}
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Common
 			var endOfLine = SyntaxFactory.XmlText("\r\n");
 			var comment = ExistingDocumentation;
 			var content = new List<XmlNodeSyntax>();
-			foreach(var xmlElement in xmlElements)
+			foreach (var xmlElement in xmlElements)
 			{
 				content.Add(startOfLine);
 				content.Add(xmlElement);

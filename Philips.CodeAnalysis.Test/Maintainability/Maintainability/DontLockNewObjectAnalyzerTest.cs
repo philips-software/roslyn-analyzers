@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new DontLockNewObjectAnalyzer();
 		}
 
-	
+
 		[DataRow("this", false)]
 		[DataRow("lockObj", false)]
 		[DataRow("new object()", true)]

@@ -58,7 +58,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithLocalVar = @"
+		private const string CorrectWithLocalVar = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -71,7 +71,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithNameOf = @"
+		private const string CorrectWithNameOf = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -83,7 +83,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectInterpolatedString = @"
+		private const string CorrectInterpolatedString = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>

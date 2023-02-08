@@ -58,13 +58,13 @@ namespace Philips.CodeAnalysis.Common
 		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
 		public void RegisterLine(string line)
 		{
-			if(line.StartsWith("~"))
+			if (line.StartsWith("~"))
 			{
 				var id = line.Substring(1);
 				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
-				if(!symbols.IsDefaultOrEmpty)
+				if (!symbols.IsDefaultOrEmpty)
 				{
-					foreach(var symbol in symbols)
+					foreach (var symbol in symbols)
 					{
 						RegisterSymbol(symbol);
 					}
@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.Common
 				_allowedLines.Add(line);
 			}
 		}
-		
+
 		/// <summary>
 		/// Load the methods for which duplicate code is allowed.
 		/// </summary>
@@ -105,10 +105,10 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsAllowed(INamedTypeSymbol requested)
 		{
 			var requestedNamespace = requested.ContainingNamespace;
-			return 
+			return
 				_allowedLines.Contains(requested.Name) ||
-			    _allowedTypes.Contains(requested) ||
-			    _allowedNamespaces.Contains(requestedNamespace) ||
+				_allowedTypes.Contains(requested) ||
+				_allowedNamespaces.Contains(requestedNamespace) ||
 				MatchesAnyLine(requestedNamespace, requested, null);
 		}
 
@@ -118,15 +118,15 @@ namespace Philips.CodeAnalysis.Common
 		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
 		private void RegisterSymbol(ISymbol symbol)
 		{
-			if(symbol is IMethodSymbol methodSymbol)
+			if (symbol is IMethodSymbol methodSymbol)
 			{
 				_allowedMethods.Add(methodSymbol);
 			}
-			else if(symbol is ITypeSymbol typeSymbol)
+			else if (symbol is ITypeSymbol typeSymbol)
 			{
 				_allowedTypes.Add(typeSymbol);
 			}
-			else if(symbol is INamespaceSymbol namespaceSymbol)
+			else if (symbol is INamespaceSymbol namespaceSymbol)
 			{
 				_allowedNamespaces.Add(namespaceSymbol);
 			}
@@ -151,7 +151,8 @@ namespace Philips.CodeAnalysis.Common
 				else if (parts.Length == 2)
 				{
 					return (parts[0] == Wildcard) ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
-				} else
+				}
+				else
 				{
 					return MatchesFullNamespace(parts, nsName, typeName, method);
 				}
@@ -200,7 +201,7 @@ namespace Philips.CodeAnalysis.Common
 			var hashIndex = input.IndexOf('#');
 			var singleLineCommentIndex = input.IndexOf("//");
 			var index = (semiColonIndex >= 0) ? semiColonIndex : input.Length;
-			index = (hashIndex >= 0) ? Math.Min(index, hashIndex): index;
+			index = (hashIndex >= 0) ? Math.Min(index, hashIndex) : index;
 			index = (singleLineCommentIndex >= 0) ? Math.Min(index, singleLineCommentIndex) : index;
 			if (index < input.Length)
 			{

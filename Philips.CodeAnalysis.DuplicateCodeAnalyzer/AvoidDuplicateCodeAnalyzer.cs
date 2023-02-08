@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
-				bool isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture,  out int duplicateTokenThreshold);
+				bool isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture, out int duplicateTokenThreshold);
 
 				if (!isParseSuccessful)
 				{
@@ -202,7 +202,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
 			{
 				StringBuilder builder = new();
-				string[] lines = ex.StackTrace.Split(new[]{ ':' }, StringSplitOptions.RemoveEmptyEntries);
+				string[] lines = ex.StackTrace.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
 				foreach (string line in lines)
 				{
 					if (line.StartsWith("line") && line.Length >= 8)

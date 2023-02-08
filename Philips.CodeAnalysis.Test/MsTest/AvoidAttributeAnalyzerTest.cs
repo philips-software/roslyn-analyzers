@@ -265,7 +265,7 @@ class Foo
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();

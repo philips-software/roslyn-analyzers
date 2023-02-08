@@ -124,7 +124,7 @@ namespace DontUseMagicNumbersTests {
         int Magic = 3;
     }
 }";
-        
+
 		private const string WrongInstanceField = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
@@ -192,7 +192,8 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode) {
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
+		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 

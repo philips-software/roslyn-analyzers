@@ -89,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private sealed class CompilationAnalyzer
 		{
 			private readonly AllowedSymbols _logMethodNames;
-			
+
 			public CompilationAnalyzer(AllowedSymbols logMethodNames)
 			{
 				_logMethodNames = logMethodNames;
@@ -125,7 +125,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var isLoggingMethod = false;
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-				    context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
+					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{
 					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(method => _logMethodNames.IsAllowed(method));
 				}

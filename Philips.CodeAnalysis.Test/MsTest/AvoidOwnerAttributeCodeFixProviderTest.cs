@@ -43,7 +43,7 @@ class Foo
   }
 }
 ";
-			
+
 			string givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()

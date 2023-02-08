@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class SetPropertiesInAnyOrderSyntaxNodeAction : SyntaxNodeAction<AccessorDeclarationSyntax>
 	{
-	
+
 		public override void Analyze()
 		{
 			var prop = Node.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();

@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
-			if(generatedCodeDetector.IsGeneratedCode(context))
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			var method = (MethodDeclarationSyntax)context.Node;
-			
+
 			if (method.Modifiers.Any(SyntaxKind.NewKeyword))
 			{
 				var location = method.Identifier.GetLocation();

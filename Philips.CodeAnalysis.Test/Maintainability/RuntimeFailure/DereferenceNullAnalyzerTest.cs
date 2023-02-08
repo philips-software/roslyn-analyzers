@@ -33,7 +33,7 @@ class Foo
 }}
 ";
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionWithNestedExpressionAsync()
@@ -68,7 +68,7 @@ Instruction i = method.Body.Instructions[0];
 ";
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
-		
+
 		/// <summary>
 		/// In this test, y is de-referenced after "y = obj as string" without first checking or re-assigning y.
 		/// </summary>
@@ -301,7 +301,7 @@ class Foo
 ";
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckHasValueTestAsync()

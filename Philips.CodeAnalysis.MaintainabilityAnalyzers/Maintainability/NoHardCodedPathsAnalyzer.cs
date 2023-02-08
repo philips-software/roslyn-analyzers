@@ -32,12 +32,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			LiteralExpressionSyntax stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
-			
+
 			if (_helper.IsInTestClass(context))
 			{
 				return;
 			}
-			
+
 			// Get the text value of the string literal expression.
 			string pathValue = stringLiteralExpressionNode.Token.ValueText;
 

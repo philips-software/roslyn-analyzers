@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			_records.Sort();
 			foreach (var record in _records)
 			{
-				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "...": record.Package;
+				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "..." : record.Package;
 				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
 				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
@@ -130,7 +130,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 		public static bool operator !=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
 		{
-			if(left is null)
+			if (left is null)
 			{
 				return right is not null;
 			}

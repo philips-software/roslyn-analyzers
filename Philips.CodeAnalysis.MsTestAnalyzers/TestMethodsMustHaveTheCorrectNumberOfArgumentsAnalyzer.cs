@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, 
+			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration,
 												out bool hasAnyCustomDataSources, out bool hasAnyDynamicData, out HashSet<int> dataRowParameters)
 			{
 				hasAnyCustomDataSources = false;

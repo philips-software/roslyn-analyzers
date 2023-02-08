@@ -20,8 +20,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private readonly TestHelper _helper = new();
 
 		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout), 
-			Title, MessageFormat, Category, 
+			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout),
+			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -37,14 +37,14 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			var creation = (ObjectCreationExpressionSyntax)context.Node;
 
-			if(_helper.IsInTestClass(context))
+			if (_helper.IsInTestClass(context))
 			{
 				return;
 			}
 
 			// Bail out early.
 			TypeSyntax typeSyntax = creation.Type;
-			if(!typeSyntax.ToString().Contains("Regex"))
+			if (!typeSyntax.ToString().Contains("Regex"))
 			{
 				return;
 			}

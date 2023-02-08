@@ -206,7 +206,7 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
 		{
 			await VerifyDiagnostic(testCode, DiagnosticId.ReturnImmutableCollections).ConfigureAwait(false);
 			if (!string.IsNullOrEmpty(fixedCode))
@@ -226,7 +226,8 @@ namespace ReturnImmutableTests {
 			await VerifySuccessfulCompilation(WrongList, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new ReturnImmutableCollectionsAnalyzer();
 		}
 

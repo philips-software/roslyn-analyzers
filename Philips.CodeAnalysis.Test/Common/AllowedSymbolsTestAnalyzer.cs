@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			context.RegisterCompilationStartAction(AnalyzeCompilationStart);
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-			
+
 		}
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
@@ -60,14 +60,14 @@ namespace Philips.CodeAnalysis.Test.Common
 		private void AnalyzeType(SymbolAnalysisContext context)
 		{
 			var typeSymbol = context.Symbol as INamedTypeSymbol;
-			if(_allowedSymbols.IsAllowed(typeSymbol))
+			if (_allowedSymbols.IsAllowed(typeSymbol))
 			{
 				var loc = typeSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 			}
 		}
 
-		public static DiagnosticDescriptor Rule => 
+		public static DiagnosticDescriptor Rule =>
 			new("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

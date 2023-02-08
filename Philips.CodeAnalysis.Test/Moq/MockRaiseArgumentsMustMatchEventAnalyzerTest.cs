@@ -129,7 +129,7 @@ public static class Bar
 				var expectedErrors =
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
+						Id = Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
 					};
@@ -173,7 +173,7 @@ public static class Bar
 			var expectedErrors =
 				new DiagnosticResult()
 				{
-					Id= diagnosticId,
+					Id = diagnosticId,
 					Location = new DiagnosticResultLocation(18),
 					Severity = DiagnosticSeverity.Error,
 				};

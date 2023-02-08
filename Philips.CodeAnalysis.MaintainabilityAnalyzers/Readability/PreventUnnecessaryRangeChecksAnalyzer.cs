@@ -76,11 +76,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (condition is ParenthesizedExpressionSyntax parenthesized)
 			{
 				isGreaterThanZero = IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
-			} 
-			else 
+			}
+			else
 			{
 				isGreaterThanZero = condition is BinaryExpressionSyntax binaryExpressionSyntax &&
-				         IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
+						 IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
 			}
 
 			return isGreaterThanZero;
