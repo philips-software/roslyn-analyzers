@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,30 +24,30 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceTest()
+		public async Task IgnoresEmptyInterfaceTestAsync()
 		{
 			const string text = @"
 public interface IFoo { }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceWithAllOperationContractsTest()
+		public async Task IgnoresEmptyInterfaceWithAllOperationContractsTestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract]
 public interface IFoo { }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceWithAllOperationContracts2Test()
+		public async Task IgnoresEmptyInterfaceWithAllOperationContracts2TestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract]
@@ -57,12 +58,12 @@ public interface IFoo
 }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InterfaceWithNoOperationContractsTest()
+		public async Task InterfaceWithNoOperationContractsTestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract()]
@@ -72,12 +73,12 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text);
+			await VerifyDiagnostic(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InterfaceWithNoOperationContracts2Test()
+		public async Task InterfaceWithNoOperationContracts2TestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract()]
@@ -90,7 +91,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text);
+			await VerifyDiagnostic(text).ConfigureAwait(false);
 		}
 	}
 }

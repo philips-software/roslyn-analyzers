@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -39,18 +40,18 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidMsFakesTest()
+		public async Task AvoidMsFakesTestAsync()
 		{
 			var file = CreateFunction("using (ShimsContext.Create()) {}");
-			VerifyDiagnostic(file);
+			await VerifyDiagnostic(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidMsFakesNotRelevantTest()
+		public async Task AvoidMsFakesNotRelevantTestAsync()
 		{
 			var file = CreateFunction("using (new MemoryStream()) {}");
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 	}
 }

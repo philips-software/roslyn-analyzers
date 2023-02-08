@@ -64,11 +64,11 @@ public static class Program
 			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 			if (isError)
 			{
-				VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
+				await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(text);
+				await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 			}
 
 			if (!string.IsNullOrEmpty(fixedText))
@@ -98,7 +98,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "Bar(obj, null)");
-			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
+			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
 			await VerifyFix(text, newText).ConfigureAwait(false);
@@ -129,7 +129,7 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "RemoveByKeys(dict, items)");
-			VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
+			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
 			await VerifyFix(text, newText).ConfigureAwait(false);
@@ -293,15 +293,15 @@ public class Baz
 ", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodsDontCallDifferentMethods(string template, bool isError)
+		public async Task ExtensionMethodsDontCallDifferentMethodsAsync(string template, bool isError)
 		{
 			if (isError)
 			{
-				VerifyDiagnostic(template, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
+				await VerifyDiagnostic(template, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(template);
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 			}
 		}
 	}

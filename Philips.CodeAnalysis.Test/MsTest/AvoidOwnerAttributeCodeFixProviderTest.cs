@@ -57,7 +57,7 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 

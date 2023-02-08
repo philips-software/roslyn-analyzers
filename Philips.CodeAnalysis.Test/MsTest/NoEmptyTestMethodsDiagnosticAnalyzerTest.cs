@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -44,12 +45,12 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow("AssemblyCleanup")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EmptyMethodTriggersAnalyzer(string attribute)
+		public async Task EmptyMethodTriggersAnalyzerAsync(string attribute)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass] public class Foo {{ [{0}] public void Method() {{ }} }}";
 
-			VerifyDiagnostic(string.Format(template, attribute), DiagnosticId.TestMethodsMustNotBeEmpty);
+			await VerifyDiagnostic(string.Format(template, attribute), DiagnosticId.TestMethodsMustNotBeEmpty).ConfigureAwait(false);
 		}
 	}
 }

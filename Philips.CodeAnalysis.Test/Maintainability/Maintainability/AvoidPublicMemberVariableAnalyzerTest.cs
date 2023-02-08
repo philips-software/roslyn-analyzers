@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -36,17 +37,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("private int i = 1;", false)]
 		[DataRow("private struct testStruct { public int i; }", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidPublicMemberVariablesTest(string content, bool isError)
+		public async Task AvoidPublicMemberVariablesTestAsync(string content, bool isError)
 		{
 			const string template = @"public class C {{    {0}       }}";
 			string classContent = string.Format(template, content);
 			if (isError)
 			{
-				VerifyDiagnostic(classContent);
+				await VerifyDiagnostic(classContent).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(classContent);
+				await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 			}
 		}
 	}

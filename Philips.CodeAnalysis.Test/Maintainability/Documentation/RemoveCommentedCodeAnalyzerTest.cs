@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -34,18 +35,18 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"// Some comment ending with a dot.")]
 		[DataRow(@"// For example: int i = 0.")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TextualCommentAreFine(string content)
+		public async Task TextualCommentAreFineAsync(string content)
 		{
-			VerifySuccessfulCompilation(content);
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(WrongCommentedLine, DisplayName = nameof(WrongCommentedLine)),
 		 DataRow(WrongCommentedChunk, DisplayName = nameof(WrongCommentedChunk))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CodeCommentsShouldTriggerDiagnostic(string content)
+		public async Task CodeCommentsShouldTriggerDiagnosticAsync(string content)
 		{
-			VerifyDiagnostic(content);
+			await VerifyDiagnostic(content).ConfigureAwait(false);
 		}
 	}
 }

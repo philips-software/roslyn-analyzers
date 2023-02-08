@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
@@ -22,20 +23,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("test123", "test345", false)]
 		[DataRow("t", "t", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateStringNoError(string literal1, string literal2, bool isClass)
+		public async Task AvoidDuplicateStringNoErrorAsync(string literal1, string literal2, bool isClass)
 		{
 			var testCode = CreateTestCode(literal1, literal2, isClass);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("test123", true)]
 		[DataRow("test123", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateStringError(string literal, bool isClass)
+		public async Task AvoidDuplicateStringErrorAsync(string literal, bool isClass)
 		{
 			var testCode = CreateTestCode(literal, literal, isClass);
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		private string CreateTestCode(string literal1, string literal2, bool isClass)

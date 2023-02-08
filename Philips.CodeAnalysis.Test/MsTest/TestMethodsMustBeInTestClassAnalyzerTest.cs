@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -56,7 +57,7 @@ public class DerivedTestMethod : TestMethod
 		[DataRow(false, "object", "abstract", "[ClassCleanup]")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestMethodsMustBeInTestClass(bool isError, string baseClass, string classQualifier, string testType)
+		public async Task TestMethodsMustBeInTestClassAsync(bool isError, string baseClass, string classQualifier, string testType)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -67,16 +68,16 @@ public {2} class Tests : {3}
 	public void Foo() {{ }}
 }}";
 
-			VerifySuccessfulCompilation(string.Format(template, "[TestClass]", testType, classQualifier, baseClass));
+			await VerifySuccessfulCompilation(string.Format(template, "[TestClass]", testType, classQualifier, baseClass)).ConfigureAwait(false);
 
 			var code = string.Format(template, "", testType, classQualifier, baseClass);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.TestMethodsMustBeInTestClass);
+				await VerifyDiagnostic(code, DiagnosticId.TestMethodsMustBeInTestClass).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 		#endregion

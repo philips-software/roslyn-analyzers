@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,7 +35,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIsCorrect(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -45,11 +46,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -63,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo_", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIgnoresPublicFields(string content, bool isGood)
+		public async Task FieldVariableNameIgnoresPublicFieldsAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -74,17 +75,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromArray()
+		public async Task FieldVariableFromArrayAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -92,12 +93,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromConstant()
+		public async Task FieldVariableFromConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -106,12 +107,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromCastConstant()
+		public async Task FieldVariableFromCastConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -120,12 +121,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromCharArray()
+		public async Task FieldVariableFromCharArrayAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -134,12 +135,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromImplicitArray()
+		public async Task FieldVariableFromImplicitArrayAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -148,12 +149,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromImplicitArrayInitializer()
+		public async Task FieldVariableFromImplicitArrayInitializerAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -162,12 +163,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromArrayWrittenTo()
+		public async Task FieldVariableFromArrayWrittenToAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -181,13 +182,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromFunction()
+		public async Task FieldVariableFromFunctionAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -197,12 +198,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromDateTime()
+		public async Task FieldVariableFromDateTimeAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -211,12 +212,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromConstantValue()
+		public async Task FieldVariableFromConstantValueAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -225,7 +226,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[DataRow("foo", false)]
@@ -237,7 +238,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo_", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventNameIsCorrect(string content, bool isGood)
+		public async Task EventNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -247,11 +248,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string givenText = string.Format(baseline, content);
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -264,7 +265,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrect(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -278,11 +279,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -294,7 +295,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", "const", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood)
+		public async Task AttributedLocalVariableNameIsCorrectAsync(string content, string attribute, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -307,11 +308,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string givenText = string.Format(baseline, content, attribute);
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -323,7 +324,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectForLoop(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForLoopAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -336,11 +337,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string givenText = string.Format(baseline, content);
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -349,7 +350,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("using(var _I = new MemoryStream()){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectUsing(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectUsingAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -362,11 +363,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string givenText = string.Format(baseline, content);
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 
@@ -375,7 +376,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectForeach(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -388,11 +389,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			string givenText = string.Format(baseline, content);
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions);
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
 		}
 

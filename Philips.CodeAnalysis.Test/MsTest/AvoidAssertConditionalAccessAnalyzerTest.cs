@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -36,16 +37,16 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), name2.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidAssertConditionalAccessAnalyzerFailTest(string test)
+		public async Task AvoidAssertConditionalAccessAnalyzerFailTestAsync(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess));
+			await VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
 		}
 
 		
 		[DataTestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
+		public async Task AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrorsAsync(string test)
 		{
 			DiagnosticResult[] expected = new[]
 			{
@@ -64,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			};
 			AssertCodeHelper helper = new();
 			var code = helper.GetText(test, string.Empty, string.Empty);
-			VerifyDiagnostic(code, expected);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
 		
 
@@ -74,9 +75,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString(), $\"error{name1?.ToString()}\")")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidAssertConditionalAccessAnalyzerSuccessTest(string test)
+		public async Task AvoidAssertConditionalAccessAnalyzerSuccessTestAsync(string test)
 		{
-			VerifySuccessfulCompilation(test);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 		#endregion
 	}

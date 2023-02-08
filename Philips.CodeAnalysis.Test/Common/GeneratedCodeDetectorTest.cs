@@ -9,6 +9,7 @@ using Philips.CodeAnalysis.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Common
 {
@@ -107,7 +108,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, false, false, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NonGeneratedCodeIsFlagged(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
+		public async Task NonGeneratedCodeIsFlaggedAsync(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = shouldAnalyzeStruct;
@@ -123,12 +124,12 @@ public class Foo
 public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
-			VerifyDiagnostic(input);
+			await VerifyDiagnostic(input).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedConstructorIsNotFlagged()
+		public async Task GeneratedConstructorIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = true;
 
@@ -139,12 +140,12 @@ public class Foo
   public Foo() { }
 }
 ";
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedStructIsNotFlagged()
+		public async Task GeneratedStructIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = true;
 
@@ -152,13 +153,13 @@ public class Foo
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedSwitchIsNotFlagged()
+		public async Task GeneratedSwitchIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = true;
 
@@ -178,7 +179,7 @@ public class Foo
 }
 ";
 
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
@@ -189,25 +190,25 @@ public class Foo
 		[DataRow(@"Foo.g", false, false, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedFilesNamesAreNotFlagged(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
+		public async Task GeneratedFilesNamesAreNotFlaggedAsync(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
-			VerifySuccessfulCompilation(input, fileNamePrefix);
+			await VerifySuccessfulCompilation(input, fileNamePrefix).ConfigureAwait(false);
 		}
 
 		[DataRow(@"Foo")]
 		[DataRow(@"Foo.xyz")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NonGeneratedFilesAreFlagged(string fileNamePrefix)
+		public async Task NonGeneratedFilesAreFlaggedAsync(string fileNamePrefix)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
-			VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix);
+			await VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix).ConfigureAwait(false);
 		}
 	}
 }

@@ -261,9 +261,9 @@ public class Foo
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow)),
 		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
+		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -273,7 +273,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.DocumentThrownExceptions);
+			await VerifyDiagnostic(testCode, DiagnosticId.DocumentThrownExceptions).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 
@@ -282,10 +282,10 @@ public class Foo
 		[DataRow(WrongInProperty, CorrectInProperty, DisplayName = nameof(WrongInProperty))]
 		[DataRow(WrongRethrow, CorrectRethrow, DisplayName = nameof(WrongRethrow))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MissingDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
+		public async Task MissingDocumentationShouldTriggerDiagnosticAsync(string testCode, string fixedCode)
 		{
 			// See https://github.com/dotnet/roslyn/issues/58210. Until decide how we want to handle this, these will pass.
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
 }

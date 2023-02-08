@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -24,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"{ get; init; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void OrderValidTests(string property)
+		public async Task OrderValidTestsAsync(string property)
 		{
 			string text = $@"
 public class TestClass
@@ -33,7 +34,7 @@ public class TestClass
 }}
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[DataRow(@"{ init; get; }")]
@@ -41,7 +42,7 @@ public class TestClass
 		[DataRow(@"{ set{ } get{ return default; } }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void OrderInvalidTests(string property)
+		public async Task OrderInvalidTestsAsync(string property)
 		{
 			string text = $@"
 public class TestClass
@@ -50,7 +51,7 @@ public class TestClass
 }}
 ";
 
-			VerifyDiagnostic(text);
+			await VerifyDiagnostic(text).ConfigureAwait(false);
 		}
 	}
 }

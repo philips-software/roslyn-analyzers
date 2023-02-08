@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -48,10 +49,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private IEnumerable<Diagnostic> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
+		private async Task<IEnumerable<Diagnostic>> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
 		{
 			var documents = GetDocuments(sources, filenamePrefix, assemblyName);
-			return GetSortedDiagnosticsFromDocuments(analyzer, documents);
+			return await GetSortedDiagnosticsFromDocuments(analyzer, documents).ConfigureAwait(false);
 		}
 
 		private sealed class TestAdditionalText : AdditionalText
@@ -115,7 +116,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
         /// <param name="analyzer">The analyzer to run on the documents</param>
         /// <param name="documents">The Documents that the analyzer will be run on</param>
         /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        protected IEnumerable<Diagnostic> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
+        protected async Task<IEnumerable<Diagnostic>> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
         {
             var projects = new HashSet<Project>();
             foreach (var document in documents)
@@ -126,7 +127,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
             var diagnostics = new List<Diagnostic>();
             foreach (var project in projects)
             {
-                var compilation = project.GetCompilationAsync().Result;
+                var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
 
                 var specificOptions = compilation.Options.SpecificDiagnosticOptions;
 
@@ -144,7 +145,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 List<AdditionalText> additionalTextsBuilder = new();
                 foreach (TextDocument textDocument in project.AdditionalDocuments)
                 {
-                    SourceText contents = textDocument.GetTextAsync().Result;
+                    SourceText contents = await textDocument.GetTextAsync().ConfigureAwait(false);
                     additionalTextsBuilder.Add(new TestAdditionalText(textDocument.Name, contents));
                 }
 
@@ -154,8 +155,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
                 var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
-                var diags = compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().Result;
-                var ourDiagnostics = CollectOurDiagnostics(diags, documents);
+                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
+                var ourDiagnostics = await CollectOurDiagnostics(diags, documents).ConfigureAwait(false);
                 diagnostics.AddRange(ourDiagnostics);
             }
 
@@ -164,7 +165,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
             return results;
         }
 
-        private IReadOnlyList<Diagnostic> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
+        private async Task<IReadOnlyList<Diagnostic>> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
         {
             List<Diagnostic> diagnostics = new();
             foreach (var diag in diags)
@@ -177,7 +178,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
                 {
                     foreach (var document in documents)
                     {
-                        var tree = document.GetSyntaxTreeAsync().Result;
+                        var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
                         if (tree == diag.Location.SourceTree)
                         {
                             diagnostics.Add(diag);
