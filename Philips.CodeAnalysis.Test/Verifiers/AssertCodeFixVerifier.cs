@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
 
-		protected async Task VerifyErrorAsync(string methodBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
+		protected async Task VerifyError(string methodBody, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
 		{
 			await VerifyError(methodBody, string.Empty, expectedErrorLineOffset, expectedErrorColumnOffset, error).ConfigureAwait(false);
 		}

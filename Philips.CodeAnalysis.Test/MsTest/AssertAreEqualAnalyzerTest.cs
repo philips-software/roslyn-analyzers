@@ -112,7 +112,7 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 
 			if (isError)
 			{
-				await VerifyErrorAsync(template).ConfigureAwait(false);
+				await VerifyError(template).ConfigureAwait(false);
 				await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 			}
 			else
@@ -166,7 +166,7 @@ Assert.IsNotNull({arg});
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckWillIgnoreTypeArgumentAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 string GetValue()
 {
 	return string.Empty;

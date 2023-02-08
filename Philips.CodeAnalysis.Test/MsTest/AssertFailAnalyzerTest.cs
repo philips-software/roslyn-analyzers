@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertFailInGuardedIfStatementAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 bool isDone = false;
 if(!isDone)
 {
@@ -45,7 +45,7 @@ if(!isDone)
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertFailInGuardedElseStatementAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 bool isDone = false;
 if(!isDone)
 {
@@ -61,7 +61,7 @@ else
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertFailInGuardedElseStatementWithoutBracesAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 bool isDone = false;
 if(!isDone)
 {
@@ -75,7 +75,7 @@ else
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreAssertFailInCatchBlockAsync()
 		{
-			await VerifyNoErrorAsync(@"
+			await VerifyNoError(@"
 try 
 {
 }
@@ -90,7 +90,7 @@ catch
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertFailInTryBlockAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 try 
 {
 	Assert.Fail();
@@ -105,7 +105,7 @@ catch
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreAssertInForeachAsync()
 		{
-			await VerifyNoErrorAsync(@"
+			await VerifyNoError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	System.Console.WriteLine(foo.ToString());
@@ -118,7 +118,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertInEmptyForeachAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	Assert.Fail();
@@ -130,7 +130,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertInEmptyForeachNoBracesAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 	Assert.Fail();
 
@@ -141,7 +141,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreAssertInEmptyUsingAsync()
 		{
-			await VerifyNoErrorAsync(@"
+			await VerifyNoError(@"
 IDisposable foo = null;
 using(foo)
 {
@@ -154,7 +154,7 @@ using(foo)
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertEndingForeachLoopAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -171,7 +171,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertEndingForeachLoopNoBracesAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -186,7 +186,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertEndingForeachLoopElseAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -205,7 +205,7 @@ foreach(var foo in Array.Empty<int>())
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagAssertEndingForeachLoopNoBracesElseAsync()
 		{
-			await VerifyErrorAsync(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)

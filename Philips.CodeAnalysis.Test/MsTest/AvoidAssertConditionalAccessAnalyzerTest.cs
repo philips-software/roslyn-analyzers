@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidAssertConditionalAccessAnalyzerFailTestAsync(string test)
 		{
-			await VerifyErrorAsync(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
+			await VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
 		}
 
 		

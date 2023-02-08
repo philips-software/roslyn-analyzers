@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckLiteralAsync(string given)
 		{
-			await VerifyErrorAsync(given, Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral)).ConfigureAwait(false);
+			await VerifyError(given, Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral)).ConfigureAwait(false);
 		}
 
 		#endregion

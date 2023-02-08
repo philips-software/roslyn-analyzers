@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	{
 		private readonly AssertCodeHelper _helper = new();
 
-		protected async Task VerifyErrorAsync(string methodBody, string expectedDiagnosticId)
+		protected async Task VerifyError(string methodBody, string expectedDiagnosticId)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
 
-		protected async Task VerifyNoErrorAsync(string methodBody)
+		protected async Task VerifyNoError(string methodBody)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 

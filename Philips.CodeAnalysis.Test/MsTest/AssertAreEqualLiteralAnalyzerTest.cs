@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckLiteralAsync(string given)
 		{
-			await VerifyErrorAsync(given).ConfigureAwait(false);
+			await VerifyError(given).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
