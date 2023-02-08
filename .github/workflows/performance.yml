@@ -28,6 +28,7 @@ jobs:
 
       - name: Prepare to eat Dogfood
         run: |
+          dotnet format whitespace -v diag --verify-no-changes
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
           cat > ./.editorconfig << EOF
           root = true
