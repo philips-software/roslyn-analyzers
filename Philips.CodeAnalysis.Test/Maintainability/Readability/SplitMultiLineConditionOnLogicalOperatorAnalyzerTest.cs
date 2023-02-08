@@ -198,7 +198,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-        private const string CorrectAssignmentToBool = @"
+		private const string CorrectAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -214,7 +214,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-        private const string WrongAssignmentToBool = @"
+		private const string WrongAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -262,7 +262,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string Wrong4Violations = @"
+		private const string Wrong4Violations = @"
 namespace MultiLineConditionUnitTests
 {
     public class Program

@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <param name="analyzer">The analyzer to be run on the sources</param>
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-		private async Task<IEnumerable<Diagnostic>> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName,  DiagnosticAnalyzer analyzer)
+		private async Task<IEnumerable<Diagnostic>> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer)
 		{
 			var documents = GetDocuments(sources, filenamePrefix, assemblyName);
 			return await GetSortedDiagnosticsFromDocuments(analyzer, documents).ConfigureAwait(false);
@@ -109,92 +109,92 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		}
 
 
-        /// <summary>
-        /// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
-        /// The returned diagnostics are then ordered by location in the source document.
-        /// </summary>
-        /// <param name="analyzer">The analyzer to run on the documents</param>
-        /// <param name="documents">The Documents that the analyzer will be run on</param>
-        /// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
-        protected async Task<IEnumerable<Diagnostic>> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
-        {
-            var projects = new HashSet<Project>();
-            foreach (var document in documents)
-            {
-                projects.Add(document.Project);
-            }
+		/// <summary>
+		/// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
+		/// The returned diagnostics are then ordered by location in the source document.
+		/// </summary>
+		/// <param name="analyzer">The analyzer to run on the documents</param>
+		/// <param name="documents">The Documents that the analyzer will be run on</param>
+		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
+		protected async Task<IEnumerable<Diagnostic>> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
+		{
+			var projects = new HashSet<Project>();
+			foreach (var document in documents)
+			{
+				projects.Add(document.Project);
+			}
 
-            var diagnostics = new List<Diagnostic>();
-            foreach (var project in projects)
-            {
-                var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
+			var diagnostics = new List<Diagnostic>();
+			foreach (var project in projects)
+			{
+				var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
 
-                var specificOptions = compilation.Options.SpecificDiagnosticOptions;
+				var specificOptions = compilation.Options.SpecificDiagnosticOptions;
 
-                foreach (var diagnostic in analyzer.SupportedDiagnostics)
-                {
-                    if (!diagnostic.IsEnabledByDefault)
-                    {
-                        specificOptions = specificOptions.Add(diagnostic.Id, ReportDiagnostic.Error);
-                    }
-                }
+				foreach (var diagnostic in analyzer.SupportedDiagnostics)
+				{
+					if (!diagnostic.IsEnabledByDefault)
+					{
+						specificOptions = specificOptions.Add(diagnostic.Id, ReportDiagnostic.Error);
+					}
+				}
 
-                var options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
-                var modified = compilation.WithOptions(options);
+				var options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
+				var modified = compilation.WithOptions(options);
 
-                List<AdditionalText> additionalTextsBuilder = new();
-                foreach (TextDocument textDocument in project.AdditionalDocuments)
-                {
-                    SourceText contents = await textDocument.GetTextAsync().ConfigureAwait(false);
-                    additionalTextsBuilder.Add(new TestAdditionalText(textDocument.Name, contents));
-                }
+				List<AdditionalText> additionalTextsBuilder = new();
+				foreach (TextDocument textDocument in project.AdditionalDocuments)
+				{
+					SourceText contents = await textDocument.GetTextAsync().ConfigureAwait(false);
+					additionalTextsBuilder.Add(new TestAdditionalText(textDocument.Name, contents));
+				}
 
-                var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
-                var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(analyzerConfigOptions);
-                AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
+				var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
+				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(analyzerConfigOptions);
+				AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
 
-                var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
+				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
-                var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
-                var ourDiagnostics = await CollectOurDiagnostics(diags, documents).ConfigureAwait(false);
-                diagnostics.AddRange(ourDiagnostics);
-            }
+				var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
+				var ourDiagnostics = await CollectOurDiagnostics(diags, documents).ConfigureAwait(false);
+				diagnostics.AddRange(ourDiagnostics);
+			}
 
-            var results = SortDiagnostics(diagnostics);
-            diagnostics.Clear();
-            return results;
-        }
+			var results = SortDiagnostics(diagnostics);
+			diagnostics.Clear();
+			return results;
+		}
 
-        private async Task<IReadOnlyList<Diagnostic>> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
-        {
-            List<Diagnostic> diagnostics = new();
-            foreach (var diag in diags)
-            {
-                if (diag.Location == Location.None || diag.Location.IsInMetadata)
-                {
-                    diagnostics.Add(diag);
-                }
-                else
-                {
-                    foreach (var document in documents)
-                    {
-                        var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-                        if (tree == diag.Location.SourceTree)
-                        {
-                            diagnostics.Add(diag);
-                        }
-                    }
-                }
-            }
-            return diagnostics;
-        }
+		private async Task<IReadOnlyList<Diagnostic>> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
+		{
+			List<Diagnostic> diagnostics = new();
+			foreach (var diag in diags)
+			{
+				if (diag.Location == Location.None || diag.Location.IsInMetadata)
+				{
+					diagnostics.Add(diag);
+				}
+				else
+				{
+					foreach (var document in documents)
+					{
+						var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
+						if (tree == diag.Location.SourceTree)
+						{
+							diagnostics.Add(diag);
+						}
+					}
+				}
+			}
+			return diagnostics;
+		}
 
-        /// <summary>
-        /// Sort diagnostics by location in source document
-        /// </summary>
-        /// <param name="diagnostics">The list of Diagnostics to be sorted</param>
-        /// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-        private static IEnumerable<Diagnostic> SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
+		/// <summary>
+		/// Sort diagnostics by location in source document
+		/// </summary>
+		/// <param name="diagnostics">The list of Diagnostics to be sorted</param>
+		/// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
+		private static IEnumerable<Diagnostic> SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
 		{
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}

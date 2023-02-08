@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		{
 			return new EveryLinqStatementOnSeparateLineCodeFixProvider();
 		}
-		
+
 		private const string Correct = $@"
 public static class Foo
 {{
@@ -103,7 +103,7 @@ public static class Foo
 ";
 
 		[DataTestMethod]
-		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)), 
+		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)),
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MultipleStatementsOnSameLineTriggersDiagnostics(string input)

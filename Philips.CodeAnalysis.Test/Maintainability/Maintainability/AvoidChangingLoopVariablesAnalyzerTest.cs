@@ -71,7 +71,7 @@ namespace AvoidUsingParametersTest {
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
 		{
 			await VerifyDiagnostic(testCode, DiagnosticId.AvoidChangingLoopVariables).ConfigureAwait(false);
 		}
@@ -87,7 +87,8 @@ namespace AvoidUsingParametersTest {
 			await VerifySuccessfulCompilation(Wrong, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidUsingParametersAsTempVariablesAnalyzer();
 		}
 	}

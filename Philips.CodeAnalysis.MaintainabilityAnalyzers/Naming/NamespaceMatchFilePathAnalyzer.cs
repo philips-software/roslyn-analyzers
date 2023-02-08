@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			InitializeConfiguration();
 
-			if(_isFolderInNamespace)
+			if (_isFolderInNamespace)
 			{
 				// Does the namespace exactly match the trailing folders?
 				if (DoesFilePathEndWithNamespace(myNamespace, myFilePath))

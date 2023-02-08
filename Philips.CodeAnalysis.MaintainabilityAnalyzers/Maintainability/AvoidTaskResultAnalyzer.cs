@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				IPropertySymbol propertySymbol = propertyReference.Property;
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
-				    propertySymbol.ContainingType.Name.Contains(ContainingType))
+					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
 					var location = propertySyntax.Name.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(Rule, location);

@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 			{
 				var location = methodDeclarationSyntax.GetLocation();
-				Diagnose(methodDeclarationSyntax.Identifier.ValueText,location, context.ReportDiagnostic);
+				Diagnose(methodDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
 

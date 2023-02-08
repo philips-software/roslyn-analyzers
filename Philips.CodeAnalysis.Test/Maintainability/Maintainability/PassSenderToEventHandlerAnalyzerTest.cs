@@ -67,13 +67,13 @@ namespace PassSenderTests {
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
+		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)),
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) 
+		public async Task WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
-			await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
+			await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -87,7 +87,7 @@ namespace PassSenderTests {
 			await VerifySuccessfulCompilation(WrongSender, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() 
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PassSenderToEventHandlerAnalyzer();
 		}

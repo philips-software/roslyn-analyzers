@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			var expected = 
+			var expected =
 				new DiagnosticResult()
 				{
 					Id = expectedDiagnosticId,

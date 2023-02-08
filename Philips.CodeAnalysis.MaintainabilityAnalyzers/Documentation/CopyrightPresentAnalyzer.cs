@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var location = GetSquiggleLocation(Node.SyntaxTree);
 			var nodeOrToken = FindFirstWithLeadingTrivia(Node);
 			var leadingTrivia = nodeOrToken.GetLeadingTrivia();
-			
+
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
 				ReportDiagnostic(location);
@@ -80,11 +80,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			});
 		}
 
-		private bool CheckCopyrightStatement(SyntaxTrivia trivia) {
+		private bool CheckCopyrightStatement(SyntaxTrivia trivia)
+		{
 			var comment = trivia.ToFullString();
 			// Check the copyright mark itself
 			bool hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
-			
+
 			// Check the year
 			bool hasYear = yearRegex.IsMatch(comment);
 

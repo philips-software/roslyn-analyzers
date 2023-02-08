@@ -50,7 +50,7 @@ public class Tests
 	public void Foo(object o, object y) { }
 }";
 
-			await VerifyDiagnostic(code, new []{ 
+			await VerifyDiagnostic(code, new[]{
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),

@@ -85,7 +85,7 @@ AllowedEnumeration";
 			string testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
-				{ CreateField("const", "F1")}
+				{CreateField("const", "F1")}
 			}}}}";
 
 			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);

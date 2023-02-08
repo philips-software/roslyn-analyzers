@@ -68,7 +68,7 @@ namespace TestMethodNameAnalyzerTest
 
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodNameAnalyzer();
@@ -85,11 +85,12 @@ namespace TestMethodNameAnalyzerTest
 			if (name.StartsWith("Test", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Test";
-			} else if(name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
+			}
+			else if (name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Verify";
 			}
-			if(name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
+			if (name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Ensure";
 			}

@@ -56,7 +56,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			switch (identifierNameSyntax.Identifier.ValueText)
 			{
-				case @"Raise": AnalyzeInvocation(context, invocationExpressionSyntax); break;
+				case @"Raise":
+					AnalyzeInvocation(context, invocationExpressionSyntax);
+					break;
 				default:
 					return;
 			}

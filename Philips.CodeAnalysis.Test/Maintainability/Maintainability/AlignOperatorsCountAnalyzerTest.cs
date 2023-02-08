@@ -186,7 +186,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
-		
+
 		private const string WrongNumberOfPlusMinusOnStruct = @"
     namespace AssignmentInConditionUnitTests {
         public struct Number {
@@ -285,8 +285,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
-		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
+		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)),
+		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinus)),
 		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
 		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticId.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
 		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticId.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
@@ -294,7 +294,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticId.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
 		 DataRow(WrongNumberOfPlusEqual, DiagnosticId.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode, DiagnosticId diagnosticId) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode, DiagnosticId diagnosticId)
 		{
 			await VerifyDiagnostic(testCode, diagnosticId).ConfigureAwait(false);
 		}
@@ -310,7 +310,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(WrongNumberOfPlusMinus, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AlignOperatorsCountAnalyzer();
 		}
 	}
