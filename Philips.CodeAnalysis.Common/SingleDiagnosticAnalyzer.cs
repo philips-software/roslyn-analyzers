@@ -17,7 +17,8 @@ namespace Philips.CodeAnalysis.Common
 		{
 			DiagnosticId = id;
 			Id = Helper.ToDiagnosticId(id);
-			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpUri);
+			var helpLink = helpUri ?? Helper.ToHelpLinkUrl(Id);
+			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpLink);
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
