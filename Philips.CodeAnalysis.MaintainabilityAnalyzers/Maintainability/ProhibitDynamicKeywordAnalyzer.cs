@@ -9,20 +9,26 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer<IdentifierNameSyntax, ProhibitDynamicKeywordSyntaxNodeAction>
+	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
 		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
-		private const string Description = @"The ""dynamic"" keyword is not checked for type safety at compile time and is prohibited.";
+		private const string Description = @"The ""dynamic"" keyword is not checked for type safety at compile time.";
 
 		public ProhibitDynamicKeywordAnalyzer()
 			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
-	}
 
-	public class ProhibitDynamicKeywordSyntaxNodeAction : SyntaxNodeAction<IdentifierNameSyntax>
-	{
-		public override void Analyze()
+		public override void Initialize(AnalysisContext context)
+		{
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.EnableConcurrentExecution();
+			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+		}
+		// TODO: Change to Analyze: MethodDeclaration, FieldDeclaration, VariableDeclaration, PropertyDeclaration
+		// TODO: And reduce the number of items inspected by the SemanticModel
+		
+		private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			if (IsIdentifierDynamicType())
 			{
