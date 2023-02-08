@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -25,9 +26,9 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AbsenceOfEditorConfigShouldTriggerDiagnostics()
+		public async Task AbsenceOfEditorConfigShouldTriggerDiagnosticsAsync()
 		{
-			VerifyDiagnostic(TestCode, DiagnosticId.EnforceEditorConfig);
+			await VerifyDiagnostic(TestCode, DiagnosticId.EnforceEditorConfig).ConfigureAwait(false);
 		}
 	}
 }

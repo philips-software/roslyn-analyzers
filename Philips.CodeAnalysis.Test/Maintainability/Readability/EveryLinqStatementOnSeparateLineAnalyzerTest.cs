@@ -72,10 +72,10 @@ public static class Foo
 		 DataRow(CorrectWithComments, DisplayName = nameof(CorrectWithComments)),
 		 DataRow(CorrectWithCommentsOnSeparateLine, DisplayName = nameof(CorrectWithCommentsOnSeparateLine))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void SingleStatementsPerLineDoesNotTriggersDiagnostics(string input)
+		public async Task SingleStatementsPerLineDoesNotTriggersDiagnosticsAsync(string input)
 		{
 
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 		private const string WhereOnSameLine = $@"
@@ -108,7 +108,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MultipleStatementsOnSameLineTriggersDiagnostics(string input)
 		{
-			VerifyDiagnostic(input);
+			await VerifyDiagnostic(input).ConfigureAwait(false);
 			await VerifyFix(input, Correct).ConfigureAwait(false);
 		}
 
@@ -118,9 +118,9 @@ public static class Foo
 		[DataTestMethod]
 		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 	}
 }

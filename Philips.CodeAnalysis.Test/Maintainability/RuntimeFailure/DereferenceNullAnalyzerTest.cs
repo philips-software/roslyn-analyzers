@@ -1,5 +1,6 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
@@ -35,7 +36,7 @@ class Foo
 		
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionWithNestedExpression()
+		public async Task DereferenceNullAsExpressionWithNestedExpressionAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -65,7 +66,7 @@ Instruction i = method.Body.Instructions[0];
 		}
 }}
 ";
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 		
 		/// <summary>
@@ -80,11 +81,11 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("string z = \"hi\"", "string t1 = y.ToString()")]
 		[DataRow("string z = \"hi\"", "int t2 = y.Length")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionFindingTest(string content1, string content2)
+		public async Task DereferenceNullAsExpressionFindingTestAsync(string content1, string content2)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -100,17 +101,17 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("if (y==null) int b = 0", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionNoFindingTest(string content1, string content2)
+		public async Task DereferenceNullAsExpressionNoFindingTestAsync(string content1, string content2)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionDifferentBlockTest()
+		public async Task DereferenceNullAsExpressionDifferentBlockTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -127,13 +128,13 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfDereferenceTest()
+		public async Task DereferenceNullAsExpressionIfDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -150,12 +151,12 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckDereferenceTest()
+		public async Task DereferenceNullAsExpressionIfCheckDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -172,12 +173,12 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTest()
+		public async Task DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -191,12 +192,12 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTest()
+		public async Task DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -213,13 +214,13 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTest()
+		public async Task DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -233,13 +234,13 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckDereference2Test()
+		public async Task DereferenceNullAsExpressionIfCheckDereference2TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -256,13 +257,13 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckDereference3Test()
+		public async Task DereferenceNullAsExpressionIfCheckDereference3TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -276,12 +277,12 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckDereference4Test()
+		public async Task DereferenceNullAsExpressionIfCheckDereference4TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -298,12 +299,12 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 		
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionIfCheckHasValueTest()
+		public async Task DereferenceNullAsExpressionIfCheckHasValueTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -320,12 +321,12 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionWhileCheckDereferenceTest()
+		public async Task DereferenceNullAsExpressionWhileCheckDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -342,13 +343,13 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DereferenceNullAsExpressionWhileCheckDereference2Test()
+		public async Task DereferenceNullAsExpressionWhileCheckDereference2TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -365,7 +366,7 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 	}

@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustExistViaNewMock(string arguments, bool isError)
+		public async Task ConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -62,17 +63,17 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustExistViaNewMock2()
+		public async Task ConstructorsMustExistViaNewMock2Async()
 		{
 			const string template = @"
 using Moq;
@@ -89,12 +90,12 @@ public static class Bar
 	}}
 }}
 ";
-			VerifyDiagnostic(template, DiagnosticId.MockArgumentsMustMatchConstructor);
+			await VerifyDiagnostic(template, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustExistViaNewMock3()
+		public async Task ConstructorsMustExistViaNewMock3Async()
 		{
 			const string template = @"
 using Moq;
@@ -109,12 +110,12 @@ public static class Bar
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MockBehaviorCanBeTakenFromMethodParameter()
+		public async Task MockBehaviorCanBeTakenFromMethodParameterAsync()
 		{
 			const string template = @"
 using Moq;
@@ -139,12 +140,12 @@ public static class Bar
 }}
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MockBehaviorCanBeTakenFromLocal()
+		public async Task MockBehaviorCanBeTakenFromLocalAsync()
 		{
 			const string template = @"
 using Moq;
@@ -168,12 +169,12 @@ public static class Bar
 }}
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MockBehaviorCanBeTakenFromField()
+		public async Task MockBehaviorCanBeTakenFromFieldAsync()
 		{
 			const string template = @"
 using Moq;
@@ -197,7 +198,7 @@ public static class Bar
 }}
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[DataRow("", false)]
@@ -205,7 +206,7 @@ public static class Bar
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DelegateConstructorsMustExistViaNewMock(string arguments, bool isError)
+		public async Task DelegateConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq
@@ -223,11 +224,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -236,7 +237,7 @@ public static class Bar
 		[DataRow("(1, 2) { TestProperty = string.Empty }", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DelegateConstructorsMustHandleNoArgumentList(string arguments, bool isError)
+		public async Task DelegateConstructorsMustHandleNoArgumentListAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -257,11 +258,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -270,7 +271,7 @@ public static class Bar
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorHandlesTypesCorrectly(string arguments, bool isError)
+		public async Task ConstructorHandlesTypesCorrectlyAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -291,11 +292,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -305,7 +306,7 @@ public static class Bar
 		[DataRow("DateTime.Now, false", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorHandlesGenericsTypesCorrectly(string arguments, bool isError)
+		public async Task ConstructorHandlesGenericsTypesCorrectlyAsync(string arguments, bool isError)
 		{
 			const string template = @"using System;
 using Moq;
@@ -327,11 +328,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -340,7 +341,7 @@ public static class Bar
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustExistViaCreate(string arguments, bool isError)
+		public async Task ConstructorsMustExistViaCreateAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -361,18 +362,18 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
 		[DataRow("", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustExistViaMockOf(string arguments, bool isError)
+		public async Task ConstructorsMustExistViaMockOfAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -392,11 +393,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -411,7 +412,7 @@ public static class Bar
 		[DataRow("Mockable m = repo.Create<Mockable>")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustNotCauseCrash(string statement)
+		public async Task ConstructorsMustNotCauseCrashAsync(string statement)
 		{
 			const string template = @"
 using Moq;
@@ -429,7 +430,7 @@ public static class Bar
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(string.Format(template, statement));
+			await VerifySuccessfulCompilation(string.Format(template, statement)).ConfigureAwait(false);
 		}
 
 		[DataRow("", false)]
@@ -437,7 +438,7 @@ public static class Bar
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CanMockInterfaces(string arguments, bool isError)
+		public async Task CanMockInterfacesAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -457,11 +458,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -470,7 +471,7 @@ public static class Bar
 		[DataRow("int.MaxValue", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ConstructorsMustHaveCorrectTypeParameters(string arguments, bool isError)
+		public async Task ConstructorsMustHaveCorrectTypeParametersAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using System;
@@ -491,11 +492,11 @@ public static class Bar
 			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor);
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 

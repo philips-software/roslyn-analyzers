@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -275,9 +276,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual)),
 		 DataRow(CorrectOnlyEqual, DisplayName = nameof(CorrectOnlyEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -293,9 +294,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticId.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
 		 DataRow(WrongNumberOfPlusEqual, DiagnosticId.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticId diagnosticId) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode, DiagnosticId diagnosticId) 
 		{
-			VerifyDiagnostic(testCode, diagnosticId);
+			await VerifyDiagnostic(testCode, diagnosticId).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -304,9 +305,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongNumberOfPlusMinus, filePath);
+			await VerifySuccessfulCompilation(WrongNumberOfPlusMinus, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {

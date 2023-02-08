@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow(true, "void")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectInvalidCreationTest(bool isAsync, string returnType)
+		public async Task AvoidTaskResultObjectInvalidCreationTestAsync(bool isAsync, string returnType)
 		{
 			string code = $@"using System;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyDiagnostic(code, DiagnosticId.AvoidAsyncVoid);
+			await VerifyDiagnostic(code, DiagnosticId.AvoidAsyncVoid).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -35,7 +36,7 @@ public class Tests
 		[DataRow(true, "Task")]
 		[DataRow(true, "Task<int>")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationValidTest(bool isAsync, string returnType)
+		public async Task AvoidTaskResultObjectCreationValidTestAsync(bool isAsync, string returnType)
 		{
 			string code = $@"using System;
 using System.Threading.Tasks;
@@ -45,13 +46,13 @@ public class Tests
 {{
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
-			VerifySuccessfulCompilation(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationCorrectTest()
+		public async Task AvoidTaskResultObjectCreationCorrectTestAsync()
 		{
 			string correctTemplate = $@"
 using System.Threading.Tasks;
@@ -75,12 +76,12 @@ public class MyEventArgs : EventArgs
 }}}}
 ";
 
-			VerifySuccessfulCompilation(correctTemplate);
+			await VerifySuccessfulCompilation(correctTemplate).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationInCorrectTestForCustomEventArgs()
+		public async Task AvoidTaskResultObjectCreationInCorrectTestForCustomEventArgsAsync()
 		{
 			string correctTemplate = $@"
 using System.Threading.Tasks;
@@ -94,12 +95,12 @@ class FooClass
 }}}}
 ";
 
-			VerifyDiagnostic(correctTemplate, DiagnosticId.AvoidAsyncVoid);
+			await VerifyDiagnostic(correctTemplate, DiagnosticId.AvoidAsyncVoid).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationInCorrectTestForEventArgs()
+		public async Task AvoidTaskResultObjectCreationInCorrectTestForEventArgsAsync()
 		{
 			string correctTemplate = $@"
 using System.Threading.Tasks;
@@ -113,7 +114,7 @@ class FooClass
 }}}}
 ";
 
-			VerifySuccessfulCompilation(correctTemplate);
+			await VerifySuccessfulCompilation(correctTemplate).ConfigureAwait(false);
 		}
 
 		[DataRow(false, "Action<int> action = x => {{ Task.Yield(); return 4; }}")]
@@ -128,7 +129,7 @@ class FooClass
 });")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidAsyncVoidDelegate(bool isError, string code)
+		public async Task AvoidAsyncVoidDelegateAsync(bool isError, string code)
 		{
 			string correctTemplate = $@"
 using System.Threading.Tasks;
@@ -143,11 +144,11 @@ class FooClass
 ";
 			if (isError)
 			{
-				VerifyDiagnostic(correctTemplate, DiagnosticId.AvoidAsyncVoid);
+				await VerifyDiagnostic(correctTemplate, DiagnosticId.AvoidAsyncVoid).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(correctTemplate);
+				await VerifySuccessfulCompilation(correctTemplate).ConfigureAwait(false);
 			}
 		}
 

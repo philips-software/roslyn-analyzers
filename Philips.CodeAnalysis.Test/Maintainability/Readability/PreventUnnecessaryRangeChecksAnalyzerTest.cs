@@ -69,7 +69,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
 		}
 
@@ -79,7 +79,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckElseClause(string declaration, string countLengthMethod)
+		public async Task CheckElseClauseAsync(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 class Foo
@@ -102,7 +102,7 @@ class Foo
 }}
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
-			VerifySuccessfulCompilation(errorCode);
+			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
 
 
@@ -161,7 +161,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
 		}
 
@@ -171,7 +171,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNestedRange2(string declaration, string countLengthMethod)
+		public async Task CheckNestedRange2Async(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 public class Container
@@ -199,12 +199,12 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifySuccessfulCompilation(errorCode);
+			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNestedRange2a()
+		public async Task CheckNestedRange2aAsync()
 		{
 			const string template = @"
 public class Container
@@ -233,7 +233,7 @@ class Foo
 }}
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -242,7 +242,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNestedRange3(string declaration, string countLengthMethod)
+		public async Task CheckNestedRange3Async(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 public class OuterContainer
@@ -275,7 +275,7 @@ class Foo
 ";
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifySuccessfulCompilation(errorCode);
+			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -319,7 +319,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
 		}
 
@@ -362,7 +362,7 @@ class Foo
 
 			string errorCode = string.Format(template, declaration, countLengthMethod);
 
-			VerifyDiagnostic(errorCode);
+			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
 		}
 
@@ -372,7 +372,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckArrayRange2(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange2Async(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -395,7 +395,7 @@ public void test()
 }}
 ";
 
-			VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod));
+			await VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod)).ConfigureAwait(false);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -404,7 +404,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckArrayRange3(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange3Async(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -425,7 +425,7 @@ public void test()
 }}
 ";
 
-			VerifyDiagnostic(string.Format(template, declaration, countLengthMethod));
+			await VerifyDiagnostic(string.Format(template, declaration, countLengthMethod)).ConfigureAwait(false);
 		}
 
 		[DataRow("int[] data = new int[0]", "Length")]
@@ -434,7 +434,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckArrayRange4(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange4Async(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -457,7 +457,7 @@ public void test()
 }}
 ";
 
-			VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod));
+			await VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod)).ConfigureAwait(false);
 		}
 	}
 }

@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"if (1==1 || 2==2) { if (1==1) {} }", DisplayName = "Parent has ||")]
 		[DataRow(@"if (1==1 || 2==2) if (2==2) {}", DisplayName = "Parent has ||, no { }")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotMergeIfsTest(string test)
+		public async Task DoNotMergeIfsTestAsync(string test)
 		{
 			const string testCodeTemplate = @"
 		        public class MyClass
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 			string testCode = string.Format(testCodeTemplate, test);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string testCode = string.Format(testCodeTemplate, test);
 			string fixedCode = string.Format(testCodeTemplate, fixedTest);
 
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 	}

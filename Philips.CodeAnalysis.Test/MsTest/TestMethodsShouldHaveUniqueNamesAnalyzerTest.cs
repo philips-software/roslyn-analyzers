@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -30,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MethodsMustHaveUniqueNamesTest()
+		public async Task MethodsMustHaveUniqueNamesTestAsync()
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -49,7 +50,7 @@ public class Tests
 	public void Foo(object o, object y) { }
 }";
 
-			VerifyDiagnostic(code, new []{ 
+			await VerifyDiagnostic(code, new []{ 
 				new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
@@ -64,7 +65,7 @@ public class Tests
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 				}
-			});
+			}).ConfigureAwait(false);
 		}
 
 		#endregion

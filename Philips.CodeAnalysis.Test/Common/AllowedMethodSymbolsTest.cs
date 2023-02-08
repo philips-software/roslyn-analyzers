@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -54,20 +55,20 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		 DataRow("Philips.Detailed", "AType", "AllowedMethodInFullNamespace"),
 		 DataRow("SomeNamespace", "Log", "SomeMethod")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName, string methodName)
+		public async Task AllowedSymbolShouldBeReportDiagnosticsAsync(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			Verify(file);
+			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("SomeNamespace", "SomeType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod2")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName, string methodName)
+		public async Task NotAllowedSymbolShouldNotReportDiagnosticsAsync(string nsName, string typeName, string methodName)
 		{
 			var file = GenerateCodeFile(nsName, typeName, methodName);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		private string GenerateCodeFile(string nsName, string typeName, string methodName)
@@ -76,9 +77,9 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 				$"namespace {nsName} {{\npublic class {typeName}\n{{\nprivate void {methodName}()\n{{\nreturn;\n}}\n}}\n}}\n";
 		}
 
-		private void Verify(string file)
+		private async Task VerifyAsync(string file)
 		{
-			VerifyDiagnostic(file,
+			await VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AllowedSymbolsTestAnalyzer.Rule.Id,
@@ -89,7 +90,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 						new DiagnosticResultLocation("Test0.cs", null, null)
 					}
 				}
-			);
+			).ConfigureAwait(false);
 		}
 	}
 }

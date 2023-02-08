@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("f1", "b2", false)]
 		[DataRow("x1", "b2", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AreEqualTypesMatchTest(string arg1, string arg2, bool isError)
+		public async Task AreEqualTypesMatchTestAsync(string arg1, string arg2, bool isError)
 		{
 			string baseline = @"
 namespace AssertAreEqualTypesMatchAnalyzerTest
@@ -64,11 +65,11 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 						new DiagnosticResultLocation("Test0.cs", 15, 7)
 					}
 				};
-				VerifyDiagnostic(givenText, expected);
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 		}
 		

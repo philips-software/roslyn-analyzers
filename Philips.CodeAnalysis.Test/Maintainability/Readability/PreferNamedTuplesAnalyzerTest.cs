@@ -1,6 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -39,28 +40,28 @@ class Foo
 		[DataRow("(int Foo, int Bar)")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NamedTuplesDontCauseErrors(string argument)
+		public async Task NamedTuplesDontCauseErrorsAsync(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifySuccessfulCompilation(source);
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
 		[DataRow("(int, int)")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
+		public async Task ErrorIfTupleElementsDoNotHaveNamesAsync(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyDiagnostic(source, 2);
+			await VerifyDiagnostic(source, 2).ConfigureAwait(false);
 		}
 
 		[DataRow("(int Foo, int)")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ErrorIfTupleElementDoesNotHaveName(string argument)
+		public async Task ErrorIfTupleElementDoesNotHaveNameAsync(string argument)
 		{
 			var source = CreateFunction(argument);
-			VerifyDiagnostic(source);
+			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
 	}
 }
