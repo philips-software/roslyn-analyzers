@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -153,7 +154,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="actualResults">The Diagnostics found by the compiler after running the analyzer on the source code</param>
 		/// <param name="analyzer">The analyzer that was being run on the sources</param>
 		/// <param name="expectedResults">Diagnostic Results that should have appeared in the code</param>
-		private static void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, DiagnosticResult[] expectedResults)
+		private void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, DiagnosticResult[] expectedResults)
 		{
 			int expectedCount = expectedResults.Length;
 			int actualCount = actualResults.Count();
@@ -193,7 +194,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			}
 		}
 
-		private static void CheckDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic actual, DiagnosticResult expected)
+		private void CheckDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic actual, DiagnosticResult expected)
 		{
 			Assert.AreEqual(expected.Id, actual.Id,
 					string.Format("Expected diagnostic id to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
@@ -212,6 +213,29 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			}
 		}
 
+		private void CheckLine(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int actualLinePosition, int? expectedLine, string startOrEnd)
+		{
+			// Only check line position if there is an actual line in the real diagnostic
+			if (actualLinePosition > 0 && expectedLine.HasValue)
+			{
+				Assert.AreEqual(expectedLine, actualLinePosition + 1,
+					$"Expected diagnostic to {startOrEnd} on line \"{expectedLine}\" was actually on line \"{actualLinePosition+1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+			}
+		}
+
+		private void CheckColumn(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int actualCharacterPosition, int? expectedColumn, string startOrEnd)
+		{
+			// Only check column position if there is an actual column position in the real diagnostic
+			if (actualCharacterPosition > 0 &&
+				expectedColumn.HasValue &&
+				expectedColumn != -1)
+			{
+				Assert.AreEqual(expectedColumn, actualCharacterPosition + 1,
+					$"Expected diagnostic to {startOrEnd} at column \"{expectedColumn}\" was actually at column \"{actualCharacterPosition + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+			}
+		}
+
+
 		/// <summary>
 		/// Helper method to VerifyDiagnosticResult that checks the location of a diagnostic and compares it with the location in the expected DiagnosticResult.
 		/// </summary>
@@ -219,53 +243,16 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="diagnostic">The diagnostic that was found in the code</param>
 		/// <param name="actual">The Location of the Diagnostic found in the code</param>
 		/// <param name="expected">The DiagnosticResultLocation that should have been found</param>
-		private static void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
+		private void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
 		{
 			FileLinePositionSpan actualSpan = CheckPath(analyzer, diagnostic, actual, expected);
-
-			var actualLinePosition = actualSpan.StartLinePosition;
-
-			// Only check line position if there is an actual line in the real diagnostic
-			if (actualLinePosition.Line > 0 && expected.Line.HasValue)
-			{
-				Assert.AreEqual(expected.Line, actualLinePosition.Line + 1,
-					string.Format("Expected diagnostic to be on line \"{0}\" was actually on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Line, actualLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
-			}
-
-			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualLinePosition.Character > 0 &&
-				expected.Column.HasValue &&
-				expected.Column != -1)
-			{
-				Assert.AreEqual(expected.Column, actualLinePosition.Character + 1,
-					string.Format("Expected diagnostic to start at column \"{0}\" was actually at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Column, actualLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
-			}
-
-			var actualEndLinePosition = actualSpan.EndLinePosition;
-
-			// Only check line position if there is an actual line in the real diagnostic
-			if (actualEndLinePosition.Line > 0 && expected.EndLine.HasValue)
-			{
-				Assert.AreEqual(expected.EndLine, actualEndLinePosition.Line + 1,
-					string.Format("Expected diagnostic to end on line \"{0}\" but actually ended on line \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.EndLine, actualEndLinePosition.Line + 1, FormatDiagnostics(analyzer, diagnostic)));
-			}
-
-			// Only check column position if there is an actual column position in the real diagnostic
-			if (actualEndLinePosition.Character > 0 &&
-				expected.EndColumn.HasValue &&
-				expected.Column != -1)
-			{
-				Assert.AreEqual(expected.EndColumn, actualEndLinePosition.Character + 1,
-					string.Format("Expected diagnostic to end at column \"{0}\" but actually ended at column \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.EndColumn, actualEndLinePosition.Character + 1, FormatDiagnostics(analyzer, diagnostic)));
-			}
-
+			CheckLine(analyzer, diagnostic, actualSpan.StartLinePosition.Line, expected.Line, "start");
+			CheckColumn(analyzer, diagnostic, actualSpan.StartLinePosition.Character, expected.Column, "start");
+			CheckLine(analyzer, diagnostic, actualSpan.EndLinePosition.Line, expected.EndLine, "end");
+			CheckColumn(analyzer, diagnostic, actualSpan.EndLinePosition.Character, expected.EndColumn, "end");
 		}
 
-		private static FileLinePositionSpan CheckPath(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
+		private FileLinePositionSpan CheckPath(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
 		{
 			var actualSpan = actual.GetLineSpan();
 
@@ -282,7 +269,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Formatting Diagnostics
 
-		private static string FormatWrongDiagnosticCount(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, int expectedCount, int actualCount)
+		private string FormatWrongDiagnosticCount(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, int expectedCount, int actualCount)
 		{
 			string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
 			return string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" actual \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput);
@@ -294,7 +281,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="analyzer">The analyzer that this verifier tests</param>
 		/// <param name="diagnostics">The Diagnostics to be formatted</param>
 		/// <returns>The Diagnostics formatted as a string</returns>
-		private static string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
+		private string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
 		{
 			var builder = new StringBuilder();
 			for (int i = 0; i < diagnostics.Length; ++i)
@@ -304,7 +291,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return builder.ToString();
 		}
 
-		private static void FormatDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, StringBuilder builder, bool isLast)
+		private void FormatDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, StringBuilder builder, bool isLast)
 		{
 			builder.AppendLine("// " + diagnostic.ToString());
 
