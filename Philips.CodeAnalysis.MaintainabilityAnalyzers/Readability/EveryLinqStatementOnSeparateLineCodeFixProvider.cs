@@ -36,9 +36,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			if(root != null)
+			if (root != null)
 			{
-				if(root.FindNode(diagnosticSpan) is not QueryClauseSyntax clause)
+				if (root.FindNode(diagnosticSpan) is not QueryClauseSyntax clause)
 				{
 					return;
 				}

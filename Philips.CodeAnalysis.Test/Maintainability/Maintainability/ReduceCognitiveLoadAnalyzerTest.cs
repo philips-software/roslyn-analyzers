@@ -150,7 +150,7 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -184,7 +184,7 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -201,7 +201,7 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]

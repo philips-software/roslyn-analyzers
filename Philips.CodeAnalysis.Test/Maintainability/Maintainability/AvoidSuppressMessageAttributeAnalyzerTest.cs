@@ -23,7 +23,7 @@ Foo.WhitelistedFunction
 		{
 			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName));
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidSuppressMessageNotRaisedInGeneratedCodeAsync()
@@ -104,7 +104,7 @@ namespace WpfApp1 {
 			string givenText = string.Format(baseline, usingStatement, attribute, functionName);
 			await VerifyDiagnostic(givenText, DiagnosticId.AvoidSuppressMessage).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidSuppressMessageAttributeAnalyzer();

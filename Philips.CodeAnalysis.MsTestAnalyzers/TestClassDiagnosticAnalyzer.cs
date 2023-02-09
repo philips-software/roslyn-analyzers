@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class TestClassDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		protected TestHelper TestHelper { get; private set;}
+		protected TestHelper TestHelper { get; private set; }
 		protected AttributeHelper AttributeHelper { get; private set; }
 
 		protected TestClassDiagnosticAnalyzer()

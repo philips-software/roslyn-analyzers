@@ -14,9 +14,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Title = @"Avoid AssemblyVersion change";
 		private const string MessageFormat = @"AssemblyVersion has changed. Actual: {0} Expected: {1}";
 		private const string Category = Categories.RuntimeFailure;
-		private static readonly string Description = 
-			"AssemblyVersion breaks compatibility.  If intentional, specify dotnet_code_quality." + 
-			Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) + 
+		private static readonly string Description =
+			"AssemblyVersion breaks compatibility.  If intentional, specify dotnet_code_quality." +
+			Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) +
 			".assembly_version in EditorConfig.";
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);

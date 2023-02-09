@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			LambdaExpressionSyntax node = (LambdaExpressionSyntax)context.Node;
 			MethodDeclarationSyntax parent =
 				node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
-			
+
 			// We need at least 2 lambdas in the same method to have even the possibility of a violation.
 			var lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
 			if (lambdas == null || lambdas.Count() < 2)
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			List<LambdaExpressionSyntax> result = new();
 			int theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
-			foreach(LambdaExpressionSyntax lambda in lambdas)
+			foreach (LambdaExpressionSyntax lambda in lambdas)
 			{
 				int currentLine = lambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 				// Do not report ourLambda itself.

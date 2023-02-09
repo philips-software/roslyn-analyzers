@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
-		
+
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			var method = (MethodDeclarationSyntax)context.Node;
@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if(!_helper.IsCallableFromOutsideClass(parent))
+			if (!_helper.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var typeName = GetTypeName(type);
 
 			NamespaceIgnoringComparer comparer = new();
-			if(type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
+			if (type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
 			{
 				// Double check the type's namespace.
 				var symbolType = context.SemanticModel.GetTypeInfo(type).Type;
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (type is GenericNameSyntax genericName)
 			{
 				var baseName = genericName.Identifier.Text;
-				if(!aliases.TryGetValue(baseName, out typeName))
+				if (!aliases.TryGetValue(baseName, out typeName))
 				{
 					typeName = baseName;
 				}

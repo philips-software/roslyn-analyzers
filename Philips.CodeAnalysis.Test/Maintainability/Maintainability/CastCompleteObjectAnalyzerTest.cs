@@ -9,10 +9,10 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-    /// <summary>
-    /// Test class for <see cref="CastCompleteObjectAnalyzer"/>.
-    /// </summary>
-    [TestClass]
+	/// <summary>
+	/// Test class for <see cref="CastCompleteObjectAnalyzer"/>.
+	/// </summary>
+	[TestClass]
 	public class CastCompleteObjectAnalyzerTest : DiagnosticVerifier
 	{
 		private const string CorrectSingleField = @"
@@ -31,7 +31,7 @@ namespace CastCompleteTests {
     }
 }";
 
-        private const string WrongMulipleFields = @"
+		private const string WrongMulipleFields = @"
 namespace CastCompleteTests {
     public class Number {
         private int n;
@@ -39,7 +39,7 @@ namespace CastCompleteTests {
         public static explicit operator int(Number num) { return num.n; }
     }
 }";
-		
+
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>

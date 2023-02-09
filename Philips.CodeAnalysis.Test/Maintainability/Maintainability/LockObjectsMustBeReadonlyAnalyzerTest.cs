@@ -68,10 +68,10 @@ class Foo
 			{
 				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
-            else
-            {
-                await VerifySuccessfulCompilation(template).ConfigureAwait(false);
-            }
+			else
+			{
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("object foo", false)]

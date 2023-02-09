@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidOverridingWithNewKeywordAnalyzer();
 		}
 
-		
+
 		private const string Correct = @"
 namespace MultiLineConditionUnitTests
 {
@@ -90,7 +90,7 @@ namespace MultiLineConditionUnitTests
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)), 
+		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)),
 		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OverrideWithNewKeywordTriggersDiagnosticsAsync(string input)

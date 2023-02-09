@@ -153,7 +153,7 @@ class Foo
 			string givenText = string.Format(baseline, given);
 			if (isError)
 			{
-				var results = 
+				var results =
 					new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),

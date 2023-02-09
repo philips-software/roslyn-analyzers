@@ -94,15 +94,16 @@ namespace AvoidArrayListTests {
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)), 
+		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)),
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
+		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			if (fixedCode != null)
 			{
-				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
+				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 			}
 		}
 
@@ -117,7 +118,8 @@ namespace AvoidArrayListTests {
 			await VerifySuccessfulCompilation(WrongLocal, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidArrayListAnalyzer();
 		}
 

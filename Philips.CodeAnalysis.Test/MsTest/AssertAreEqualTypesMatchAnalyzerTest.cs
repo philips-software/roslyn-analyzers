@@ -72,7 +72,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualTypesMatchAnalyzer();

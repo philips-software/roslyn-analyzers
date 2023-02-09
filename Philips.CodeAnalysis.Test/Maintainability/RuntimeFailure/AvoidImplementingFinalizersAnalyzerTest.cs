@@ -91,8 +91,9 @@ namespace FinalizerTest {
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
-		
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidImplementingFinalizersAnalyzer();
 		}
 	}

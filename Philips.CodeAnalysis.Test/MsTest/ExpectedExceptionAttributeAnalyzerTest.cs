@@ -34,7 +34,7 @@ namespace ExpectedAnalyzerAttributeTest
 ";
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ExpectedExceptionAttributeAnalyzer();

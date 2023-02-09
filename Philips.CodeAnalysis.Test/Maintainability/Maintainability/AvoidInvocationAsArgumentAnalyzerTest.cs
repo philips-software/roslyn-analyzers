@@ -521,8 +521,8 @@ class Foo
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-        {
-            return new AvoidInvocationAsArgumentAnalyzer();
-        }
-    }
+		{
+			return new AvoidInvocationAsArgumentAnalyzer();
+		}
+	}
 }

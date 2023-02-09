@@ -161,7 +161,7 @@ public static class Foo
 
 
 		[DataTestMethod]
-		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)), 
+		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)),
 		 DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
 		 DataRow(CorrectMultiple, DisplayName = nameof(CorrectMultiple)),
 		 DataRow(CorrectDistinct, DisplayName = nameof(CorrectDistinct)),

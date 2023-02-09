@@ -33,9 +33,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			foreach (var clause in Node.Body.Clauses)
 			{
-				if(!EndsWithNewline(clause))
+				if (!EndsWithNewline(clause))
 				{
-					var clauseLocation = clause.GetLocation(); 
+					var clauseLocation = clause.GetLocation();
 					ReportDiagnostic(clauseLocation);
 				}
 			}

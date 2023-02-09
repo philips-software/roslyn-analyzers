@@ -31,7 +31,7 @@ class Foo
 		{
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange)}.assembly_version", InvalidVersion);
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InvalidVersionShouldTriggerTriggerDiagnosticsAsync()

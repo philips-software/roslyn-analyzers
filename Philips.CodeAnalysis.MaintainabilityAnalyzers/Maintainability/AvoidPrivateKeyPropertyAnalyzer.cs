@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string HelpUri = @"https://www.pkisolutions.com/accessing-and-using-certificate-private-keys-in-net-framework-net-core/";
 
 		public AvoidPrivateKeyPropertyAnalyzer()
-			: base(DiagnosticId.AvoidPrivateKeyProperty, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri )
+			: base(DiagnosticId.AvoidPrivateKeyProperty, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
 		{
 			FullyQualifiedMetaDataName = "System.Security.Cryptography.X509Certificates.X509Certificate2";
 		}

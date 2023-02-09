@@ -75,7 +75,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithMethod = @"
+		private const string CorrectWithMethod = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -89,7 +89,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectRethrow = @"
+		private const string CorrectRethrow = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -106,7 +106,7 @@ public class Foo
     private ArgumentException DangerousMethod() { return new ArgumentException(""FromFactory"");}
 }
 ";
-    private const string CorrectFromCommon = @"
+		private const string CorrectFromCommon = @"
 public class Foo {
 	/// <summary>
 	/// Register a new symbol.
@@ -135,7 +135,7 @@ public class Foo {
 }
 ";
 
-        private const string WrongNoDoc = @"
+		private const string WrongNoDoc = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -235,7 +235,7 @@ public class Foo
 }
 ";
 
-        private const string WrongRethrow = @"
+		private const string WrongRethrow = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>

@@ -82,7 +82,7 @@ namespace PropertiesinOrderTests {
 		[DataTestMethod]
 		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenReferencingOtherPropertiesDiagnosticIsRaisedAsync(string testCode) 
+		public async Task WhenReferencingOtherPropertiesDiagnosticIsRaisedAsync(string testCode)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
@@ -98,7 +98,7 @@ namespace PropertiesinOrderTests {
 			await VerifySuccessfulCompilation(WrongInAssignment, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() 
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new SetPropertiesInAnyOrderAnalyzer();
 		}

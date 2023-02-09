@@ -44,7 +44,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-string fixedText = @"
+			string fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestContextAnalyzerTest
 {

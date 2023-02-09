@@ -65,12 +65,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeConstructor(SyntaxNode node)
 		{
-			if(node is ConstructorDeclarationSyntax constructorDeclaration)
+			if (node is ConstructorDeclarationSyntax constructorDeclaration)
 			{
 				// Check constructors of an Exception.
 				bool? withinExceptionClass =
 					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
-				if((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
+				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
 					var loc = Node.ThrowKeyword.GetLocation();
 					ReportDiagnostic(loc, "constructor of an Exception derived type");
@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeDestructor(SyntaxNode node)
 		{
-			if(node is DestructorDeclarationSyntax)
+			if (node is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
 				var loc = Node.ThrowKeyword.GetLocation();
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeConversionOperator(SyntaxNode methodDeclaration)
 		{
-			if(methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
+			if (methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
 			{
 				// Check implicit cast operators.
 				var loc = Node.ThrowKeyword.GetLocation();

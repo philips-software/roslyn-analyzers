@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"Elide the switch statement";
 
 		public AvoidRedundantSwitchStatementAnalyzer()
-			:this(GeneratedCodeAnalysisFlags.None)
+			: this(GeneratedCodeAnalysisFlags.None)
 		{ }
 
 		public AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags generatedCodeFlags)
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void Analyze(OperationAnalysisContext operationContext)
 		{
-			GeneratedCodeDetector generatedCodeDetector= new();
+			GeneratedCodeDetector generatedCodeDetector = new();
 			if (generatedCodeDetector.IsGeneratedCode(operationContext))
 			{
 				return;

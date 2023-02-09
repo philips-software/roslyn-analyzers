@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return regionName;
 		}
 
-		private static void PopulateRegionLocation(ref string regionStartName, Dictionary<string, LocationRangeModel> regionLocations, 
+		private static void PopulateRegionLocation(ref string regionStartName, Dictionary<string, LocationRangeModel> regionLocations,
 													DirectiveTriviaSyntax region, int i, SyntaxNodeAnalysisContext context)
 		{
 			if (i % 2 == 0)
@@ -325,7 +325,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Check whether the members inside Non-Public Properties/Methods region belong there
 		/// </summary>
- 		/// <returns>Dummy return</returns>
+		/// <returns>Dummy return</returns>
 		private static bool CheckMembersOfNonPublicPropertiesAndMethodsRegion(IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
 			foreach (MemberDeclarationSyntax member in members)
@@ -456,7 +456,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public static bool HasAccessModifier(SyntaxTokenList memberTokens)
 		{
-			return 
+			return
 				memberTokens.Any(SyntaxKind.PublicKeyword) ||
 				memberTokens.Any(SyntaxKind.PrivateKeyword) ||
 				memberTokens.Any(SyntaxKind.ProtectedKeyword) ||

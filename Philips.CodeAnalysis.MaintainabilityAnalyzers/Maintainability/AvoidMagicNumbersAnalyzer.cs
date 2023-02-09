@@ -69,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				parsed = integer;
 			}
-			else if(double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
 			{
 				double rounded = (long)value;
 				if (Math.Abs(rounded - value) < double.Epsilon)
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			return 
+			return
 				parsed is -1 or 0 or 90 or 180 or 270 or 360 ||
 				IsPowerOf(parsed, 2) ||
 				IsPowerOf(parsed, 10);

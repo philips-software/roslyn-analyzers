@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if ((identifier.Identifier.ToString() == varName) &&
 					identifier.Parent is not VariableDeclarationSyntax &&
-					!propNodes.Contains(identifier) && 
+					!propNodes.Contains(identifier) &&
 					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the variable and it's not a type, the original declaration, or part of the property, it's used
