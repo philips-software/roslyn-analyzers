@@ -11,16 +11,16 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidAsyncVoidAnalyzer : DiagnosticAnalyzer
+	public class AvoidAsyncVoidAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid async void";
 		public const string MessageFormat = @"Methods may not have async void return type";
 		private const string Description = @"To avoid unhandled exception, methods should not use async void unless a event handler.";
-		private const string Category = Categories.Maintainability;
 		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void";
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAsyncVoid), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public AvoidAsyncVoidAnalyzer()
+			: base(DiagnosticId.AvoidAsyncVoid, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
 				{
 					return;
 				}

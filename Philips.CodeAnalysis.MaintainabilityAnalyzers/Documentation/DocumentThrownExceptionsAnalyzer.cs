@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				var loc = throwStatement.ThrowKeyword.GetLocation();
-				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", thrownExceptionName);
+				var properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, thrownExceptionName);
 				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, properties, thrownExceptionName);
 				context.ReportDiagnostic(diagnostic);
 			}
@@ -114,7 +114,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				else if (a.Expression is IdentifierNameSyntax identifierName)
 				{
 					node = identifierName;
-				} 
+				}
 				else if (a.Expression is InvocationExpressionSyntax invocation)
 				{
 					node = invocation;
@@ -122,7 +122,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				else if (a.Expression is InterpolatedStringExpressionSyntax interpolatedString)
 				{
 					node = interpolatedString;
-				} else if (a.Expression is BinaryExpressionSyntax binaryExpression)
+				}
+				else if (a.Expression is BinaryExpressionSyntax binaryExpression)
 				{
 					// Assume the returning type is the same as the left type.
 					node = binaryExpression.Left;

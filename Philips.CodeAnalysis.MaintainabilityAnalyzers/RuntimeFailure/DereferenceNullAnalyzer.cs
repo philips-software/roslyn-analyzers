@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
 			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
-			return 
+			return
 				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
 				binaryExpressionSyntax != null &&
 				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
@@ -173,8 +173,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				return;
 			}
 
-			bool ourSymbolIsReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
-			if (!ourSymbolIsReadOrWritten)
+			bool isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
+			if (!isOurSymbolReadOrWritten)
 			{
 				Report(identifierNameSyntax);
 			}
@@ -183,7 +183,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
 			StatementSyntax lastStatementOfAnalysis, ISymbol ourSymbol)
 		{
-			bool ourSymbolIsReadOrWritten = false;
+			bool isOurSymbolReadOrWritten = false;
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
 			{
@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
 					{
 						// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-						ourSymbolIsReadOrWritten = true;
+						isOurSymbolReadOrWritten = true;
 						break;
 					}
 				}
@@ -201,13 +201,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				{
 					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
 					{
-						ourSymbolIsReadOrWritten = true;
+						isOurSymbolReadOrWritten = true;
 						break;
 					}
 				}
 			}
 
-			return ourSymbolIsReadOrWritten;
+			return isOurSymbolReadOrWritten;
 		}
 
 		private bool CheckStatements(int lastStatementOfAnalysisIndex,
@@ -223,25 +223,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				// if (y != null && y.ToString() == @"")
 				// Ie there's nothing to analyze between the statements, but within the statement exists a check
 				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax &&
-				    HasNullCheck(ifStatementSyntax.Condition))
+					HasNullCheck(ifStatementSyntax.Condition))
 				{
 					return true;
 				}
 
 				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax &&
-				    HasNullCheck(whileStatementSyntax.Condition))
+					HasNullCheck(whileStatementSyntax.Condition))
 				{
 					return true;
 				}
 
 				if (firstStatementOfAnalysis is ReturnStatementSyntax returnStatementSyntax &&
-				    HasNullCheck(returnStatementSyntax.Expression))
+					HasNullCheck(returnStatementSyntax.Expression))
 				{
 					return true;
 				}
 
 				if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>()
-				    .Any(c => HasNullCheck(c.Condition)))
+					.Any(c => HasNullCheck(c.Condition)))
 				{
 					return true;
 				}

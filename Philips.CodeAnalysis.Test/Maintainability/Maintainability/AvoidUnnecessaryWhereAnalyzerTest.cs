@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -36,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("result.OfType<string>().Where(x => true).SingleOrDefault();")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidUnnecessaryWhereTest(string line)
+		public async Task AvoidUnnecessaryWhereTestAsync(string line)
 		{
 			string template = @"
 using System.Linq;
@@ -50,7 +51,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidUnnecessaryWhere));
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 
@@ -70,7 +71,7 @@ class Foo
 		[DataRow("Console.WriteLine(\"ny\")")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidUnnecessaryWhereNoFindingTest(string line)
+		public async Task AvoidUnnecessaryWhereNoFindingTestAsync(string line)
 		{
 			string template = @"
 using System.Linq;
@@ -84,7 +85,7 @@ class Foo
 }}
 ";
 			string testCode = string.Format(template, line);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
 }

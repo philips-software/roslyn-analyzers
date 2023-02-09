@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -18,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidOverridingWithNewKeywordAnalyzer();
 		}
 
-		
+
 		private const string Correct = @"
 namespace MultiLineConditionUnitTests
 {
@@ -82,21 +83,19 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void OverrideVirtualDoesNotTriggersDiagnostics(string input)
+		public async Task OverrideVirtualDoesNotTriggersDiagnosticsAsync(string input)
 		{
 
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)), 
+		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)),
 		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void OverrideWithNewKeywordTriggersDiagnostics(string input)
+		public async Task OverrideWithNewKeywordTriggersDiagnosticsAsync(string input)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidOverridingWithNewKeyword,
-				new Regex("Avoid overriding Virtual.* with the new keyword."));
-			VerifyDiagnostic(input, expected);
+			await VerifyDiagnostic(input, DiagnosticId.AvoidOverridingWithNewKeyword, regex: "Avoid overriding Virtual.* with the new keyword.").ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -105,9 +104,9 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(WrongMethod, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 	}
 }

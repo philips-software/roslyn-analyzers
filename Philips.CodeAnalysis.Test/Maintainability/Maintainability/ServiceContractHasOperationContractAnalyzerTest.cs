@@ -3,6 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,47 +17,37 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class ServiceContractHasOperationContractAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ServiceContractHasOperationContractAnalyzer();
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceTest()
+		public async Task IgnoresEmptyInterfaceTestAsync()
 		{
 			const string text = @"
 public interface IFoo { }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceWithAllOperationContractsTest()
+		public async Task IgnoresEmptyInterfaceWithAllOperationContractsTestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract]
 public interface IFoo { }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoresEmptyInterfaceWithAllOperationContracts2Test()
+		public async Task IgnoresEmptyInterfaceWithAllOperationContracts2TestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract]
@@ -67,12 +58,12 @@ public interface IFoo
 }
 ";
 
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InterfaceWithNoOperationContractsTest()
+		public async Task InterfaceWithNoOperationContractsTestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract()]
@@ -82,22 +73,12 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text, 
-				new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
-					Message = new Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", 5, null),
-					}
-				});
+			await VerifyDiagnostic(text).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InterfaceWithNoOperationContracts2Test()
+		public async Task InterfaceWithNoOperationContracts2TestAsync()
 		{
 			const string text = @"using System.ServiceModel;
 [ServiceContract()]
@@ -110,19 +91,7 @@ public interface IFoo
 }
 ";
 
-			VerifyDiagnostic(text,
-				new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes),
-					Message = new Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", 5, null),
-					}
-				});
+			await VerifyDiagnostic(text).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

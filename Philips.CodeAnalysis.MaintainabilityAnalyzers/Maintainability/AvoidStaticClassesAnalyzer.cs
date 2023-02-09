@@ -24,9 +24,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
+		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
 		{
-			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, generateExceptionsFile);
+			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, shouldGenerateExceptionsFile);
 		}
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
@@ -55,12 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidStaticClassesCompilationAnalyzer
 	{
 		private readonly AllowedSymbols _allowedSymbols;
-		private readonly bool _generateExceptionsFile;
+		private readonly bool _shouldGenerateExceptionsFile;
 
-		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool generateExceptionsFile)
+		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
 		{
 			_allowedSymbols = allowedSymbols;
-			_generateExceptionsFile = generateExceptionsFile;
+			_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 		}
 
 		public void Analyze(SyntaxNodeAnalysisContext context)
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (_generateExceptionsFile)
+			if (_shouldGenerateExceptionsFile)
 			{
 				var exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 				if (exceptionSymbol != null)
@@ -122,7 +122,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var modifiers = field.Modifiers;
 			return modifiers.Any(SyntaxKind.ConstKeyword) ||
-			       (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
+				   (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
 		}
 	}
 }

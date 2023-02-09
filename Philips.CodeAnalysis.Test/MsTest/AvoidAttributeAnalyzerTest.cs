@@ -1,6 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,16 +21,16 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidAttributeAnalyzer.AttributesWhitelist, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidAttributeAnalyzer.AttributesWhitelist, allowedMethodName));
 		}
 
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Ignore]", 16)]
 		[DataRow(@"[Ignore]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidIgnoreAttributeTest(string test, int expectedColumn)
+		public async Task AvoidIgnoreAttributeTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -53,7 +55,7 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
@@ -62,7 +64,7 @@ class Foo
 		[DataRow(@"[Owner(""MK"")]", 4)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
+		public async Task AvoidOwnerAttributeTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -87,13 +89,13 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(@"[TestInitialize]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTestInitializeMethodTest(string test, int expectedColumn)
+		public async Task AvoidTestInitializeMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -118,14 +120,14 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[TestCleanup]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTestCleanupMethodTest(string test, int expectedColumn)
+		public async Task AvoidTestCleanupMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -150,14 +152,14 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[ClassInitialize]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidClassInitializeMethodTest(string test, int expectedColumn)
+		public async Task AvoidClassInitializeMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -182,14 +184,14 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[ClassCleanup]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidClassCleanupMethodTest(string test, int expectedColumn)
+		public async Task AvoidClassCleanupMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -214,7 +216,7 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -223,7 +225,7 @@ class Foo
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhitelistIsApplied(string test)
+		public async Task WhitelistIsAppliedAsync(string test)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -237,7 +239,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -246,7 +248,7 @@ class Foo
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhitelistIsAppliedUnresolvable(string test)
+		public async Task WhitelistIsAppliedUnresolvableAsync(string test)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -261,9 +263,9 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();

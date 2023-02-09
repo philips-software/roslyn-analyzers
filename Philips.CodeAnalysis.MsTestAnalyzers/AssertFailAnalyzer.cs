@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				INamedTypeSymbol assertClass = startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert");
+				INamedTypeSymbol assertClass = startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName);
 
 				if (assertClass == null)
 				{

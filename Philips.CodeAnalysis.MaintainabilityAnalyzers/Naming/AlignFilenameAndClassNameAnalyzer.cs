@@ -40,23 +40,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				typeKind = "class";
 				identifier = cls.Identifier;
 			}
-			else if(firstType is StructDeclarationSyntax value)
+			else if (firstType is StructDeclarationSyntax value)
 			{
 				typeKind = "struct";
 				identifier = value.Identifier;
 			}
-			else if(firstType is EnumDeclarationSyntax enumeration)
+			else if (firstType is EnumDeclarationSyntax enumeration)
 			{
 				typeKind = "enum";
 				identifier = enumeration.Identifier;
 			}
 
-			if(string.IsNullOrEmpty(typeKind) || identifier == default)
+			if (string.IsNullOrEmpty(typeKind) || identifier == default)
 			{
 				return;
 			}
 			GeneratedCodeDetector generatedCodeDetector = new();
-			if(generatedCodeDetector.IsGeneratedCode(context))
+			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -65,14 +65,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			int indexOfDot = filename.IndexOf('.');
 			if (indexOfDot != -1)
 			{
-				filename = filename.Substring(0,indexOfDot);
+				filename = filename.Substring(0, indexOfDot);
 			}
 			int indexOfCurly = filename.IndexOf('{');
-			if(indexOfCurly != -1)
+			if (indexOfCurly != -1)
 			{
 				filename = filename.Substring(0, indexOfCurly);
 			}
-			if(StringComparer.OrdinalIgnoreCase.Compare(identifier.Text, filename) != 0)
+			if (StringComparer.OrdinalIgnoreCase.Compare(identifier.Text, filename) != 0)
 			{
 				var location = identifier.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.Text, typeKind);

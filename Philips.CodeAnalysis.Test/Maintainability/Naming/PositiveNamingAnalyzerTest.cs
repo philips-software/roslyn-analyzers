@@ -1,5 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NegativeField()
+		public async Task NegativeFieldAsync()
 		{
 			const string template = @"
 using System;
@@ -29,12 +30,12 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticId.PositiveNaming);
+			await VerifyDiagnostic(template, DiagnosticId.PositiveNaming).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PositiveField()
+		public async Task PositiveFieldAsync()
 		{
 			const string template = @"
 using System;
@@ -44,12 +45,12 @@ class Foo
 }
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NegativeLocalVariable()
+		public async Task NegativeLocalVariableAsync()
 		{
 			const string template = @"
 using System;
@@ -62,12 +63,12 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticId.PositiveNaming);
+			await VerifyDiagnostic(template, DiagnosticId.PositiveNaming).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NegativeProperty()
+		public async Task NegativePropertyAsync()
 		{
 			const string template = @"
 using System;
@@ -77,7 +78,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticId.PositiveNaming);
+			await VerifyDiagnostic(template, DiagnosticId.PositiveNaming).ConfigureAwait(false);
 		}
 	}
 }

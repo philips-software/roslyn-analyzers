@@ -1,5 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -61,9 +62,9 @@ namespace PathTooLongUnitTest {
 		 DataRow(ShortAbsolutePath, DisplayName = "ShortAbsolutePath"),
 		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(Correct, filePath);
+			await VerifySuccessfulCompilation(Correct, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -75,9 +76,9 @@ namespace PathTooLongUnitTest {
 		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath)
+		public async Task WhenPathIsTooLongDiagnosticIsRaisedAsync(string filePath)
 		{
-			VerifyDiagnostic(Correct, DiagnosticId.LimitPathLength, filePath);
+			await VerifyDiagnostic(Correct, DiagnosticId.LimitPathLength, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

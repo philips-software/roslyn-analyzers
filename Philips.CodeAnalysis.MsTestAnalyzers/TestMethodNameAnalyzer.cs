@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,38 +10,28 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestMethodNameAnalyzer : DiagnosticAnalyzer
+	public class TestMethodNameAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, TestMethodNameSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Test Method must not start with '{0}'";
-		private const string Title = @"Test Method names unhelpful prefix'";
+		private const string Title = @"Test Method names unhelpful prefix";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
-		private const string Category = Categories.Naming;
-		private const string TestLiteral = @"Test";
-		private const string EnsureLiteral = @"Ensure";
-		private const string VerifyLiteral = @"Verify";
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public TestMethodNameAnalyzer()
+			: base(DiagnosticId.TestMethodName, Title, MessageFormat, Description, Categories.Naming)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AttributeList);
+			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute";
 		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+	}
+	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
+	{
+		public override void Analyze()
 		{
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
-
 			// Only interested in TestMethod attributes
-			if(attributesNode.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
+			if (Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
 			{
 				return;
 			}
 
-			SyntaxNode methodNode = attributesNode.Parent;
+			SyntaxNode methodNode = Node.Parent;
 
 			// Confirm this is actually a method...
 			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
@@ -55,24 +44,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
 				{
-					if (token.ValueText.StartsWith(TestLiteral))
+					if (token.ValueText.StartsWith(StringConstants.TestAttributeName))
 					{
-						invalidPrefix = TestLiteral;
+						invalidPrefix = StringConstants.TestAttributeName;
 					}
-					else if (token.ValueText.StartsWith(EnsureLiteral))
+					else if (token.ValueText.StartsWith(StringConstants.EnsureAttributeName))
 					{
-						invalidPrefix = EnsureLiteral;
+						invalidPrefix = StringConstants.EnsureAttributeName;
 					}
-					else if (token.ValueText.StartsWith(VerifyLiteral))
+					else if (token.ValueText.StartsWith(StringConstants.VerifyAttributeName))
 					{
-						invalidPrefix = VerifyLiteral;
+						invalidPrefix = StringConstants.VerifyAttributeName;
 					}
 
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
 						var location = token.GetLocation();
-						Diagnostic diagnostic = Diagnostic.Create(Rule, location, invalidPrefix);
-						context.ReportDiagnostic(diagnostic);
+						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}
 				}

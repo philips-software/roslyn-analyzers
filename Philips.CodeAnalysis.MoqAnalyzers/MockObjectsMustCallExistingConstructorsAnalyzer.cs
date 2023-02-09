@@ -11,27 +11,26 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MoqAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class MockObjectsMustCallExistingConstructorsAnalyzer : DiagnosticAnalyzer
+	public class MockObjectsMustCallExistingConstructorsAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const string Title = @"Mock<T> construction must call an existing constructor";
-		private const string MessageFormat = @"Could not find a matching constructor for {0}";
-		private const string Description = @"Could not find a constructor that matched the given arguments";
-		private const string Category = Categories.RuntimeFailure;
 		private const string MockName = "Mock";
 		private const string MockBehavior = "MockBehavior";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.MockArgumentsMustMatchConstructor), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		private const string Title = @"Mock<T> construction must call an existing constructor";
+		private const string MessageFormat = @"Could not find a matching constructor for {0}";
+		private const string Description = @"Could not find a constructor that matched the given arguments";
+		public MockObjectsMustCallExistingConstructorsAnalyzer()
+			: base(DiagnosticId.MockArgumentsMustMatchConstructor, Title, MessageFormat, Description, Categories.RuntimeFailure)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Moq.MockRepository") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 				{
 					return;
 				}
@@ -57,14 +56,18 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			switch (genericNameSyntax.Identifier.Value)
 			{
-				case @"Create": AnalyzeInvocation(context, invocationExpressionSyntax, "MockFactory", true, true); break;
-				case @"Of": AnalyzeInvocation(context, invocationExpressionSyntax, MockName, false, false); break;
+				case @"Create":
+					AnalyzeInvocation(context, invocationExpressionSyntax, "MockFactory", true, true);
+					break;
+				case @"Of":
+					AnalyzeInvocation(context, invocationExpressionSyntax, MockName, false, false);
+					break;
 				default:
 					return;
 			}
 		}
 
-		private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, string expectedClassName, bool returnsMock, bool canHaveMockBehavior)
+		private void AnalyzeInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, string expectedClassName, bool hasReturnedMock, bool hasMockBehavior)
 		{
 			//by now we know they are calling foo.Create<T>/foo.Of.  Drop to the semantic model, is this MockRepository.Create<T> or Mock.Of<T>?
 			SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax);
@@ -80,7 +83,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			ITypeSymbol returnType = method.ReturnType;
-			if (returnsMock)
+			if (hasReturnedMock)
 			{
 				if (returnType is not INamedTypeSymbol typeSymbol || !typeSymbol.IsGenericType)
 				{
@@ -91,7 +94,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			//they are calling MockRepository.Create<T>.
-			VerifyMockAttempt(context, returnType, invocationExpressionSyntax.ArgumentList, canHaveMockBehavior);
+			VerifyMockAttempt(context, returnType, invocationExpressionSyntax.ArgumentList, hasMockBehavior);
 		}
 
 		private void AnalyzeNewObject(SyntaxNodeAnalysisContext context)
@@ -166,7 +169,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			return false;
 		}
 
-		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool canHaveMockBehavior)
+		private void VerifyMockAttempt(SyntaxNodeAnalysisContext context, ITypeSymbol mockedClass, ArgumentListSyntax argumentList, bool hasMockBehavior)
 		{
 			if (mockedClass is IErrorTypeSymbol)
 			{
@@ -180,7 +183,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				arguments = argumentList.Arguments.ToImmutableArray();
 			}
 
-			if (canHaveMockBehavior && arguments.Length > 0 && IsFirstArgumentMockBehavior(context, argumentList))
+			if (hasMockBehavior && arguments.Length > 0 && IsFirstArgumentMockBehavior(context, argumentList))
 			{
 				//they passed a mock behavior as the first argument.  ignore this one, mock swallows it.
 				arguments = arguments.RemoveAt(0);
@@ -239,7 +242,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			foreach (IMethodSymbol constructor in bestFitConstructors)
 			{
-				bool didFindAll = true;
+				bool hasFoundAll = true;
 
 				for (int i = 0; i < arguments.Length; i++)
 				{
@@ -259,12 +262,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					}
 					if (!c.Exists)
 					{
-						didFindAll = false;
+						hasFoundAll = false;
 						break;
 					}
 				}
 
-				if (didFindAll)
+				if (hasFoundAll)
 				{
 					return true;
 				}

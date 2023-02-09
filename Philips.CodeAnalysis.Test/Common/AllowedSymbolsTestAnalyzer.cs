@@ -17,11 +17,11 @@ namespace Philips.CodeAnalysis.Test.Common
 		public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 
 		private AllowedSymbols _allowedSymbols;
-		private readonly bool _checkMethods;
+		private readonly bool _shouldCheckMethods;
 
-		public AllowedSymbolsTestAnalyzer(bool checkMethods)
+		public AllowedSymbolsTestAnalyzer(bool shouldCheckMethods)
 		{
-			_checkMethods = checkMethods;
+			_shouldCheckMethods = shouldCheckMethods;
 		}
 
 		public override void Initialize(AnalysisContext context)
@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			context.RegisterCompilationStartAction(AnalyzeCompilationStart);
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-			
+
 		}
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			_allowedSymbols = new AllowedSymbols(context.Compilation);
 			_allowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
-			if (_checkMethods)
+			if (_shouldCheckMethods)
 			{
 				context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
 			}
@@ -60,14 +60,14 @@ namespace Philips.CodeAnalysis.Test.Common
 		private void AnalyzeType(SymbolAnalysisContext context)
 		{
 			var typeSymbol = context.Symbol as INamedTypeSymbol;
-			if(_allowedSymbols.IsAllowed(typeSymbol))
+			if (_allowedSymbols.IsAllowed(typeSymbol))
 			{
 				var loc = typeSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 			}
 		}
 
-		public static DiagnosticDescriptor Rule => 
+		public static DiagnosticDescriptor Rule =>
 			new("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

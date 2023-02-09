@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
 			var diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (!diagnostic.Properties.TryGetValue("missing", out string missingExceptionTypeName))
+			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out string missingExceptionTypeName))
 			{
 				return;
 			}
@@ -53,21 +53,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken);
 			var newRoot = root;
-			
+
 			DocumentationHelper docHelper = new(node);
 			var parts = exceptionTypeName.Split(',');
-			foreach(var part in parts)
+			foreach (var part in parts)
 			{
 				docHelper.AddException(part, string.Empty);
 			}
 			var newComment = docHelper.CreateDocumentation();
-			
+
 			if (docHelper.ExistingDocumentation != null)
 			{
 				newComment = newComment.WithAdditionalAnnotations(Formatter.Annotation);
 				newRoot = root.ReplaceNode(docHelper.ExistingDocumentation, newComment);
-			} 
-			
+			}
+
 			return document.WithSyntaxRoot(newRoot);
 		}
 	}

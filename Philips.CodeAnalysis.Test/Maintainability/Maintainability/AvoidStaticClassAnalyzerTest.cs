@@ -1,7 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -38,9 +39,9 @@ AllowedEnumeration";
 			return new AvoidStaticClassesCodeFixProvider();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { (AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes) };
+			return base.GetAdditionalTexts().Add((AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes));
 		}
 
 		private string CreateField(string modifiers, string name)
@@ -79,15 +80,15 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesOnlyConstFieldTest()
+		public async Task AvoidStaticClassesOnlyConstFieldTestAsync()
 		{
 			string testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
-				{ CreateField("const", "F1")}
+				{CreateField("const", "F1")}
 			}}}}";
 
-			VerifySuccessfulCompilation(testClass);
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -106,7 +107,7 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesMixFieldTest()
+		public async Task AvoidStaticClassesMixFieldTestAsync()
 		{
 			string testClass = $@"
 			namespace MyNamespace {{
@@ -118,7 +119,7 @@ AllowedEnumeration";
 				{CreateField("const", "F5")}
 			}}}}";
 
-			VerifySuccessfulCompilation(testClass);
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -174,31 +175,31 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldWhitelistWildCardClassTest()
+		public async Task AvoidStaticClassesShouldWhitelistWildCardClassTestAsync()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 			var file2 = CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName);
-			VerifySuccessfulCompilation(file2);
+			await VerifySuccessfulCompilation(file2).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
+		public async Task AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
-			VerifySuccessfulCompilation(noDiagnostic);
+			await VerifySuccessfulCompilation(noDiagnostic).ConfigureAwait(false);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
 			Verify(methodHavingDiagnostic);
-			VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic);
+			await VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidNoStaticClassesTest()
+		public async Task AvoidNoStaticClassesTestAsync()
 		{
 			var file = CreateFunction("");
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 
@@ -213,7 +214,7 @@ AllowedEnumeration";
 				{
 					new DiagnosticResultLocation("Test0.cs", 3, -1),
 				}
-			});
+			}).ConfigureAwait(false);
 		}
 	}
 
@@ -229,13 +230,13 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldWhitelistTest()
+		public async Task AvoidStaticClassesShouldWhitelistTestAsync()
 		{
 			AllowedSymbols allowedSymbols = new(null);
 			allowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
 			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
 			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 	}
 }

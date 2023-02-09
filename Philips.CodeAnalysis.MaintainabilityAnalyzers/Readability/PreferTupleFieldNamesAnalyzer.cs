@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.ValueTuple") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TupleFullyQualifiedName) == null)
 				{
 					return;
 				}

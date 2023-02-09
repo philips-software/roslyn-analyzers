@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Linq;
+
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -25,12 +26,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			return new CallExtensionMethodsAsInstanceMethodsCodeFixProvider();
 		}
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
-
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		[DataRow(true, "Foo.Bar(new object())", true, "new object().Bar()")]
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false, "Foo.Bar", false, "")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
+		public async Task ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
 		{
 			const string Template = @"
 using System;
@@ -64,24 +64,23 @@ public static class Program
 			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-				VerifyDiagnostic(text, result);
+				await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(text);
+				await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 			}
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
 				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
-				VerifyFix(text, newText);
+				await VerifyFix(text, newText).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodCallSelfErrors()
+		public async Task ExtensionMethodCallSelfErrors()
 		{
 			const string Template = @"
 using System;
@@ -99,16 +98,15 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "Bar(obj, null)");
-			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-			VerifyDiagnostic(text, result);
+			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
-			VerifyFix(text, newText);
+			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodCallSelfErrors2()
+		public async Task ExtensionMethodCallSelfErrors2()
 		{
 			const string Template = @"
 using System;
@@ -131,11 +129,10 @@ public static class Foo
 }}
 ";
 			var text = string.Format(Template, "RemoveByKeys(dict, items)");
-			DiagnosticResult result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-			VerifyDiagnostic(text, result);
+			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
-			VerifyFix(text, newText);
+			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 
 		[DataRow(@"
@@ -296,16 +293,15 @@ public class Baz
 ", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ExtensionMethodsDontCallDifferentMethods(string template, bool isError)
+		public async Task ExtensionMethodsDontCallDifferentMethodsAsync(string template, bool isError)
 		{
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods);
-				VerifyDiagnostic(template, result);
+				await VerifyDiagnostic(template, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(template);
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 			}
 		}
 	}

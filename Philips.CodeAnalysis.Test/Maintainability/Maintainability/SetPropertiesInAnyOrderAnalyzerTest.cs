@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -70,9 +71,9 @@ namespace PropertiesinOrderTests {
 		 DataRow(CorrectNoSetter, DisplayName = nameof(CorrectNoSetter)),
 		 DataRow(CorrectPrivateSetter, DisplayName = nameof(CorrectPrivateSetter))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -81,9 +82,9 @@ namespace PropertiesinOrderTests {
 		[DataTestMethod]
 		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenReferencingOtherPropertiesDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.SetPropertiesInAnyOrder);
-			VerifyDiagnostic(testCode, expected);
+		public async Task WhenReferencingOtherPropertiesDiagnosticIsRaisedAsync(string testCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -92,12 +93,13 @@ namespace PropertiesinOrderTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongInAssignment, filePath);
+			await VerifySuccessfulCompilation(WrongInAssignment, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new SetPropertiesInAnyOrderAnalyzer();
 		}
 	}

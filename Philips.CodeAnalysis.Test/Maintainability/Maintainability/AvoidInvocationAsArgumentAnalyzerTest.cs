@@ -11,6 +11,7 @@ using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -20,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentTest()
+		public async Task AvoidInvocationAsArgumentTestAsync()
 		{
 			string template = @"
 class Foo
@@ -57,12 +58,12 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(template, result);
+			await VerifyDiagnostic(template, result).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentReturnTest()
+		public async Task AvoidInvocationAsArgumentReturnTest()
 		{
 			string errorContent = @"
 class Foo
@@ -90,13 +91,13 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsUnknownSymbolArgumentReturnTest()
+		public async Task AvoidInvocationAsUnknownSymbolArgumentReturnTest()
 		{
 			string errorContent = @"
 class Foo
@@ -122,13 +123,13 @@ class Foo
   }}
 }}
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixTest()
+		public async Task AvoidInvocationAsArgumentFixTest()
 		{
 			string errorContent = @"
 class Foo
@@ -154,13 +155,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationInIfStatementTest()
+		public async Task AvoidInvocationInIfStatementTest()
 		{
 			string errorContent = @"
 class Foo
@@ -188,13 +189,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationInWhileStatementTest()
+		public async Task AvoidInvocationInWhileStatementTest()
 		{
 			string errorContent = @"
 class Foo
@@ -222,13 +223,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsMemberAccessArgumentFixTest()
+		public async Task AvoidInvocationAsMemberAccessArgumentFixTest()
 		{
 			string errorContent = @"
 class Foo
@@ -254,13 +255,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsStaticMemberAccessArgumentFixTest()
+		public async Task AvoidInvocationAsStaticMemberAccessArgumentFixTest()
 		{
 			string errorContent = @"
 class Foo
@@ -286,13 +287,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentLocalAssignmentTest()
+		public async Task AvoidInvocationAsArgumentLocalAssignmentTest()
 		{
 			string errorContent = @"
 class Foo
@@ -318,13 +319,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentAssignmentTest()
+		public async Task AvoidInvocationAsArgumentAssignmentTest()
 		{
 			string errorContent = @"
 class Foo
@@ -352,14 +353,14 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixReturnTest()
+		public async Task AvoidInvocationAsArgumentFixReturnTest()
 		{
 			string errorContent = @"
 class Foo
@@ -387,13 +388,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixIfTest()
+		public async Task AvoidInvocationAsArgumentFixIfTest()
 		{
 			string errorContent = @"
 class Foo
@@ -422,13 +423,13 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixNewTest()
+		public async Task AvoidInvocationAsArgumentFixNewTest()
 		{
 			string errorContent = @"
 class Meow { public Meow(string x) {} }
@@ -453,13 +454,13 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixSwitchTest()
+		public async Task AvoidInvocationAsArgumentFixSwitchTest()
 		{
 			string errorContent = @"
 class Meow { public Meow(string x) {} }
@@ -493,13 +494,13 @@ class Foo
   }
 }
 ";
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidInvocationAsArgumentFixExpressionTest()
+		public async Task AvoidInvocationAsArgumentFixExpressionTestAsync()
 		{
 			string errorContent = @"
 class Meow { public Meow(string x) {} }
@@ -511,8 +512,7 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(errorContent, DiagnosticResultHelper.Create(DiagnosticId.AvoidInvocationAsArgument));
-			//VerifyFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()
@@ -521,8 +521,8 @@ class Foo
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-        {
-            return new AvoidInvocationAsArgumentAnalyzer();
-        }
-    }
+		{
+			return new AvoidInvocationAsArgumentAnalyzer();
+		}
+	}
 }

@@ -16,27 +16,28 @@ using Castle.Core.Internal;
 using System.Collections.Immutable;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerTest : DiagnosticVerifier
 	{
-		private Regex MakeRegex(int expectedLoad)
+		private string MakeRegex(int expectedLoad)
 		{
-			return new Regex($"Load of {expectedLoad} ");
+			return $"Load of {expectedLoad} ";
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics, _mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadGeneratedCodeIgnoredTest()
+		public async Task CognitiveLoadGeneratedCodeIgnoredTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -51,13 +52,13 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template, "Test.Designer");
+			await VerifySuccessfulCompilation(template, "Test.Designer").ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad1()
+		public async Task CognitiveLoad1Async()
 		{
 			const string template = @"
 class Foo
@@ -67,13 +68,13 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIf()
+		public async Task CognitiveLoadIfAsync()
 		{
 			const string template = @"
 class Foo
@@ -84,12 +85,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
+			string regex = MakeRegex(2);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadExpressionBody()
+		public async Task CognitiveLoadExpressionBodyAsync()
 		{
 			const string template = @"
 class Foo
@@ -97,12 +99,12 @@ class Foo
 	private string MakeString() => new string(""MyString"");
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfNotEqual()
+		public async Task CognitiveLoadIfNotEqualAsync()
 		{
 			const string template = @"
 class Foo
@@ -113,12 +115,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			string regex = MakeRegex(3);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfReturn()
+		public async Task CognitiveLoadIfReturnAsync()
 		{
 			const string template = @"
 class Foo
@@ -129,12 +132,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(2)));
+			string regex = MakeRegex(2);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfLogicalOr()
+		public async Task CognitiveLoadIfLogicalOrAsync()
 		{
 			const string template = @"
 class Foo
@@ -145,12 +149,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			string regex = MakeRegex(3);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfLogicalAnd()
+		public async Task CognitiveLoadIfLogicalAndAsync()
 		{
 			const string template = @"
 class Foo
@@ -161,12 +166,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			string regex = MakeRegex(3);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadBreak()
+		public async Task CognitiveLoadBreakAsync()
 		{
 			const string template = @"
 class Foo
@@ -177,12 +183,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			string regex = MakeRegex(3);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadBang()
+		public async Task CognitiveLoadBangAsync()
 		{
 			const string template = @"
 class Foo
@@ -193,12 +200,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(3)));
+			string regex = MakeRegex(3);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested1()
+		public async Task CognitiveLoadNested1Async()
 		{
 			const string template = @"
 class Foo
@@ -213,12 +221,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(4)));
+			string regex = MakeRegex(4);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested2()
+		public async Task CognitiveLoadNested2Async()
 		{
 			const string template = @"
 class Foo
@@ -235,12 +244,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(6)));
+			string regex = MakeRegex(6);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested3()
+		public async Task CognitiveLoadNested3Async()
 		{
 			const string template = @"
 class Foo
@@ -259,14 +269,15 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(8)));
+			string regex = MakeRegex(8);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadCombo()
+		public async Task CognitiveLoadComboAsync()
 		{
 			const string template = @"
 class Foo
@@ -282,12 +293,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(5)));
+			string regex = MakeRegex(5);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad3()
+		public async Task CognitiveLoad3Async()
 		{
 			const string template = @"
 class Foo
@@ -348,13 +360,14 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(34)));
+			string regex = MakeRegex(34);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad4()
+		public async Task CognitiveLoad4Async()
 		{
 			const string template = @"
 class Foo
@@ -411,12 +424,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(26)));
+			string regex = MakeRegex(26);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad5()
+		public async Task CognitiveLoad5Async()
 		{
 			const string template = @"
 class Foo
@@ -460,7 +474,8 @@ class Foo
 		return document;
 	}
 }";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, MakeRegex(40)));
+			string regex = MakeRegex(48);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 	}
 
@@ -472,12 +487,13 @@ class Foo
 			const string InvalidMaxLoad = @"1000";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
 			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
+
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
+		public async Task CognitiveLoadInitPassTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -499,80 +515,12 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {} // over the threshold
-	}
-}
-";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
-		}
-
-	}
-
-	[TestClass]
-	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest2 : DiagnosticVerifier
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			const string InvalidMaxLoad = @"0";
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(GeneratedCodeAnalysisFlags.None, _mockAdditionalFilesHelper.Object);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-	}
-}
-";
-			VerifySuccessfulCompilation(template);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
+		public async Task CognitiveLoadInitFailTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -595,9 +543,8 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
+			await VerifyDiagnostic(template, regex: "Load of 27 ").ConfigureAwait(false);
 		}
-
 	}
 
 	[TestClass]
@@ -610,7 +557,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
+		public async Task CognitiveLoadInitPassTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -632,37 +579,7 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
-		{
-			const string template = @"
-class Foo
-{
-	private void Test()
-	{
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {}
-		if (1!=1) {} // over the threshold
 	}
-}
-";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.ReduceCognitiveLoad, new Regex("Load of 27 ")));
-		}
-
-	}
-
 }

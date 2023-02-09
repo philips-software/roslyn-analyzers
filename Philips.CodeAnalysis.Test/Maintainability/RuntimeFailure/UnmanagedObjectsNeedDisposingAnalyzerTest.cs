@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
@@ -42,10 +43,10 @@ namespace MyNamespace
 		 DataRow("HANDLE", true, DisplayName = "CorrectHandleDisposable"),
 		 DataRow("int", false, DisplayName = "CorrectIntNotDisposable")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string fieldType, bool isDisposable)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string fieldType, bool isDisposable)
 		{
 			var source = CreateClass(fieldType, isDisposable);
-			VerifySuccessfulCompilation(source);
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -53,7 +54,7 @@ namespace MyNamespace
 		/// </summary>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoDiagnosticIsTriggeredForStructs()
+		public async Task NoDiagnosticIsTriggeredForStructsAsync()
 		{
 			string source = @"
 namespace MyNamespace
@@ -64,7 +65,7 @@ namespace MyNamespace
   }}
 }}
 ";
-			VerifySuccessfulCompilation(source);
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -74,10 +75,10 @@ namespace MyNamespace
 		[DataRow("IntPtr", DisplayName = "WrongIntPtrNotDisposable"),
 		 DataRow("Handle", DisplayName = "WrongHandleNotDisposable")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaised(string fieldType)
+		public async Task WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaisedAsync(string fieldType)
 		{
 			var source = CreateClass(fieldType, false);
-			VerifyDiagnostic(source);
+			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

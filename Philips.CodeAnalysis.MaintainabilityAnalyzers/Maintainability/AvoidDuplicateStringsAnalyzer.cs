@@ -50,32 +50,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var typeDeclarationSyntax = (BaseTypeDeclarationSyntax)context.Node;
 
 				GeneratedCodeDetector detector = new();
-				if(detector.IsGeneratedCode(context))
+				if (detector.IsGeneratedCode(context))
 				{
 					return;
 				}
 
 				TestHelper testHelper = new();
-				if(testHelper.IsInTestClass(context))
+				if (testHelper.IsInTestClass(context))
 				{
 					return;
 				}
 
-				foreach(var literal in typeDeclarationSyntax.DescendantTokens()
+				foreach (var literal in typeDeclarationSyntax.DescendantTokens()
 							 .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))
 				{
 					var literalText = literal.Text.Trim('\\', '\"');
-					if(string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
+					if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 					{
 						continue;
 					}
 					var location = literal.GetLocation();
-					if(_usedLiterals.TryGetValue(literalText, out Location firstLocation))
+					if (_usedLiterals.TryGetValue(literalText, out Location firstLocation))
 					{
 						var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
 						var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-						var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
-						context.ReportDiagnostic(diagnostic);
+						var currentLineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
+						if (currentLineNumber > firstLineNumber)
+						{
+							var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber,
+								literalText);
+							context.ReportDiagnostic(diagnostic);
+						}
 					}
 					else
 					{

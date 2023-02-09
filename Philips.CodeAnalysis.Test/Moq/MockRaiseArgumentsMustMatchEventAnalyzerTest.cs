@@ -1,8 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,12 +27,12 @@ namespace Philips.CodeAnalysis.Test.Moq
 			return new MockRaiseArgumentsMustMatchEventAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		#endregion
@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		[DataRow(false, "m.Object, EventArgs.Empty")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArguments(bool isError, string args)
+		public async Task EventMustHaveCorrectArgumentsAsync(bool isError, string args)
 		{
 			const string template = @"
 using Moq;
@@ -82,11 +82,11 @@ public static class Bar
 						Severity = DiagnosticSeverity.Error,
 					}
 				};
-				VerifyDiagnostic(code, expectedErrors);
+				await VerifyDiagnostic(code, expectedErrors).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -96,7 +96,7 @@ public static class Bar
 		[DataRow(false, "EventArgs.Empty")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentCount(bool isError, string args)
+		public async Task EventMustHaveCorrectArgumentCountAsync(bool isError, string args)
 		{
 			const string template = @"
 using Moq;
@@ -129,15 +129,15 @@ public static class Bar
 				var expectedErrors =
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
+						Id = Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
 					};
-				VerifyDiagnostic(code, expectedErrors);
+				await VerifyDiagnostic(code, expectedErrors).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -146,7 +146,7 @@ public static class Bar
 		//[DataRow(false, "new DerivedEventArgs()", DiagnosticIds.MockRaiseArgumentsMustMatchEvent)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentCount2(string args, string diagnosticId)
+		public async Task EventMustHaveCorrectArgumentCount2Async(string args, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -173,7 +173,7 @@ public static class Bar
 			var expectedErrors =
 				new DiagnosticResult()
 				{
-					Id= diagnosticId,
+					Id = diagnosticId,
 					Location = new DiagnosticResultLocation(18),
 					Severity = DiagnosticSeverity.Error,
 				};
@@ -184,7 +184,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyDiagnostic(string.Format(template, arguments), expectedErrors);
+			await VerifyDiagnostic(string.Format(template, arguments), expectedErrors).ConfigureAwait(false);
 		}
 
 		[DataRow("", 1, @"PH2054")]
@@ -193,7 +193,7 @@ public static class Bar
 		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 3, @"PH2053")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentsNonEventHandler(string args, int errorCount, string diagnosticId)
+		public async Task EventMustHaveCorrectArgumentsNonEventHandlerAsync(string args, int errorCount, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -240,11 +240,11 @@ public static class Bar
 
 			if (errorCount == 1)
 			{
-				VerifyDiagnostic(code, expectedErrors[0]);
+				await VerifyDiagnostic(code, expectedErrors[0]).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(code, expectedErrors);
+				await VerifyDiagnostic(code, expectedErrors).ConfigureAwait(false);
 			}
 		}
 
@@ -253,7 +253,7 @@ public static class Bar
 		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", @"PH2054")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EventMustHaveCorrectArgumentsNonEventHandler2(string args, string diagnosticId)
+		public async Task EventMustHaveCorrectArgumentsNonEventHandler2Async(string args, string diagnosticId)
 		{
 			const string template = @"
 using Moq;
@@ -290,7 +290,7 @@ public static class Bar
 				arguments = $", {args}";
 			}
 
-			VerifyDiagnostic(string.Format(template, arguments), result);
+			await VerifyDiagnostic(string.Format(template, arguments), result).ConfigureAwait(false);
 		}
 
 		#endregion

@@ -10,12 +10,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 
 using Philips.CodeAnalysis.Common;
-using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
@@ -23,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		 Name = nameof(SplitMultiLineConditionOnLogicalOperatorCodeFixProvider)), Shared]
 	public class SplitMultiLineConditionOnLogicalOperatorCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Put every linq statement on a separate line";
+		private const string Title = "Split multiline conditions on logical operators";
 		private static readonly SyntaxAnnotation annotation = new($"SplitCondition");
 
 		public override ImmutableArray<string> FixableDiagnosticIds =>
@@ -53,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					diagnostic);
 			}
 		}
-	
+
 		private async Task<Document> ApplyCodeFix(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -61,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				return document;
 			}
-			
+
 			// First remove the EOL from the violating token.
 			var oldTrivia = node.GetTrailingTrivia();
 			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);

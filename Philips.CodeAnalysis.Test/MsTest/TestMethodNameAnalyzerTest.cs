@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -26,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("VerifySomething", true)]
 		[DataRow("SomethingToVerify", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AreEqualTypesMatchTest(string name, bool isError)
+		public async Task AreEqualTypesMatchTest(string name, bool isError)
 		{
 			string baseline = @"
 namespace TestMethodNameAnalyzerTest
@@ -40,7 +41,6 @@ namespace TestMethodNameAnalyzerTest
   }}
 }}
 ";
-
 			string givenText = string.Format(baseline, name);
 			var prefix = GetPrefix(name);
 			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
@@ -59,16 +59,16 @@ namespace TestMethodNameAnalyzerTest
 						new DiagnosticResultLocation("Test0.cs", 7, 17)
 					}
 				};
-				VerifyDiagnostic(givenText, expected);
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 
-			VerifyFix(givenText, fixedText);
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodNameAnalyzer();
@@ -85,11 +85,12 @@ namespace TestMethodNameAnalyzerTest
 			if (name.StartsWith("Test", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Test";
-			} else if(name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
+			}
+			else if (name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Verify";
 			}
-			if(name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
+			if (name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Ensure";
 			}

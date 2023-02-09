@@ -1,7 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -34,10 +36,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			if (!IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
+			if (IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
 			{
-				ReportDiagnostic(Node);
+				return;
 			}
+
+			if (Helper.IsNamespaceExempt(myNamespace))
+			{
+				return;
+			}
+			ReportDiagnostic();
 		}
 
 		private bool IsNamespacePartOfAssemblyName(string ns, string assemblyName)
@@ -45,9 +53,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return ns.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private void ReportDiagnostic(NamespaceDeclarationSyntax namespaceDeclaration)
+		private void ReportDiagnostic()
 		{
-			var location = namespaceDeclaration.Name.GetLocation();
+			var location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
 	}

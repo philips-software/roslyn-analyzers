@@ -1,7 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new TestMethodsMustHaveTheCorrectNumberOfArgumentsAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using System;
@@ -34,7 +36,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		string GetDisplayName(MethodInfo methodInfo, object[] data) => string.Empty;
 }
 ";
-			return new[] { ("DerivedDataSourceAttribute.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedDataSourceAttribute.cs", code));
 		}
 
 
@@ -43,7 +45,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		[DataRow("[DataTestMethod]", 0, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestMethodsMustBeInTestClass(string testType, int parameters, bool isCorrect)
+		public async Task TestMethodsMustBeInTestClassAsync(string testType, int parameters, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -62,17 +64,17 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifySuccessfulCompilation(string.Format(code, testType, parameterListString));
+				await VerifySuccessfulCompilation(string.Format(code, testType, parameterListString)).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
+				await VerifyDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
 				{
 					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) },
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
-				});
+				}).ConfigureAwait(false);
 			}
 		}
 
@@ -80,7 +82,7 @@ public class Tests
 		[DataRow(1)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DerivedDataSourcesShouldBeIgnored(int parameters)
+		public async Task DerivedDataSourcesShouldBeIgnoredAsync(int parameters)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -99,7 +101,7 @@ public class Tests
 			}
 
 
-			VerifySuccessfulCompilation(string.Format(code, parameterListString));
+			await VerifySuccessfulCompilation(string.Format(code, parameterListString)).ConfigureAwait(false);
 		}
 
 		private static IEnumerable<object[]> DataRowVariants()
@@ -121,7 +123,7 @@ public class Tests
 		[DynamicData(nameof(DataRowVariants), DynamicDataSourceType.Method)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestMethodsMustBeInTestClass2(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
+		public async Task TestMethodsMustBeInTestClass2Async(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -170,11 +172,11 @@ public class Tests
 
 			if (isCorrect)
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments));
+				await VerifyDiagnostic(code, DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments).ConfigureAwait(false);
 			}
 		}
 	}

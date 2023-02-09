@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -18,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DisallowDisposeRegistrationTest()
+		public async Task DisallowDisposeRegistrationTest()
 		{
 			string givenText = @"
 class Foo 
@@ -41,11 +42,11 @@ class Foo
 					new DiagnosticResultLocation("Test0.cs", 7, 5)
 				}
 			};
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 
-			VerifyFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

@@ -1,6 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,9 +15,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class NamespacePrefixAnalyzerTest1 : DiagnosticVerifier
 	{
-
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
 			using System.Globalization;
@@ -31,9 +29,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}}
 			";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
 		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
 		{
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
@@ -44,14 +39,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return new NamespacePrefixAnalyzer();
 		}
 
-		#endregion
-
-
-		#region Test Methods
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReportEmptyNamespacePrefix()
+		public async Task ReportEmptyNamespacePrefixAsync()
 		{
 
 			string code = string.Format(ClassString, "");
@@ -66,9 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyDiagnostic(code, expected);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

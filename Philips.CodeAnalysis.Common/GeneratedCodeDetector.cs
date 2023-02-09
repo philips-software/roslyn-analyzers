@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.Common
 			// Visual Studio generates SuppressMessage attributes in this file.
 			bool isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
 			return isDesignerFile || isGeneratedFile || isSuppressionsFile;
-	}
+		}
 
 	}
 }

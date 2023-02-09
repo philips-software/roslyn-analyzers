@@ -11,48 +11,34 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ServiceContractHasOperationContractAnalyzer : DiagnosticAnalyzer
+	public class ServiceContractHasOperationContractAnalyzer : SingleDiagnosticAnalyzer<InterfaceDeclarationSyntax, ServiceContractHasOperationContractSyntaxNodeAction>
 	{
 		private const string Title = @"Interfaces marked with [ServiceContract] must have methods marked with [OperationContract]";
 		private const string MessageFormat = @"Method '{0}' is not marked [OperationContract]";
 		private const string Description = @"Attribute method with [OperationContract]";
-		private const string Category = Categories.Maintainability;
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		private readonly AttributeHelper _attributeHelper;
 
 		public ServiceContractHasOperationContractAnalyzer()
-			: this(new AttributeHelper())
+			: base(DiagnosticId.ServiceContractsMustHaveOperationContractAttributes, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
+	}
 
-		public ServiceContractHasOperationContractAnalyzer(AttributeHelper attributeHelper)
-		{
-			_attributeHelper = attributeHelper;
-		}
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InterfaceDeclaration);
-		}
+	public class ServiceContractHasOperationContractSyntaxNodeAction : SyntaxNodeAction<InterfaceDeclarationSyntax>
+	{
+		private readonly AttributeHelper _attributeHelper = new();
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		public override void Analyze()
 		{
-			InterfaceDeclarationSyntax interfaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
-
-			if (!_attributeHelper.HasAttribute(interfaceDeclaration.AttributeLists, context, "ServiceContract", null, out _))
+			if (!_attributeHelper.HasAttribute(Node.AttributeLists, Context, "ServiceContract", null, out _))
 			{
 				return;
 			}
 
-			foreach (MethodDeclarationSyntax method in interfaceDeclaration.Members.OfType<MethodDeclarationSyntax>())
+			foreach (MethodDeclarationSyntax method in Node.Members.OfType<MethodDeclarationSyntax>())
 			{
-				if (!_attributeHelper.HasAttribute(method.AttributeLists, context, "OperationContract", null, out _))
+				if (!_attributeHelper.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
+					var location = method.Identifier.GetLocation();
+					ReportDiagnostic(location, method.Identifier);
 				}
 			}
 		}

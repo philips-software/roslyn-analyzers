@@ -12,31 +12,24 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class SetPropertiesInAnyOrderAnalyzer : DiagnosticAnalyzer
+	public class SetPropertiesInAnyOrderAnalyzer : SingleDiagnosticAnalyzer<AccessorDeclarationSyntax, SetPropertiesInAnyOrderSyntaxNodeAction>
 	{
 		private const string Title = @"Set properties in any order";
 		private const string MessageFormat = @"Avoid getting other properties when setting property {0}.";
 		private const string Description = @"Getting other properties in a setter makes this setter dependent on the order in which these properties are set.";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.SetPropertiesInAnyOrder),
-			Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
-			description: Description);
+		public SetPropertiesInAnyOrderAnalyzer()
+			: base(DiagnosticId.SetPropertiesInAnyOrder, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+	public class SetPropertiesInAnyOrderSyntaxNodeAction : SyntaxNodeAction<AccessorDeclarationSyntax>
+	{
 
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SetAccessorDeclaration);
-		}
-		
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			var getMethod = (AccessorDeclarationSyntax)context.Node;
-			var prop = getMethod.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
-			if (getMethod.Body == null || prop == null)
+			var prop = Node.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
+			if (Node.Body == null || prop == null)
 			{
 				return;
 			}
@@ -50,11 +43,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var propertiesInType = GetProperties(type);
 			var otherProperties = propertiesInType.Except(new[] { prop.Identifier.Text });
 
-			if (getMethod.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
+			if (Node.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
 			{
 				var propertyName = prop.Identifier.Text;
-				var loc = getMethod.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, loc, propertyName));
+				var loc = Node.GetLocation();
+				ReportDiagnostic(loc, propertyName);
 			}
 		}
 
@@ -70,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsPublicSetter(AccessorDeclarationSyntax accessor)
 		{
-			return accessor.Keyword.Text == "set" && !accessor.Modifiers.Any(SyntaxKind.PrivateKeyword);
+			return accessor.Keyword.Text == StringConstants.Set && !accessor.Modifiers.Any(SyntaxKind.PrivateKeyword);
 		}
 
 		private static bool ReferencesOtherProperties(StatementSyntax statement, IEnumerable<string> otherProperties)

@@ -1,7 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Linq;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -20,12 +21,12 @@ namespace Philips.CodeAnalysis.Test.Security
 			return new RegexNeedsTimeoutAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string regexReference = typeof(Regex).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(regexReference);
 
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		private string GetTemplate()
@@ -55,12 +56,11 @@ namespace RegexNeedsTimeoutTest
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled)")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"")")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WithoutTimeoutShouldTriggerDiagnostic(string content)
+		public async Task WithoutTimeoutShouldTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content);
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.RegexNeedsTimeout);
-			VerifyDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -71,11 +71,33 @@ namespace RegexNeedsTimeoutTest
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.NonBacktracking)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WithTimeoutShouldNotTriggerDiagnostic(string content)
+		public async Task WithTimeoutShouldNotTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoesNotTriggerDiagnosticInTestCodeAsync()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	[TestMethod]
+    public void Test()
+	{
+		Regex myRegex = new RegEx("".*"");
+	}
+}
+";
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+
+		}
+
 	}
 }

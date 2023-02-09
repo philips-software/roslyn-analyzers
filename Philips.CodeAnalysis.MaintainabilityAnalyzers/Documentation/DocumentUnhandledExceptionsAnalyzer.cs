@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Analyzer that checks if the text of the XML code documentation contains a reference to each exception being unhandled in the method or property.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DocumentUnhandledExceptionsAnalyzer :  SingleDiagnosticAnalyzer<MethodDeclarationSyntax, DocumentUnhandledExceptionsSyntaxNodeAction>
+	public class DocumentUnhandledExceptionsAnalyzer : SingleDiagnosticAnalyzer<MethodDeclarationSyntax, DocumentUnhandledExceptionsSyntaxNodeAction>
 	{
 		private const string Title = @"Document unhandled exceptions";
 		private const string MessageFormat = @"Document that this method can throw from {0} the following exceptions: {1}.";
@@ -122,15 +122,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var docHelper = new DocumentationHelper(Node);
 			var documentedExceptions = docHelper.GetExceptionCrefs();
 			var comparer = new NamespaceIgnoringComparer();
-			var remainingExceptions = 
-				unhandledExceptions.Where(ex => 
+			var remainingExceptions =
+				unhandledExceptions.Where(ex =>
 					documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
 			{
 				var loc = Node.Identifier.GetLocation();
 				var methodName = Node.Identifier.Text;
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
-				var properties = ImmutableDictionary<string, string>.Empty.Add("missing", remainingExceptionsString);
+				var properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
 				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
 				Context.ReportDiagnostic(diagnostic);
 			}
@@ -165,7 +165,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			var matches = DocumentationRegex.Matches(documentation);
 			var results = new string[matches.Count];
-			for(int i = 0; i < results.Length; i++)
+			for (int i = 0; i < results.Length; i++)
 			{
 				results[i] = matches[i].Groups[1].Captures[0].Value.Trim('!', ':', 'T');
 			}
@@ -176,7 +176,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			List<string> namespaces = new();
 			var ns = symbol.ContainingNamespace;
-			while(ns != null && !string.IsNullOrEmpty(ns.Name))
+			while (ns != null && !string.IsNullOrEmpty(ns.Name))
 			{
 				namespaces.Add(ns.Name);
 				ns = ns.ContainingNamespace;

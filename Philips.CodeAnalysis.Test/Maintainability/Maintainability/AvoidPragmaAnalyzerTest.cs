@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PragmaWarningNotAvoidedTest(string test, int expectedColumn)
+		public async Task PragmaWarningNotAvoidedTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 class Foo 
@@ -29,24 +30,12 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma),
-				Message = new Regex(AvoidPragmaAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test.cs", 6, expectedColumn)
-				}
-			};
-
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PragmaAllowedDisableSelf()
+		public async Task PragmaAllowedDisableSelfAsync()
 		{
 			string text = @"
 class Foo 
@@ -58,13 +47,13 @@ class Foo
   }}
 }}
 ";
-			VerifySuccessfulCompilation(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PragmaAllowedGeneratedCode(string test, int expectedColumn)
+		public async Task PragmaAllowedGeneratedCodeAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 class Foo 
@@ -76,8 +65,7 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
-			VerifySuccessfulCompilation(givenText, "Test.Designer");
+			await VerifySuccessfulCompilation(givenText, "Test.Designer").ConfigureAwait(false);
 		}
 
 

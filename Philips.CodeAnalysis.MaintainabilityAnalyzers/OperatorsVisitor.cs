@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public override void VisitOperatorDeclaration(OperatorDeclarationSyntax node)
 		{
 			base.VisitOperatorDeclaration(node);
-			switch(node.OperatorToken.Kind())
+			switch (node.OperatorToken.Kind())
 			{
 				case SyntaxKind.PlusPlusToken:
 					IncrementCount += 1;

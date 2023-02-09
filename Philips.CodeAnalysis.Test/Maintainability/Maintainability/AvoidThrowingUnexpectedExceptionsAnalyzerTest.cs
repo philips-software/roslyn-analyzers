@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -166,9 +167,9 @@ public class FooException
 		[DataRow(CorrectExplicitCast, DisplayName = nameof(CorrectExplicitCast)),
 		 DataRow(CorrectOperatorPlus, DisplayName = nameof(CorrectOperatorPlus))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
+		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -183,9 +184,9 @@ public class FooException
 		 DataRow(WrongImplicitCast, DisplayName = nameof(WrongImplicitCast)),
 		 DataRow(WrongExceptionConstructor, DisplayName = nameof(WrongExceptionConstructor))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
+		public async Task MissingOrWrongDocumentationShouldTriggerDiagnosticAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticResultHelper.Create(DiagnosticId.AvoidExceptionsFromUnexpectedLocations));
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 	}
 }

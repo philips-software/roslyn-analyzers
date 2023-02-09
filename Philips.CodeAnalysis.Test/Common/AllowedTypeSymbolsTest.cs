@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -38,9 +39,9 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 			return new AllowedSymbolsTestAnalyzer(false);
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new [] { ("NotFile.txt", "data"), (AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedSymbolsContent) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedSymbolsContent));
 		}
 
 		[DataTestMethod]
@@ -53,7 +54,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
 		{
 			var file = GenerateCodeFile(nsName, typeName);
-			Verify(file);
+			VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -63,10 +64,10 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		[DataRow("AllowedMethodName", "AType")]
 		[DataRow("ANamespace.DetailedNamespace", "AType")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NotAllowedSymbolShouldNotReportDiagnostics(string nsName, string typeName)
+		public async Task NotAllowedSymbolShouldNotReportDiagnosticsAsync(string nsName, string typeName)
 		{
 			var file = GenerateCodeFile(nsName, typeName);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		private string GenerateCodeFile(string nsName, string typeName)
@@ -75,9 +76,9 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 				$"namespace {nsName} {{\npublic class {typeName}\n{{\n}}\n}}\n";
 		}
 
-		private void Verify(string file)
+		private async Task VerifyAsync(string file)
 		{
-			VerifyDiagnostic(file,
+			await VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AllowedSymbolsTestAnalyzer.Rule.Id,
@@ -88,7 +89,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 						new DiagnosticResultLocation("Test0.cs", null, null)
 					}
 				}
-			);
+			).ConfigureAwait(false);
 		}
 	}
 }

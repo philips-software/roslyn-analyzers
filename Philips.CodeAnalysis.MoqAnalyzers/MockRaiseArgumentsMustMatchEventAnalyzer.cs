@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Moq.MockRepository") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 				{
 					return;
 				}
@@ -56,7 +56,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			switch (identifierNameSyntax.Identifier.ValueText)
 			{
-				case @"Raise": AnalyzeInvocation(context, invocationExpressionSyntax); break;
+				case @"Raise":
+					AnalyzeInvocation(context, invocationExpressionSyntax);
+					break;
 				default:
 					return;
 			}

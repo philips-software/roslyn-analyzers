@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				return;
 			}
-			
+
 			var lastToken = logicalNode.GetLastToken();
 			var violations = logicalNode.DescendantTokens()
 				.Where(ContainsEndOfLine)
@@ -92,8 +92,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 				// Prevent breaking out of the context.
 				if (currentKind is SyntaxKind.IfStatement
-				    or SyntaxKind.SimpleAssignmentExpression
-				    or SyntaxKind.ReturnStatement)
+					or SyntaxKind.SimpleAssignmentExpression
+					or SyntaxKind.ReturnStatement)
 				{
 					break;
 				}
@@ -122,11 +122,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			// - ( for more complex logic expressions
 			// - && and || as these are the logical operators.
 			// => for lambdas
-			return 
+			return
 				!token.IsKind(SyntaxKind.OpenParenToken) &&
-			    !token.IsKind(SyntaxKind.AmpersandAmpersandToken) &&
-			    !token.IsKind(SyntaxKind.BarBarToken) &&
-			    !token.IsKind(SyntaxKind.EqualsGreaterThanToken);
+				!token.IsKind(SyntaxKind.AmpersandAmpersandToken) &&
+				!token.IsKind(SyntaxKind.BarBarToken) &&
+				!token.IsKind(SyntaxKind.EqualsGreaterThanToken);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -84,25 +85,25 @@ namespace AvoidArrayListTests {
 		 DataRow(CorrectField, DisplayName = nameof(CorrectField)),
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)), 
+		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)),
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.AvoidArrayList);
-			VerifyDiagnostic(testCode, expected);
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			if (fixedCode != null)
 			{
-				VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 			}
 		}
 
@@ -112,12 +113,13 @@ namespace AvoidArrayListTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongLocal, filePath);
+			await VerifySuccessfulCompilation(WrongLocal, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidArrayListAnalyzer();
 		}
 

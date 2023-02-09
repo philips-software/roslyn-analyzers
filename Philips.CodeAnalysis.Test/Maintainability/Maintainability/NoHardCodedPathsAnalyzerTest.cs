@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedAbsoluteWindowsPaths()
+		public async Task CatchesHardCodedAbsoluteWindowsPathsAsync()
 		{
 			const string template = @"
 using System;
@@ -31,13 +32,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedAbsoluteWindowsPathWithDoubleSlash()
+		public async Task CatchesHardCodedAbsoluteWindowsPathWithDoubleSlashAsync()
 		{
 			const string template = @"
 using System;
@@ -49,14 +50,14 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedPathsRegardlessOfCase()
+		public async Task CatchesHardCodedPathsRegardlessOfCaseAsync()
 		{
 			const string template = @"
 using System;
@@ -68,13 +69,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedPaths2()
+		public async Task CatchesHardCodedPaths2Async()
 		{
 			const string template = @"
 using System;
@@ -97,13 +98,13 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedPathsWithSpace()
+		public async Task CatchesHardCodedPathsWithSpaceAsync()
 		{
 			const string template = @"
 using System;
@@ -116,13 +117,13 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CatchesHardCodedPathsWithSpecialCharacters()
+		public async Task CatchesHardCodedPathsWithSpecialCharactersAsync()
 		{
 			const string template = @"
 using System;
@@ -135,14 +136,14 @@ class Foo
 }
 ";
 
-			VerifyDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticId.NoHardcodedPaths));
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
 
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotCatchNormalString()
+		public async Task DoesNotCatchNormalStringAsync()
 		{
 			const string template = @"
 using System;
@@ -155,13 +156,13 @@ class Foo
 }
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotCatchShortString()
+		public async Task DoesNotCatchShortStringAsync()
 		{
 			const string template = @"
 using System;
@@ -174,12 +175,12 @@ class Foo
 }
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotCatchEmptyString()
+		public async Task DoesNotCatchEmptyStringAsync()
 		{
 			const string template = @"
 using System;
@@ -192,12 +193,12 @@ class Foo
 }
 ";
 
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotCatchRelativePath()
+		public async Task DoesNotCatchRelativePathAsync()
 		{
 			const string template = @"
 using system;
@@ -209,12 +210,12 @@ class foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesnotCatchPathsInComments()
+		public async Task DoesNotCatchPathsInCommentsAsync()
 		{
 			const string template = @"
 using System;
@@ -229,9 +230,29 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoesNotCatchPathsInTestCodeAsync()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	[TestMethod]
+    public void Test()
+	{
+		string path = @""c:\users\Bin\example.xml"";
+	}
+}
+";
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+
+		}
 	}
 }

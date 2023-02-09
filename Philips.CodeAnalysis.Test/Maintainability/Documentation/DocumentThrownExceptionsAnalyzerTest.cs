@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -74,7 +75,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithMethod = @"
+		private const string CorrectWithMethod = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -88,7 +89,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectRethrow = @"
+		private const string CorrectRethrow = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -105,7 +106,7 @@ public class Foo
     private ArgumentException DangerousMethod() { return new ArgumentException(""FromFactory"");}
 }
 ";
-    private const string CorrectFromCommon = @"
+		private const string CorrectFromCommon = @"
 public class Foo {
 	/// <summary>
 	/// Register a new symbol.
@@ -134,7 +135,7 @@ public class Foo {
 }
 ";
 
-        private const string WrongNoDoc = @"
+		private const string WrongNoDoc = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -234,7 +235,7 @@ public class Foo
 }
 ";
 
-        private const string WrongRethrow = @"
+		private const string WrongRethrow = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -260,9 +261,9 @@ public class Foo
 		 DataRow(CorrectRethrow, DisplayName = nameof(CorrectRethrow)),
 		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
+		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -270,10 +271,10 @@ public class Foo
 		[DataRow(WrongEmptyCref, FixedEmptyCref, DisplayName = nameof(WrongEmptyCref))]
 		[DataRow(WrongType, FixedWrongType, DisplayName = nameof(WrongType))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
+		public async Task WrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.DocumentThrownExceptions);
-			VerifyFix(testCode, fixedCode);
+			await VerifyDiagnostic(testCode, DiagnosticId.DocumentThrownExceptions).ConfigureAwait(false);
+			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -281,11 +282,10 @@ public class Foo
 		[DataRow(WrongInProperty, CorrectInProperty, DisplayName = nameof(WrongInProperty))]
 		[DataRow(WrongRethrow, CorrectRethrow, DisplayName = nameof(WrongRethrow))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MissingDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
+		public async Task MissingDocumentationShouldTriggerDiagnosticAsync(string testCode, string fixedCode)
 		{
 			// See https://github.com/dotnet/roslyn/issues/58210. Until decide how we want to handle this, these will pass.
-			VerifySuccessfulCompilation(testCode);
-			//VerifyFix(testCode, fixedCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
 }

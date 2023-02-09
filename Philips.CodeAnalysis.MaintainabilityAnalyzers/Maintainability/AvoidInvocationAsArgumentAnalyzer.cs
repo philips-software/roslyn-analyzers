@@ -10,34 +10,27 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidInvocationAsArgumentAnalyzer : DiagnosticAnalyzer
+	public class AvoidInvocationAsArgumentAnalyzer : SingleDiagnosticAnalyzer<ArgumentSyntax, AvoidInvocationAsArgumentSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid method calls as arguments";
 		public const string MessageFormat = @"Avoid '{0}' as an argument";
 		private const string Description = @"Avoid method calls as arguments to method calls";
-		private const string Category = Categories.Maintainability;
+		public AvoidInvocationAsArgumentAnalyzer()
+			: base(DiagnosticId.AvoidInvocationAsArgument, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+	public class AvoidInvocationAsArgumentSyntaxNodeAction : SyntaxNodeAction<ArgumentSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.Argument);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			ArgumentSyntax argumentSyntax = (ArgumentSyntax)context.Node;
-
 			// We are looking for method calls as arguments
-			if (argumentSyntax.Expression is not InvocationExpressionSyntax argumentExpressionSyntax)
+			if (Node.Expression is not InvocationExpressionSyntax argumentExpressionSyntax)
 			{
 				return;
 			}
@@ -50,26 +43,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
 			string methodName = (argumentExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
-			if (methodName is "ToString" or "ToArray" or "ToList")
+			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
 				return;
 			}
 
 			// If nested calls (e.g., Foo(Bar(Meow()))), only trigger the outer violation Bar(Meow())
-			if (argumentSyntax.Ancestors().OfType<ArgumentSyntax>().Any())
+			if (Node.Ancestors().OfType<ArgumentSyntax>().Any())
 			{
 				return;
 			}
 
 			// If we're within a constructor initializer (this(...) or base(...) eg), let it go
-			ConstructorInitializerSyntax constructorInitializerSyntax = argumentSyntax.Ancestors().OfType<ConstructorInitializerSyntax>().FirstOrDefault();
+			ConstructorInitializerSyntax constructorInitializerSyntax = Node.Ancestors().OfType<ConstructorInitializerSyntax>().FirstOrDefault();
 			if (constructorInitializerSyntax != null)
 			{
 				return;
 			}
 
 			// If the caller is Assert, let it go. (This is debatable, and ideally warrants a configuration option.)
-			MemberAccessExpressionSyntax caller = (argumentSyntax.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
+			MemberAccessExpressionSyntax caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
 			if (caller?.Expression is IdentifierNameSyntax identifier && identifier.Identifier.ValueText.Contains(@"Assert"))
 			{
 				return;
@@ -79,16 +72,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// This is debatable, and ideally warrants a configuration option.
 			if (argumentExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
 			{
-				var symbol = context.SemanticModel.GetSymbolInfo(callee).Symbol;
+				var symbol = Context.SemanticModel.GetSymbolInfo(callee).Symbol;
 				if (symbol.IsStatic)
 				{
 					return;
 				}
 			}
 
-			var location = argumentSyntax.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, argumentSyntax.ToString());
-			context.ReportDiagnostic(diagnostic);
+			var location = Node.GetLocation();
+			ReportDiagnostic(location, Node.ToString());
 		}
 	}
 }

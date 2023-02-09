@@ -1,7 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -27,12 +29,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}}
 			";
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(X509Certificate2).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 
@@ -41,32 +43,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidPrivateKeyPropertyAnalyzer();
 		}
 
-		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
-		{
-			return new DiagnosticResultLocation("Test.cs", 8 + rowOffset, 8 + columnOffset);
-		}
-
 		[DataTestMethod]
-		[DataRow(@"_ = new X509Certificate2().PrivateKey", 0, 2)]
+		[DataRow(@"_ = new X509Certificate2().PrivateKey")]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
-			_ = cert.PrivateKey;", 1, 0)]
+			_ = cert.PrivateKey;")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidPrivateKeyPropertyOnX509Certificate(string s, int row, int col)
+		public async Task AvoidPrivateKeyPropertyOnX509CertificateAsync(string s)
 		{
-
 			string code = string.Format(ClassString, s);
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidPrivateKeyProperty),
-				Message = new Regex(".+ "),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					GetBaseDiagnosticLocation(row,col)
-				}
-			};
-
-			VerifyDiagnostic(code, expected);
+			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 	}
 }

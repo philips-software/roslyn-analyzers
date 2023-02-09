@@ -1,6 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -18,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("Task", "() => 4")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultTest(string taskType, string argument)
+		public async Task AvoidTaskResultTest(string taskType, string argument)
 		{
 			string template = $@"
 using System.Threading.Tasks;
@@ -34,13 +35,13 @@ class FooClass
 			string before = string.Format(template, @"task.Result");
 			string after = string.Format(template, @"await task");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
-			VerifyFix(before, after);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
+			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultObjectCreationTest()
+		public async Task AvoidTaskResultObjectCreationTest()
 		{
 			string template = $@"
 using System.Threading.Tasks;
@@ -55,14 +56,14 @@ class FooClass
 			string before = string.Format(template, @"new Task<int>(() => 4).Result");
 			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
-			VerifyFix(before, after);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
+			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultCallMethodTest()
+		public async Task AvoidTaskResultCallMethodTest()
 		{
 			string template = $@"
 using System.Threading.Tasks;
@@ -81,14 +82,14 @@ class FooClass
 			string before = string.Format(template, @"Foo(1).Result");
 			string after = string.Format(template, @"await Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
-			VerifyFix(before, after);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
+			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidTaskResultCallMethodThisTest()
+		public async Task AvoidTaskResultCallMethodThisTest()
 		{
 			string template = $@"
 using System.Threading.Tasks;
@@ -107,8 +108,8 @@ class FooClass
 			string before = string.Format(template, @"this.Foo(1).Result");
 			string after = string.Format(template, @"await this.Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticResultHelper.Create(DiagnosticId.AvoidTaskResult));
-			VerifyFix(before, after);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
+			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()

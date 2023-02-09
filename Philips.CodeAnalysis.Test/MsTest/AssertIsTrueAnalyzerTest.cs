@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -26,9 +27,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsFalse(true == false)", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true != false)", "Assert.AreEqual(true, false)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReplacesEqualsEquals(string given, string expected)
+		public async Task ReplacesEqualsEquals(string given, string expected)
 		{
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected);
 		}
 
 		[DataTestMethod]
@@ -37,9 +38,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Object o = null;\n      Assert.IsFalse(o == null)", "Object o = null;\n      Assert.IsNotNull(o)")]
 		[DataRow("Object o = null;\n      Assert.IsFalse(o != null)", "Object o = null;\n      Assert.IsNull(o)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IsNullIsNotNull(string given, string expected)
+		public async Task IsNullIsNotNull(string given, string expected)
 		{
-			VerifyChange(given, expected, expectedErrorLineOffset: 1);
+			await VerifyChange(given, expected, expectedErrorLineOffset: 1).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -49,9 +50,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PreserveMessage(string given, string expected)
+		public async Task PreserveMessage(string given, string expected)
 		{
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -61,31 +62,31 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		//[DataRow("Assert.IsFalse(!true.Equals(false))", "Assert.AreEqual(true, false)")]
 		//[DataRow("Assert.IsFalse(!true.Equals(false))", "Assert.AreEqual(true, false)")]
-		public void ReplacesEquals(string given, string expected)
+		public async Task ReplacesEquals(string given, string expected)
 		{
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\n      Assert.IsTrue(true)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CanBreakDownCompoundStatements(string given, string expected)
+		public async Task CanBreakDownCompoundStatements(string given, string expected)
 		{
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\n      Assert.IsTrue(true, \"blah\")")]
 		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PreserveCompoundMessages(string given, string expected)
+		public async Task PreserveCompoundMessages(string given, string expected)
 		{
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void StaticFunctionCallDoesntThrow()
+		public async Task StaticFunctionCallDoesntThrow()
 		{
 			string givenText = @"
 class Foo 
@@ -105,14 +106,14 @@ class Foo
 
 ";
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 
-			VerifyFix(givenText, givenText);
+			await VerifyFix(givenText, givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CommentsAreNotRemoved()
+		public async Task CommentsAreNotRemoved()
 		{
 			string given = @"
 int i = 50;
@@ -125,12 +126,12 @@ int i = 50;
       Assert.IsTrue(true);
       Assert.IsTrue(true)";
 
-			VerifyChange(given, expected, 3);
+			await VerifyChange(given, expected, 3).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TrailingWhitespacePreserved()
+		public async Task TrailingWhitespacePreserved()
 		{
 			string given = @"
 int i = 50;
@@ -149,7 +150,7 @@ int i = 50;
       i.ToString();
       int k = 4";
 
-			VerifyChange(given, expected, 3);
+			await VerifyChange(given, expected, 3);
 		}
 
 		[DataTestMethod]
@@ -157,18 +158,18 @@ int i = 50;
 		[DataRow("Assert.IsTrue(1 != 2 || 2 == 3)")]
 		[DataRow("Assert.IsFalse(1 != 2 || 2 == 3)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CanBreakDownFalseOrOrCompoundStatements(string given)
+		public async Task CanBreakDownFalseOrOrCompoundStatements(string given)
 		{
-			VerifyNoChange(given);
+			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("bool value = false; Assert.IsFalse(value)")]
 		[DataRow("Assert.IsFalse(\"foo\".Contains(\"f\"))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EnsureWeDontChangeValues(string given)
+		public async Task EnsureWeDontChangeValues(string given)
 		{
-			VerifyNoChange(given);
+			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -186,27 +187,27 @@ int i = 50;
 		[DataRow("Assert.AreEqual(!false, !false)")]
 		[DataRow("Assert.AreEqual(!false, false)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckLiteral(string given)
+		public async Task CheckLiteral(string given)
 		{
-			VerifyNoChange(given);
+			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNoCrash()
+		public async Task CheckNoCrash()
 		{
-			VerifyNoChange("Assert.IsTrue(");
+			await VerifyNoChange("Assert.IsTrue(").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckForNoSemanticModel()
+		public async Task CheckForNoSemanticModel()
 		{
 			const string template = @"
 Assert.IsTrue(foo.Test());
 ";
 
-			VerifyNoChange(template);
+			await VerifyNoChange(template).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)

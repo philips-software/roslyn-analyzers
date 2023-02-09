@@ -2,6 +2,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -25,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("readonly object _foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonly(string field, bool isError)
+		public async Task LockObjectsMustBeReadonlyAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -40,19 +41,18 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(template);
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 			}
 		}
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonlyLocalVariables(string field, bool isError)
+		public async Task LockObjectsMustBeReadonlyLocalVariablesAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -66,19 +66,18 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
-            else
-            {
-                VerifySuccessfulCompilation(template);
-            }
+			else
+			{
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonlyFunctionReturn(string field, bool isError)
+		public async Task LockObjectsMustBeReadonlyFunctionReturnAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -97,18 +96,17 @@ class Foo
 ";
 			if (isError)
 			{
-				var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-				VerifyDiagnostic(string.Format(template, field), result);
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(template);
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonlyPartialStatement()
+		public async Task LockObjectsMustBeReadonlyPartialStatementAsync()
 		{
 			const string template = @"using System;
 class Foo
@@ -121,12 +119,12 @@ class Foo
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonlyPartialStatement2()
+		public async Task LockObjectsMustBeReadonlyPartialStatement2Async()
 		{
 			const string template = @"using System;
 class Foo
@@ -139,12 +137,12 @@ class Foo
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LockObjectsMustBeReadonlyVerifyErrorMessage()
+		public async Task LockObjectsMustBeReadonlyVerifyErrorMessageAsync()
 		{
 			const string template = @"using System;
 class Foo
@@ -157,9 +155,7 @@ class Foo
 	}}
 }}
 ";
-			var result = DiagnosticResultHelper.Create(DiagnosticId.LocksShouldBeReadonly);
-			result.Message = new Regex("'_foo'");
-			VerifyDiagnostic(template, result);
+			await VerifyDiagnostic(template, DiagnosticId.LocksShouldBeReadonly, regex: "'_foo'").ConfigureAwait(false);
 		}
 	}
 }

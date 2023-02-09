@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
-using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 	{
 		private DiagnosticResultLocation[] locations;
 
-		public DiagnosticResultLocation[] Locations
+		public IReadOnlyCollection<DiagnosticResultLocation> Locations
 		{
 			get
 			{
@@ -23,13 +23,13 @@ namespace Philips.CodeAnalysis.Test.Helpers
 				return locations;
 			}
 
-			set => locations = value;
+			set => locations = value.ToArray();
 		}
 
 		public DiagnosticResultLocation Location
 		{
-			get => Locations[0];
-			set => Locations = new[] { value };
+			get => locations[0];
+			set => locations = new[] { value };
 		}
 
 		public DiagnosticSeverity Severity { get; set; }
@@ -38,24 +38,10 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public Regex Message { get; set; }
 
-		public string Path => Locations.Length > 0 ? Locations[0].Path : "";
+		public string Path => locations.Length > 0 ? locations[0].Path : "";
 
-		public int? Line => Locations.Length > 0 ? Locations[0].Line : -1;
+		public int? Line => locations.Length > 0 ? locations[0].Line : -1;
 
-		public int? Column => Locations.Length > 0 ? Locations[0].Column : -1;
-	}
-
-	internal static class DiagnosticResultHelper
-	{
-		public static DiagnosticResult Create(DiagnosticId diagnosticId, Regex message = null)
-		{
-			return new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(diagnosticId),
-				Location = new DiagnosticResultLocation(null),
-				Message = message ?? new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-			};
-		}
+		public int? Column => locations.Length > 0 ? locations[0].Column : -1;
 	}
 }

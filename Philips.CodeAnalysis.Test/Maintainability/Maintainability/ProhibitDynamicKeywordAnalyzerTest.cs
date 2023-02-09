@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -40,19 +41,19 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }", 0)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CantBeDynamic(string testCode, int errorCount)
+		public async Task CantBeDynamicAsync(string testCode, int errorCount)
 		{
 			if (errorCount == 0)
 			{
-				VerifySuccessfulCompilation(testCode);
+				await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 			}
 			else if (errorCount == 1)
 			{
-				VerifyDiagnostic(testCode);
+				await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(testCode, errorCount);
+				await VerifyDiagnostic(testCode, errorCount).ConfigureAwait(false);
 			}
 		}
 

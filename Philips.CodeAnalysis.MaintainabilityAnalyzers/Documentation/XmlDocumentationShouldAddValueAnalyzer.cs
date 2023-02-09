@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,8 +30,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
 		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
 
-		private static readonly HashSet<string> UselessWords = 
-			new( new[]{ "get", "set", "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", "value", "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
+		private static readonly HashSet<string> UselessWords =
+			new(new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
@@ -52,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration); 
+				ctx.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
 			});
 		}
@@ -112,7 +111,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			string name = member?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
-		
+
 		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, string name)
 		{
 			if (string.IsNullOrEmpty(name))
@@ -125,7 +124,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
-			foreach(var xmlElement in xmlElements)
+			foreach (var xmlElement in xmlElements)
 			{
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 				{
@@ -181,7 +180,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static IEnumerable<string> SplitInWords(string input)
 		{
 			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
-			return pruned.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
+			return pruned.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
 		}
 	}
 }

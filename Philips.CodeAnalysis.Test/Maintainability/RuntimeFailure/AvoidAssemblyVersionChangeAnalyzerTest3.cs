@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -26,21 +27,16 @@ class Foo
 		private const string AnyVersion = "5.6.3.4";
 		private const string InvalidVersion = "1";
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) }.assembly_version", InvalidVersion }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange)}.assembly_version", InvalidVersion);
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InvalidVersionShouldTriggerTriggerDiagnostics()
+		public async Task InvalidVersionShouldTriggerTriggerDiagnosticsAsync()
 		{
-			var diagnostic = DiagnosticResultHelper.Create(DiagnosticId.AvoidAssemblyVersionChange);
-			VerifyDiagnostic(TestCode, diagnostic);
+			await VerifyDiagnostic(TestCode, DiagnosticId.AvoidAssemblyVersionChange).ConfigureAwait(false);
 		}
 	}
 }

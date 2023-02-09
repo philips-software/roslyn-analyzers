@@ -1,7 +1,7 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -47,23 +47,22 @@ namespace ComplexConditionUnitTests {
 		/// No diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses))]
+		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
+		public async Task WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails))]
+		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
+		public async Task WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LimitConditionComplexity);
-			VerifyDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity).ConfigureAwait(false);
 		}
 
 
@@ -75,15 +74,11 @@ namespace ComplexConditionUnitTests {
 			return new LimitConditionComplexityAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
 				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new()
-			{
-				{ key, "not a number" }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add(key, "not a number");
 		}
 	}
 }

@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		 DataRow("protected internal readonly", true),
 		 DataRow("protected internal", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IsCallableFromOutsideClassTest(string modifiers, bool expected)
+		public void IsCallableFromOutsideClassTest(string modifiers, bool isExpectedCallable)
 		{
 			// Arrange
 			var testCode = $"{modifiers} int I;";
@@ -68,10 +68,10 @@ namespace Philips.CodeAnalysis.Test.Common
 
 			// Act
 			Helper helper = new();
-			var actual = helper.IsCallableFromOutsideClass(memberDeclaration);
+			var isActualCallable = helper.IsCallableFromOutsideClass(memberDeclaration);
 
 			// Assert
-			Assert.AreEqual(expected, actual);
+			Assert.AreEqual(isExpectedCallable, isActualCallable);
 		}
 	}
 }

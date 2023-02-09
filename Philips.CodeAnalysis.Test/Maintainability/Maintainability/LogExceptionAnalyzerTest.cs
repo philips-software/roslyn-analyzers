@@ -1,6 +1,7 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -123,9 +124,9 @@ public class Program {
 		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
 		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -134,10 +135,9 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(Missing, DisplayName = nameof(Missing))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
+		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggeredAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.LogException); 
-			VerifyDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.LogException).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -146,9 +146,9 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -159,9 +159,9 @@ public class Program {
 			return new LogExceptionAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new [] {(LogExceptionAnalyzer.AllowedFileName, configuredLogMethods)};
+			return base.GetAdditionalTexts().Add((LogExceptionAnalyzer.AllowedFileName, configuredLogMethods));
 		}
 	}
 }

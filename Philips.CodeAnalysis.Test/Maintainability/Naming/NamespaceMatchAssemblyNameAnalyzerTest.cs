@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
@@ -32,21 +33,22 @@ namespace {0} {{
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "CodeAnalysis.Test")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReportIncorrectNamespaceMatch(string ns, string assemblyName)
+		public async Task ReportIncorrectNamespaceMatchAsync(string ns, string assemblyName)
 		{
 			string code = string.Format(Template, ns);
-			VerifyDiagnostic(code, null, assemblyName);
+			await VerifyDiagnostic(code, assemblyName: assemblyName).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("Philips.Test", "")]
 		[DataRow("Philips.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis")]
+		[DataRow("System.Runtime.CompilerServices", "Philips.CodeAnalysis")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotReportANamespaceSupersetMatch(string ns, string assemblyName)
+		public async Task DoNotReportANamespaceSupersetMatchAsync(string ns, string assemblyName)
 		{
 			string code = string.Format(Template, ns);
-			VerifySuccessfulCompilation(code, null, assemblyName);
+			await VerifySuccessfulCompilation(code, null, assemblyName).ConfigureAwait(false);
 		}
 	}
 }

@@ -1,10 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -33,8 +33,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 	public class NamespaceMatchFilePathSyntaxNodeAction : SyntaxNodeAction<NamespaceDeclarationSyntax>
 	{
-		private bool _folderInNamespace;
-		private bool _configInitialized;
+		private bool _isFolderInNamespace;
+		private bool _isConfigInitialized;
 
 		public override void Analyze()
 		{
@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			InitializeConfiguration();
 
-			if(_folderInNamespace)
+			if (_isFolderInNamespace)
 			{
 				// Does the namespace exactly match the trailing folders?
 				if (DoesFilePathEndWithNamespace(myNamespace, myFilePath))
@@ -60,10 +60,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 			}
 
+			if (Helper.IsNamespaceExempt(myNamespace))
+			{
+				return;
+			}
+
 			var location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
-
 		private bool IsNamespacePartOfPath(string ns, string path)
 		{
 			string[] nodes = path.Split(Path.DirectorySeparatorChar);
@@ -86,13 +90,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void InitializeConfiguration()
 		{
-			if (!_configInitialized)
+			if (!_isConfigInitialized)
 			{
 				var additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
 				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
 				string folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
-				_ = bool.TryParse(folderInNamespace, out _folderInNamespace);
-				_configInitialized = true;
+				_ = bool.TryParse(folderInNamespace, out _isFolderInNamespace);
+				_isConfigInitialized = true;
 			}
 		}
 	}

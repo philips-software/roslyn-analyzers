@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,96 +14,94 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class NoRegionsInMethodAnalyzerTest : DiagnosticVerifier
 	{
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-
 			return new NoRegionsInMethodAnalyzer();
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoRegionNoMethodTest()
+		public async Task NoRegionNoMethodTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{C(){}}");
+			await VerifySuccessfulCompilation(@"Class C{C(){}}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoRegionTest()
+		public async Task NoRegionTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{C(){}public void foo(){}}");
+			await VerifySuccessfulCompilation(@"Class C{C(){}public void foo(){}}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EmptyClassWithRegionTest()
+		public async Task EmptyClassWithRegionTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{	#region testRegion	#endregion	}");
+			await VerifySuccessfulCompilation(@"Class C{	#region testRegion	#endregion	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionOutsideMethodTest()
+		public async Task RegionOutsideMethodTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{#region testRegion	public void foo() {int x = 2; }	#endregion}");
+			await VerifySuccessfulCompilation(@"Class C{#region testRegion	public void foo() {int x = 2; }	#endregion}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionStartsAndEndsInMethodTest()
+		public async Task RegionStartsAndEndsInMethodTestAsync()
 		{
-			Verify(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}", 2);
+			await VerifyDiagnostic(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionStartsInMethodTest()
+		public async Task RegionStartsInMethodTestAsync()
 		{
-			Verify(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
+			await VerifyDiagnostic(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
 
-	}", 2);
+	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionEndsInMethodTest()
+		public async Task RegionEndsInMethodTestAsync()
 		{
-			Verify(@"Class C{
+			await VerifyDiagnostic(@"Class C{
 	#region testRegion
 	public void foo(){
 		int x = 2;
 		#endregion
 	}
-	}", 5);
+	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionCoversMultipleMethodsTest()
+		public async Task RegionCoversMultipleMethodsTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}");
+			await VerifySuccessfulCompilation(@"Class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionBeforeClassTest()
+		public async Task RegionBeforeClassTestAsync()
 		{
-			VerifySuccessfulCompilation(@"	#region testRegion	#endregion Class C{	public void foo(){	return; }	public void bar(){	}	}");
+			await VerifySuccessfulCompilation(@"	#region testRegion	#endregion Class C{	public void foo(){	return; }	public void bar(){	}	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void UnnamedRegionTest()
+		public async Task UnnamedRegionTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}");
+			await VerifySuccessfulCompilation(@"Class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void RegionStartsInOneMethodEndsInAnotherTest()
+		public async Task RegionStartsInOneMethodEndsInAnotherTestAsync()
 		{
-			Verify(@"
+			await VerifyDiagnostic(@"
 Class C{
 	#region 
 	public void foo(){
@@ -113,39 +112,22 @@ Class C{
 
 	}
 
-	}", 8);
+	}").ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MalformedCodeTest()
+		public async Task MalformedCodeTestAsync()
 		{
-			VerifySuccessfulCompilation(@"Class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	");
+			await VerifySuccessfulCompilation(@"Class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void EmptyStringTest()
+		public async Task EmptyStringTestAsync()
 		{
-			VerifySuccessfulCompilation("");
-		}
-
-
-
-
-		private void Verify(string file, int line)
-		{
-			VerifyDiagnostic(file, new DiagnosticResult()
-			{
-				Id = NoRegionsInMethodAnalyzer.Rule.Id,
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", line, -1), //6,-1
-				}
-			});
+			await VerifySuccessfulCompilation("").ConfigureAwait(false);
 		}
 	}
 }

@@ -90,12 +90,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			bool isLiteralTrue = GetMethod(literalExpected);
 
-			if (calledMethod.ToString() == @"AreNotEqual")
+			if (calledMethod.ToString() == StringConstants.AreNotEqualMethodName)
 			{
 				isLiteralTrue = !isLiteralTrue;
 			}
 
-			string method = isLiteralTrue ? "IsTrue" : "IsFalse";
+			string method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
 
 			ArgumentListSyntax argumentListSyntax = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[] { SyntaxFactory.Argument(actual) }));
 
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				argumentListSyntax = argumentListSyntax.AddArguments(SyntaxFactory.Argument(message));
 			}
 
-			return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName("Assert"), SyntaxFactory.Token(SyntaxKind.DotToken), (SimpleNameSyntax)SyntaxFactory.ParseName(method)), argumentListSyntax);
+			return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName(StringConstants.Assert), SyntaxFactory.Token(SyntaxKind.DotToken), (SimpleNameSyntax)SyntaxFactory.ParseName(method)), argumentListSyntax);
 		}
 
 		private bool GetMethod(ExpressionSyntax literalExpected)

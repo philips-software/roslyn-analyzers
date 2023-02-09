@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -185,7 +186,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
             }
         }
     }";
-		
+
 		private const string WrongNumberOfPlusMinusOnStruct = @"
     namespace AssignmentInConditionUnitTests {
         public struct Number {
@@ -275,17 +276,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual)),
 		 DataRow(CorrectOnlyEqual, DisplayName = nameof(CorrectOnlyEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)), 
-		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators , DisplayName = nameof(WrongNumberOfPlusMinus)),
+		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)),
+		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinus)),
 		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
 		 DataRow(WrongNumberOfMultiplyDivide, DiagnosticId.AlignNumberOfMultiplyAndDivideOperators, DisplayName = nameof(WrongNumberOfMultiplyDivide)),
 		 DataRow(WrongNumberOfGreaterLessThan, DiagnosticId.AlignNumberOfGreaterAndLessThanOperators, DisplayName = nameof(WrongNumberOfGreaterLessThan)),
@@ -293,9 +294,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(WrongNumberOfRightLeftShift, DiagnosticId.AlignNumberOfShiftRightAndLeftOperators, DisplayName = nameof(WrongNumberOfRightLeftShift)),
 		 DataRow(WrongNumberOfPlusEqual, DiagnosticId.AlignNumberOfPlusAndEqualOperators, DisplayName = nameof(WrongNumberOfPlusEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, DiagnosticId diagnosticId) {
-			var expected = DiagnosticResultHelper.Create(diagnosticId);
-			VerifyDiagnostic(testCode, expected);
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode, DiagnosticId diagnosticId)
+		{
+			await VerifyDiagnostic(testCode, diagnosticId).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -304,12 +305,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongNumberOfPlusMinus, filePath);
+			await VerifySuccessfulCompilation(WrongNumberOfPlusMinus, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AlignOperatorsCountAnalyzer();
 		}
 	}

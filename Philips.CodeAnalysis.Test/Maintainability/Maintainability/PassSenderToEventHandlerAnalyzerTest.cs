@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -57,22 +58,22 @@ namespace PassSenderTests {
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)), 
+		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)),
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.PassSenderToEventHandler);
-			VerifyDiagnostic(testCode, expected);
-			VerifyFix(testCode, fixedCode, allowNewCompilerDiagnostics:true);
+		public async Task WhenArgumentIsNullDiagnosticIsRaised(string testCode, string fixedCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+			await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -81,12 +82,13 @@ namespace PassSenderTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongSender, filePath);
+			await VerifySuccessfulCompilation(WrongSender, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new PassSenderToEventHandlerAnalyzer();
 		}
 

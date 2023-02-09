@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
 				{
 					return;
 				}
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				IPropertySymbol propertySymbol = propertyReference.Property;
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
-				    propertySymbol.ContainingType.Name.Contains(ContainingType))
+					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
 					var location = propertySyntax.Name.GetLocation();
 					Diagnostic diagnostic = Diagnostic.Create(Rule, location);

@@ -1,5 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -17,14 +19,14 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName));
 		}
-		
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidSuppressMessageNotRaisedInGeneratedCode()
+		public async Task AvoidSuppressMessageNotRaisedInGeneratedCodeAsync()
 		{
 			string baseline = @"
 #pragma checksum ""..\..\BedPosOverlayWindow.xaml"" ""{ ff1816ec - aa5e - 4d10 - 87f7 - 6f4963833460}"" ""B42AD704B6EC2B9E4AC053991400023FA2213654""
@@ -75,7 +77,7 @@ namespace WpfApp1 {
 }
 			";
 
-			VerifySuccessfulCompilation(baseline, "BedPosOverlayWindow.g.i");
+			await VerifySuccessfulCompilation(baseline, "BedPosOverlayWindow.g.i").ConfigureAwait(false);
 		}
 
 		[DataRow("NotWhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
@@ -86,7 +88,7 @@ namespace WpfApp1 {
 		[DataRow("WhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidSupressMessageRaisedInUserCode(string functionName, string usingStatement, string attribute)
+		public async Task AvoidSupressMessageRaisedInUserCodeAsync(string functionName, string usingStatement, string attribute)
 		{
 			string baseline = @"
 				using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -100,9 +102,9 @@ namespace WpfApp1 {
 				}}
 				";
 			string givenText = string.Format(baseline, usingStatement, attribute, functionName);
-			VerifyDiagnostic(givenText, DiagnosticResultHelper.Create(DiagnosticId.AvoidSuppressMessage));
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidSuppressMessage).ConfigureAwait(false);
 		}
-		
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidSuppressMessageAttributeAnalyzer();

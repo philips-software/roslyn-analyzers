@@ -13,20 +13,15 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidPasswordAnalyzer : DiagnosticAnalyzer
+	public class AvoidPasswordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Password";
 		public const string MessageFormat = @"Naming something Password suggests a potential hard-coded password.";
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
-		private const string Category = Categories.Security;
 
-		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticId.AvoidPasswordField), 
-			Title, MessageFormat, Category, 
-			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
+		public AvoidPasswordAnalyzer()
+			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -52,7 +47,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 			{
 				var location = methodDeclarationSyntax.GetLocation();
-				Diagnose(methodDeclarationSyntax.Identifier.ValueText,location, context.ReportDiagnostic);
+				Diagnose(methodDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
 

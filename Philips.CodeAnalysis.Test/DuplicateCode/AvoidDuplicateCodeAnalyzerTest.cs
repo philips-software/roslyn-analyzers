@@ -1,8 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -31,18 +33,14 @@ Foo.WhitelistedFunction";
 			return new AvoidDuplicateCodeFixProvider();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			var options = new Dictionary<string, string>
-			{
-				{ $@"dotnet_code_quality.{ AvoidDuplicateCodeAnalyzer.Rule.Id }.token_count", @"20" }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.token_count", @"20");
 		}
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidDuplicateCodeAnalyzer.AllowedFileName, allowedMethodName));
 		}
 
 		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)
@@ -295,10 +293,10 @@ Foo.WhitelistedFunction";
 		[DataTestMethod]
 		[DataRow("object obj = new object();", "Foo()")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeNoError(string method1, string method2)
+		public async Task AvoidDuplicateCodeNoErrorAsync(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -306,17 +304,17 @@ Foo.WhitelistedFunction";
 		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeError(string method1, string method2)
+		public async Task AvoidDuplicateCodeError(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifyFix(file, file);
-			VerifyFixAll(file, file);
+			await VerifyFix(file, file).ConfigureAwait(false);
+			await VerifyFixAll(file, file).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeErrorInSameMethod()
+		public async Task AvoidDuplicateCodeErrorInSameMethodAsync()
 		{
 			string baseline = @"
 class Foo 
@@ -330,12 +328,12 @@ class Foo
 }}
 ";
 
-			Verify(baseline);
+			await VerifyAsync(baseline).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeNoErrorWhenOverlapping()
+		public async Task AvoidDuplicateCodeNoErrorWhenOverlappingAsync()
 		{
 			// The first two initializations are identical to the second two initializations, but "int b = 0" is overlapping.
 			string baseline = @"
@@ -350,7 +348,7 @@ class Foo
 }}
 ";
 
-			VerifySuccessfulCompilation(baseline);
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
 		}
 
 
@@ -378,9 +376,9 @@ namespace MyNamespace
 		}
 
 
-		private void Verify(string file)
+		private async Task VerifyAsync(string file)
 		{
-			VerifyDiagnostic(file,
+			await VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
@@ -392,7 +390,7 @@ namespace MyNamespace
 						new DiagnosticResultLocation("Test0.cs", null, null),
 					}
 				}
-			);
+			).ConfigureAwait(false);
 		}
 	}
 }

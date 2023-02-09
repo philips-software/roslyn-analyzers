@@ -1,7 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new DataTestMethodsHaveDataRowsAnalyzer();
 		}
 
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using System;
@@ -40,7 +41,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		string GetDisplayName(MethodInfo methodInfo, object[] data) => string.Empty;
 }
 ";
-			return new[] { ("DerivedDataSourceAttribute.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedDataSourceAttribute.cs", code));
 		}
 
 		#endregion
@@ -49,7 +50,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DataTestMethodsMustHaveDataRows()
+		public async Task DataTestMethodsMustHaveDataRowsAsync()
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -60,13 +61,13 @@ public class Tests
 	public void Foo() { }
 }";
 
-			VerifyDiagnostic(code, new DiagnosticResult()
+			await VerifyDiagnostic(code, new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) }
-			});
+			}).ConfigureAwait(false);
 		}
 
 		[DataRow("[DerivedDataSource]", false)]
@@ -77,7 +78,7 @@ public class Tests
 		[DataRow("", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DataTestMethodsMustHaveDataRows2(string arg, bool isError)
+		public async Task DataTestMethodsMustHaveDataRows2Async(string arg, bool isError)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -91,12 +92,11 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
-				VerifyDiagnostic(code, expected);
+				await VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -106,7 +106,7 @@ public class Tests
 		[DataRow("", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestMethodsMustNotHaveDataRows(string arg, bool isError)
+		public async Task TestMethodsMustNotHaveDataRowsAsync(string arg, bool isError)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -120,12 +120,11 @@ public class Tests
 			string code = string.Format(template, arg);
 			if (isError)
 			{
-				var expected = DiagnosticResultHelper.Create(DiagnosticId.DataTestMethodsHaveDataRows);
-				VerifyDiagnostic(code, expected);
+				await VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 

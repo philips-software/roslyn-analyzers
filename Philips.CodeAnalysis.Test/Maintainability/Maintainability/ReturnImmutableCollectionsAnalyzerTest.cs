@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -186,9 +187,9 @@ namespace ReturnImmutableTests {
 		 DataRow(CorrectPrivate, DisplayName = nameof(CorrectPrivate)),
 		 DataRow(CorrectProperty, DisplayName = nameof(CorrectProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -205,12 +206,12 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticId.ReturnImmutableCollections);
-			VerifyDiagnostic(testCode, expected);
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
+		{
+			await VerifyDiagnostic(testCode, DiagnosticId.ReturnImmutableCollections).ConfigureAwait(false);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
-				VerifyFix(testCode, fixedCode);
+				await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 			}
 		}
 
@@ -220,12 +221,13 @@ namespace ReturnImmutableTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongList, filePath);
+			await VerifySuccessfulCompilation(WrongList, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new ReturnImmutableCollectionsAnalyzer();
 		}
 
