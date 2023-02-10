@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -25,7 +27,7 @@ namespace Philips.CodeAnalysis.Benchmark
 	public class Input
 	{
 		public string Folder { get; set; }
-		public Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> Data { get; set; }
+		public IReadOnlyDictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> Data { get; set; }
 
 		public override string ToString()
 		{
@@ -34,9 +36,13 @@ namespace Philips.CodeAnalysis.Benchmark
 	}
 
 	[ExcludeFromCodeCoverage]
-	[SimpleJob(launchCount: 3, warmupCount: 2, targetCount: 5)]
+	[SimpleJob(launchCount: LaunchCount, warmupCount: WarmupCount, targetCount: TargetCount)]
 	public class DuplicationDetectorBenchmark
 	{
+		public const int LaunchCount = 3;
+		public const int WarmupCount = 2;
+		public const int TargetCount = 5;
+
 		[ParamsSource(nameof(ValuesForA))]
 		public Input A { get; set; }
 
@@ -94,17 +100,19 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
+			const int BaseModulus = 2048;
+			const int Modulus = 1723;
 			DuplicateDetector _library = new();
-
-			TestDictionary(_library, 2048, 1723);
+			TestDictionary(_library, BaseModulus, Modulus);
 		}
 
 		[Benchmark]
 		public void BiggerPrimes()
 		{
+			const int BaseModulus = 227;
+			const int Modulus = 1000005;
 			DuplicateDetector _library = new();
-
-			TestDictionary(_library, 227, 1000005);
+			TestDictionary(_library, BaseModulus, Modulus);
 		}
 	}
 }
