@@ -13,6 +13,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		private static string _filter = string.Empty;
 		private const int MaxPackageNameLength = 24;
 		private const int MaxAnalyzerNameLength = 45;
+		private const string Ellipsis = "...";
 
 		public static void Main(string[] args)
 		{
@@ -59,8 +60,8 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			_records.Sort();
 			foreach (var record in _records)
 			{
-				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + "..." : record.Package;
-				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + "..." : record.Analyzer;
+				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + Ellipsis : record.Package;
+				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + Ellipsis : record.Analyzer;
 				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
