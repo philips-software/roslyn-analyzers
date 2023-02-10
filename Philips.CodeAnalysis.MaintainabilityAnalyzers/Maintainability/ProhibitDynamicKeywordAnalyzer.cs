@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Linq;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -30,8 +29,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 		}
-		// TODO: Change to Analyze: MethodDeclaration, FieldDeclaration, VariableDeclaration, PropertyDeclaration
-		// TODO: And reduce the number of items inspected by the SemanticModel
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
@@ -95,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool HasDynamicType(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
-			return node.DescendantNodes().OfType<SimpleNameSyntax>().Any(id => IsDynamicType(context, id));
+			return node != null && node.DescendantNodes().OfType<SimpleNameSyntax>().Any(id => IsDynamicType(context, id));
 		}
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location)

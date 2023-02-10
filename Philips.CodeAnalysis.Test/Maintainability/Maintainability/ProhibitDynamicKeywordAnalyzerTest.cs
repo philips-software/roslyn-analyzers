@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
@@ -46,9 +47,17 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CantBeDynamicAsync(string testCode)
+		public async Task DynamicNameShouldNotTriggerDiagnostic(string testCode)
 		{
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DuplicateCodeAnalyzerCrash()
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "AvoidDuplicateCodeAnalyzer.cs");
+			await VerifySuccessfulCompilationFromFile(path);
 		}
 
 		#endregion
