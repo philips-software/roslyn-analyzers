@@ -1,9 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -28,32 +26,28 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Public Interface
 
-		[DataRow(@"void TestMethod() { dynamic i = 5; }", 1)]
-		[DataRow(@"dynamic TestMethod() { return 5; }", 1)]
-		[DataRow(@"void TestMethod(dynamic i) { return 5; }", 1)]
-		[DataRow(@"void TestMethod() { List<dynamic> list = null; }", 1)]
-		[DataRow(@"void TestMethod() { var t = (dynamic)4; }", 2)]
-		[DataRow(@"void TestMethod() { string dynamic = ""test""; }", 0)]
+		[DataRow(@"void TestMethod() { dynamic i = 5; }")]
+		[DataRow(@"dynamic TestMethod() { return 5; }")]
+		[DataRow(@"void TestMethod(dynamic i) { return 5; }")]
+		[DataRow(@"void TestMethod() { List<dynamic> list = null; }")]
+		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DynamicTypeShouldTriggerDiagnostic(string testCode)
+		{
+			VerifyDiagnostic(testCode);
+		}
+
+		[DataRow(@"void TestMethod() { string dynamic = ""test""; }")]
 		[DataRow(@"void TestMethod() { string dynamic = mrModule.DynamicSeries;
 bool isDynamic = !String.IsNullOrEmpty(dynamic) &&
 dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
- }", 0)]
+ }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CantBeDynamic(string testCode, int errorCount)
+		public void DynamicNamesShouldNotTriggerDiagnostic(string testCode)
 		{
-			if (errorCount == 0)
-			{
-				VerifySuccessfulCompilation(testCode);
-			}
-			else if (errorCount == 1)
-			{
-				VerifyDiagnostic(testCode);
-			}
-			else
-			{
-				VerifyDiagnostic(testCode, errorCount);
-			}
+			VerifySuccessfulCompilation(testCode);
 		}
 
 		#endregion
