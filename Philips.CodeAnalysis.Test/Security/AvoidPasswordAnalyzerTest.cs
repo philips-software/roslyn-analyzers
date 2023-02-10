@@ -60,9 +60,11 @@ class Foo
 		{
 			// Our test environment always loads the MsTests Metadata references.
 			// However, this is precisely when we want to disable this analyzer, and that makes it hard to Unit Test!
-			Mock<AvoidPasswordAnalyzer> mock = new() { CallBase = true };
-			mock.SetupGet(x => x.ShouldAnalyzeTests).Returns(true);
-			return mock.Object;
+			var analyzer = new AvoidPasswordAnalyzer
+			{
+				ShouldAnalyzeTests = true
+			};
+			return analyzer;
 		}
 
 		private string GetTemplate()
