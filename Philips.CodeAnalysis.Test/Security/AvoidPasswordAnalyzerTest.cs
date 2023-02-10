@@ -16,6 +16,44 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Security
 {
 	[TestClass]
+	public class AvoidPasswordAnalyzerTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidPasswordAnalyzer();
+		}
+
+		private string GetTemplate()
+		{
+			return @"
+class Foo 
+{{
+  {0}
+  public void Foo()
+  {{
+    {1};
+  }}
+}}
+";
+		}
+
+		[DataTestMethod]
+		[DataRow("private string _x, _password);", @"")]
+		[DataRow("private const string MyPassword = \"Hi\");", @"")]
+		[DataRow("public string Password {get; set;}", @"")]
+		[DataRow(@"", "/*  MyPassword */")]
+		[DataRow(@"", "//  MyPassword")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckPasswordTestAsync(string content0, string content1)
+		{
+			// These would normally fail, but by default we're in the context of a MS Test environment, which short-circuits the analyzer.
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
 	public class AvoidPasswordAnalyzerInMsTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -64,44 +102,6 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNoPasswordTestAsync(string content0, string content1)
 		{
-			var format = GetTemplate();
-			string testCode = string.Format(format, content0, content1);
-			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
-		}
-	}
-
-	[TestClass]
-	public class AvoidPasswordAnalyzerTest : DiagnosticVerifier
-	{
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return new AvoidPasswordAnalyzer();
-		}
-
-		private string GetTemplate()
-		{
-			return @"
-class Foo 
-{{
-  {0}
-  public void Foo()
-  {{
-    {1};
-  }}
-}}
-";
-		}
-
-		[DataTestMethod]
-		[DataRow("private string _x, _password);", @"")]
-		[DataRow("private const string MyPassword = \"Hi\");", @"")]
-		[DataRow("public string Password {get; set;}", @"")]
-		[DataRow(@"", "/*  MyPassword */")]
-		[DataRow(@"", "//  MyPassword")]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckPasswordTestAsync(string content0, string content1)
-		{
-			// These would normally fail, but by default we're in the context of a MS Test environment, which short-circuits the analyzer.
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
