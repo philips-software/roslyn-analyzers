@@ -33,6 +33,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"void TestMethod(dynamic i) { return 5; }")]
 		[DataRow(@"void TestMethod() { List<dynamic> list = null; }")]
 		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
+		[DataRow(@"dynamic TestProperty { get; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DynamicTypeShouldTriggerDiagnostic(string testCode)
