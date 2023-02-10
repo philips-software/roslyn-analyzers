@@ -42,6 +42,10 @@ namespace Philips.CodeAnalysis.Benchmark
 		public const int LaunchCount = 3;
 		public const int WarmupCount = 2;
 		public const int TargetCount = 5;
+		private const int BaseModulus1 = 2048;
+		private const int Modulus1 = 1723;
+		private const int BaseModulus2 = 227;
+		private const int Modulus2 = 1000005;
 
 		[ParamsSource(nameof(ValuesForA))]
 		public Input A { get; set; }
@@ -100,19 +104,15 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			const int BaseModulus = 2048;
-			const int Modulus = 1723;
 			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus, Modulus);
+			TestDictionary(_library, BaseModulus1, Modulus1);
 		}
 
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			const int BaseModulus = 227;
-			const int Modulus = 1000005;
 			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus, Modulus);
+			TestDictionary(_library, BaseModulus2, Modulus2);
 		}
 	}
 }
