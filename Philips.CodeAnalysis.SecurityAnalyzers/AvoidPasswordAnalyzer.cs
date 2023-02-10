@@ -21,6 +21,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private const string MsTestMetadataReference = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 
+		public virtual bool ShouldAnalyzeTests { get; set; }
+
 		public AvoidPasswordAnalyzer()
 			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
 		{ }
@@ -31,14 +33,13 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(context =>
 			{
-				if (context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
+				if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
 				{
-					return;
+					context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+					context.RegisterSyntaxTreeAction(AnalyzeComments);
 				}
-				context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
-				context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-				context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				context.RegisterSyntaxTreeAction(AnalyzeComments);
 			});
 		}
 
