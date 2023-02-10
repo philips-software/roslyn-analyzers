@@ -23,5 +23,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public const string SortedListClassName = "SortedList";
 		public const string WindowsNewLine = "\r\n";
 		public const string List = "List";
+		public const string Dispose = "Dispose";
 	}
 }
