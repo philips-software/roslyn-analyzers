@@ -45,9 +45,20 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DynamicNamesShouldNotTriggerDiagnostic(string testCode)
+		public async Task CantBeDynamicAsync(string testCode, int errorCount)
 		{
-			VerifySuccessfulCompilation(testCode);
+			if (errorCount == 0)
+			{
+				await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+			}
+			else if (errorCount == 1)
+			{
+				await VerifyDiagnostic(testCode).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifyDiagnostic(testCode, errorCount).ConfigureAwait(false);
+			}
 		}
 
 		#endregion

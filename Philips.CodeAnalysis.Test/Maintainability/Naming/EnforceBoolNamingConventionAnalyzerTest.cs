@@ -3,6 +3,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("wasFoo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIsCorrect(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -60,17 +61,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void VariableNameIsNotBool()
+		public async Task VariableNameIsNotBoolAsync()
 		{
 			string givenText = @"class Foo 
 {{
@@ -79,7 +80,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 
@@ -113,7 +114,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameIsCorrectPublic(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrectPublicAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -124,17 +125,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromConstant()
+		public async Task FieldVariableFromConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -142,12 +143,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableFromConstantValue()
+		public async Task FieldVariableFromConstantValueAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -156,7 +157,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	private static readonly bool _shouldFoo = true;
 }}
 ";
-			VerifySuccessfulCompilation(baseline);
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
 		}
 
 		[DataRow("i", false)]
@@ -186,7 +187,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_is12foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrect(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -200,11 +201,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
@@ -237,7 +238,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(int i in new[] { 55, 22 }){}", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameIsCorrectForeach(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -251,11 +252,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
@@ -263,7 +264,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FieldVariableNameOfTypeBoolean(string content, bool isGood)
+		public async Task FieldVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
 			string baseline = @"using System;
 class Foo 
@@ -275,11 +276,11 @@ class Foo
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
@@ -287,7 +288,7 @@ class Foo
 		[DataRow("isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameOfTypeBoolean(string content, bool isGood)
+		public async Task LocalVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
 			string baseline = @"using System;
 class Foo 
@@ -302,11 +303,11 @@ class Foo
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
@@ -314,7 +315,7 @@ class Foo
 		[DataRow("isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LocalVariableNameOfTypeVar(string content, bool isGood)
+		public async Task LocalVariableNameOfTypeVarAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -328,11 +329,11 @@ class Foo
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
@@ -347,7 +348,7 @@ class Foo
 		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PropertyNameIsCorrect(string content, bool isGood)
+		public async Task PropertyNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -363,18 +364,18 @@ class Foo
 
 			if (isGood)
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void BaseClassPropertiesAreNotErrors()
+		public async Task BaseClassPropertiesAreNotErrorsAsync()
 		{
 			string baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -394,12 +395,12 @@ class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void InterfacePropertiesAreNotErrors()
+		public async Task InterfacePropertiesAreNotErrorsAsync()
 		{
 			string baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -419,12 +420,12 @@ abstract class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void BaseClassMethodsAreNotErrors()
+		public async Task BaseClassMethodsAreNotErrorsAsync()
 		{
 			string baseline = @"
 using System.Windows.Forms;
@@ -438,7 +439,7 @@ abstract class Foo : ApplicationContext
 }
 ";
 			string givenText = baseline;
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 	}
 }

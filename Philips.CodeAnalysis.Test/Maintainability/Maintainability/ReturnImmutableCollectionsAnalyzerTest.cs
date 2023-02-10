@@ -187,9 +187,9 @@ namespace ReturnImmutableTests {
 		 DataRow(CorrectPrivate, DisplayName = nameof(CorrectPrivate)),
 		 DataRow(CorrectProperty, DisplayName = nameof(CorrectProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -206,9 +206,9 @@ namespace ReturnImmutableTests {
 		 DataRow(WrongArray, CorrectReadOnlyList, DisplayName = nameof(WrongArray)),
 		 DataRow(WrongProperty, null, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.ReturnImmutableCollections);
+			await VerifyDiagnostic(testCode, DiagnosticId.ReturnImmutableCollections).ConfigureAwait(false);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
 				await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
@@ -221,12 +221,13 @@ namespace ReturnImmutableTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongList, filePath);
+			await VerifySuccessfulCompilation(WrongList, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new ReturnImmutableCollectionsAnalyzer();
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,10 +48,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
 			_ = cert.PrivateKey;")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidPrivateKeyPropertyOnX509Certificate(string s)
+		public async Task AvoidPrivateKeyPropertyOnX509CertificateAsync(string s)
 		{
 			string code = string.Format(ClassString, s);
-			VerifyDiagnostic(code);
+			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 	}
 }

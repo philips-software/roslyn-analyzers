@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -59,9 +60,9 @@ namespace AvoidUsingParametersTest {
 		 DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectNoLoopVariable, DisplayName = nameof(CorrectNoLoopVariable))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -70,9 +71,9 @@ namespace AvoidUsingParametersTest {
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) 
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.AvoidChangingLoopVariables);
+			await VerifyDiagnostic(testCode, DiagnosticId.AvoidChangingLoopVariables).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -81,12 +82,13 @@ namespace AvoidUsingParametersTest {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(Wrong, filePath);
+			await VerifySuccessfulCompilation(Wrong, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidUsingParametersAsTempVariablesAnalyzer();
 		}
 	}

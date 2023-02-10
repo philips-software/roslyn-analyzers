@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
@@ -8,10 +9,10 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-    /// <summary>
-    /// Test class for <see cref="CastCompleteObjectAnalyzer"/>.
-    /// </summary>
-    [TestClass]
+	/// <summary>
+	/// Test class for <see cref="CastCompleteObjectAnalyzer"/>.
+	/// </summary>
+	[TestClass]
 	public class CastCompleteObjectAnalyzerTest : DiagnosticVerifier
 	{
 		private const string CorrectSingleField = @"
@@ -30,7 +31,7 @@ namespace CastCompleteTests {
     }
 }";
 
-        private const string WrongMulipleFields = @"
+		private const string WrongMulipleFields = @"
 namespace CastCompleteTests {
     public class Number {
         private int n;
@@ -38,7 +39,7 @@ namespace CastCompleteTests {
         public static explicit operator int(Number num) { return num.n; }
     }
 }";
-		
+
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
@@ -47,9 +48,9 @@ namespace CastCompleteTests {
 		 DataRow(CorrectSingleField, DisplayName = nameof(CorrectSingleField)),
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -58,9 +59,9 @@ namespace CastCompleteTests {
 		[DataTestMethod]
 		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode)
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -69,9 +70,9 @@ namespace CastCompleteTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongMulipleFields, filePath);
+			await VerifySuccessfulCompilation(WrongMulipleFields, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

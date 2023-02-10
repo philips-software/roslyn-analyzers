@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public override void Analyze()
 		{
 			// Only interested in TestMethod attributes
-			if(Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
+			if (Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
 			{
 				return;
 			}

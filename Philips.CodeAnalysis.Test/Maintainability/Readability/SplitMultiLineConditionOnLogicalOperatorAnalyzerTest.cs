@@ -198,7 +198,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-        private const string CorrectAssignmentToBool = @"
+		private const string CorrectAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -214,7 +214,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-        private const string WrongAssignmentToBool = @"
+		private const string WrongAssignmentToBool = @"
 using System;
 
 namespace MultiLineConditionUnitTests
@@ -262,7 +262,7 @@ namespace MultiLineConditionUnitTests
     }
 }";
 
-		        private const string Wrong4Violations = @"
+		private const string Wrong4Violations = @"
 namespace MultiLineConditionUnitTests
 {
     public class Program
@@ -291,9 +291,9 @@ namespace MultiLineConditionUnitTests
 		 DataRow(CorrectMultiLine, DisplayName = nameof(CorrectMultiLine)),
 		 DataRow(CorrectFromCommon, DisplayName = nameof(CorrectFromCommon))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -322,7 +322,7 @@ namespace MultiLineConditionUnitTests
 						new DiagnosticResultLocation("Test0.cs", line, column)
 					}
 			};
-			VerifyDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, expected).ConfigureAwait(false);
 			if (!string.IsNullOrEmpty(fixedCode))
 			{
 				await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
@@ -337,7 +337,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(Wrong4Violations, 3, DisplayName = nameof(Wrong4Violations))
 		]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMultiLineConditionIsIncorrectInMorePlacesCorrectNumberOfDiagnosticIsTriggered(
+		public async Task WhenMultiLineConditionIsIncorrectInMorePlacesCorrectNumberOfDiagnosticIsTriggeredAsync(
 			string testCode,
 			int expectedCount
 		)
@@ -350,7 +350,7 @@ namespace MultiLineConditionUnitTests
 			};
 			var expectedArray = new DiagnosticResult[expectedCount];
 			Array.Fill(expectedArray, expected);
-			VerifyDiagnostic(testCode, expectedArray);
+			await VerifyDiagnostic(testCode, expectedArray).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -359,9 +359,9 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(WrongBreak, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>

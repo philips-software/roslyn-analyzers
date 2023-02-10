@@ -1,11 +1,8 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

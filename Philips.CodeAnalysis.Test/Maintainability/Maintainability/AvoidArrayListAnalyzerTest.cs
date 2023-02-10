@@ -85,24 +85,25 @@ namespace AvoidArrayListTests {
 		 DataRow(CorrectField, DisplayName = nameof(CorrectField)),
 		 DataRow(CorrectLocal, DisplayName = nameof(CorrectLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)), 
+		[DataRow(WrongField, FixedField, DisplayName = nameof(WrongField)),
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode) {
-			VerifyDiagnostic(testCode);
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			if (fixedCode != null)
 			{
-				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics:true).ConfigureAwait(false);
+				await VerifyFix(testCode, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 			}
 		}
 
@@ -112,12 +113,13 @@ namespace AvoidArrayListTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongLocal, filePath);
+			await VerifySuccessfulCompilation(WrongLocal, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidArrayListAnalyzer();
 		}
 

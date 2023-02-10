@@ -35,7 +35,7 @@ class FooClass
 			string before = string.Format(template, @"task.Result");
 			string after = string.Format(template, @"await task");
 
-			VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
@@ -56,7 +56,7 @@ class FooClass
 			string before = string.Format(template, @"new Task<int>(() => 4).Result");
 			string after = string.Format(template, @"await new Task<int>(() => 4)");
 
-			VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
@@ -82,7 +82,7 @@ class FooClass
 			string before = string.Format(template, @"Foo(1).Result");
 			string after = string.Format(template, @"await Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 
@@ -108,7 +108,7 @@ class FooClass
 			string before = string.Format(template, @"this.Foo(1).Result");
 			string after = string.Format(template, @"await this.Foo(1)");
 
-			VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult);
+			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
 		}
 

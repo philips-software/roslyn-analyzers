@@ -87,7 +87,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				AttributeSyntax attributeSyntax =
 					attributes.Attributes.FirstOrDefault(attr => attr.Name.ToString().Contains(@"Timeout"));
-				if (attributeSyntax != null) { 
+				if (attributeSyntax != null)
+				{
 					SyntaxNode newRoot = rootNode.ReplaceNode(attributeSyntax, newAttribute);
 
 					return document.WithSyntaxRoot(newRoot);

@@ -148,7 +148,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 
 				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() +
-				                newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+								newNameSuffix.Substring(1, newNameSuffix.Length - 1);
 				niceName = @"resultOf" + newNameSuffix;
 			}
 

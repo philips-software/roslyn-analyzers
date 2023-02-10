@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -55,11 +56,11 @@ namespace RegexNeedsTimeoutTest
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled)")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"")")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WithoutTimeoutShouldTriggerDiagnostic(string content)
+		public async Task WithoutTimeoutShouldTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content);
-			VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout);
+			await VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -70,16 +71,16 @@ namespace RegexNeedsTimeoutTest
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.NonBacktracking)")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WithTimeoutShouldNotTriggerDiagnostic(string content)
+		public async Task WithTimeoutShouldNotTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoesNotTriggerDiagnosticInTestCode()
+		public async Task DoesNotTriggerDiagnosticInTestCodeAsync()
 		{
 			const string template = @"
 using System;
@@ -94,7 +95,7 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 
 		}
 

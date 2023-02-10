@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -57,7 +58,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithLocalVar = @"
+		private const string CorrectWithLocalVar = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -70,7 +71,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectWithNameOf = @"
+		private const string CorrectWithNameOf = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -82,7 +83,7 @@ public class Foo
 }
 ";
 
-        private const string CorrectInterpolatedString = @"
+		private const string CorrectInterpolatedString = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -140,18 +141,18 @@ public class Foo
 		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString)),
 		 DataRow(CorrectAddStatement, DisplayName = nameof(CorrectAddStatement))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectCodeShouldNotTriggerAnyDiagnostics(string testCode)
+		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments)),
 		DataRow(WrongIssue273, DisplayName = nameof(WrongIssue273))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode)
+		public async Task MissingOrWrongDocumentationShouldTriggerDiagnosticAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode, DiagnosticId.ThrowInformationalExceptions, regex: "Specify context to the .+, by using a constructor overload that sets the Message property.");
+			await VerifyDiagnostic(testCode, DiagnosticId.ThrowInformationalExceptions, regex: "Specify context to the .+, by using a constructor overload that sets the Message property.").ConfigureAwait(false);
 		}
 	}
 }

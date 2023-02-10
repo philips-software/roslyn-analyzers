@@ -96,10 +96,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (
 				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
-				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id)) 
+				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
-					context.ReportDiagnostic(diagnostic);
+				context.ReportDiagnostic(diagnostic);
 			}
 		}
 

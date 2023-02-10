@@ -155,29 +155,29 @@ public static class Foo
 		public async Task FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
 
-			VerifyDiagnostic(input, DiagnosticId.AvoidMultipleLambdasOnSingleLine);
+			await VerifyDiagnostic(input, DiagnosticId.AvoidMultipleLambdasOnSingleLine).ConfigureAwait(false);
 			await VerifyFix(input, fixedCode).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
-		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)), 
+		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)),
 		 DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
 		 DataRow(CorrectMultiple, DisplayName = nameof(CorrectMultiple)),
 		 DataRow(CorrectDistinct, DisplayName = nameof(CorrectDistinct)),
 		 DataRow(CorrectMoreLines, DisplayName = nameof(CorrectMoreLines)),
 		 DataRow(CorrectParenthesized, DisplayName = nameof(CorrectParenthesized))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CorrectDoesNotFlag(string input)
+		public async Task CorrectDoesNotFlagAsync(string input)
 		{
-			VerifySuccessfulCompilation(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void GeneratedFileWrongIsNotFlagged()
+		public async Task GeneratedFileWrongIsNotFlaggedAsync()
 		{
-			VerifySuccessfulCompilation(WrongMultiple, @"Foo.designer");
+			await VerifySuccessfulCompilation(WrongMultiple, @"Foo.designer").ConfigureAwait(false);
 		}
 	}
 }

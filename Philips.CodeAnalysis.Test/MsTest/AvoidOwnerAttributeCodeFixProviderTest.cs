@@ -43,7 +43,7 @@ class Foo
   }
 }
 ";
-			
+
 			string givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
@@ -57,7 +57,7 @@ class Foo
 				}
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 

@@ -17,6 +17,11 @@ namespace Philips.CodeAnalysis.Common
 			return @"PH" + ((int)id).ToString();
 		}
 
+		public static string ToHelpLinkUrl(string id)
+		{
+			return $"https://github.com/philips-software/roslyn-analyzers/blob/master/Documentation/Diagnostics/{id}.md";
+		}
+
 		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
 		{
 			var values = diagnostics.Select(diagnostic => diagnostic.Id);
@@ -92,7 +97,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsExtensionClass(INamedTypeSymbol declaredSymbol)
 		{
-			return 
+			return
 				declaredSymbol is { MightContainExtensionMethods: true } &&
 					!declaredSymbol.GetMembers().Any(m =>
 						m.Kind == SymbolKind.Method &&
@@ -157,9 +162,9 @@ namespace Philips.CodeAnalysis.Common
 		{
 			var list = new Dictionary<string, string>();
 			var root = node.SyntaxTree.GetRoot();
-			foreach(var child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
+			foreach (var child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
 			{
-				if(child.Alias != null)
+				if (child.Alias != null)
 				{
 					var alias = child.Alias.Name.GetFullName(list);
 					var name = child.Name.GetFullName(list);

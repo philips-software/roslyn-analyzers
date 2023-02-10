@@ -16,6 +16,7 @@ using Castle.Core.Internal;
 using System.Collections.Immutable;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -36,7 +37,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadGeneratedCodeIgnoredTest()
+		public async Task CognitiveLoadGeneratedCodeIgnoredTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -51,13 +52,13 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template, "Test.Designer");
+			await VerifySuccessfulCompilation(template, "Test.Designer").ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad1()
+		public async Task CognitiveLoad1Async()
 		{
 			const string template = @"
 class Foo
@@ -67,13 +68,13 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIf()
+		public async Task CognitiveLoadIfAsync()
 		{
 			const string template = @"
 class Foo
@@ -85,12 +86,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(2);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadExpressionBody()
+		public async Task CognitiveLoadExpressionBodyAsync()
 		{
 			const string template = @"
 class Foo
@@ -98,12 +99,12 @@ class Foo
 	private string MakeString() => new string(""MyString"");
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfNotEqual()
+		public async Task CognitiveLoadIfNotEqualAsync()
 		{
 			const string template = @"
 class Foo
@@ -115,12 +116,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfReturn()
+		public async Task CognitiveLoadIfReturnAsync()
 		{
 			const string template = @"
 class Foo
@@ -132,12 +133,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(2);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfLogicalOr()
+		public async Task CognitiveLoadIfLogicalOrAsync()
 		{
 			const string template = @"
 class Foo
@@ -149,12 +150,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadIfLogicalAnd()
+		public async Task CognitiveLoadIfLogicalAndAsync()
 		{
 			const string template = @"
 class Foo
@@ -166,12 +167,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadBreak()
+		public async Task CognitiveLoadBreakAsync()
 		{
 			const string template = @"
 class Foo
@@ -183,12 +184,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadBang()
+		public async Task CognitiveLoadBangAsync()
 		{
 			const string template = @"
 class Foo
@@ -200,12 +201,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(3);
-            VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested1()
+		public async Task CognitiveLoadNested1Async()
 		{
 			const string template = @"
 class Foo
@@ -221,12 +222,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(4);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested2()
+		public async Task CognitiveLoadNested2Async()
 		{
 			const string template = @"
 class Foo
@@ -244,12 +245,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(6);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadNested3()
+		public async Task CognitiveLoadNested3Async()
 		{
 			const string template = @"
 class Foo
@@ -269,14 +270,14 @@ class Foo
 }
 ";
 			string regex = MakeRegex(8);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadCombo()
+		public async Task CognitiveLoadComboAsync()
 		{
 			const string template = @"
 class Foo
@@ -293,12 +294,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(5);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad3()
+		public async Task CognitiveLoad3Async()
 		{
 			const string template = @"
 class Foo
@@ -360,13 +361,13 @@ class Foo
 }
 ";
 			string regex = MakeRegex(34);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad4()
+		public async Task CognitiveLoad4Async()
 		{
 			const string template = @"
 class Foo
@@ -424,12 +425,12 @@ class Foo
 }
 ";
 			string regex = MakeRegex(26);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoad5()
+		public async Task CognitiveLoad5Async()
 		{
 			const string template = @"
 class Foo
@@ -474,7 +475,7 @@ class Foo
 	}
 }";
 			string regex = MakeRegex(48);
-			VerifyDiagnostic(template, regex: regex);
+			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 	}
 
@@ -492,7 +493,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
+		public async Task CognitiveLoadInitPassTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -514,12 +515,12 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitFailTest()
+		public async Task CognitiveLoadInitFailTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -542,7 +543,7 @@ class Foo
 	}
 }
 ";
-			VerifyDiagnostic(template, regex: "Load of 27 ");
+			await VerifyDiagnostic(template, regex: "Load of 27 ").ConfigureAwait(false);
 		}
 	}
 
@@ -556,7 +557,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CognitiveLoadInitPassTest()
+		public async Task CognitiveLoadInitPassTestAsync()
 		{
 			const string template = @"
 class Foo
@@ -578,7 +579,7 @@ class Foo
 	}
 }
 ";
-			VerifySuccessfulCompilation(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 	}
 }

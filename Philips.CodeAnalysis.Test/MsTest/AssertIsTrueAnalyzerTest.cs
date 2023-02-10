@@ -106,7 +106,7 @@ class Foo
 
 ";
 
-			VerifySuccessfulCompilation(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 
 			await VerifyFix(givenText, givenText).ConfigureAwait(false);
 		}

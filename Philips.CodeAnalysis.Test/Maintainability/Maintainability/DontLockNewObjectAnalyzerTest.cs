@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 using System;
 using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -20,14 +21,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new DontLockNewObjectAnalyzer();
 		}
 
-	
+
 		[DataRow("this", false)]
 		[DataRow("lockObj", false)]
 		[DataRow("new object()", true)]
 		[DataRow("new object().ToString()", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void PreventLockOnUncapturedVariable(string lockText, bool isExpectedError)
+		public async Task PreventLockOnUncapturedVariableAsync(string lockText, bool isExpectedError)
 		{
 			string text = @$"
 public class Foo
@@ -43,11 +44,11 @@ public class Foo
 
 			if (isExpectedError)
 			{
-				VerifyDiagnostic(text, DiagnosticId.DontLockNewObject);
+				await VerifyDiagnostic(text, DiagnosticId.DontLockNewObject).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(text);
+				await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 			}
 		}
 

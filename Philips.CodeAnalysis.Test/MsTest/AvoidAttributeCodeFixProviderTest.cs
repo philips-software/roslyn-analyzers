@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestInitializeMethod);
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassInitializeMethod);
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestCleanupMethod);
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			string givenText = string.Format(baseline, testMethod);
 
 			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassCleanupMethod);
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}

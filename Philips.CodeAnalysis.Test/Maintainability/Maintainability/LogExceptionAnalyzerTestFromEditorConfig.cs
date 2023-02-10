@@ -1,6 +1,7 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -44,9 +45,9 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(CorrectCode, DisplayName = "CorrectCode")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenExceptionIsLoggedNoDiagnosticShouldBeTriggered(string testCode)
+		public async Task WhenExceptionIsLoggedNoDiagnosticShouldBeTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>

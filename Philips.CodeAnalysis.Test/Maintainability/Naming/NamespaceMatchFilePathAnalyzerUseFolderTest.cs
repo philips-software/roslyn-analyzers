@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,10 +42,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.Test", "C:\\development\\Philips.Production\\code\\MyTest.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Production\\MyAnalyzer.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.TestFramework\\MyHelper.cs")]
-		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName="Namespace Match, Folder Does not")]
+		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void ReportIncorrectNamespaceFolderMatch(string ns, string path)
+		public async Task ReportIncorrectNamespaceFolderMatchAsync(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
@@ -59,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyDiagnostic(code, expected, sanitizedPath);
+			await VerifyDiagnostic(code, expected, sanitizedPath).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -67,11 +68,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DoNotReportANamespaceSupersetFolderMatch(string ns, string path)
+		public async Task DoNotReportANamespaceSupersetFolderMatchAsync(string ns, string path)
 		{
 			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			string code = string.Format(ClassString, ns);
-			VerifySuccessfulCompilation(code, sanitizedPath);
+			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
 		}
 	}
 }

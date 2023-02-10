@@ -56,8 +56,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			switch (genericNameSyntax.Identifier.Value)
 			{
-				case @"Create": AnalyzeInvocation(context, invocationExpressionSyntax, "MockFactory", true, true); break;
-				case @"Of": AnalyzeInvocation(context, invocationExpressionSyntax, MockName, false, false); break;
+				case @"Create":
+					AnalyzeInvocation(context, invocationExpressionSyntax, "MockFactory", true, true);
+					break;
+				case @"Of":
+					AnalyzeInvocation(context, invocationExpressionSyntax, MockName, false, false);
+					break;
 				default:
 					return;
 			}

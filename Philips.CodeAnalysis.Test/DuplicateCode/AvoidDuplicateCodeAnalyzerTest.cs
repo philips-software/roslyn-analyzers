@@ -293,10 +293,10 @@ Foo.WhitelistedFunction";
 		[DataTestMethod]
 		[DataRow("object obj = new object();", "Foo()")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeNoError(string method1, string method2)
+		public async Task AvoidDuplicateCodeNoErrorAsync(string method1, string method2)
 		{
 			var file = CreateFunctions(method1, method2);
-			VerifySuccessfulCompilation(file);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -314,7 +314,7 @@ Foo.WhitelistedFunction";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeErrorInSameMethod()
+		public async Task AvoidDuplicateCodeErrorInSameMethodAsync()
 		{
 			string baseline = @"
 class Foo 
@@ -328,12 +328,12 @@ class Foo
 }}
 ";
 
-			Verify(baseline);
+			await VerifyAsync(baseline).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidDuplicateCodeNoErrorWhenOverlapping()
+		public async Task AvoidDuplicateCodeNoErrorWhenOverlappingAsync()
 		{
 			// The first two initializations are identical to the second two initializations, but "int b = 0" is overlapping.
 			string baseline = @"
@@ -348,7 +348,7 @@ class Foo
 }}
 ";
 
-			VerifySuccessfulCompilation(baseline);
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
 		}
 
 
@@ -376,9 +376,9 @@ namespace MyNamespace
 		}
 
 
-		private void Verify(string file)
+		private async Task VerifyAsync(string file)
 		{
-			VerifyDiagnostic(file,
+			await VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
 					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
@@ -390,7 +390,7 @@ namespace MyNamespace
 						new DiagnosticResultLocation("Test0.cs", null, null),
 					}
 				}
-			);
+			).ConfigureAwait(false);
 		}
 	}
 }

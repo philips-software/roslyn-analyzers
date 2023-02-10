@@ -1,4 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -28,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("1.1.2", "1.1.2+417ce", false)]
 		[DataRow("1.1.2", "1.1.2-beta+417ce", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
+		public async Task FileVersionMustBeSameAsPackageVersionAsync(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
 			string code = $@"
 using System;
@@ -49,17 +50,17 @@ class FooClass
 
 			if (hasDiagnostic)
 			{
-				VerifyDiagnostic(code, DiagnosticId.EnforceFileVersionIsSameAsPackageVersion);
+				await VerifyDiagnostic(code, DiagnosticId.EnforceFileVersionIsSameAsPackageVersion).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoDiagnosticWhenNoPackageVersion()
+		public async Task NoDiagnosticWhenNoPackageVersionAsync()
 		{
 			string code = $@"
 using System;
@@ -77,12 +78,12 @@ class FooClass
 }}}}
 ";
 
-			VerifySuccessfulCompilation(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void NoDiagnosticWhenNoFileVersionOrPackageVersion()
+		public async Task NoDiagnosticWhenNoFileVersionOrPackageVersionAsync()
 		{
 			string code = $@"
 using System;
@@ -97,7 +98,7 @@ class FooClass
 }}}}
 ";
 
-			VerifySuccessfulCompilation(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

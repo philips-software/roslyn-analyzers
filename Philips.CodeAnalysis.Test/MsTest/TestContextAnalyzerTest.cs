@@ -44,7 +44,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-string fixedText = @"
+			string fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestContextAnalyzerTest
 {
@@ -58,7 +58,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-			VerifyDiagnostic(givenText, DiagnosticId.TestContext);
+			await VerifyDiagnostic(givenText, DiagnosticId.TestContext).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 

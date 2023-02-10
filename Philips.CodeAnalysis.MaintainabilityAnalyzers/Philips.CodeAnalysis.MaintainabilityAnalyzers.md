@@ -10,7 +10,7 @@
 | PH2029  | Avoid #pragma                                | #pragmas result in violations of codified coding guidelines. |
 | PH2030  | Variable naming conventions                  | Fields look like `_foo`. Locals look like `foo`.  (This analyzer does not respect IntelliSense settings in the .editorconfig.  It assumes this is your naming convention.)|
 | PH2031  | Avoid TryParse without Culture               | When interpreting a string as a number, always specify culture information.                                                             |
-| PH2032  | Avoid Empty Type Initializer                 | Empty type initializers are unnecessary.                          |
+| [PH2032](../Documentation/Diagnostics/PH2032.md) | Avoid Empty Type Initializer                 | Empty type initializers are unnecessary.                          |
 | PH2040  | ServiceContracts have InterfaceContracts     | Interfaces marked with [ServiceContract] must have methods marked with [OperationContract]|
 | PH2042  | WinForms InitalizeComponent                  | Legacy WinForms must call InitializeComponent exactly once. (As we moved away from static classes, and introduced construtor injection patterns, this pattern requires refactoring legacy code, and we found ourselves breaking these legacy forms.) |
 | PH2044  | Avoid dynamic keyword                        | The `dynamic` keyword is not checked for type safety at compile time. |
@@ -41,41 +41,41 @@
 | PH2086  | Avoid calling Task<TResult>.Result           | [Avoid calling Task<TResult>.Result](https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way)|
 | PH2087  | Do not use spaces in filenames               | Not all tools handle files correctly that have spaces in their names. Homebrew scripts are prone to this for example.|
 | PH2088  | Paths should not exceed 260 characters       | This prevents your code to run correctly on older Windows version.|
-| PH2089  | Avoid assignments in conditions              | Conditions shouldn't have any side effects. Assign a variable outside of the condition instead.|
+| [PH2089](../Documentation/Diagnostics/PH2089.md)  | Avoid assignments in conditions              | Conditions shouldn't have any side effects. Assign a variable outside of the condition instead.|
 | PH2090  |	Log Exception                                | Log any of the caught exceptions. The Log method names are configurable either in the .editorconfig using key: 'dotnet_code_quality.PH2090.log_method_names' or by adding an <AdditionalFiles> named AllowedLogMethods.txt.|
 | PH2091  |	Throw Inner Exception                        | When throwing an exception inside a catch block, include the original exception as arguments. This will show the inner exception also in a Callstack, aiding debugability. |
 | PH2092  | Limit Condition Complexity                   | Limit the number of logical expressions in a single condition. Humans are not very good of keeping track of large logical expressions. The maximum allowed number is configurable in the .editorconfig using key: 'dotnet_code_quality.PH2092.max_operators'.|
 | PH2093  |	Prefer creating tuples with named fields     | When creating or accepting a tuple, provide names for the elements (IE, prefer (DateTime createdAt, int id) rather than (DateTime, int) |
 | PH2094  | Prefer using the named tuple field, not ItemX| Wherever possible, use the provided name of a tuple field, not the generic name.  (IE, (DateTime createdAt, int id) value;  value.Item1.ToString(), prefer value.createdAt.ToString() |
-| PH2096  | Prefer async Task methods over async void methods | Wherever possible return Task rather then void for async methods. Exception are Event handlers |
-| PH2097  | Avoid Empty Statement Blocks                 | Avoid empty statement blocks |
-| PH2098  | Avoid Empty Catch Block                      | Avoid try-catch-swallow pattern |
+| [PH2096](../Documentation/Diagnostics/PH2096.md)  | Prefer async Task methods over async void methods | Wherever possible return Task rather then void for async methods. Exception are Event handlers |
+| [PH2097](../Documentation/Diagnostics/PH2097.md)  | Avoid Empty Statement Blocks                 | Avoid empty statement blocks |
+| [PH2098](../Documentation/Diagnostics/PH2098.md)  | Avoid Empty Catch Block                      | Avoid try-catch-swallow pattern |
 | PH2099  | Enforce FileVersion to be same as PackageVersion | For NuGet packages, this analyzer enforces that the .NET AssemblyFileVersion is equal to the AssemblyInformationalVersion. AssemblyFileVersion is not used at runtime, so it is helpful for it to match the Package Version. Set it with the &lt;FileVersion&gt; tag in the project file. If not set, it will inherit from &lt;AssemblyVersion&gt;, which if not set will inherit from &lt;Version&gt;|
 | PH2101  | Detect Null Dereference after "as"           | After "as" include null checks; or, use static cast to set expectations. |
 | PH2102  | Xml documentation should add value           | The content of the summary block of the inline XML code documentation, should add more information then merely repeating its name. |
-| PH2103  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
+| [PH2103](../Documentation/Diagnostics/PH2103.md)  | Avoid method calls as arguments              | Avoid method calls as arguments to method calls. For example, avoid `Foo(Meow())` |
 | PH2104  | Every Linq statement on separate line        | Put every linq statement on a separate line, this makes it easier for a reader to follow the steps. |
-| PH2105  | Align number of + and - operators            | Overload the minus (-) operator, when you overload the plus (+) operator, as these are often used in combination with each other. |
-| PH2106  | Align number of * and / operators            | Overload the divide (/) operator, when you overload the multiple (*) operator, as these are often used in combination with each other. |
-| PH2107  | Align number of > and < operators            | Overload the smaller than (<) operator, when you overload the greater than (>) operator, as these are often used in combination with each other. |
-| PH2108  | Align number of >= and <= operators          | Overload the smaller or equal (<=) operator, when you overload the greater or equal (>=) operator, as these are often used in combination with each other. |
-| PH2109  | Align number of >> and << operators          | Overload the left shift (<<) operator, when you overload the right shift (>>) operator, as these are often used in combination with each other. |
-| PH2110  | Align number of ++ and -- operators          | Overload the increment (--) operator, when you overload the increment (++) operator, as these are often used in combination with each other. |
+| [PH2105](../Documentation/Diagnostics/PH2105.md)  | Align number of + and - operators            | Overload the minus (-) operator, when you overload the plus (+) operator, as these are often used in combination with each other. |
+| [PH2106](../Documentation/Diagnostics/PH2106.md)  | Align number of * and / operators            | Overload the divide (/) operator, when you overload the multiple (*) operator, as these are often used in combination with each other. |
+| [PH2107](../Documentation/Diagnostics/PH2107.md)  | Align number of > and < operators            | Overload the smaller than (<) operator, when you overload the greater than (>) operator, as these are often used in combination with each other. |
+| [PH2108](../Documentation/Diagnostics/PH2108.md)  | Align number of >= and <= operators          | Overload the smaller or equal (<=) operator, when you overload the greater or equal (>=) operator, as these are often used in combination with each other. |
+| [PH2109](../Documentation/Diagnostics/PH2109.md)  | Align number of >> and << operators          | Overload the left shift (<<) operator, when you overload the right shift (>>) operator, as these are often used in combination with each other. |
+| [PH2110](../Documentation/Diagnostics/PH2110.md)  | Align number of ++ and -- operators          | Overload the increment (--) operator, when you overload the increment (++) operator, as these are often used in combination with each other. |
 | PH2111  | Reduce Cognitive Load                        | Reduce the number of logical cases, negations, or especially nested blocks in this method. Extracting a method is the typical solution. |
 | PH2112  | Avoid overridde with new keyword             | Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property. |
 | PH2113  | Merge If Statements                          | Nested If statements lacking else clauses and containing the same body can be safely merged to reduce cognitive load |
-| PH2114  | Avoid empty statement                        | Avoid empty statements. |
+| [PH2114](../Documentation/Diagnostics/PH2114.md)  | Avoid empty statement                        | Avoid empty statements. |
 | PH2115  | Every Lambda expression on separate line     | Avoid putting multiple lambda statements on a single line for readability. |
-| PH2116  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
+| [PH2116](../Documentation/Diagnostics/PH2116.md)  | Avoid ArrayList                              | Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead. |
 | PH2117  | Avoid Unnecessary Where()                    | Move the predicate of the Where clause into the Any(), Count(), First(), Last(), or Single() clause |
-| PH2118  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
+| [PH2118](../Documentation/Diagnostics/PH2118.md)  | Avoid inline magic numbers                   | Avoid inline magic number, define them as constant or include in an enumeration instead. |
 | PH2119  | Cast complete object                         | A cast should include all information from the previous type. By casting to a type of one of the fields, the cast is losing information. Use an AsType() or ToType() method instead. |
 | PH2120  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method. |
 | PH2121  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |
 | PH2122  | Avoid Exceptions from unexpected locations   | Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, some operators, and overidden methods of Object. |
 | PH2123  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
 | PH2124  | Document unhandled exceptions                | Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.|
-| PH2125  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
+| [PH2125](../Documentation/Diagnostics/PH2125.md)  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
 | PH2126  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
 | PH2127  | Avoid changing loop variables                | Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.|
 | PH2128  | Split multi-line condition on logical operator | In case that the condition of an "if" or "?" statement covers more then one line, its line endings should be right after the logical operators (&& and ||). This is aligns with the mental split when reading the code. |
@@ -86,4 +86,4 @@
 | PH2133  | Unmanaged objects need disposing             | Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable. |
 | PH2134  | Set properties in any order                  | Getting other properties in a setter makes this setter dependent on the order in which these properties are set. |
 | PH2135  | Match namespace and Assembly Name            | The Assembly Name and Namespace must match. |
-| PH2136  | Avoid duplicate strings                      | Duplicate strings are less maintainable. |
+| [PH2136](../Documentation/Diagnostics/PH2136.md)  | Avoid duplicate strings                      | Duplicate strings are less maintainable. |

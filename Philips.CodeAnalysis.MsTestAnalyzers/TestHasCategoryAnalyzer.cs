@@ -86,7 +86,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			private static string TrimStart(string victim, string piece)
 			{
 				var index = victim.IndexOf(piece);
-				if(index > 0)
+				if (index > 0)
 				{
 					return victim.Substring(index);
 				}

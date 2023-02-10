@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Test.Helpers;
 
@@ -9,25 +10,25 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	{
 		private readonly AssertCodeHelper _helper = new();
 
-		protected void VerifyError(string methodBody, string expectedDiagnosticId)
+		protected async Task VerifyError(string methodBody, string expectedDiagnosticId)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			var expected = 
+			var expected =
 				new DiagnosticResult()
 				{
 					Id = expectedDiagnosticId,
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				};
-			VerifyDiagnostic(test, expected);
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
 
-		protected void VerifyNoError(string methodBody)
+		protected async Task VerifyNoError(string methodBody)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifySuccessfulCompilation(test);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 	}
 }

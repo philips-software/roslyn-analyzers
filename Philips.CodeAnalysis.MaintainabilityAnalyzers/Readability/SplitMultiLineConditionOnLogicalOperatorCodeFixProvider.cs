@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					diagnostic);
 			}
 		}
-	
+
 		private async Task<Document> ApplyCodeFix(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				return document;
 			}
-			
+
 			// First remove the EOL from the violating token.
 			var oldTrivia = node.GetTrailingTrivia();
 			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);

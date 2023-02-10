@@ -1,13 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -19,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerPartialDoesNotCrash()
+		public async Task AvoidEmptyTypeInitializerPartialDoesNotCrashAsync()
 		{
 			const string template = @"public class Foo 
 {{
@@ -28,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 }}
 ";
 			string classContent = template;
-			VerifySuccessfulCompilation(classContent);
+			await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 		}
 
 		[DataRow("static", "", true)]
@@ -37,7 +33,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("static", "int x = 4;", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidEmptyTypeInitializerStatic(string modifier, string content, bool isError)
+		public async Task AvoidEmptyTypeInitializerStaticAsync(string modifier, string content, bool isError)
 		{
 			const string template = @"public class Foo 
 {{
@@ -51,11 +47,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 			if (isError)
 			{
-				VerifyDiagnostic(classContent);
+				await VerifyDiagnostic(classContent).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(classContent);
+				await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 			}
 		}
 

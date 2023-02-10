@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
 		[DataRow(@"[Owner(""MK""), TestMethod]", 15)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestHasCategoryAttributeTest(string test, int expectedColumn)
+		public async Task TestHasCategoryAttributeTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,7 +43,7 @@ class Foo
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, expectedColumn) }
 			};
 
-			VerifyDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -52,7 +52,7 @@ class Foo
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestHasCategoryAttributeTest2(string category, bool isError)
+		public async Task TestHasCategoryAttributeTest2Async(string category, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -64,7 +64,7 @@ class Foo
   }}
 }}
 ";
-			VerifyError(baseline, category, isError);
+			await VerifyErrorAsync(baseline, category, isError).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -73,7 +73,7 @@ class Foo
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestHasCategoryAttributeIndirectionTest(string category, bool isError)
+		public async Task TestHasCategoryAttributeIndirectionTestAsync(string category, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -91,7 +91,7 @@ class Foo
   }}
 }}
 ";
-			VerifyError(baseline, category, isError);
+			await VerifyErrorAsync(baseline, category, isError).ConfigureAwait(false);
 		}
 
 
@@ -99,7 +99,7 @@ class Foo
 		[DataRow(@"Foo1", false)]
 		[DataRow(@"Foo2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void TestHasCategoryAttributeWhiteListTest(string testName, bool isError)
+		public async Task TestHasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -111,7 +111,7 @@ class Foo
   }}
 }}
 ";
-			VerifyError(baseline, testName, isError);
+			await VerifyErrorAsync(baseline, testName, isError).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -148,12 +148,12 @@ class Foo
 			await VerifyFix(baseline, fixedText).ConfigureAwait(false);
 		}
 
-		private void VerifyError(string baseline, string given, bool isError)
+		private async Task VerifyErrorAsync(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
 			if (isError)
 			{
-				var results = 
+				var results =
 					new DiagnosticResult()
 					{
 						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
@@ -161,11 +161,11 @@ class Foo
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
 					};
-				VerifyDiagnostic(givenText, results);
+				await VerifyDiagnostic(givenText, results).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifySuccessfulCompilation(givenText);
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 		}
 

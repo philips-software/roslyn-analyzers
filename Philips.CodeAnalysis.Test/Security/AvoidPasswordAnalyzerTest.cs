@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -38,11 +39,11 @@ class Foo
 		[DataRow(@"", "/*  MyPassword */")]
 		[DataRow(@"", "//  MyPassword")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckPasswordTest(string content0, string content1)
+		public async Task CheckPasswordTestAsync(string content0, string content1)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField);
+			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -52,11 +53,11 @@ class Foo
 		[DataRow(@"", "/*  MyComment */")]
 		[DataRow(@"", "//  MyComment")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CheckNoPasswordTest(string content0, string content1)
+		public async Task CheckNoPasswordTestAsync(string content0, string content1)
 		{
 			var format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
 }

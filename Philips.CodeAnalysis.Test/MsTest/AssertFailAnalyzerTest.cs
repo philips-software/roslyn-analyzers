@@ -1,5 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -29,52 +30,52 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertFailInGuardedIfStatement()
+		public async Task FlagAssertFailInGuardedIfStatementAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 bool isDone = false;
 if(!isDone)
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertFailInGuardedElseStatement()
+		public async Task FlagAssertFailInGuardedElseStatementAsync()
 		{
-			VerifyError(@"
-bool isDone = false;
-if(!isDone)
-{
-}
-else
-{
-	Assert.Fail();
-}
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertFailInGuardedElseStatementWithoutBraces()
-		{
-			VerifyError(@"
+			await VerifyError(@"
 bool isDone = false;
 if(!isDone)
 {
 }
 else
+{
 	Assert.Fail();
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+}
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoreAssertFailInCatchBlock()
+		public async Task FlagAssertFailInGuardedElseStatementWithoutBracesAsync()
 		{
-			VerifyNoError(@"
+			await VerifyError(@"
+bool isDone = false;
+if(!isDone)
+{
+}
+else
+	Assert.Fail();
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreAssertFailInCatchBlockAsync()
+		{
+			await VerifyNoError(@"
 try 
 {
 }
@@ -82,14 +83,14 @@ catch
 {
 	Assert.Fail();
 }
-");
+").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertFailInTryBlock()
+		public async Task FlagAssertFailInTryBlockAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 try 
 {
 	Assert.Fail();
@@ -97,63 +98,63 @@ try
 catch
 {
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoreAssertInForeach()
+		public async Task IgnoreAssertInForeachAsync()
 		{
-			VerifyNoError(@"
+			await VerifyNoError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	System.Console.WriteLine(foo.ToString());
 	Assert.Fail();
 }
-");
+").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertInEmptyForeach()
+		public async Task FlagAssertInEmptyForeachAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertInEmptyForeachNoBraces()
+		public async Task FlagAssertInEmptyForeachNoBracesAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 	Assert.Fail();
 
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void IgnoreAssertInEmptyUsing()
+		public async Task IgnoreAssertInEmptyUsingAsync()
 		{
-			VerifyNoError(@"
+			await VerifyNoError(@"
 IDisposable foo = null;
 using(foo)
 {
 	Assert.Fail();
 }
-");
+").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertEndingForeachLoop()
+		public async Task FlagAssertEndingForeachLoopAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -163,14 +164,14 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertEndingForeachLoopNoBraces()
+		public async Task FlagAssertEndingForeachLoopNoBracesAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -178,14 +179,14 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertEndingForeachLoopElse()
+		public async Task FlagAssertEndingForeachLoopElseAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -197,14 +198,14 @@ foreach(var foo in Array.Empty<int>())
 		Assert.Fail();
 	}
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void FlagAssertEndingForeachLoopNoBracesElse()
+		public async Task FlagAssertEndingForeachLoopNoBracesElseAsync()
 		{
-			VerifyError(@"
+			await VerifyError(@"
 foreach(var foo in Array.Empty<int>())
 {
 	if(foo == 0)
@@ -212,7 +213,7 @@ foreach(var foo in Array.Empty<int>())
 	else
 		Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail));
+", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
 		}
 		#endregion
 	}

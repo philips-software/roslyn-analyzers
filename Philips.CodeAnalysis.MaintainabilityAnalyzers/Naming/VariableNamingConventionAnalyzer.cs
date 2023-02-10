@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public VariableNamingConventionAnalyzer() : this(true, true) { }
 
 		public VariableNamingConventionAnalyzer(bool shouldCheckLocalVariables, bool shouldCheckFieldVariables)
-			: base(DiagnosticId.VariableNamingConventions, Title, MessageFormat, Description, Categories.Naming, isEnabled:false)
+			: base(DiagnosticId.VariableNamingConventions, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{
 			_shouldCheckLocalVariables = shouldCheckLocalVariables;
 			_shouldCheckFieldVariables = shouldCheckFieldVariables;

@@ -1,5 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -123,9 +124,9 @@ namespace InnerExceptionUnitTest {
 			DataRow(HttpResponseInline, DisplayName = "HttpResponseInline"),
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -134,9 +135,9 @@ namespace InnerExceptionUnitTest {
 		[DataTestMethod]
 		[DataRow(ThrowOther, DisplayName = "ThrowOther")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
+		public async Task WhenInnerExceptionIsMissingDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -145,9 +146,9 @@ namespace InnerExceptionUnitTest {
 		[DataTestMethod]
 		[DataRow(ThrowOther, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifySuccessfulCompilation(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>

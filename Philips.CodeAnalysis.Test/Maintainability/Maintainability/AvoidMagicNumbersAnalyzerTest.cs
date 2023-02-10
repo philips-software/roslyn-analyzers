@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -123,7 +124,7 @@ namespace DontUseMagicNumbersTests {
         int Magic = 3;
     }
 }";
-        
+
 		private const string WrongInstanceField = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
@@ -177,9 +178,9 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum)),
 		 DataRow(CorrectInTestClass, DisplayName = nameof(CorrectInTestClass))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifySuccessfulCompilation(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -191,8 +192,9 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode) {
-			VerifyDiagnostic(testCode);
+		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -201,9 +203,9 @@ namespace DontUseMagicNumbersTests {
 		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifySuccessfulCompilation(WrongLocal, filePath);
+			await VerifySuccessfulCompilation(WrongLocal, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
