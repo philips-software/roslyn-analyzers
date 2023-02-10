@@ -31,7 +31,8 @@ jobs:
           dotnet format whitespace -v diag --verify-no-changes
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
           cat > ./.editorconfig << EOF
-          is_global = true
+          root = true
+          [*.cs]
           dotnet_analyzer_diagnostic.severity = none
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
@@ -68,7 +69,7 @@ jobs:
 
       - name: Dogfood Performance
         continue-on-error: true
-        run: dotnet build -binaryLogger --configuration Debug /p:TargetFramework=net7.0 /p:RunAnalyzersDuringBuild=true
+        run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
         
       - name: Analyze Performance
         run: |
