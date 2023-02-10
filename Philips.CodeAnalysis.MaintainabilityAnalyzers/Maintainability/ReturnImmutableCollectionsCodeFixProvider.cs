@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static readonly IReadOnlyDictionary<string, string> CollectionsMap = new Dictionary<string, string>()
 		{
-			{"List", ReadonlyList},
+			{StringConstants.List, ReadonlyList},
 			{StringConstants.QueueClassName, ReadonlyCollection},
 			{StringConstants.SortedListClassName, ReadonlyDictionary},
 			{StringConstants.StackClassName, ReadonlyCollection},
