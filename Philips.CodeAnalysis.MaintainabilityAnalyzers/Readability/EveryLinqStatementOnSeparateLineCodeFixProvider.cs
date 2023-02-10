@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			SyntaxToken lastToken = clause.GetLastToken();
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine("\r\n"));
+			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
 			var clauseWithTrivia = clause.WithTrailingTrivia(newTrivia);
 			root = root.ReplaceNode(clause, clauseWithTrivia).WithAdditionalAnnotations(Formatter.Annotation);

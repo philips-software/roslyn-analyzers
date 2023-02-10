@@ -21,6 +21,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	/// </summary>
 	public abstract partial class DiagnosticVerifier
 	{
+		private const string Start = @"start";
+		private const string End = @"end";
+
 		private static readonly Regex WildcardRegex =
 			new(".*", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
 		#region To be implemented by Test classes
@@ -246,10 +249,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		private void VerifyDiagnosticLocation(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
 		{
 			FileLinePositionSpan actualSpan = CheckPath(analyzer, diagnostic, actual, expected);
-			CheckLine(analyzer, diagnostic, actualSpan.StartLinePosition.Line, expected.Line, "start");
-			CheckColumn(analyzer, diagnostic, actualSpan.StartLinePosition.Character, expected.Column, "start");
-			CheckLine(analyzer, diagnostic, actualSpan.EndLinePosition.Line, expected.EndLine, "end");
-			CheckColumn(analyzer, diagnostic, actualSpan.EndLinePosition.Character, expected.EndColumn, "end");
+			CheckLine(analyzer, diagnostic, actualSpan.StartLinePosition.Line, expected.Line, Start);
+			CheckColumn(analyzer, diagnostic, actualSpan.StartLinePosition.Character, expected.Column, Start);
+			CheckLine(analyzer, diagnostic, actualSpan.EndLinePosition.Line, expected.EndLine, End);
+			CheckColumn(analyzer, diagnostic, actualSpan.EndLinePosition.Character, expected.EndColumn, End);
 		}
 
 		private FileLinePositionSpan CheckPath(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
