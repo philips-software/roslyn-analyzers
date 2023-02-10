@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -33,9 +34,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DynamicTypeShouldTriggerDiagnostic(string testCode)
+		public async Task DynamicTypeShouldTriggerDiagnostic(string testCode)
 		{
-			VerifyDiagnostic(testCode);
+			await VerifyDiagnostic(testCode);
 		}
 
 		[DataRow(@"void TestMethod() { string dynamic = ""test""; }")]
@@ -45,20 +46,9 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CantBeDynamicAsync(string testCode, int errorCount)
+		public async Task CantBeDynamicAsync(string testCode)
 		{
-			if (errorCount == 0)
-			{
-				await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
-			}
-			else if (errorCount == 1)
-			{
-				await VerifyDiagnostic(testCode).ConfigureAwait(false);
-			}
-			else
-			{
-				await VerifyDiagnostic(testCode, errorCount).ConfigureAwait(false);
-			}
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		#endregion
