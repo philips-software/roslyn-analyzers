@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,10 +15,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Avoid async void";
 		public const string MessageFormat = @"Methods may not have async void return type";
 		private const string Description = @"To avoid unhandled exception, methods should not use async void unless a event handler.";
-		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#avoid-async-void";
 
 		public AvoidAsyncVoidAnalyzer()
-			: base(DiagnosticId.AvoidAsyncVoid, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
+			: base(DiagnosticId.AvoidAsyncVoid, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
 		public override void Initialize(AnalysisContext context)
