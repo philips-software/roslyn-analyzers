@@ -31,8 +31,7 @@ jobs:
           dotnet format whitespace -v diag --verify-no-changes
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
           cat > ./.editorconfig << EOF
-          root = true
-          [*.cs]
+          is_global = true
           dotnet_analyzer_diagnostic.severity = none
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
