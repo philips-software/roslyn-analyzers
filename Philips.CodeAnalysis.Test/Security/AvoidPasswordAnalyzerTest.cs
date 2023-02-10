@@ -58,8 +58,8 @@ class Foo
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			// Our test environment always loads the MsTests Metadata references;
-			// however, this is precisely when we want to disable this analyzer, and that makes it hard to Unit Test!
+			// Our test environment always loads the MsTests Metadata references.
+			// However, this is precisely when we want to disable this analyzer, and that makes it hard to Unit Test!
 			Mock<AvoidPasswordAnalyzer> mock = new() { CallBase = true };
 			mock.SetupGet(x => x.ShouldAnalyzeTests).Returns(true);
 			return mock.Object;
