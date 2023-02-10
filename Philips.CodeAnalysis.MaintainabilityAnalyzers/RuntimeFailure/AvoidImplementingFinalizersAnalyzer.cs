@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			if (node is ExpressionStatementSyntax { Expression: InvocationExpressionSyntax invocation })
 			{
-				return invocation.Expression.ToString() == "Dispose";
+				return invocation.Expression.ToString() == StringConstants.Dispose;
 			}
 
 			return false;

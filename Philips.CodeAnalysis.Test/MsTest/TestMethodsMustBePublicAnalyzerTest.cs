@@ -15,19 +15,10 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodsMustBePublicAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsMustBePublicAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("", false)]
 		[DataRow("static", false)]
@@ -59,17 +50,9 @@ public class Tests
 				}
 				else
 				{
-					await VerifyDiagnostic(text, new DiagnosticResult()
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustBePublic),
-						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, modifier.Length + 8) },
-						Message = new Regex(".*"),
-						Severity = DiagnosticSeverity.Error,
-					}).ConfigureAwait(false);
+					await VerifyDiagnostic(text, DiagnosticId.TestMethodsMustBePublic).ConfigureAwait(false);
 				}
 			}
 		}
-
-		#endregion
 	}
 }
