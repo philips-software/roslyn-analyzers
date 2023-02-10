@@ -55,8 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			var trivia = resultExpression.GetLeadingTrivia();
 			var newExpression = SyntaxFactory.AwaitExpression(resultExpression.Expression);
-			var newExpressionWithLeadingTrivia = newExpression.WithLeadingTrivia(trivia);
-			rootNode = rootNode.ReplaceNode(resultExpression, newExpressionWithLeadingTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			var newExpressionWithLeadingTrivia = newExpression.WithLeadingTrivia(trivia).WithAdditionalAnnotations(Formatter.Annotation);
+			rootNode = rootNode.ReplaceNode(resultExpression, newExpressionWithLeadingTrivia);
 			return document.WithSyntaxRoot(rootNode);
 		}
 	}
