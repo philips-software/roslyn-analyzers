@@ -1,5 +1,6 @@
-// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private sealed class CompilationAnalyzer
 		{
-			private readonly Dictionary<string, Location> _usedLiterals = new();
+			private readonly ConcurrentDictionary<string, Location> _usedLiterals = new();
 			private readonly DiagnosticDescriptor _rule;
 
 			public CompilationAnalyzer(DiagnosticDescriptor rule)
@@ -70,21 +71,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 						continue;
 					}
 					var location = literal.GetLocation();
-					if (_usedLiterals.TryGetValue(literalText, out Location firstLocation))
+					if(!_usedLiterals.TryAdd(literalText, location))
 					{
+						_usedLiterals.TryGetValue(literalText, out Location firstLocation);
 						var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
 						var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
 						var currentLineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
-						if (currentLineNumber > firstLineNumber)
-						{
-							var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber,
-								literalText);
-							context.ReportDiagnostic(diagnostic);
-						}
-					}
-					else
-					{
-						_usedLiterals.Add(literalText, location);
+						var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
+						context.ReportDiagnostic(diagnostic);
 					}
 				}
 			}
