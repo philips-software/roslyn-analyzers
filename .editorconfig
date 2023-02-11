@@ -1,12 +1,12 @@
 root = true
 
 [*.cs]
-indent_style = tab
-indent_size = 4
+#indent_style = tab
+#indent_size = 4
 #end_of_line = crlf
-charset = utf-8-bom
-trim_trailing_whitespace = true
-insert_final_newline = true
+#charset = utf-8-bom
+#trim_trailing_whitespace = true
+#insert_final_newline = true
 
 dotnet_sort_system_directives_first = true
 dotnet_style_namespace_match_folder = true
