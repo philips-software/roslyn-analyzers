@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidDuplicateStringsAnalyzer : SingleDiagnosticAnalyzer
+	public class AvoidDuplicateStringsAnalyzer : SingleDiagnosticAnalyzer<LiteralExpressionSyntax, AvoidDuplicateStringsSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid Duplicate Strings";
 		private const string MessageFormat = @"Duplicate string found, first location in file {0} at line {1}. Consider moving '{2}' into a constant.";
@@ -23,60 +23,40 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(compilationContext =>
-			{
-				var compilationAnalyzer = new CompilationAnalyzer(Rule);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.StringLiteralExpression);
-			});
+		public ConcurrentDictionary<string, Location> UsedLiterals { get; } = new();
 
+		protected override SyntaxKind GetSyntaxKind()
+		{
+			return SyntaxKind.StringLiteralExpression;
 		}
+	}
 
-		private sealed class CompilationAnalyzer
+	public class AvoidDuplicateStringsSyntaxNodeAction : SyntaxNodeAction<LiteralExpressionSyntax>
+	{
+		public override void Analyze()
 		{
-			private readonly ConcurrentDictionary<string, Location> _usedLiterals = new();
-			private readonly DiagnosticDescriptor _rule;
-
-			public CompilationAnalyzer(DiagnosticDescriptor rule)
+			TestHelper testHelper = new();
+			if (testHelper.IsInTestClass(Context))
 			{
-				_rule = rule;
+				return;
 			}
 
-			public void Analyze(SyntaxNodeAnalysisContext context)
+			var literal = Node.Token;
+			var literalText = literal.Text.Trim('\\', '\"');
+			if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 			{
-				var literalExpressionSyntax = (LiteralExpressionSyntax)context.Node;
+				return;
+			}
 
-				GeneratedCodeDetector detector = new();
-				if (detector.IsGeneratedCode(context))
-				{
-					return;
-				}
+			var location = literal.GetLocation();
+			var usedLiterals = ((AvoidDuplicateStringsAnalyzer)Analyzer).UsedLiterals;
 
-				TestHelper testHelper = new();
-				if (testHelper.IsInTestClass(context))
-				{
-					return;
-				}
-
-				var literal = literalExpressionSyntax.Token;
-				var literalText = literal.Text.Trim('\\', '\"');
-				if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
-				{
-					return;
-				}
-
-				var location = literal.GetLocation();
-				if(!_usedLiterals.TryAdd(literalText, location))
-				{
-					_usedLiterals.TryGetValue(literalText, out Location firstLocation);
-					var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
-					var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-					var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
-					context.ReportDiagnostic(diagnostic);
-				}
+			if (!usedLiterals.TryAdd(literalText, location))
+			{
+				usedLiterals.TryGetValue(literalText, out Location firstLocation);
+				var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
+				var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
+				ReportDiagnostic(location, firstFilename, firstLineNumber, literalText);
 			}
 		}
 	}
