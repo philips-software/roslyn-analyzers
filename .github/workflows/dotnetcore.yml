@@ -3,7 +3,7 @@ on:
   workflow_call:
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
       - name: Setup .NET Core
@@ -13,7 +13,8 @@ jobs:
             3.1.x
             7.0.x
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: |
+          dotnet format whitespace -v diag --verify-no-changes
       - name: Test with dotnet
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
       - name: Test Report
