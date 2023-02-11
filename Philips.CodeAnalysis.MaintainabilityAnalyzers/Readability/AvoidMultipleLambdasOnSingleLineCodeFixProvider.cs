@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				lastToken = lastToken.GetNextToken();
 				oldNode = lastToken.Parent;
 			}
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine("\r\n"));
+			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
 			var newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 			root = root.ReplaceNode(oldNode, newNode);

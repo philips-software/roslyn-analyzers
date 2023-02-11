@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (ancestorMethods.Any())
 			{
 				MethodDeclarationSyntax parentMethod = ancestorMethods.First();
-				if (parentMethod.Identifier.Text == @"Dispose")
+				if (parentMethod.Identifier.Text == StringConstants.Dispose)
 				{
 					IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(parentMethod);
 					if ((methodSymbol != null) && methodSymbol.ToString().Contains(".Dispose("))

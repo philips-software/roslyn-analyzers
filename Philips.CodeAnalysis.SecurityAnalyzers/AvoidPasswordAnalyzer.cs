@@ -19,6 +19,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public const string MessageFormat = @"Naming something Password suggests a potential hard-coded password.";
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
 
+		private const string MsTestMetadataReference = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
+
+		public virtual bool ShouldAnalyzeTests { get; set; }
+
 		public AvoidPasswordAnalyzer()
 			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
 		{ }
@@ -27,10 +31,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-			context.RegisterSyntaxTreeAction(AnalyzeComments);
+			context.RegisterCompilationStartAction(context =>
+			{
+				if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
+				{
+					context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+					context.RegisterSyntaxTreeAction(AnalyzeComments);
+				}
+			});
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
@@ -75,7 +85,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 		}
 
-		private Diagnostic CheckComment(string comment, Location location)
+		private Diagnostic Check(string comment, Location location)
 		{
 			if (comment.ToLower(CultureInfo.CurrentCulture).Contains(@"password"))
 			{
@@ -86,7 +96,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)
 		{
-			Diagnostic diagnostic = CheckComment(valueText, location);
+			Diagnostic diagnostic = Check(valueText, location);
 			if (diagnostic != null)
 			{
 				reportDiagnostic(diagnostic);

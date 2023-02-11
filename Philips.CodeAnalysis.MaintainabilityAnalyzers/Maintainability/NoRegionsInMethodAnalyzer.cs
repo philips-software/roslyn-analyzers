@@ -1,9 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -28,12 +26,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			// Specifying Span instead of FullSpan correctly excludes trivia before or after the method
-			var descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true);
+			var descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>();
 			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
 			{
 				var location = regionDirective.GetLocation();
-				var diagnostic = Diagnostic.Create(Rule, location);
-				Context.ReportDiagnostic(diagnostic);
+				ReportDiagnostic(location);
 			}
 
 			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
