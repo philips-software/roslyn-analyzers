@@ -15,7 +15,6 @@ jobs:
       - name: Build with dotnet
         run: |
           dotnet format whitespace -v diag --verify-no-changes
-          dotnet build --configuration Release
       - name: Test with dotnet
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
       - name: Test Report
