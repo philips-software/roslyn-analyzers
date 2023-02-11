@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				// Double check the semantic model (to distinguish a variable named 'dynamic').
 				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(typeSyntax);
-				if(symbol.Symbol is IDynamicTypeSymbol)
+				if (symbol.Symbol is IDynamicTypeSymbol)
 				{
 					return true;
 				}
