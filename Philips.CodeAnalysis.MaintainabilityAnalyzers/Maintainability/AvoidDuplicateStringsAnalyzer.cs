@@ -35,6 +35,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
+			if (Node?.Parent?.Parent is FieldDeclarationSyntax)
+			{
+				return;
+			}
+
 			TestHelper testHelper = new();
 			if (testHelper.IsInTestClass(Context))
 			{

@@ -77,6 +77,20 @@ namespace DuplicateStringsTest {{
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringFieldDeclarationTest()
+		{
+			var code = @"
+namespace DuplicateStringsTest {{
+    public class Foo {{
+		private const string Meow = ""NotAViolation"";
+    }}
+}}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
 
 		[DataTestMethod]
 		[DataRow("test123", true)]
