@@ -13,7 +13,7 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
 
   build:
-    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@bcoll/whitespace
 
   sonarcloud:
     uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
