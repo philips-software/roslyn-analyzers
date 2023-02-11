@@ -60,6 +60,23 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifyDiagnostic(code, Count).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringNestedClassesTest()
+		{
+			var code = @"
+namespace DuplicateStringsTest {{
+    public class Foo {{
+        public void MethodA() {{  string str1 = ""Violation""; }}
+        public class Meow {{
+            public void MethodB() {{ string str = ""Violation""); }}
+        }}
+    }}
+}}
+";
+			await VerifyDiagnostic(code).ConfigureAwait(false);
+		}
+
 
 		[DataTestMethod]
 		[DataRow("test123", true)]

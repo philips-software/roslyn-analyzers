@@ -30,8 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
 				var compilationAnalyzer = new CompilationAnalyzer(Rule);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.StructDeclaration);
+				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.StringLiteralExpression);
 			});
 
 		}
@@ -48,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			public void Analyze(SyntaxNodeAnalysisContext context)
 			{
-				var typeDeclarationSyntax = (BaseTypeDeclarationSyntax)context.Node;
+				var literalExpressionSyntax = (LiteralExpressionSyntax)context.Node;
 
 				GeneratedCodeDetector detector = new();
 				if (detector.IsGeneratedCode(context))
@@ -62,24 +61,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				foreach (var literal in typeDeclarationSyntax.DescendantTokens()
-							 .Where(token => token.IsKind(SyntaxKind.StringLiteralToken)))
+				var literal = literalExpressionSyntax.Token;
+				var literalText = literal.Text.Trim('\\', '\"');
+				if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 				{
-					var literalText = literal.Text.Trim('\\', '\"');
-					if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
-					{
-						continue;
-					}
-					var location = literal.GetLocation();
-					if(!_usedLiterals.TryAdd(literalText, location))
-					{
-						_usedLiterals.TryGetValue(literalText, out Location firstLocation);
-						var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
-						var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-						var currentLineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
-						var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
-						context.ReportDiagnostic(diagnostic);
-					}
+					return;
+				}
+
+				var location = literal.GetLocation();
+				if(!_usedLiterals.TryAdd(literalText, location))
+				{
+					_usedLiterals.TryGetValue(literalText, out Location firstLocation);
+					var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
+					var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
+					var diagnostic = Diagnostic.Create(_rule, location, firstFilename, firstLineNumber, literalText);
+					context.ReportDiagnostic(diagnostic);
 				}
 			}
 		}
