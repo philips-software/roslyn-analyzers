@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
@@ -28,15 +29,30 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		public const string UnauthorizedException = "System.UnauthorizedException";
 
 		[DataTestMethod]
+		[DataRow("Insert", ArgumentOutOfRangeException)]
+		[DataRow("InsertRange", ArgumentNullException, ArgumentOutOfRangeException)]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void CreateCallTreeFromListWithExpectedNumberOfNodes(string methodName, params string[] expectedExceptions)
+		{
+			var type = typeof(System.Collections.Generic.List<>);
+			AssertCorrectUnhandledExceptions(type, methodName, expectedExceptions);
+		}
+
+		[DataTestMethod]
 		[DataRow("CreateDirectory", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, NotSupportedException)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, params string[] expectedExceptions)
 		{
 			var type = typeof(System.IO.Directory);
+			AssertCorrectUnhandledExceptions(type, methodName, expectedExceptions);
+		}
+
+		private void AssertCorrectUnhandledExceptions(Type type, string methodName, string[] expectedExceptions)
+		{
 			var assembly = type.Assembly;
 			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
 			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().Where(method => method.Name == methodName).FirstOrDefault();
+			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			ExceptionWalker walker = new();
 			// Act

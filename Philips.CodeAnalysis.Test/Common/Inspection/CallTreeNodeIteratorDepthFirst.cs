@@ -45,21 +45,22 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		}
 
 		[DataTestMethod]
-		[DataRow("CreateDirectory", 331266)]
-		[DataRow("Delete", 720725)]
-		[DataRow("Exists", 111881)]
-		[DataRow("EnumerateFiles", 20536)]
-		[DataRow("GetFiles", 20536)]
-		[DataRow("Move", 185652)]
+		[DataRow("CreateDirectory")]
+		[DataRow("Delete")]
+		[DataRow("Exists")]
+		[DataRow("EnumerateFiles")]
+		[DataRow("GetFiles")]
+		[DataRow("Move")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, int expectedNodeCount)
+		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName)
 		{
 			var type = typeof(System.IO.Directory);
 			var assembly = type.Assembly;
 			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
 			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().Where(method => method.Name == methodName).FirstOrDefault();
+			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
+			var expectedNodeCount = GetNodeCount(tree);
 			var iterator = new CallTreeIteratorDeepestFirst(tree);
 			// Act
 			var actualCount = iterator.Count();
@@ -67,5 +68,14 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 			Assert.AreEqual(expectedNodeCount, actualCount);
 		}
 
+		private int GetNodeCount(CallTreeNode node)
+		{
+			int sum = 1;
+			foreach(var child in node.Children)
+			{
+				sum += GetNodeCount(child);
+			}
+			return sum;
+		}
 	}
 }

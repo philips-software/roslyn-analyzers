@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 						continue;
 					}
 					// Check for recursive call patterns.
-					if (!node.HasAncestor(called) && !node.Children.Any(n => n.Method == called))
+					if (!node.HasAncestor(called) && node.Children.All(n => n.Method != called))
 					{
 						var child = node.AddChild(called);
 						CreateCallTree(child);
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			}
 		}
 
-		private static bool IsCallInstruction(Instruction instruction)
+		public static bool IsCallInstruction(Instruction instruction)
 		{
 			var opCode = instruction.OpCode.Op2;
 			return opCode is 0x28 or 0x6F or 0x73;
@@ -71,6 +71,8 @@ namespace Philips.CodeAnalysis.Common.Inspection
 		public IReadOnlyList<CallTreeNode> Children => _children;
 
 		public MethodDefinition Method { get; }
+
+		public object Tag { get; set; }
 
 		public CallTreeNode AddChild(MethodDefinition method)
 		{

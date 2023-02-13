@@ -60,31 +60,66 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		public IEnumerable<string> UnhandledExceptionsFromCallTree(CallTreeNode root)
 		{
 			CallTreeIteratorDeepestFirst iterator = new(root);
-			HashSet<string> openExceptions = new();
+			IEnumerable<string> lastOpenExceptions = Array.Empty<string>();
 			foreach(CallTreeNode node in iterator)
 			{
+				HashSet<string> openExceptions = new();
 				var body = node.Method.Body;
 				if (body == null)
 				{ 
+					node.Tag = Array.Empty<string>();
 					continue;
 				}
-				// TODO: Take logic from deeper in the CallTree into account.
-				var thrownExceptions = body.Instructions.Where(instr => instr.OpCode.Op2 == ThrowOpCode).Select(thrown => (thrown.Operand as MethodDefinition)?.FullName);
-				var caughtExceptions = body.ExceptionHandlers.Where(ex => ex.HandlerType == ExceptionHandlerType.Catch).Select(caught => caught.CatchType.FullName);
-				if (caughtExceptions.Any(ex => ex == "Exception"))
+
+				var catchHandlers =
+					body.ExceptionHandlers.Where(handler => handler.HandlerType == ExceptionHandlerType.Catch).ToList();
+				var filteredExceptions = new Stack<string>();
+				foreach (var instruction in body.Instructions)
 				{
-					openExceptions.Clear();
-				} 
-				else
-				{
-					var addedOpenExceptions = thrownExceptions.Except(caughtExceptions);
-					foreach (var toBeAdded in addedOpenExceptions)
+					foreach (var filter in catchHandlers)
 					{
-						openExceptions.Add(toBeAdded);
+						if (instruction.Offset == filter.TryStart.Offset)
+						{
+							filteredExceptions.Push(filter.CatchType.FullName);
+						}
+
+						if (instruction.Offset == filter.HandlerStart.Offset)
+						{
+							filteredExceptions.Pop();
+						}
+					}
+
+					if (CallTreeNode.IsCallInstruction(instruction))
+					{
+						var callee = instruction.Operand as MethodDefinition;
+						var calleeChild = node.Children.FirstOrDefault(child => child.Method == callee);
+						if (calleeChild != null)
+						{
+							var newExceptions = calleeChild.Tag as IEnumerable<string>;
+							foreach (var newException in newExceptions)
+							{
+								if (!IsThrownExceptionFiltered(newException, filteredExceptions))
+								{
+									openExceptions.Add(newException);
+								}
+							}
+						}
+					}
+
+					if (instruction.OpCode.Op2 == ThrowOpCode)
+					{
+						string exFullName = GetResultingTypeName(instruction.Previous);
+						if (!string.IsNullOrEmpty(exFullName) && !IsThrownExceptionFiltered(exFullName, filteredExceptions))
+						{
+							openExceptions.Add(exFullName);
+						}
 					}
 				}
+
+				node.Tag = openExceptions;
+				lastOpenExceptions = openExceptions;
 			}
-			return openExceptions;
+			return lastOpenExceptions;
 		}
 
 		private string GetFullName(ISymbol symbol)
@@ -98,6 +133,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 			namespaces.Reverse();
 			return $"{string.Join(".", namespaces)}.{symbol.Name}";
+		}
+
+		private bool IsThrownExceptionFiltered(string thrown, Stack<string> filteredExceptions)
+		{
+			if (filteredExceptions.Any(ex => ex == "Exception"))
+			{
+				return true;
+			}
+			return filteredExceptions.Contains(thrown);
+		}
+
+		private string GetResultingTypeName(Instruction instruction)
+		{
+			if (CallTreeNode.IsCallInstruction(instruction) && instruction.Operand is MethodDefinition method)
+			{
+				if (method.IsConstructor)
+				{
+					return method.DeclaringType.FullName;
+				}
+				return method.ReturnType.FullName;
+			}
+
+			throw new ArgumentException($"No returning type found in: {instruction}");
 		}
 	}
 }
