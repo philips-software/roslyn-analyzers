@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
-			if (Node?.Parent?.Parent?.Parent?.Parent is FieldDeclarationSyntax)
+			if (Node.Ancestors().OfType<FieldDeclarationSyntax>().Any())
 			{
 				return;
 			}
