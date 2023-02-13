@@ -222,7 +222,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			if (actualLinePosition > 0 && expectedLine.HasValue)
 			{
 				Assert.AreEqual(expectedLine, actualLinePosition + 1,
-					$"Expected diagnostic to {startOrEnd} on line \"{expectedLine}\" was actually on line \"{actualLinePosition+1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+					$"Expected diagnostic to {startOrEnd} on line \"{expectedLine}\" was actually on line \"{actualLinePosition + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
 			}
 		}
 
