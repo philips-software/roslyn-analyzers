@@ -36,7 +36,9 @@ namespace Philips.CodeAnalysis.Common.Inspection
 				_visited.Add(Current);
 				return true;
 			}
-			var next = FindDeepest(Current.GetNextSibling()) ?? BackTrack();
+
+			var nextSibling = Current.GetNextSibling();
+			var next = FindDeepest(nextSibling) ?? BackTrack();
 			Current = next;
 			_visited.Add(Current);
 			return Current != null;

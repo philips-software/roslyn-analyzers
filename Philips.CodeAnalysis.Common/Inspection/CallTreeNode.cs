@@ -10,6 +10,9 @@ namespace Philips.CodeAnalysis.Common.Inspection
 {
 	public class CallTreeNode
 	{
+		private const int CallOpcode = 0x28;
+		private const int VirtualCallOpcode = 0x6F;
+		private const int NewObjectCallOpcode = 0x73;
 		private readonly List<CallTreeNode> _children;
 		private static readonly Dictionary<string, CallTreeNode> Cache = new();
 
@@ -62,7 +65,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 		public static bool IsCallInstruction(Instruction instruction)
 		{
 			var opCode = instruction.OpCode.Op2;
-			return opCode is 0x28 or 0x6F or 0x73;
+			return opCode is CallOpcode or VirtualCallOpcode or NewObjectCallOpcode;
 		}
 
 		public CallTreeNode Parent { get; }
