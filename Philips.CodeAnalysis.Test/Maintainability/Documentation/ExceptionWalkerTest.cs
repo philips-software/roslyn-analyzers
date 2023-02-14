@@ -27,6 +27,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		public const string PathTooLongException = "System.IO.PathTooLongException";
 		public const string SecurityException = "System.SecurityException";
 		public const string UnauthorizedException = "System.UnauthorizedException";
+		public const string IndexOutOfRangeException = "System.IndexOutOfRangeException";
+		public const string OutOfMemoryException = "System.OutOfMemoryException";
 
 		[DataTestMethod]
 		[DataRow("Insert", ArgumentOutOfRangeException)]
@@ -41,10 +43,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataTestMethod]
 		[DataRow("CreateDirectory", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
 		[DataRow("Delete", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
-		//[DataRow("GetFiles", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, SecurityException)]
-		//[DataRow("EnumerateFiles", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, SecurityException)]
-		//[DataRow("EnumerateDirectories", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, SecurityException)]
-		//[DataRow("GetDirectories", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
+		[DataRow("GetFiles", ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, IndexOutOfRangeException, OutOfMemoryException)]
+		[DataRow("EnumerateFiles", ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, IndexOutOfRangeException, OutOfMemoryException)]
+		[DataRow("EnumerateDirectories", ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, IndexOutOfRangeException, OutOfMemoryException)]
+		[DataRow("GetDirectories", ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, IndexOutOfRangeException, OutOfMemoryException)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, params string[] expectedExceptions)
 		{
