@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 	public class CallTreeNode
 	{
 		private readonly List<CallTreeNode> _children;
-		private static readonly Dictionary<string, CallTreeNode> _cache = new();
+		private static readonly Dictionary<string, CallTreeNode> Cache = new();
 
 		public CallTreeNode(MethodDefinition method, CallTreeNode parent)
 		{
@@ -22,6 +22,8 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		public static CallTreeNode CreateCallTree(MethodDefinition entryPoint)
 		{
+			// TODO: Investigate why clearing the cache changes the outcome.
+			Cache.Clear();
 			var root = new CallTreeNode(entryPoint, null);
 			CreateCallTree(root);
 			return root;
@@ -33,7 +35,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			if (methodDef is { HasBody: true })
 			{
 				var body = methodDef.Body;
-				if (_cache.TryGetValue(methodDef.FullName, out var cached))
+				if (Cache.TryGetValue(methodDef.FullName, out var cached))
 				{
 					node.CopyChildrenFrom(cached);
 					return;
@@ -53,10 +55,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 					}
 				}
 				// TODO: Investigate why object.ToString() is added in between.
-				if (!_cache.ContainsKey(methodDef.FullName))
-				{
-					_cache.Add(methodDef.FullName, node);
-				}
+				Cache[methodDef.FullName] = node;
 			}
 		}
 

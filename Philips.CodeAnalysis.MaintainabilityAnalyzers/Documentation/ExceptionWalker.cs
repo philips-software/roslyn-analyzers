@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
-
+using Mono.Collections.Generic;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Common.Inspection;
 
@@ -21,6 +21,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	public class ExceptionWalker
 	{
 		private const int ThrowOpCode = 0x7a;
+		private static readonly Dictionary<string, IEnumerable<string>> WellKnownMethods = new() {
+			// Assuming dotnet checked their resource usage.
+			{ "System.String System.SR::GetResourceString(System.String)", Array.Empty<string>() },
+			{ "System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)", new [] { "System.IO.IOException", "System.IO.FileNotFoundException", "System.IO.DirectoryNotFoundException", "System.IO.PathTooLongException", "System.UnauthorizedException" } },
+			{ "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)", new [] { "System.IO.IOException", "System.IO.FileNotFoundException", "System.IO.DirectoryNotFoundException", "System.IO.PathTooLongException", "System.UnauthorizedException" } }
+		};
 
 		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases, SemanticModel semanticModel)
 		{
@@ -71,6 +77,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					continue;
 				}
 
+				if (WellKnownMethods.TryGetValue(node.Method.FullName, out var cached))
+				{
+					node.Tag = cached;
+					lastOpenExceptions = cached;
+					continue;
+				}
+
 				var catchHandlers =
 					body.ExceptionHandlers.Where(handler => handler.HandlerType == ExceptionHandlerType.Catch).ToList();
 				var filteredExceptions = new Stack<string>();
@@ -108,10 +121,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 					if (instruction.OpCode.Op2 == ThrowOpCode)
 					{
-						string exFullName = GetResultingTypeName(instruction.Previous);
-						if (!string.IsNullOrEmpty(exFullName) && !IsThrownExceptionFiltered(exFullName, filteredExceptions))
+						var exType = GetResultingTypeName(instruction.Previous, body.Instructions);
+						if (exType != null && !IsThrownExceptionFiltered(exType.FullName, filteredExceptions))
 						{
-							openExceptions.Add(exFullName);
+							openExceptions.Add(exType.FullName);
 						}
 					}
 				}
@@ -144,18 +157,72 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return filteredExceptions.Contains(thrown);
 		}
 
-		private string GetResultingTypeName(Instruction instruction)
+		private TypeDefinition GetResultingTypeName(Instruction instruction, Collection<Instruction> instructions)
 		{
+			TypeDefinition typeDef = null;
 			if (CallTreeNode.IsCallInstruction(instruction) && instruction.Operand is MethodDefinition method)
 			{
 				if (method.IsConstructor)
 				{
-					return method.DeclaringType.FullName;
+					typeDef = method.DeclaringType.Resolve();
 				}
-				return method.ReturnType.FullName;
+				else
+				{
+
+					if (method.FullName is
+					    "System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)"
+					    or "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)")
+					{
+						return null;
+					}
+
+					typeDef = method.ReturnType.Resolve();
+				}
 			}
 
-			throw new ArgumentException($"No returning type found in: {instruction}");
+			typeDef ??= TryGetFromLocalVariable(0, instruction, instructions) ??
+			            TryGetFromLocalVariable(1, instruction, instructions) ??
+			            TryGetFromLocalVariable(2, instruction, instructions) ??
+			            TryGetFromLocalVariable(3, instruction, instructions);
+
+			if (!IsException(typeDef))
+			{
+				return null;
+			}
+			return typeDef;
+		}
+
+		private TypeDefinition TryGetFromLocalVariable(int localIndex, Instruction instruction, Collection<Instruction> instructions)
+		{
+			TypeDefinition typeDef = null;
+			if (instruction.OpCode.Op2 == 0x06 + localIndex)
+			{
+				var index = instructions.IndexOf(instruction);
+				for (int i = index - 1; i >= 0; i--)
+				{
+					if (instructions[i].OpCode.Op2 == 0x0a + localIndex)
+					{
+						typeDef = GetResultingTypeName(instructions[i - 1], instructions);
+						break;
+					}
+				}
+			}
+
+			return typeDef;
+		}
+
+		private bool IsException(TypeDefinition typeDef)
+		{
+			while (typeDef != null)
+			{
+				if (typeDef.FullName == "System.Exception")
+				{
+					return true;
+				}
+				typeDef = typeDef.BaseType?.Resolve();
+			}
+
+			return false;
 		}
 	}
 }
