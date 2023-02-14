@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		private int GetNodeCount(CallTreeNode node)
 		{
 			int sum = 1;
-			foreach(var child in node.Children)
+			foreach (var child in node.Children)
 			{
 				sum += GetNodeCount(child);
 			}

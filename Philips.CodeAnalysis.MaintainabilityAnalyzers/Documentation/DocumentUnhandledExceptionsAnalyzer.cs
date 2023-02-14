@@ -27,15 +27,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class DocumentUnhandledExceptionsSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public const string SystemException = "System.Exception";
-		
 		public override void Analyze()
 		{
 			if (Context.Compilation?.SyntaxTrees.FirstOrDefault()?.Options.DocumentationMode == DocumentationMode.None)
 			{
 				return;
 			}
-			
+
 			var aliases = Helper.GetUsingAliases(Node);
 
 			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();

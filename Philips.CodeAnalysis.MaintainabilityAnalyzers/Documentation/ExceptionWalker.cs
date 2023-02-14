@@ -62,17 +62,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return UnhandledExceptionsFromCallTree(root);
 		}
 
-		
 		public IEnumerable<string> UnhandledExceptionsFromCallTree(CallTreeNode root)
 		{
 			CallTreeIteratorDeepestFirst iterator = new(root);
 			IEnumerable<string> lastOpenExceptions = Array.Empty<string>();
-			foreach(CallTreeNode node in iterator)
+			foreach (CallTreeNode node in iterator)
 			{
 				HashSet<string> openExceptions = new();
 				var body = node.Method.Body;
 				if (body == null)
-				{ 
+				{
 					node.Tag = Array.Empty<string>();
 					continue;
 				}
@@ -170,8 +169,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				{
 
 					if (method.FullName is
-					    "System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)"
-					    or "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)")
+						"System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)"
+						or "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)")
 					{
 						return null;
 					}
@@ -180,10 +179,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 			}
 
-			typeDef ??= TryGetFromLocalVariable(0, instruction, instructions) ??
-			            TryGetFromLocalVariable(1, instruction, instructions) ??
-			            TryGetFromLocalVariable(2, instruction, instructions) ??
-			            TryGetFromLocalVariable(3, instruction, instructions);
+			typeDef ??=
+				TryGetFromLocalVariable(0, instruction, instructions) ??
+				TryGetFromLocalVariable(1, instruction, instructions) ??
+				TryGetFromLocalVariable(2, instruction, instructions) ??
+				TryGetFromLocalVariable(3, instruction, instructions);
 
 			if (!IsException(typeDef))
 			{
