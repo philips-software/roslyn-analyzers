@@ -89,6 +89,7 @@ public class Tests
 {{
 	[DataTestMethod]
 	[DataRow(1)]
+	[DataRow(1,2,3)]
 	public void Foo(int x, params int[] y) {{ }}
 }}";
 
