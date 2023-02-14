@@ -28,7 +28,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			// Assuming dotnet checked their resource usage.
 			{ "System.String System.SR::GetResourceString(System.String)", Array.Empty<string>() },
 			{ StringConstants.GetExceptionForWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } },
-			{ StringConstants.GetExceptionForLastWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } }
+			{ StringConstants.GetExceptionForLastWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } },
+			{ StringConstants.GetExceptionForIoErrno, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } }
 		};
 
 		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases, SemanticModel semanticModel)
@@ -201,7 +202,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				else
 				{
 
-					if (method.FullName is StringConstants.GetExceptionForLastWin32Error or StringConstants.GetExceptionForWin32Error)
+					if (method.FullName is StringConstants.GetExceptionForLastWin32Error or StringConstants.GetExceptionForWin32Error or StringConstants.GetExceptionForIoErrno)
 					{
 						return null;
 					}

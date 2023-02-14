@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
@@ -23,8 +24,14 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		[DataRow("GetFiles", 2)]
 		[DataRow("Move", 3)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, int expectedNodeCount)
+		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, int nodeCount)
 		{
+			// Hack: Linux has one method call more for Exists.
+			var expectedNodeCount = nodeCount;
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && methodName == @"Exists")
+			{
+				expectedNodeCount++;
+			}
 			var type = typeof(System.IO.Directory);
 			var assembly = type.Assembly;
 			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);

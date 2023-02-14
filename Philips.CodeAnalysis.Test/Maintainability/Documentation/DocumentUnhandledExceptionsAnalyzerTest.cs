@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -139,6 +140,29 @@ public class Foo
 }
 ";
 
+		private const string FixedDirectoryCreateOnLinux = @"
+using System.IO;
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.ArgumentException""></exception>
+    /// <exception cref=""System.IO.IOException""></exception>
+    /// <exception cref=""System.IO.FileNotFoundException""></exception>
+    /// <exception cref=""System.IO.DirectoryNotFoundException""></exception>
+    /// <exception cref=""System.IO.PathTooLongException""></exception>
+    /// <exception cref=""System.UnauthorizedException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
+	public void MethodA()
+    {
+        try {
+            Directory.CreateDirectory(""abc"");
+        } catch (IOException ex) {
+        }
+    }
+}
+";
+
 		private const string WrongEnumerateFiles = @"
 public class Foo
 {
@@ -238,14 +262,19 @@ public class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongDirectoryCreate, FixedDirectoryCreate, DisplayName = nameof(WrongDirectoryCreate)),
-		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, DisplayName = nameof(WrongEnumerateFiles)),
-		 DataRow(WrongDangerous, FixedDangerous, DisplayName = nameof(WrongDangerous))]
+		[DataRow(WrongDirectoryCreate, FixedDirectoryCreate, FixedDirectoryCreateOnLinux, DisplayName = nameof(WrongDirectoryCreate)),
+		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, null, DisplayName = nameof(WrongEnumerateFiles)),
+		 DataRow(WrongDangerous, FixedDangerous, null, DisplayName = nameof(WrongDangerous))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode)
+		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode, string fixedCodeOnLinux)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
-			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
+			var expectedFixedCode = fixedCode;
+			if (fixedCodeOnLinux != null && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				expectedFixedCode = fixedCodeOnLinux;
+			}
+			await VerifyFix(testCode, expectedFixedCode).ConfigureAwait(false);
 		}
 	}
 }

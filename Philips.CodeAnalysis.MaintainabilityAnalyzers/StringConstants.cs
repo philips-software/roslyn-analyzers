@@ -29,6 +29,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 			"System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)";
 		public const string GetExceptionForLastWin32Error =
 			"System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)";
+		public const string GetExceptionForIoErrno =
+			"System.Exception Interop::GetExceptionForIoErrno(Interop/ErrorInfo,Stsstem.String,System.Boolean)";
 		public const string SystemException = "System.Exception";
 		public const string IoException = "System.IO.IOException";
 		public const string FileNotFoundException = "System.IO.FileNotFoundException";
