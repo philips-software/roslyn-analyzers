@@ -21,11 +21,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	public class ExceptionWalker
 	{
 		private const int ThrowOpCode = 0x7a;
+		private const int LoadLocalOpCode = 0x06;
+		private const int StoreLocalOpCode = 0x0a;
+
 		private static readonly Dictionary<string, IEnumerable<string>> WellKnownMethods = new() {
 			// Assuming dotnet checked their resource usage.
 			{ "System.String System.SR::GetResourceString(System.String)", Array.Empty<string>() },
-			{ "System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)", new [] { "System.IO.IOException", "System.IO.FileNotFoundException", "System.IO.DirectoryNotFoundException", "System.IO.PathTooLongException", "System.UnauthorizedException" } },
-			{ "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)", new [] { "System.IO.IOException", "System.IO.FileNotFoundException", "System.IO.DirectoryNotFoundException", "System.IO.PathTooLongException", "System.UnauthorizedException" } }
+			{ StringConstants.GetExceptionForWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } },
+			{ StringConstants.GetExceptionForLastWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } }
 		};
 
 		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases, SemanticModel semanticModel)
@@ -168,9 +171,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				else
 				{
 
-					if (method.FullName is
-						"System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)"
-						or "System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)")
+					if (method.FullName is StringConstants.GetExceptionForLastWin32Error or StringConstants.GetExceptionForWin32Error)
 					{
 						return null;
 					}
@@ -183,7 +184,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				TryGetFromLocalVariable(0, instruction, instructions) ??
 				TryGetFromLocalVariable(1, instruction, instructions) ??
 				TryGetFromLocalVariable(2, instruction, instructions) ??
-				TryGetFromLocalVariable(3, instruction, instructions);
+				TryGetFromLocalVariable(2 + 1, instruction, instructions);
 
 			if (!IsException(typeDef))
 			{
@@ -195,12 +196,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private TypeDefinition TryGetFromLocalVariable(int localIndex, Instruction instruction, Collection<Instruction> instructions)
 		{
 			TypeDefinition typeDef = null;
-			if (instruction.OpCode.Op2 == 0x06 + localIndex)
+			if (instruction.OpCode.Op2 == LoadLocalOpCode + localIndex)
 			{
 				var index = instructions.IndexOf(instruction);
 				for (int i = index - 1; i >= 0; i--)
 				{
-					if (instructions[i].OpCode.Op2 == 0x0a + localIndex)
+					if (instructions[i].OpCode.Op2 == StoreLocalOpCode + localIndex)
 					{
 						typeDef = GetResultingTypeName(instructions[i - 1], instructions);
 						break;
@@ -211,11 +212,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			return typeDef;
 		}
 
-		private bool IsException(TypeDefinition typeDef)
+		private bool IsException(TypeDefinition type)
 		{
+			TypeDefinition typeDef = type;
 			while (typeDef != null)
 			{
-				if (typeDef.FullName == "System.Exception")
+				if (typeDef.FullName == StringConstants.SystemException)
 				{
 					return true;
 				}

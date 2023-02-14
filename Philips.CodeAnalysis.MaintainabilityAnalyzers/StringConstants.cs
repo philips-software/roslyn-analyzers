@@ -21,9 +21,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public const string QueueClassName = "Queue";
 		public const string StackClassName = "Stack";
 		public const string SortedListClassName = "SortedList";
-		public const string SystemException = "System.Exception";
 		public const string WindowsNewLine = "\r\n";
 		public const string List = "List";
 		public const string Dispose = "Dispose";
+
+		public const string GetExceptionForWin32Error =
+			"System.Exception System.IO.Win32Marshal::GetExceptionForWin32Error(System.Int32,System.String)";
+		public const string GetExceptionForLastWin32Error =
+			"System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)";
+		public const string SystemException = "System.Exception";
+		public const string IoException = "System.IO.IOException";
+		public const string FileNotFoundException = "System.IO.FileNotFoundException";
+		public const string DirectoryNotFoundException = "System.IO.DirectoryNotFoundException";
+		public const string PathTooLongException = "System.IO.PathTooLongException";
+		public const string UnauthorizedException = "System.UnauthorizedException";
 	}
 }
