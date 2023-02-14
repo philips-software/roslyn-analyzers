@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		}
 
 		[DataTestMethod]
-		//[DataRow("CreateDirectory", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, NotSupportedException)]
+		[DataRow("CreateDirectory", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
 		[DataRow("Delete", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
 		//[DataRow("GetFiles", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, SecurityException)]
 		//[DataRow("EnumerateFiles", IoException, ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException, SecurityException)]
