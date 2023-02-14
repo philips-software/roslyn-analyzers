@@ -6,15 +6,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
         with:
           dotnet-version: |
-            3.1.x
             7.0.x
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
-      - name: Test with dotnet
+      - name: Build
+        run: |
+          dotnet build --configuration Release
+      - name: Test
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
       - name: Test Report
         uses: dorny/test-reporter@e9fa2f582c0ebbe2e263fd18fad744d52e0b0203 # ratchet:dorny/test-reporter@v1

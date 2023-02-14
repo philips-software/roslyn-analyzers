@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var parameterType = SyntaxFactory.ParseTypeName("int")
 					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
-				var list = CreateGenericTypeSyntax("List", parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
+				var list = CreateGenericTypeSyntax(StringConstants.List, parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
 
 				newRoot = root.ReplaceNode(existingType, list);
 			}

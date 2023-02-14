@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			{ "Equals", "Equals method" },
 			{ "GetHashCode", "GetHashCode method" },
-			{ "Dispose", "Dispose method" },
+			{ StringConstants.Dispose, "Dispose method" },
 			{ StringConstants.ToStringMethodName, "ToString method" }
 		};
 

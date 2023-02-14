@@ -95,7 +95,7 @@ class FooClass
 using System.Threading.Tasks;
 class FooClass
 {{{{
-  public async Task<int> Foo(int x)
+                   public async Task<int> Foo(int x)
   {{{{
     return new Task<int>(() => x);
   }}}}
@@ -105,7 +105,7 @@ class FooClass
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"this.Foo(1).Result");
+			string before = string.Format(template, @"this.Foo(1       ).Result");
 			string after = string.Format(template, @"await this.Foo(1)");
 
 			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);

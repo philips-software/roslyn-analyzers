@@ -1,13 +1,12 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -29,32 +28,37 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Public Interface
 
-		[DataRow(@"void TestMethod() { dynamic i = 5; }", 1)]
-		[DataRow(@"dynamic TestMethod() { return 5; }", 1)]
-		[DataRow(@"void TestMethod(dynamic i) { return 5; }", 1)]
-		[DataRow(@"void TestMethod() { List<dynamic> list = null; }", 1)]
-		[DataRow(@"void TestMethod() { var t = (dynamic)4; }", 2)]
-		[DataRow(@"void TestMethod() { string dynamic = ""test""; }", 0)]
+		[DataRow(@"void TestMethod() { dynamic i = 5; }")]
+		[DataRow(@"dynamic TestMethod() { return 5; }")]
+		[DataRow(@"void TestMethod(dynamic i) { return 5; }")]
+		[DataRow(@"void TestMethod() { List<dynamic> list = null; }")]
+		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
+		[DataRow(@"dynamic TestProperty { get; }")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DynamicTypeShouldTriggerDiagnostic(string testCode)
+		{
+			await VerifyDiagnostic(testCode);
+		}
+
+		[DataRow(@"void TestMethod() { string dynamic = ""test""; }")]
 		[DataRow(@"void TestMethod() { string dynamic = mrModule.DynamicSeries;
 bool isDynamic = !String.IsNullOrEmpty(dynamic) &&
 dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
- }", 0)]
+ }")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CantBeDynamicAsync(string testCode, int errorCount)
+		public async Task DynamicNameShouldNotTriggerDiagnostic(string testCode)
 		{
-			if (errorCount == 0)
-			{
-				await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
-			}
-			else if (errorCount == 1)
-			{
-				await VerifyDiagnostic(testCode).ConfigureAwait(false);
-			}
-			else
-			{
-				await VerifyDiagnostic(testCode, errorCount).ConfigureAwait(false);
-			}
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DuplicateCodeAnalyzerCrash()
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "AvoidDuplicateCodeAnalyzer.cs");
+			await VerifySuccessfulCompilationFromFile(path);
 		}
 
 		#endregion
