@@ -72,17 +72,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			foreach (CallTreeNode node in iterator)
 			{
 				HashSet<string> openExceptions = new();
-				var body = node.Method.Body;
-				if (body == null)
+				if (TrySkipMethod(node, out var body) || TryGetFromCache(node, ref lastOpenExceptions))
 				{
-					node.Tag = Array.Empty<string>();
-					continue;
-				}
-
-				if (WellKnownMethods.TryGetValue(node.Method.FullName, out var cached))
-				{
-					node.Tag = cached;
-					lastOpenExceptions = cached;
 					continue;
 				}
 
@@ -91,50 +82,89 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var filteredExceptions = new Stack<string>();
 				foreach (var instruction in body.Instructions)
 				{
-					foreach (var filter in catchHandlers)
-					{
-						if (instruction.Offset == filter.TryStart.Offset)
-						{
-							filteredExceptions.Push(filter.CatchType.FullName);
-						}
-
-						if (instruction.Offset == filter.HandlerStart.Offset)
-						{
-							filteredExceptions.Pop();
-						}
-					}
-
-					if (CallTreeNode.IsCallInstruction(instruction))
-					{
-						var callee = instruction.Operand as MethodDefinition;
-						var calleeChild = node.Children.FirstOrDefault(child => child.Method == callee);
-						if (calleeChild != null)
-						{
-							var newExceptions = calleeChild.Tag as IEnumerable<string>;
-							foreach (var newException in newExceptions)
-							{
-								if (!IsThrownExceptionFiltered(newException, filteredExceptions))
-								{
-									openExceptions.Add(newException);
-								}
-							}
-						}
-					}
-
-					if (instruction.OpCode.Op2 == ThrowOpCode)
-					{
-						var exType = GetResultingTypeName(instruction.Previous, body.Instructions);
-						if (exType != null && !IsThrownExceptionFiltered(exType.FullName, filteredExceptions))
-						{
-							openExceptions.Add(exType.FullName);
-						}
-					}
+					AdjustExceptionFilter(catchHandlers, instruction, filteredExceptions);
+					HandleCallInstruction(instruction, node, filteredExceptions, openExceptions);
+					HandleThrowInstruction(instruction, body, filteredExceptions, openExceptions);
 				}
 
 				node.Tag = openExceptions;
 				lastOpenExceptions = openExceptions;
 			}
 			return lastOpenExceptions;
+		}
+
+		private static bool TrySkipMethod(CallTreeNode node, out MethodBody body)
+		{
+			body = node.Method.Body;
+			if (body == null)
+			{
+				node.Tag = Array.Empty<string>();
+				return true;
+			}
+
+			return false;
+		}
+
+		private void HandleThrowInstruction(Instruction instruction, MethodBody body, Stack<string> filteredExceptions,
+			HashSet<string> openExceptions)
+		{
+			if (instruction.OpCode.Op2 == ThrowOpCode)
+			{
+				var exType = GetResultingTypeName(instruction.Previous, body.Instructions);
+				if (exType != null && !IsThrownExceptionFiltered(exType.FullName, filteredExceptions))
+				{
+					openExceptions.Add(exType.FullName);
+				}
+			}
+		}
+
+		private void HandleCallInstruction(Instruction instruction, CallTreeNode node, Stack<string> filteredExceptions,
+			HashSet<string> openExceptions)
+		{
+			if (CallTreeNode.IsCallInstruction(instruction))
+			{
+				var callee = instruction.Operand as MethodDefinition;
+				var calleeChild = node.Children.FirstOrDefault(child => child.Method == callee);
+				if (calleeChild != null)
+				{
+					var newExceptions = calleeChild.Tag as IEnumerable<string>;
+					foreach (var newException in newExceptions)
+					{
+						if (!IsThrownExceptionFiltered(newException, filteredExceptions))
+						{
+							openExceptions.Add(newException);
+						}
+					}
+				}
+			}
+		}
+
+		private static void AdjustExceptionFilter(List<ExceptionHandler> catchHandlers, Instruction instruction, Stack<string> filteredExceptions)
+		{
+			foreach (var filter in catchHandlers)
+			{
+				if (instruction.Offset == filter.TryStart.Offset)
+				{
+					filteredExceptions.Push(filter.CatchType.FullName);
+				}
+
+				if (instruction.Offset == filter.HandlerStart.Offset)
+				{
+					filteredExceptions.Pop();
+				}
+			}
+		}
+
+		private static bool TryGetFromCache(CallTreeNode node, ref IEnumerable<string> lastOpenExceptions)
+		{
+			if (WellKnownMethods.TryGetValue(node.Method.FullName, out var cached))
+			{
+				node.Tag = cached;
+				lastOpenExceptions = cached;
+				return true;
+			}
+
+			return false;
 		}
 
 		private string GetFullName(ISymbol symbol)
