@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 	/// Test class for methods in <see cref="CallTreeIteratorDeepestFirst"/>.
 	/// </summary>
 	[TestClass]
-	public class CallTreeIteratorDepthFirstTest
+	public class CallTreeIteratorDeepestFirstTest
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]

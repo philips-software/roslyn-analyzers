@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 			var assembly = type.Assembly;
 			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
 			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().Where(method => method.Name == methodName).FirstOrDefault();
+			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			Assert.AreEqual(expectedNodeCount, tree.Children.Count);
 		}
