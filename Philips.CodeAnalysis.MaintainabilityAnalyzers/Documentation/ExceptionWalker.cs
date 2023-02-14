@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static readonly Dictionary<string, IEnumerable<string>> WellKnownMethods = new() {
 			// Assuming dotnet checked their resource usage.
-			{ "System.String System.SR::GetResourceString(System.String)", Array.Empty<string>() },
+			{ StringConstants.GetResourceString, Array.Empty<string>() },
 			{ StringConstants.GetExceptionForWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } },
 			{ StringConstants.GetExceptionForLastWin32Error, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } },
 			{ StringConstants.GetExceptionForIoErrno, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } }
@@ -183,7 +183,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private bool IsThrownExceptionFiltered(string thrown, Stack<string> filteredExceptions)
 		{
-			if (filteredExceptions.Any(ex => ex == "Exception"))
+			if (filteredExceptions.Any(ex => ex == StringConstants.Exception))
 			{
 				return true;
 			}
