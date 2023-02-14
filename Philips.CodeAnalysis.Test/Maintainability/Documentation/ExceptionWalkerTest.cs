@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.Common.Inspection;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 using Philips.CodeAnalysis.Test.Helpers;
 
-namespace Philips.CodeAnalysis.Test.Common.Inspection
+namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 {
 	/// <summary>
 	/// Test class for methods in <see cref="ExceptionWalker"/>.
