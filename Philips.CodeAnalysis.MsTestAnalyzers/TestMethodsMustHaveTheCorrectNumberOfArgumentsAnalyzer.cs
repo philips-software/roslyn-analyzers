@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -38,23 +39,33 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
 				int? expectedNumberOfParameters;
-				if (!isDataTestMethod)
+				if (isDataTestMethod)
 				{
-					expectedNumberOfParameters = 0;
-				}
-				else
-				{
+					if (HasParams(methodDeclaration))
+					{
+						return;
+					}
+
 					if (!TryGetExpectedParameters(methodDeclaration, context, out expectedNumberOfParameters))
 					{
 						context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 						return;
 					}
 				}
+				else
+				{
+					expectedNumberOfParameters = 0;
+				}
 
 				if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
 				{
 					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
 				}
+			}
+
+			private bool HasParams(MethodDeclarationSyntax methodDeclaration)
+			{
+				return methodDeclaration.ParameterList.Parameters.LastOrDefault()?.Modifiers.Any(SyntaxKind.ParamsKeyword) == true;
 			}
 
 			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration,
