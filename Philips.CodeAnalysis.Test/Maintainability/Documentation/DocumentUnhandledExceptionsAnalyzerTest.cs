@@ -55,7 +55,6 @@ public class Foo
     }
 }
 ";
-
 		private const string CorrectEnumerateFiles = @"
 public class Foo
 {
@@ -69,6 +68,12 @@ public class Foo
 	/// <exception cref=""System.IO.DirectoryNotFoundException"">abc</exception>
     /// <exception cref=""System.IndexOutOfRangeException"">abc</exception>
 	/// <exception cref=""System.OutOfMemoryException"">abc</exception>
+	/// <exception cref=""System.NotSupportedException"">abc</exception>
+	/// <exception cref=""System.FormatException"">abc</exception>
+	/// <exception cref=""System.Globalization.CultureNotFoundException"">abc</exception>
+	/// <exception cref=""System.Runtime.InteropServices.ExternalException"">abc</exception>
+	/// <exception cref=""System.ObjectDisposedException"">abc</exception>
+	/// <exception cref=""System.InvalidOperationException"">abc</exception>
     public void MethodA()
     {
         System.IO.Directory.EnumerateFiles(""abc"");
@@ -91,6 +96,12 @@ public class Foo
 	/// <exception cref=""DirectoryNotFoundException"">abc</exception>
     /// <exception cref=""System.IndexOutOfRangeException"">abc</exception>
 	/// <exception cref=""System.OutOfMemoryException"">abc</exception>
+	/// <exception cref=""System.NotSupportedException"">abc</exception>
+	/// <exception cref=""System.FormatException"">abc</exception>
+	/// <exception cref=""System.Globalization.CultureNotFoundException"">abc</exception>
+	/// <exception cref=""System.Runtime.InteropServices.ExternalException"">abc</exception>
+	/// <exception cref=""System.ObjectDisposedException"">abc</exception>
+	/// <exception cref=""System.InvalidOperationException"">abc</exception>
     public void MethodA()
     {
         Directory.EnumerateFiles(""abc"");
@@ -118,18 +129,22 @@ using System.IO;
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""System.ArgumentNullException""></exception>
     /// <exception cref=""System.ArgumentException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
+    /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
+    /// <exception cref=""System.FormatException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
+    /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
+    /// <exception cref=""System.ObjectDisposedException""></exception>
+    /// <exception cref=""System.InvalidOperationException""></exception>
     /// <exception cref=""System.IO.IOException""></exception>
     /// <exception cref=""System.IO.FileNotFoundException""></exception>
     /// <exception cref=""System.IO.DirectoryNotFoundException""></exception>
     /// <exception cref=""System.IO.PathTooLongException""></exception>
     /// <exception cref=""System.UnauthorizedException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
-    /// <exception cref=""System.OutOfMemoryException""></exception>
-    /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
-    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
 	public void MethodA()
     {
         try {
@@ -178,6 +193,31 @@ public class Foo
 ";
 
 		private const string FixedEnumerateFiles = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""System.ArgumentException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
+    /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
+    /// <exception cref=""System.FormatException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
+    /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
+    /// <exception cref=""System.ObjectDisposedException""></exception>
+    /// <exception cref=""System.InvalidOperationException""></exception>
+    public void MethodA()
+    {
+        try {
+            System.IO.Directory.EnumerateFiles(""abc"");
+        } catch (System.IO.IOException ex) {
+        }
+    }
+}
+";
+
+		private const string FixedEnumerateFilesLinux = @"
 public class Foo
 {
     /// <summary> Helpful text. </summary>
@@ -234,15 +274,21 @@ public class Foo
         }
     }
     /// <summary> Helpful text. </summary>
-	/// <exception cref=""System.IO.IOException"">abc</exception>
-	/// <exception cref=""System.SecurityException"">abc</exception>
-	/// <exception cref=""System.ArgumentOutOfRangeException"">abc</exception>
-	/// <exception cref=""System.ArgumentException"">abc</exception>
-	/// <exception cref=""System.ArgumentNullException"">abc</exception>
-	/// <exception cref=""System.IO.PathTooLongException"">abc</exception>
-	/// <exception cref=""System.IO.DirectoryNotFoundException"">abc</exception>
+    /// <exception cref=""System.IO.IOException"">abc</exception>
+    /// <exception cref=""System.SecurityException"">abc</exception>
+    /// <exception cref=""System.ArgumentOutOfRangeException"">abc</exception>
+    /// <exception cref=""System.ArgumentException"">abc</exception>
+    /// <exception cref=""System.ArgumentNullException"">abc</exception>
+    /// <exception cref=""System.IO.PathTooLongException"">abc</exception>
+    /// <exception cref=""System.IO.DirectoryNotFoundException"">abc</exception>
     /// <exception cref=""System.IndexOutOfRangeException""></exception>
-	/// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.FormatException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
+    /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
+    /// <exception cref=""System.ObjectDisposedException""></exception>
+    /// <exception cref=""System.InvalidOperationException""></exception>
 	public bool Dangerous()
     {
         return System.IO.Directory.EnumerateFiles(""abc"").Any();
@@ -263,7 +309,7 @@ public class Foo
 
 		[DataTestMethod]
 		[DataRow(WrongDirectoryCreate, FixedDirectoryCreate, FixedDirectoryCreateOnLinux, DisplayName = nameof(WrongDirectoryCreate)),
-		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, null, DisplayName = nameof(WrongEnumerateFiles)),
+		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, FixedEnumerateFilesLinux, DisplayName = nameof(WrongEnumerateFiles)),
 		 DataRow(WrongDangerous, FixedDangerous, null, DisplayName = nameof(WrongDangerous))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode, string fixedCodeOnLinux)
