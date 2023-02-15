@@ -35,23 +35,15 @@ namespace Philips.CodeAnalysis.Common
 				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(T)}");
 			}
 
-			if (string.IsNullOrEmpty(FullyQualifiedMetaDataName))
+			context.RegisterCompilationStartAction(startContext =>
 			{
-				context.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
-			}
-			else
-			{
-				context.RegisterCompilationStartAction(startContext =>
+				if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && startContext.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
 				{
-					if (startContext.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
-					{
-						return;
-					}
+					return;
+				}
 
-					startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
-				});
-			}
-
+				startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
+			});
 		}
 
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
@@ -72,7 +64,7 @@ namespace Philips.CodeAnalysis.Common
 			syntaxNodeAction.Analyze();
 		}
 
-		private SyntaxKind GetSyntaxKind()
+		protected virtual SyntaxKind GetSyntaxKind()
 		{
 			return typeof(T).Name switch
 			{
