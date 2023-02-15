@@ -64,14 +64,14 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 			await VerifyDiagnostic(test, DiagnosticId.AvoidVoidReturn, regex: "Foo");
 		}
 
-        /**
+		/**
          * The reasoning behind this condition is that its impossible to avoid void methods
          * when they override those of base class
          */
-        [TestMethod]
-        public async Task NotFireForOverridenVoidReturnAsync()
-        {
-            var test = @"
+		[TestMethod]
+		public async Task NotFireForOverridenVoidReturnAsync()
+		{
+			var test = @"
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
     }
     }";
 			await VerifyDiagnostic(test, DiagnosticId.AvoidVoidReturn, regex: "Foo");
-        }
+		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{

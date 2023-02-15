@@ -12,8 +12,8 @@ using static LanguageExt.Prelude;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 {
 
-		public static class MethodPredicates
-		{
+	public static class MethodPredicates
+	{
 		public static bool IsNotOverridenMethod(MethodDeclarationSyntax m)
 		{
 			return !m.Modifiers.Any(SyntaxKind.OverrideKeyword);
@@ -34,5 +34,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 			return m.ParameterList.Parameters.Select((p) => (m.Identifier.Text, p, context.SemanticModel.GetDeclaredSymbol(p)));
 		}
 
-		}
+	}
 }
