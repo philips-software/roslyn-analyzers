@@ -160,15 +160,18 @@ using System.IO;
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""System.ArgumentNullException""></exception>
     /// <exception cref=""System.ArgumentException""></exception>
-    /// <exception cref=""System.IO.IOException""></exception>
-    /// <exception cref=""System.IO.FileNotFoundException""></exception>
-    /// <exception cref=""System.IO.DirectoryNotFoundException""></exception>
-    /// <exception cref=""System.IO.PathTooLongException""></exception>
-    /// <exception cref=""System.UnauthorizedException""></exception>
     /// <exception cref=""System.IndexOutOfRangeException""></exception>
-	public void MethodA()
+    /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
+    /// <exception cref=""System.FormatException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
+    /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
+    /// <exception cref=""System.ObjectDisposedException""></exception>
+    /// <exception cref=""System.InvalidOperationException""></exception>
+    /// <exception cref=""System.Exception""></exception>	public void MethodA()
     {
         try {
             Directory.CreateDirectory(""abc"");
@@ -221,12 +224,18 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-	/// <exception cref=""System.ArgumentNullException""></exception>
-	/// <exception cref=""System.ArgumentException""></exception>
-	/// <exception cref=""System.ArgumentOutOfRangeException""></exception>
+    /// <exception cref=""System.ArgumentException""></exception>
     /// <exception cref=""System.IndexOutOfRangeException""></exception>
-	/// <exception cref=""System.OutOfMemoryException""></exception>
-	public void MethodA()
+    /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
+    /// <exception cref=""System.FormatException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
+    /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
+    /// <exception cref=""System.ObjectDisposedException""></exception>
+    /// <exception cref=""System.InvalidOperationException""></exception>
+    public void MethodA()
     {
         try {
             System.IO.Directory.EnumerateFiles(""abc"");
