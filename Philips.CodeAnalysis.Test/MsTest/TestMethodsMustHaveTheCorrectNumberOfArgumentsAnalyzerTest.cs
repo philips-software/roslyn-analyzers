@@ -78,6 +78,25 @@ public class Tests
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParamsAreExemptTest()
+		{
+			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class Tests
+{{
+	[DataTestMethod]
+	[DataRow(1)]
+	[DataRow(1,2,3)]
+	public void Foo(int x, params int[] y) {{ }}
+}}";
+
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+
 		[DataRow(0)]
 		[DataRow(1)]
 		[DataTestMethod]
