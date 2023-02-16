@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 		public const string GetExceptionForLastWin32Error =
 			"System.Exception System.IO.Win32Marshal::GetExceptionForLastWin32Error(System.String)";
 		public const string GetExceptionForIoErrno =
-			"System.Exception Interop::GetExceptionForIoErrno(Interop/ErrorInfo,Stsstem.String,System.Boolean)";
+			"System.Exception Interop::GetExceptionForIoErrno(Interop/ErrorInfo, System.String, System.Boolean)";
 		public const string Exception = "Exception";
 		public const string SystemException = "System.Exception";
 		public const string IoException = "System.IO.IOException";

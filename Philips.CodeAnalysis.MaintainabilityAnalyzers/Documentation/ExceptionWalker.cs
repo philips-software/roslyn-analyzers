@@ -209,11 +209,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 					typeDef = method.ReturnType.Resolve();
 				}
-
-				if (typeDef.FullName == StringConstants.SystemException)
-				{
-					throw new ArgumentException(method.FullName);
-				}
 			}
 
 			typeDef ??=
