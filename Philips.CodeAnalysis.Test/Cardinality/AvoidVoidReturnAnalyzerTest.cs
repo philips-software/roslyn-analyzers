@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
         }
     }";
 
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVoidReturn, regex: "Foo");
+			await VerifyDiagnostic(test, regex: "Foo");
 		}
 
 		/**
@@ -83,18 +83,18 @@ namespace Philips.CodeAnalysis.Test.Cardinality
     {
         public abstract class AbstractBase
 	{
-		public abstract void Foo(int param);
+		public abstract void Foo(int param); // Will fire here
 	}
 
     public class Unavoidable : AbstractBase
     {
-        public override void Foo(int param)
+        public override void Foo(int param) // But not here
         {
             throw new System.NotImplementedException();
         }
     }
     }";
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVoidReturn, regex: "Foo");
+			await VerifyDiagnostic(test, regex: "Foo");
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
