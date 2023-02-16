@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using Microsoft.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 	/// <summary>
 	/// Traverse the <see cref="CallTreeNode"/> in Port-Order Depth First, as described for LRN in <see href="https://en.wikipedia.org/wiki/Tree_traversal"/>.
 	/// </summary>
-	public class CallTreeIteratorDeepestFirst : IEnumerator<CallTreeNode>, IEnumerable<CallTreeNode>
+	public sealed class CallTreeIteratorDeepestFirst : IEnumerator<CallTreeNode>, IEnumerable<CallTreeNode>
 	{
 		private readonly CallTreeNode _root;
 		private readonly HashSet<CallTreeNode> _visited;
@@ -65,7 +64,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			{
 				return null;
 			}
-			CallTreeNode current = start;
+			CallTreeNode current;
 			var candidate = start;
 			do
 			{

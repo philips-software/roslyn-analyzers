@@ -57,7 +57,6 @@ namespace Philips.CodeAnalysis.Common.Inspection
 						CreateCallTree(child);
 					}
 				}
-				// TODO: Investigate why object.ToString() is added in between.
 				Cache[methodDef.FullName] = node;
 			}
 		}
