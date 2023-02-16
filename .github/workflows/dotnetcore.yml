@@ -11,15 +11,11 @@ jobs:
         with:
           dotnet-version: |
             7.0.x
+            
       - name: Build
         run: |
           dotnet build --configuration Release
+          
       - name: Test
-        run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" || true
-      - name: Test Report
-        uses: dorny/test-reporter@e9fa2f582c0ebbe2e263fd18fad744d52e0b0203 # ratchet:dorny/test-reporter@v1
-        if: always()
-        with:
-          name: Test-Reporter
-          path: "**/test-results.trx"
-          reporter: dotnet-trx
+        run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
+        
