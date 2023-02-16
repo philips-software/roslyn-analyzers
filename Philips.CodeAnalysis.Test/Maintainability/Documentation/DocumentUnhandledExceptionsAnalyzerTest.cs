@@ -171,7 +171,8 @@ public class Foo
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
-    /// <exception cref=""System.Exception""></exception>	public void MethodA()
+    /// <exception cref=""System.Exception""></exception>
+	public void MethodA()
     {
         try {
             Directory.CreateDirectory(""abc"");
