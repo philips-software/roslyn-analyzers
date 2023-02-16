@@ -171,8 +171,12 @@ public class Foo
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
-    /// <exception cref=""System.Exception""></exception>
-	public void MethodA()
+    /// <exception cref=""System.IO.IOException""></exception>
+    /// <exception cref=""System.IO.FileNotFoundException""></exception>
+    /// <exception cref=""System.IO.DirectoryNotFoundException""></exception>
+    /// <exception cref=""System.IO.PathTooLongException""></exception>
+    /// <exception cref=""System.UnauthorizedException""></exception>
+    public void MethodA()
     {
         try {
             Directory.CreateDirectory(""abc"");
