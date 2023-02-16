@@ -19,7 +19,7 @@
 | [PH2051](../Documentation/Diagnostics/PH2051.md)  | Avoid unnecessary range checks               | Do not superfluously check the length of a List or Array before iterating over it. |
 | [PH2060](../Documentation/Diagnostics/PH2060.md)  | Bool naming conventions                      | Bool names start with is, are, should, has, does, or was.    |
 | [PH2061](../Documentation/Diagnostics/PH2061.md)  | Public/Private #regions                      | Regions called `Non-Public Data Members`, `Non-Public Properties/Methods` or `Public Interface` must have appropriate contents|
-| [PH2062](../Documentation/Diagnostics/PH2062.md)  | Avoid duplicate #regions                     | A class cannot have regions of the same name.                |
+| [PH2064](../Documentation/Diagnostics/PH2064.md)  | Avoid duplicate #regions                     | A class cannot have regions of the same name.                |
 | [PH2066](../Documentation/Diagnostics/PH2066.md)  | Readonly lock                                | Locks are readonly.                                          |
 | [PH2067](../Documentation/Diagnostics/PH2067.md)  | Avoid nested string.Format                   | Don't nest string.Format (or similar) methods.               |
 | [PH2068](../Documentation/Diagnostics/PH2068.md)  | Avoid goto                                   | Avoid goto.                                                  |
@@ -73,7 +73,7 @@
 | [PH2120](../Documentation/Diagnostics/PH2120.md)  | Document thrown exceptions                   | Be clear to your callers what exception can be thrown from your method by mentioning each of them in an <exception> element in the documentation of the method. |
 | [PH2121](../Documentation/Diagnostics/PH2121.md)  | Throw informational exceptions               | Specify context to a thrown exception, by using a constructor overload that sets the Message property. |
 | [PH2122](../Documentation/Diagnostics/PH2122.md)  | Avoid Exceptions from unexpected locations   | Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, some operators, and overidden methods of Object. |
-| [PH2132](../Documentation/Diagnostics/PH2132.md)  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
+| [PH2123](../Documentation/Diagnostics/PH2123.md)  | Pass sender to EventHandler                  | Prevent passing null values for sender/object to event handler (for instance-based events).|
 | [PH2124](../Documentation/Diagnostics/PH2124.md)  | Document unhandled exceptions                | Be clear to your callers what exception can be thrown from your method (or any called methods) by mentioning each of them in an <exception> element in the documentation of the method.|
 | [PH2125](../Documentation/Diagnostics/PH2125.md)  | Align number of + and == operators           | Overload the equality operator (==), when you overload the addition (+) operator. |
 | [PH2126](../Documentation/Diagnostics/PH2126.md)  | Avoid using Parameters as temporary variables| Don't use parameters as temporary variables, define a local variable instead. |
