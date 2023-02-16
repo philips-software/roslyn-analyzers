@@ -1,11 +1,14 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -13,7 +16,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public class ExpectedExceptionAttributeAnalyzerTest : DiagnosticVerifier
 	{
 		[TestMethod]
-		public void ExpectedExceptionAttributeTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ExpectedExceptionAttributeTestAsync()
 		{
 			string givenText = @"
 namespace ExpectedAnalyzerAttributeTest
@@ -28,21 +32,10 @@ namespace ExpectedAnalyzerAttributeTest
   }
 }
 ";
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.ExpectedExceptionAttribute),
-				Message = new Regex(ExpectedExceptionAttributeAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, 6)
-				}
-			};
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
-		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ExpectedExceptionAttributeAnalyzer();
 		}

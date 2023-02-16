@@ -1,51 +1,34 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-
-using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Philips.CodeAnalysis.Test.Helpers;
 
-namespace Philips.CodeAnalysis.Test
+namespace Philips.CodeAnalysis.Test.Verifiers
 {
 	public abstract class AssertDiagnosticVerifier : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
 		private readonly AssertCodeHelper _helper = new();
 
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected void VerifyError(string methodBody, params string[] expectedDiagnosticIds)
+		protected async Task VerifyError(string methodBody, string expectedDiagnosticId)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifyCSharpDiagnostic(test, expectedDiagnosticIds.Select(expectedDiagnosticId =>
+			var expected =
 				new DiagnosticResult()
 				{
 					Id = expectedDiagnosticId,
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
-				}).ToArray());
+				};
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
 
-		protected void VerifyNoError(string methodBody)
+		protected async Task VerifyNoError(string methodBody)
 		{
 			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
-			VerifyCSharpDiagnostic(test);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
-
-		#endregion
-
-		#region Public Interface
-
-
-		protected override MetadataReference[] GetMetadataReferences()
-		{
-			return _helper.GetMetaDataReferences();
-		}
-
-		#endregion
 	}
 }

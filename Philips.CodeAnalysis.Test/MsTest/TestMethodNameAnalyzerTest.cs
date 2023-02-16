@@ -2,12 +2,15 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -23,7 +26,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("SomethingToEnsure", false)]
 		[DataRow("VerifySomething", true)]
 		[DataRow("SomethingToVerify", false)]
-		public void AreEqualTypesMatchTest(string name, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AreEqualTypesMatchTest(string name, bool isError)
 		{
 			string baseline = @"
 namespace TestMethodNameAnalyzerTest
@@ -37,32 +41,40 @@ namespace TestMethodNameAnalyzerTest
   }}
 }}
 ";
-
 			string givenText = string.Format(baseline, name);
-			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, GetPrefix(name));
-			string fixedText = string.Format(baseline, FixName(name));
+			var prefix = GetPrefix(name);
+			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
+			var fixedName = FixName(name);
+			string fixedText = string.Format(baseline, fixedName);
 
-			DiagnosticResult[] expected = new [] { new DiagnosticResult
+			if (isError)
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodName),
-				Message = new Regex(expectedMessage),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+				var expected = new DiagnosticResult
 				{
-					new DiagnosticResultLocation("Test0.cs", 7, 17)
-				}
-			}};
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
+					Message = new Regex(expectedMessage),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", 7, 17)
+					}
+				};
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+			}
 
-			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
-			VerifyCSharpFix(givenText, fixedText);
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
-		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodNameAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestMethodNameCodeFixProvider();
 		}
@@ -73,11 +85,12 @@ namespace TestMethodNameAnalyzerTest
 			if (name.StartsWith("Test", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Test";
-			} else if(name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
+			}
+			else if (name.StartsWith("Verify", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Verify";
 			}
-			if(name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
+			if (name.StartsWith("Ensure", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Ensure";
 			}

@@ -1,30 +1,24 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class PassByRefAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
-		public void ParameterNotWrittenTo(bool isWrittenTo)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToAsync(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
 {{
@@ -36,14 +30,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 }}
 ";
-
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifyDiagnostic(content).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
-		public void ParameterNotWrittenToStruct(bool isWrittenTo)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToStructAsync(bool isWrittenTo)
 		{
 			string content = $@"
 public struct FooStruct
@@ -62,13 +63,21 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifyDiagnostic(content).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
-		public void ParameterNotWrittenToButRequiredForInterface(bool isExplicit)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToButRequiredForInterfaceAsync(bool isExplicit)
 		{
 			string content = $@"
 public interface IData
@@ -85,11 +94,12 @@ public class TestClass : IData
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
-		public void ParameterNotWrittenToButRequiredForBaseClass()
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToButRequiredForBaseClassAsync()
 		{
 			string content = $@"
 public abstract class Data
@@ -106,13 +116,14 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[DataRow(true)]
 		[DataRow(false)]
 		[DataTestMethod]
-		public void ParameterNotWrittenToExpressionMethod(bool isWrittenTo)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToExpressionMethodAsync(bool isWrittenTo)
 		{
 			string content = $@"public class TestClass
 {{
@@ -121,11 +132,19 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isWrittenTo ? Array.Empty<DiagnosticResult>() : DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference));
+			if (isWrittenTo)
+			{
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifyDiagnostic(content).ConfigureAwait(false);
+			}
 		}
 
 		[TestMethod]
-		public void ParameterNotWrittenToNestedMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNotWrittenToNestedMethodAsync()
 		{
 			string content = $@"public class TestClass
 {{
@@ -144,13 +163,14 @@ public class TestClass : Data
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[DataRow(": Foo", false)]
 		[DataRow("", true)]
 		[DataTestMethod]
-		public void EmptyStatementMethodBody(string baseClass, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyStatementMethodBodyAsync(string baseClass, bool isError)
 		{
 			string content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -161,8 +181,14 @@ public class TestClass {baseClass}
 	}}
 }}
 ";
-
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				await VerifyDiagnostic(content).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow(": Foo", "i = 0", false)]
@@ -170,7 +196,8 @@ public class TestClass {baseClass}
 		[DataRow(": Foo", "_ = i.ToString()", false)]
 		[DataRow("", "_ = i.ToString()", true)]
 		[DataTestMethod]
-		public void SingleStatementMethodBody(string baseClass, string statement, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SingleStatementMethodBodyAsync(string baseClass, string statement, bool isError)
 		{
 			string content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -182,16 +209,20 @@ public class TestClass {baseClass}
 	}}
 }}
 ";
-
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPassByReference) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				await VerifyDiagnostic(content).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+			}
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PassByRefAnalyzer();
 		}
-
-		#endregion
 	}
 }

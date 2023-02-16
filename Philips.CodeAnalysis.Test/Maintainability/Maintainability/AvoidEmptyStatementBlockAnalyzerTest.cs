@@ -1,23 +1,38 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidEmptyStatementBlockAnalyzerTest : DiagnosticVerifier
+	public class AvoidEmptyStatementBlockAnalyzerTest : CodeFixVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-
 			return new AvoidEmptyStatementBlocksAnalyzer();
+		}
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidEmptyStatementBlocksCodeFixProvider();
 		}
 
 		[TestMethod]
-		public void CatchesEmptyPrivateMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void FixAllProviderTest()
+		{
+			Assert.AreEqual(WellKnownFixAllProviders.BatchFixer, GetCodeFixProvider().GetFixAllProvider());
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesEmptyPrivateMethodAsync()
 		{
 			const string template = @"
 using System;
@@ -29,12 +44,42 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatementBlock).ConfigureAwait(false);
 
 		}
 
 		[TestMethod]
-		public void CatchesEmptyStatementBlock()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesEmptyStatementMethod()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	private void Test()
+	{
+		Console.WriteLine(""hi""); ; // stuff
+	}
+}
+";
+			const string fixedCode = @"
+using System;
+class Foo
+{
+	private void Test()
+	{
+		Console.WriteLine(""hi"");  // stuff
+	}
+}
+";
+
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatement).ConfigureAwait(false);
+			await VerifyFix(template, fixedCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesEmptyStatementBlockAsync()
 		{
 			const string template = @"
 using System;
@@ -50,11 +95,12 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatementBlock).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchesStatementBlockWithJustComment()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesStatementBlockWithJustCommentAsync()
 		{
 			const string template = @"
 using System;
@@ -66,13 +112,14 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatementBlock).ConfigureAwait(false);
 
 
 		}
 
 		[TestMethod]
-		public void DoesNotCatchStatementBlock()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoesNotCatchStatementBlockAsync()
 		{
 			const string template = @"
 using System;
@@ -85,7 +132,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 
 
 
@@ -93,7 +140,8 @@ class Foo
 
 
 		[TestMethod]
-		public void DoesNotFailOnEmptyConstructor()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoesNotFailOnEmptyConstructorAsync()
 		{
 			const string template = @"
 using System;
@@ -103,11 +151,12 @@ class Foo
 	{ }
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void ConstructorWithEmptyStatementBlockFails()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorWithEmptyStatementBlockFailsAsync()
 		{
 			const string template = @"
 using System;
@@ -119,11 +168,12 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatementBlock).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyCatchBlockFails()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyCatchBlockFailsAsync()
 		{
 			const string template = @"
 using System;
@@ -141,12 +191,13 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyCatchBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyCatchBlock).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void EmptyPublicMethodAllowed()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyPublicMethodAllowedAsync()
 		{
 			const string template = @"
 using System;
@@ -158,12 +209,13 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void EmptyProtectedMethodAllowed()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyProtectedMethodAllowedAsync()
 		{
 			const string template = @"
 using System;
@@ -175,12 +227,13 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void ParenthesizedLambdasAllowed()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParenthesizedLambdasAllowedAsync()
 		{
 			const string template = @"
 using System;
@@ -193,11 +246,12 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void SimpleLambdasAllowed()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SimpleLambdasAllowedAsync()
 		{
 			const string template = @"
 using System;
@@ -211,12 +265,12 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
-
 		[TestMethod]
-		public void EmptyLockBlocksAllowed()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyLockBlocksAllowedAsync()
 		{
 			const string template = @"
 using System;
@@ -225,17 +279,18 @@ class Foo
 {
 	public void Meow()
 	{
-			object lock = new object();
-			lock (lock) { }
+			object l = new object();
+			lock (l) { }
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void PublicMethodWithEmptyStatementBlockFails()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PublicMethodWithEmptyStatementBlockFailsAsync()
 		{
 			const string template = @"
 using System;
@@ -248,7 +303,7 @@ class Foo
 	}
 }
 ";
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidEmptyStatementBlock));
+			await VerifyDiagnostic(template, DiagnosticId.AvoidEmptyStatementBlock).ConfigureAwait(false);
 		}
 
 	}

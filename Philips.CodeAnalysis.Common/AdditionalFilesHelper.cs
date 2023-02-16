@@ -30,10 +30,11 @@ namespace Philips.CodeAnalysis.Common
 		{
 			ExceptionsOptions = LoadExceptionsOptions(diagnosticId);
 			HashSet<string> exceptions = new();
-			if (!ExceptionsOptions.IgnoreExceptionsFile)
+			if (ExceptionsOptions.ShouldUseExceptionsFile)
 			{
 				exceptions = LoadExceptions(exceptionsFile);
 			}
+
 			return exceptions;
 		}
 
@@ -45,9 +46,11 @@ namespace Philips.CodeAnalysis.Common
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 				if (comparer.Equals(fileName, exceptionsFile))
 				{
-					return Convert(additionalFile.GetText());
+					var text = additionalFile.GetText();
+					return Convert(text);
 				}
 			}
+
 			return new HashSet<string>();
 		}
 
@@ -58,6 +61,7 @@ namespace Philips.CodeAnalysis.Common
 			{
 				result.Add(line.ToString());
 			}
+
 			return result;
 		}
 
@@ -65,23 +69,25 @@ namespace Philips.CodeAnalysis.Common
 		{
 			ExceptionsOptions options = new();
 
-			string ignoreExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
-			options.IgnoreExceptionsFile = !string.IsNullOrWhiteSpace(ignoreExceptionsFile);
+			string valueFromEditorConfig = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
+			options.ShouldUseExceptionsFile = string.IsNullOrWhiteSpace(valueFromEditorConfig);
 
 			string generateExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"generate_exceptions_file");
-			options.GenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
+			options.ShouldGenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
 			return options;
 		}
 
 		private string GetRawValue(string settingKey)
 		{
-			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(_compilation.SyntaxTrees.First());
+			var tree = _compilation.SyntaxTrees.First();
+			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
 
 #nullable enable
 			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))
 			{
 				return value == null ? string.Empty : value.ToString();
 			}
+
 			return string.Empty;
 #nullable disable
 		}
@@ -95,7 +101,7 @@ namespace Philips.CodeAnalysis.Common
 		/// Get a list of values (comma separated) for the given setting in editorconfig
 		/// </summary>
 		/// <returns></returns>
-		public virtual List<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
+		public virtual IReadOnlyList<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
 			List<string> values = new();
 			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
@@ -107,13 +113,8 @@ namespace Philips.CodeAnalysis.Common
 					values.Add(v);
 				}
 			}
+
 			return values;
 		}
-	}
-
-	public class ExceptionsOptions
-	{
-		public bool IgnoreExceptionsFile { get; set; } = false;
-		public bool GenerateExceptionsFile { get; set; } = false;
 	}
 }

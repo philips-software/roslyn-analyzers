@@ -20,10 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		private const string Title = "Remove invalid prefix";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.TestMethodName)); }
-		}
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestMethodName));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -62,20 +59,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Compute new name.
 			string name = methodDeclaration.Identifier.Text;
 
-			while (name.Contains(@"Test"))
+			while (name.Contains(StringConstants.TestAttributeName))
 			{
-				name = name.Replace(@"Test", @"");
+				name = name.Replace(StringConstants.TestAttributeName, string.Empty);
 			}
-			while (name.Contains(@"Ensure"))
+			while (name.Contains(StringConstants.EnsureAttributeName))
 			{
-				name = name.Replace(@"Ensure", @"");
+				name = name.Replace(StringConstants.EnsureAttributeName, string.Empty);
 			}
-			while (name.Contains(@"Verify"))
+			while (name.Contains(StringConstants.VerifyAttributeName))
 			{
-				name = name.Replace(@"Verify", @"");
+				name = name.Replace(StringConstants.VerifyAttributeName, string.Empty);
 			}
 
-			name += @"Test";
+			name += StringConstants.TestAttributeName;
 
 			// Get the symbol representing the type to be renamed.
 			var semanticModel = await document.GetSemanticModelAsync(cancellationToken);

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(CallExtensionMethodsAsInstanceMethodsAnalyzer)), Shared]
 	public class CallExtensionMethodsAsInstanceMethodsCodeFixProvider : CodeFixProvider
 	{
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.ExtensionMethodsCalledLikeInstanceMethods));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods));
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
@@ -66,11 +66,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ExpressionSyntax thisObject = invocation.ArgumentList.Arguments[0].Expression;
 			ArgumentListSyntax newArguments = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(invocation.ArgumentList.Arguments.Skip(1).ToArray()));
 
-			MemberAccessExpressionSyntax newExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisObject, name.WithoutLeadingTrivia());
+			name = name.WithoutLeadingTrivia();
+			MemberAccessExpressionSyntax newExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, thisObject, name);
 
 			InvocationExpressionSyntax newInvocation = SyntaxFactory.InvocationExpression(newExpression, newArguments);
 
-			root = root.ReplaceNode(invocation, newInvocation.WithLeadingTrivia(invocation.GetLeadingTrivia()));
+			var trivia = invocation.GetLeadingTrivia();
+			var newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
+			root = root.ReplaceNode(invocation, newInvocationWithLeadingTrivia);
 
 			return document.WithSyntaxRoot(root);
 		}

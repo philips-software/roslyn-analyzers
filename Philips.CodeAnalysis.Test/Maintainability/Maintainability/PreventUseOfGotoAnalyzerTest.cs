@@ -1,22 +1,26 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class PreventUseOfGotoAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreventUseOfGotoAnalyzer();
 		}
 
 		[TestMethod]
-		public void NoLabeledStatements()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoLabeledStatementsAsync()
 		{
 			const string template = @"
 using System;
@@ -29,12 +33,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoLabeledStatementsWithGoto()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoLabeledStatementsWithGotoAsync()
 		{
 			const string template = @"
 using System;
@@ -49,11 +53,12 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed), DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			await VerifyDiagnostic(template, 2).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoGotoCase()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoGotoCaseAsync()
 		{
 			const string template = @"
 using System;
@@ -70,12 +75,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoGotoDefault()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoGotoDefaultAsync()
 		{
 			const string template = @"
 using System;
@@ -92,8 +97,7 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.GotoNotAllowed));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 	}
 }

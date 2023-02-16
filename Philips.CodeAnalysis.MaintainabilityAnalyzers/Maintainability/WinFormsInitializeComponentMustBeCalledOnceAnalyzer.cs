@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,44 +11,38 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : DiagnosticAnalyzer
+	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzer : SingleDiagnosticAnalyzer<ClassDeclarationSyntax, WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction>
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Check for UserControl constructor chains calls to InitializeComponent()";
 		public static readonly string MessageFormat = @"Class ""{0}"" constructor triggers {1} calls to ""InitializeComponent()"".  Must only trigger 1.";
 		private const string Description = @"All UserControl constructor chains must call InitializeComponent().";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
-												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public WinFormsInitializeComponentMustBeCalledOnceAnalyzer()
+			: base(DiagnosticId.InitializeComponentMustBeCalledOnce, Title, MessageFormat, Description, Categories.Maintainability)
+		{
+			FullyQualifiedMetaDataName = "System.Windows.Forms.ContainerControl";
+		}
+	}
 
+	public class WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction : SyntaxNodeAction<ClassDeclarationSyntax>
+	{
+		private readonly TestHelper _testHelper = new();
 
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		/// <summary>
-		/// IsInitializeComponentInConstructors
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="constructors"></param>
-		/// <param name="classDeclaration"></param>
-		/// <returns></returns>
-		private void IsInitializeComponentInConstructors(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors, ClassDeclarationSyntax classDeclaration)
+		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
 			{
-				Diagnostic diagnostic0 = Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier.ToString(), 0);
-				context.ReportDiagnostic(diagnostic0);
+				var identifierLocation = Node.Identifier.GetLocation();
+				ReportDiagnostic(identifierLocation, Node.Identifier.ToString(), 0);
 				return;
 			}
 
-			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = ConstructorSyntaxHelper.CreateMapping(context, constructors);
+			ConstructorSyntaxHelper constructorSyntaxHelper = new();
+			var mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
-				var chain = ConstructorSyntaxHelper.GetCtorChain(mapping, ctor);
+				var chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
 
 				if (!IsInitializeComponentInConstructorChainOnce(chain, out int count))
 				{
@@ -62,12 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					{
 						location = ctor.Initializer.GetLocation();
 					}
-					context.ReportDiagnostic(Diagnostic.Create(Rule, location, ctor.Identifier, count));
+					ReportDiagnostic(location, ctor.Identifier, count);
 				}
 			}
 		}
 
-		private bool IsInitializeComponentInConstructorChainOnce(List<ConstructorDeclarationSyntax> chain, out int count)
+		private bool IsInitializeComponentInConstructorChainOnce(IReadOnlyList<ConstructorDeclarationSyntax> chain, out int count)
 		{
 			count = 0;
 			foreach (var ctor in chain)
@@ -87,7 +80,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					continue;
 				}
-				if (string.Equals(@"InitializeComponent", name.Identifier.ValueText))
+				if (string.Equals(@"InitializeComponent", name.Identifier.ValueText, System.StringComparison.Ordinal))
 				{
 					count++;
 				}
@@ -96,73 +89,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 
 
-		/// <summary>
-		/// Analyze
-		/// </summary>
-		/// <param name="context"></param>
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		public override void Analyze()
 		{
-			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
-			if (!classDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
-			{
-				if (!classDeclaration.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
-				{
-					return;
-				}
-			}
-
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (!Node.Modifiers.Any(SyntaxKind.PartialKeyword) && !Node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{
 				return;
 			}
 
 			// If we're in a TestClass, let it go.
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(Context))
 			{
 				return;
 			}
 
 			// If we're not within a Control/Form, let it go.
-			INamedTypeSymbol type = context.SemanticModel.GetDeclaredSymbol(classDeclaration);
+			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
 			if (!Helper.IsUserControl(type))
 			{
 				return;
 			}
 
-			ConstructorDeclarationSyntax[] constructors = classDeclaration.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
-			IsInitializeComponentInConstructors(context, constructors, classDeclaration);
+			ConstructorDeclarationSyntax[] constructors = Node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
+			IsInitializeComponentInConstructors(constructors);
 		}
-
-		#endregion
-
-		#region Public Interface
-
-		/// <summary>
-		/// SupportedDiagnostics
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		/// <summary>
-		/// Initialize
-		/// </summary>
-		/// <param name="context"></param>
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.Windows.Forms.ContainerControl") == null)
-				{
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
-			});
-		}
-
-		#endregion
 	}
 }

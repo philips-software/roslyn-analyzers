@@ -8,22 +8,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using System.CodeDom.Compiler;
+using Philips.CodeAnalysis.Test.Verifiers;
+using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
-	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-		}
-	}
-
-	[TestClass]
 	public class AvoidRedundantSwitchStatementAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidRedundantSwitchStatementAnalyzer();
 		}
@@ -32,7 +26,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("int")]
 		[DataRow("string")]
 		[DataTestMethod]
-		public void SwitchWithOnlyDefaultCaseIsFlagged(string type)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SwitchWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
 			string input = $@"
 public static class Foo
@@ -49,7 +44,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 
@@ -73,24 +68,27 @@ public class Foo
 ";
 
 		[TestMethod]
-		public void GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
 			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
-			VerifyCSharpDiagnostic(SampleMethodWithSwitches, @"Foo.designer");
+			await VerifySuccessfulCompilation(SampleMethodWithSwitches, @"Foo.designer").ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
-		public void SwitchWithMultipleCasesIsFlagged(string type, string value)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SwitchWithMultipleCasesIsFlaggedAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -108,14 +106,15 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
-		public void SwitchWithMultipleCasesIsIgnored(string type, string value)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SwitchWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -134,7 +133,7 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
@@ -142,7 +141,8 @@ public static class Foo
 		[DataRow("int")]
 		[DataRow("string")]
 		[DataTestMethod]
-		public void SwitchExpressionWithOnlyDefaultCaseIsFlagged(string type)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
 			string input = $@"
 public static class Foo
@@ -157,14 +157,15 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input, DiagnosticResultHelper.Create(DiagnosticIds.AvoidSwitchStatementsWithNoCases));
+			await VerifyDiagnostic(input, DiagnosticId.AvoidSwitchStatementsWithNoCases).ConfigureAwait(false);
 		}
 
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
-		public void SwitchExpressionWithMultipleCasesIsIgnored(string type, string value)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SwitchExpressionWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
 			string input = $@"
 public static class Foo
@@ -180,8 +181,17 @@ public static class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
+	}
+
+	[TestClass]
+	public class AvoidRedundantSwitchStatementAnalyzerGeneratedCodeTest : AvoidRedundantSwitchStatementAnalyzerTest
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidRedundantSwitchStatementAnalyzer(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+		}
 	}
 }

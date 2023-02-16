@@ -1,9 +1,12 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -17,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertIsTrueLiteralAnalyzer();
 		}
@@ -33,9 +36,10 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsFalse(true)")]
 		[DataRow("Assert.IsFalse(false)")]
 		[DataRow("Assert.IsFalse(!false)")]
-		public void CheckLiteral(string given)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckLiteralAsync(string given)
 		{
-			VerifyError(given, Helper.ToDiagnosticId(DiagnosticIds.AssertIsTrueLiteral));
+			await VerifyError(given, Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral)).ConfigureAwait(false);
 		}
 
 		#endregion

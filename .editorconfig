@@ -3,7 +3,15 @@ root = true
 [*.cs]
 end_of_line = lf
 indent_style = tab
+indent_size = 4
+end_of_line = crlf
+charset = utf-8-bom
+trim_trailing_whitespace = true
+insert_final_newline = true
+
 dotnet_sort_system_directives_first = true
+dotnet_style_namespace_match_folder = true
+
 csharp_new_line_before_open_brace = all
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
@@ -11,6 +19,39 @@ csharp_new_line_before_finally = true
 csharp_new_line_before_members_in_object_initializers = true
 csharp_new_line_before_members_in_anonymous_types = true
 csharp_new_line_between_query_expression_clauses = true
+
+csharp_indent_case_contents = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = flush_left
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents_when_block = true
+
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_parentheses = none
+csharp_space_before_colon_in_inheritance_clause = true
+csharp_space_after_colon_in_inheritance_clause = true
+csharp_space_around_binary_operators = before_and_after
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_call_empty_parameter_list_parentheses = false
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+csharp_space_after_dot = false
+csharp_space_before_dot = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_around_declaration_statements = false
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_square_brackets = false
+
+csharp_preserve_single_line_statements = false
+csharp_preserve_single_line_blocks = true
 
 dotnet_style_qualification_for_field = false:error
 dotnet_style_qualification_for_property = false:error
@@ -29,6 +70,11 @@ dotnet_style_prefer_conditional_expression_over_return = false
 dotnet_diagnostic.CA1305.severity = none
 dotnet_diagnostic.CA1310.severity = none
 dotnet_diagnostic.CA1824.severity = none
+
+# string.Contains(ReadOnlySpan, ReadOnlySpan) is not available in .NET Standard 2.0
+dotnet_diagnostic.CA1845.severity = none
+# string.Contains(char) is not available in .NET Standard 2.0
+dotnet_diagnostic.CA1847.severity = none
 
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
@@ -91,7 +137,7 @@ dotnet_diagnostic.IDE0051.severity = error
 dotnet_diagnostic.IDE0052.severity = error
 dotnet_diagnostic.IDE0053.severity = error
 dotnet_diagnostic.IDE0054.severity = error
-###dotnet_diagnostic.IDE0055.severity = error
+dotnet_diagnostic.IDE0055.severity = error
 dotnet_diagnostic.IDE0056.severity = none   # Cannot use index/range with .NET Standard 2.0
 dotnet_diagnostic.IDE0057.severity = none   # Cannot use index/range with .NET Standard 2.0
 ###dotnet_diagnostic.IDE0058.severity = error
@@ -131,6 +177,9 @@ dotnet_diagnostic.IDE0250.severity = error
 dotnet_diagnostic.IDE1005.severity = error
 dotnet_diagnostic.IDE1006.severity = error
 
+dotnet_code_quality.PH2006.folder_in_namespace = true
+dotnet_code_quality.PH2015.allowed_test_categories = TestDefinitions.UnitTests
 dotnet_code_quality.PH2028.company_name = Koninklijke Philips N.V.
-
+dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
+dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
 

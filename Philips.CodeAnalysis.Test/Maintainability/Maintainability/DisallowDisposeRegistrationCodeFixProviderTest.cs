@@ -2,20 +2,24 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class DisallowDisposeRegistrationCodeFixProviderTest : AssertCodeFixVerifier
+	public class DisallowDisposeRegistrationCodeFixProviderTest : CodeFixVerifier
 	{
 		[TestMethod]
-		public void DisallowDisposeRegistrationTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DisallowDisposeRegistrationTest()
 		{
 			string givenText = @"
 class Foo 
@@ -30,7 +34,7 @@ class Foo
 ";
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.DisallowDisposeRegistration),
+				Id = Helper.ToDiagnosticId(DiagnosticId.DisallowDisposeRegistration),
 				Message = new Regex(DisallowDisposeRegistrationAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -38,26 +42,21 @@ class Foo
 					new DiagnosticResultLocation("Test0.cs", 7, 5)
 				}
 			};
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 
-			VerifyCSharpFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new DisallowDisposeRegistrationCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DisallowDisposeRegistrationAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

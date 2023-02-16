@@ -13,45 +13,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Don't allow protected fields, they violate encapsulation
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoProtectedFieldsAnalyzer : DiagnosticAnalyzer
+	public class NoProtectedFieldsAnalyzer : SingleDiagnosticAnalyzer<FieldDeclarationSyntax, NoProtectedFieldsSyntaxNodeAction>
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Do not use protected fields";
-		private const string MessageFormat = @"Do not use protected fields";
-		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
+		private const string MessageFormat = Title;
+		private const string Description = Title;
+		public NoProtectedFieldsAnalyzer()
+			: base(DiagnosticId.NoProtectedFields, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
 
-		private static readonly DiagnosticDescriptor _rule = new(Helper.ToDiagnosticId(DiagnosticIds.NoProtectedFields), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(_rule);
-
-		public override void Initialize(AnalysisContext context)
+	public class NoProtectedFieldsSyntaxNodeAction : SyntaxNodeAction<FieldDeclarationSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterSyntaxNodeAction(OnField, SyntaxKind.FieldDeclaration);
-		}
-
-		private void OnField(SyntaxNodeAnalysisContext context)
-		{
-			FieldDeclarationSyntax fieldDeclarationSyntax = (FieldDeclarationSyntax)context.Node;
-
-			if (fieldDeclarationSyntax.Modifiers.Any(SyntaxKind.ProtectedKeyword))
+			if (Node.Modifiers.Any(SyntaxKind.ProtectedKeyword))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(_rule, fieldDeclarationSyntax.GetLocation()));
+				var location = Node.GetLocation();
+				ReportDiagnostic(location);
 			}
 		}
-
-		#endregion
 	}
 }

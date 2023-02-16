@@ -7,6 +7,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Test.Verifiers;
+using Philips.CodeAnalysis.Test.Helpers;
+using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Common
 {
@@ -15,16 +18,16 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		#region Helper Analyzer
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private sealed class AvoidWritingCodeAnalyzer : DiagnosticAnalyzer
+		private sealed class AvoidWritingCodeAnalyzer : SingleDiagnosticAnalyzer
 		{
+			public AvoidWritingCodeAnalyzer()
+				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)
+			{ }
+
 			public static bool ShouldAnalyzeTree { get; set; }
 			public static bool ShouldAnalyzeConstructor { get; set; }
 			public static bool ShouldAnalyzeStruct { get; set; }
 			public static bool ShouldAnalyzeSwitch { get; set; }
-
-			private const string Title = @"Avoid writing code";
-			public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodName), Title, Title, Categories.Maintainability, DiagnosticSeverity.Error, true, Title);
-			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 			public override void Initialize(AnalysisContext context)
 			{
@@ -94,7 +97,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 		#endregion Helper Analyzer
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidWritingCodeAnalyzer();
 		}
@@ -104,12 +107,13 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, false, true, false)]
 		[DataRow(false, false, false, true)]
 		[DataTestMethod]
-		public void NonGeneratedCodeIsFlagged(bool tree, bool structStatement, bool constructor, bool switchStatement)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NonGeneratedCodeIsFlaggedAsync(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = structStatement;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = constructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = switchStatement;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = shouldAnalyzeStruct;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
 			string input = @"
 public class Foo
@@ -120,12 +124,12 @@ public class Foo
 public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, expected);
+			await VerifyDiagnostic(input).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void GeneratedConstructorIsNotFlagged()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedConstructorIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = true;
 
@@ -136,11 +140,12 @@ public class Foo
   public Foo() { }
 }
 ";
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void GeneratedStructIsNotFlagged()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedStructIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = true;
 
@@ -148,12 +153,13 @@ public class Foo
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void GeneratedSwitchIsNotFlagged()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedSwitchIsNotFlaggedAsync()
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = true;
 
@@ -173,7 +179,7 @@ public class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(input);
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
 
@@ -183,27 +189,26 @@ public class Foo
 		[DataRow(@"Foo.g", false, true, false)]
 		[DataRow(@"Foo.g", false, false, true)]
 		[DataTestMethod]
-		public void GeneratedFilesNamesAreNotFlagged(string fileNamePrefix, bool tree, bool constructor, bool switchStatement)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedFilesNamesAreNotFlaggedAsync(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = tree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = constructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = switchStatement;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
+			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
 			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			await VerifySuccessfulCompilation(input, fileNamePrefix).ConfigureAwait(false);
 		}
 
 		[DataRow(@"Foo")]
 		[DataRow(@"Foo.xyz")]
 		[DataTestMethod]
-
-		public void NonGeneratedFilesAreFlagged(string fileNamePrefix)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NonGeneratedFilesAreFlaggedAsync(string fileNamePrefix)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
 			string input = @"public class Foo { }";
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.TestMethodName) };
-			VerifyCSharpDiagnostic(input, fileNamePrefix, expected);
+			await VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix).ConfigureAwait(false);
 		}
 	}
 }

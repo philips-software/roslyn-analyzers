@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualLiteral)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
 
-					if (!Helper.IsLiteralTrueFalse(arg.Expression))
+					Helper helper = new();
+					if (!helper.IsLiteralTrueFalse(arg.Expression))
 					{
 						return;
 					}
@@ -78,8 +79,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			InvocationExpressionSyntax newInvocation = ConvertToInvocation(((MemberAccessExpressionSyntax)invocationExpression.Expression).Name, literalExpected.Expression, actual.Expression, message?.Expression);
-
-			root = root.ReplaceNode(invocationExpression, newInvocation.WithLeadingTrivia(invocationExpression.GetLeadingTrivia()));
+			var trivia = invocationExpression.GetLeadingTrivia();
+			var newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
+			root = root.ReplaceNode(invocationExpression, newInvocationWithTrivia);
 
 			return document.WithSyntaxRoot(root);
 		}
@@ -88,12 +90,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			bool isLiteralTrue = GetMethod(literalExpected);
 
-			if (calledMethod.ToString() == @"AreNotEqual")
+			if (calledMethod.ToString() == StringConstants.AreNotEqualMethodName)
 			{
 				isLiteralTrue = !isLiteralTrue;
 			}
 
-			string method = isLiteralTrue ? "IsTrue" : "IsFalse";
+			string method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
 
 			ArgumentListSyntax argumentListSyntax = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[] { SyntaxFactory.Argument(actual) }));
 
@@ -102,7 +104,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				argumentListSyntax = argumentListSyntax.AddArguments(SyntaxFactory.Argument(message));
 			}
 
-			return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName("Assert"), SyntaxFactory.Token(SyntaxKind.DotToken), (SimpleNameSyntax)SyntaxFactory.ParseName(method)), argumentListSyntax);
+			return SyntaxFactory.InvocationExpression(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.ParseTypeName(StringConstants.Assert), SyntaxFactory.Token(SyntaxKind.DotToken), (SimpleNameSyntax)SyntaxFactory.ParseName(method)), argumentListSyntax);
 		}
 
 		private bool GetMethod(ExpressionSyntax literalExpected)

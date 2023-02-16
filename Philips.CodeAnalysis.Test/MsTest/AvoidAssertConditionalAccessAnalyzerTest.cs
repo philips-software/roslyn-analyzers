@@ -1,10 +1,14 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -18,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAssertConditionalAccessAnalyzer();
 		}
@@ -32,26 +36,48 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name?.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), name2.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), (name2?.ToString()))")]
-		public void AvoidAssertConditionalAccessAnalyzerFailTest(string test)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidAssertConditionalAccessAnalyzerFailTestAsync(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
+			await VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
 		}
+
 
 		[DataTestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
-		public void AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrors(string test)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrorsAsync(string test)
 		{
-			VerifyError(test, Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess), Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess));
+			DiagnosticResult[] expected = new[]
+			{
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				},
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Severity = DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation("Test0.cs", null, null),
+				}
+			};
+			AssertCodeHelper helper = new();
+			var code = helper.GetText(test, string.Empty, string.Empty);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
+
 
 		[DataTestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString(), $\"error{name1?.ToString()}\")")]
-		public void AvoidAssertConditionalAccessAnalyzerSuccessTest(string test)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidAssertConditionalAccessAnalyzerSuccessTestAsync(string test)
 		{
-			VerifyCSharpDiagnostic(test, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 		#endregion
 	}

@@ -1,57 +1,54 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-	[TestClass]
-	public class AvoidStaticClassAnalyzerTest2 : AvoidStaticClassAnalyzerTest
-	{
-		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
-		{
-			return _mock.Object;
-		}
-
-		[TestMethod]
-		public void AvoidStaticClassesShouldWhitelistTest()
-		{
-			HashSet<string> exceptions = new()
-			{
-				KnownWhitelistClassNamespace + "." + KnownWhitelistClassClassName
-			};
-			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<HashSet<string>>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(exceptions, false));
-			VerifyNoDiagnostic(CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName));
-		}
-	}
-
 	/// <summary>
 	/// 
 	/// </summary>
 	[TestClass]
-	public class AvoidStaticClassAnalyzerTest : DiagnosticVerifier
+	public class AvoidStaticClassAnalyzerTest : CodeFixVerifier
 	{
 		public const string KnownWhitelistClassNamespace = "Philips.Monitoring.Common";
 		public const string KnownWhitelistClassClassName = "SerializationHelper";
 		public const string KnownWildcardClassName = "AssemblyInitialize";
 		public const string AnotherKnownWildcardClassName = "Program";
+		private const string AllowedStaticTypes = @"AllowedClass
+AllowedStruct
+AllowedEnumeration";
 
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidStaticClassesAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidStaticClassesCodeFixProvider();
+		}
+
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
+		{
+			return base.GetAdditionalTexts().Add((AvoidStaticClassesAnalyzer.AllowedFileName, AllowedStaticTypes));
+		}
+
+		private string CreateField(string modifiers, string name)
+		{
+			return $@"
+				public {modifiers} string {name} = ""{name}"";
+";
 		}
 
 		protected string CreateFunction(string staticModifier, string nameSpace = "Sweet", string className = "Caroline", bool isExtension = false, bool hasNonExtensionMethods = true)
@@ -81,52 +78,134 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}}";
 		}
 
-		#endregion
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesOnlyConstFieldTestAsync()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+			}}}}";
 
-		#region Public Interface
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
+		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void AvoidStaticClassesViolatingFieldTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("", "ViolatingField")}
+			}}}}";
+
+			Verify(testClass);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesMixFieldTestAsync()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("static readonly", "F2")}
+				{CreateField("const", "F3")}
+				{CreateField("static readonly", "F4")}
+				{CreateField("const", "F5")}
+			}}}}";
+
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void AvoidStaticClassesMixViolationTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("static readonly", "F2")}
+				{CreateField("const", "F3")}
+				{CreateField("static", "ViolatingField")}
+				{CreateField("const", "F5")}
+			}}}}";
+
+			Verify(testClass);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void AvoidStaticClassesRogueMethodTest()
+		{
+			string testClass = $@"
+			namespace MyNamespace {{
+			public static class TestClass {{
+				{CreateField("const", "F1")}
+				{CreateField("const", "F2")}
+				{CreateField("const", "F3")}
+				public static void Foo();
+			}}}}";
+
+			Verify(testClass);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesTest()
 		{
-			VerifyDiagnostic(CreateFunction("static"));
+			var file = CreateFunction("static");
+			Verify(file);
 		}
 
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
-			VerifyDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName));
+			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
+			Verify(file);
 		}
 
 		[TestMethod]
-		public void AvoidStaticClassesShouldWhitelistWildCardClassTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesShouldWhitelistWildCardClassTestAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName));
-			VerifyNoDiagnostic(CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName));
+			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWildcardClassName);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
+			var file2 = CreateFunction("static", "IAmSooooooNotWhitelisted", AnotherKnownWildcardClassName);
+			await VerifySuccessfulCompilation(file2).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AvoidStaticClassesShouldWhitelistExtensionClasses()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesShouldWhitelistExtensionClasses()
 		{
-			VerifyNoDiagnostic(CreateFunction("static", isExtension: true, hasNonExtensionMethods: false));
-			VerifyDiagnostic(CreateFunction("static", isExtension: true));
+			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
+			await VerifySuccessfulCompilation(noDiagnostic).ConfigureAwait(false);
+			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
+			Verify(methodHavingDiagnostic);
+			await VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AvoidNoStaticClassesTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidNoStaticClassesTestAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction(""));
+			var file = CreateFunction("");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 
-		protected void VerifyNoDiagnostic(string file)
+		private void Verify(string file)
 		{
-			VerifyCSharpDiagnostic(file);
-		}
-
-		private void VerifyDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
+			VerifyDiagnostic(file, new DiagnosticResult()
 			{
 				Id = AvoidStaticClassesAnalyzer.Rule.Id,
 				Message = new Regex(".+"),
@@ -135,9 +214,29 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				{
 					new DiagnosticResultLocation("Test0.cs", 3, -1),
 				}
-			});
+			}).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class AvoidStaticClassAnalyzerTest2 : AvoidStaticClassAnalyzerTest
+	{
+		private readonly Mock<AvoidStaticClassesAnalyzer> _mock = new() { CallBase = true };
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return _mock.Object;
 		}
 
-		#endregion
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesShouldWhitelistTestAsync()
+		{
+			AllowedSymbols allowedSymbols = new(null);
+			allowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
+			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
+			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
+		}
 	}
 }

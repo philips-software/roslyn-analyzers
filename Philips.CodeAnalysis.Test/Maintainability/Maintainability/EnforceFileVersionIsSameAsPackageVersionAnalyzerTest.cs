@@ -1,7 +1,11 @@
-﻿using Microsoft.CodeAnalysis.Diagnostics;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -24,7 +28,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("1.0.0", "1.0.0-ci.1", false)]
 		[DataRow("1.1.2", "1.1.2+417ce", false)]
 		[DataRow("1.1.2", "1.1.2-beta+417ce", false)]
-		public void FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FileVersionMustBeSameAsPackageVersionAsync(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
 			string code = $@"
 using System;
@@ -45,16 +50,17 @@ class FooClass
 
 			if (hasDiagnostic)
 			{
-				VerifyCSharpDiagnostic(code, DiagnosticResultHelper.Create(DiagnosticIds.EnforceFileVersionIsSameAsPackageVersion));
+				await VerifyDiagnostic(code, DiagnosticId.EnforceFileVersionIsSameAsPackageVersion).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyCSharpDiagnostic(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
 		[TestMethod]
-		public void NoDiagnosticWhenNoPackageVersion()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoDiagnosticWhenNoPackageVersionAsync()
 		{
 			string code = $@"
 using System;
@@ -72,11 +78,12 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoDiagnosticWhenNoFileVersionOrPackageVersion()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoDiagnosticWhenNoFileVersionOrPackageVersionAsync()
 		{
 			string code = $@"
 using System;
@@ -91,10 +98,10 @@ class FooClass
 }}}}
 ";
 
-			VerifyCSharpDiagnostic(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceFileVersionIsSameAsPackageVersionAnalyzer();
 		}

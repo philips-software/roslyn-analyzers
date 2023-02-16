@@ -3,56 +3,54 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
 	public class EnforceBoolNamingConventionAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceBoolNamingConventionAnalyzer();
 		}
 
-		#endregion
-
-		#region Public Interface
-
-		[DataRow("_isFoo", true, 3)]
-		[DataRow("_areFoo", true, 3)]
-		[DataRow("_shouldFoo", true, 3)]
-		[DataRow("_hasFoo", true, 3)]
-		[DataRow("_doesFoo", true, 3)]
-		[DataRow("_wasFoo", true, 3)]
-		[DataRow("_is12Foo", true, 3)]
-		[DataRow("_foo", false, 3)]
-		[DataRow("_isfoo", false, 3)]
-		[DataRow("_arefoo", false, 3)]
-		[DataRow("_shouldfoo", false, 3)]
-		[DataRow("_hasfoo", false, 3)]
-		[DataRow("_doesfoo", false, 3)]
-		[DataRow("_wasfoo", false, 3)]
-		[DataRow("IsFoo", false, 3)]
-		[DataRow("AreFoo", false, 3)]
-		[DataRow("ShouldFoo", false, 3)]
-		[DataRow("HasFoo", false, 3)]
-		[DataRow("DoesFoo", false, 3)]
-		[DataRow("WasFoo", false, 3)]
-		[DataRow("isFoo", false, 3)]
-		[DataRow("areFoo", false, 3)]
-		[DataRow("shouldFoo", false, 3)]
-		[DataRow("hasFoo", false, 3)]
-		[DataRow("doesFoo", false, 3)]
-		[DataRow("wasFoo", false, 3)]
+		[DataRow("_isFoo", true)]
+		[DataRow("_areFoo", true)]
+		[DataRow("_shouldFoo", true)]
+		[DataRow("_hasFoo", true)]
+		[DataRow("_doesFoo", true)]
+		[DataRow("_wasFoo", true)]
+		[DataRow("_is12Foo", true)]
+		[DataRow("_foo", false)]
+		[DataRow("_isfoo", false)]
+		[DataRow("_arefoo", false)]
+		[DataRow("_shouldfoo", false)]
+		[DataRow("_hasfoo", false)]
+		[DataRow("_doesfoo", false)]
+		[DataRow("_wasfoo", false)]
+		[DataRow("IsFoo", false)]
+		[DataRow("AreFoo", false)]
+		[DataRow("ShouldFoo", false)]
+		[DataRow("HasFoo", false)]
+		[DataRow("DoesFoo", false)]
+		[DataRow("WasFoo", false)]
+		[DataRow("isFoo", false)]
+		[DataRow("areFoo", false)]
+		[DataRow("shouldFoo", false)]
+		[DataRow("hasFoo", false)]
+		[DataRow("doesFoo", false)]
+		[DataRow("wasFoo", false)]
 		[DataTestMethod]
-		public void FieldVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -61,59 +59,62 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 15)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("isfoo", false, 3)]
-		[DataRow("arefoo", false, 3)]
-		[DataRow("shouldfoo", false, 3)]
-		[DataRow("hasfoo", false, 3)]
-		[DataRow("doesfoo", false, 3)]
-		[DataRow("wasfoo", false, 3)]
-		[DataRow("is12foo", false, 3)]
-		[DataRow("Isfoo", false, 3)]
-		[DataRow("Arefoo", false, 3)]
-		[DataRow("Shouldfoo", false, 3)]
-		[DataRow("Hasfoo", false, 3)]
-		[DataRow("Doesfoo", false, 3)]
-		[DataRow("Wasfoo", false, 3)]
-		[DataRow("_IsFoo", false, 3)]
-		[DataRow("_AreFoo", false, 3)]
-		[DataRow("_ShouldFoo", false, 3)]
-		[DataRow("_HasFoo", false, 3)]
-		[DataRow("_DoesFoo", false, 3)]
-		[DataRow("_WasFoo", false, 3)]
-		[DataRow("_Foo", false, 3)]
-		[DataRow("Foo", false, 3)]
-		[DataRow("IsFoo", true, 3)]
-		[DataRow("AreFoo", true, 3)]
-		[DataRow("ShouldFoo", true, 3)]
-		[DataRow("HasFoo", true, 3)]
-		[DataRow("DoesFoo", true, 3)]
-		[DataRow("WasFoo", true, 3)]
-		[DataRow("Is12Foo", true, 3)]
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task VariableNameIsNotBoolAsync()
+		{
+			string givenText = @"class Foo 
+{{
+	private int i = 5;
+	private void Foo() { int x = 10; }
+}}
+";
+
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+
+		[DataRow("isfoo", false)]
+		[DataRow("arefoo", false)]
+		[DataRow("shouldfoo", false)]
+		[DataRow("hasfoo", false)]
+		[DataRow("doesfoo", false)]
+		[DataRow("wasfoo", false)]
+		[DataRow("is12foo", false)]
+		[DataRow("Isfoo", false)]
+		[DataRow("Arefoo", false)]
+		[DataRow("Shouldfoo", false)]
+		[DataRow("Hasfoo", false)]
+		[DataRow("Doesfoo", false)]
+		[DataRow("Wasfoo", false)]
+		[DataRow("_IsFoo", false)]
+		[DataRow("_AreFoo", false)]
+		[DataRow("_ShouldFoo", false)]
+		[DataRow("_HasFoo", false)]
+		[DataRow("_DoesFoo", false)]
+		[DataRow("_WasFoo", false)]
+		[DataRow("_Foo", false)]
+		[DataRow("Foo", false)]
+		[DataRow("IsFoo", true)]
+		[DataRow("AreFoo", true)]
+		[DataRow("ShouldFoo", true)]
+		[DataRow("HasFoo", true)]
+		[DataRow("DoesFoo", true)]
+		[DataRow("WasFoo", true)]
+		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
-		public void FieldVariableNameIsCorrectPublic(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableNameIsCorrectPublicAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -122,31 +123,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 14)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromConstant()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -154,14 +143,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromConstantValue()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromConstantValueAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -170,40 +157,37 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	private static readonly bool _shouldFoo = true;
 }}
 ";
-			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
 		}
 
-		[DataRow("i", false, 5)]
-		[DataRow("is", false, 5)]
-		[DataRow("are", false, 5)]
-		[DataRow("should", false, 5)]
-		[DataRow("has", false, 5)]
-		[DataRow("does", false, 5)]
-		[DataRow("was", false, 5)]
-		[DataRow("isA", true, 5)]
-		[DataRow("areA", true, 5)]
-		[DataRow("shouldA", true, 5)]
-		[DataRow("hasA", true, 5)]
-		[DataRow("doesA", true, 5)]
-		[DataRow("wasA", true, 5)]
-		[DataRow("is12", true, 5)]
-		[DataRow("isa", false, 5)]
-		[DataRow("area", false, 5)]
-		[DataRow("shoulda", false, 5)]
-		[DataRow("hasa", false, 5)]
-		[DataRow("doesa", false, 5)]
-		[DataRow("wasa", false, 5)]
-		[DataRow("_isFoo", false, 5)]
-		[DataRow("__isfoo", false, 5)]
-		[DataRow("__isFoo", false, 5)]
-		[DataRow("_isfoo", false, 5)]
-		[DataRow("_is12foo", false, 5)]
+		[DataRow("i", false)]
+		[DataRow("is", false)]
+		[DataRow("are", false)]
+		[DataRow("should", false)]
+		[DataRow("has", false)]
+		[DataRow("does", false)]
+		[DataRow("was", false)]
+		[DataRow("isA", true)]
+		[DataRow("areA", true)]
+		[DataRow("shouldA", true)]
+		[DataRow("hasA", true)]
+		[DataRow("doesA", true)]
+		[DataRow("wasA", true)]
+		[DataRow("is12", true)]
+		[DataRow("isa", false)]
+		[DataRow("area", false)]
+		[DataRow("shoulda", false)]
+		[DataRow("hasa", false)]
+		[DataRow("doesa", false)]
+		[DataRow("wasa", false)]
+		[DataRow("_isFoo", false)]
+		[DataRow("__isfoo", false)]
+		[DataRow("__isFoo", false)]
+		[DataRow("_isfoo", false)]
+		[DataRow("_is12foo", false)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -215,57 +199,46 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 8)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("foreach(bool i in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _i in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _I in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _isI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _areI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _shouldI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _hasI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _doesI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool _wasI in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool are in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool should in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool has in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool does in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool was in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool isf in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool aref in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool shouldf in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool hasf in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool doesf in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool wasf in new[] { true, false }){}", false, 5)]
-		[DataRow("foreach(bool isFoo in new[] { true, false }){}", true, 5)]
-		[DataRow("foreach(bool areFoo in new[] { true, false }){}", true, 5)]
-		[DataRow("foreach(bool shouldFoo in new[] { true, false }){}", true, 5)]
-		[DataRow("foreach(bool hasFoo in new[] { true, false }){}", true, 5)]
-		[DataRow("foreach(bool doesFoo in new[] { true, false }){}", true, 5)]
-		[DataRow("foreach(bool wasFoo in new[] { true, false }){}", true, 5)]
+		[DataRow("foreach(bool i in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _i in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _I in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _isI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _areI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _shouldI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _hasI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _doesI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool _wasI in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool are in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool should in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool has in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool does in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool was in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool isf in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool aref in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool shouldf in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool hasf in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool doesf in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool wasf in new[] { true, false }){}", false)]
+		[DataRow("foreach(bool isFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(bool areFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(bool shouldFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(bool hasFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(bool doesFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(bool wasFoo in new[] { true, false }){}", true)]
+		[DataRow("foreach(int i in new[] { 55, 22 }){}", true)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -277,33 +250,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 16)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("_foo", false, 4)]
-		[DataRow("_isFoo", true, 4)]
+		[DataRow("_foo", false)]
+		[DataRow("_isFoo", true)]
 		[DataTestMethod]
-		public void FieldVariableNameOfTypeBoolean(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
 			string baseline = @"using System;
 class Foo 
@@ -313,33 +274,21 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 18)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("foo", false, 6)]
-		[DataRow("isFoo", true, 6)]
+		[DataRow("foo", false)]
+		[DataRow("isFoo", true)]
 		[DataTestMethod]
-		public void LocalVariableNameOfTypeBoolean(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
 			string baseline = @"using System;
 class Foo 
@@ -352,33 +301,21 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 11)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("foo", false, 5)]
-		[DataRow("isFoo", true, 5)]
+		[DataRow("foo", false)]
+		[DataRow("isFoo", true)]
 		[DataTestMethod]
-		public void LocalVariableNameOfTypeVar(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameOfTypeVarAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -390,40 +327,28 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 7)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("Foo", false, 4)]
-		[DataRow("foo", false, 4)]
-		[DataRow("IsFoo", true, 4)]
-		[DataRow("AreFoo", true, 4)]
-		[DataRow("ShouldFoo", true, 4)]
-		[DataRow("HasFoo", true, 4)]
-		[DataRow("DoesFoo", true, 4)]
-		[DataRow("WasFoo", true, 4)]
-		[DataRow("Is12Foo", true, 4)]
+		[DataRow("Foo", false)]
+		[DataRow("foo", false)]
+		[DataRow("IsFoo", true)]
+		[DataRow("AreFoo", true)]
+		[DataRow("ShouldFoo", true)]
+		[DataRow("HasFoo", true)]
+		[DataRow("DoesFoo", true)]
+		[DataRow("WasFoo", true)]
+		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
-		public void PropertyNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PropertyNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -437,32 +362,20 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 14)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
 
 		[TestMethod]
-		public void BaseClassPropertiesAreNotErrors()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task BaseClassPropertiesAreNotErrorsAsync()
 		{
 			string baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -482,14 +395,12 @@ class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void InterfacePropertiesAreNotErrors()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task InterfacePropertiesAreNotErrorsAsync()
 		{
 			string baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -509,14 +420,12 @@ abstract class Foo : BaseClass
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void BaseClassMethodsAreNotErrors()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task BaseClassMethodsAreNotErrorsAsync()
 		{
 			string baseline = @"
 using System.Windows.Forms;
@@ -530,12 +439,7 @@ abstract class Foo : ApplicationContext
 }
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

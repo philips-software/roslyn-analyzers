@@ -11,11 +11,14 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class GeneratedCodeDetector
 	{
+		private readonly AttributeHelper _attributeHelper = new();
+
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
-		private bool HasGeneratedCodeAttribute(SyntaxNode node, Func<SemanticModel> getSemanticModel)
+		private bool HasGeneratedCodeAttribute(SyntaxNode inputNode, Func<SemanticModel> getSemanticModel)
 		{
+			SyntaxNode node = inputNode;
 			while (node != null)
 			{
 				SyntaxList<AttributeListSyntax> attributes;
@@ -35,7 +38,7 @@ namespace Philips.CodeAnalysis.Common
 						continue;
 				}
 
-				if (Helper.HasAttribute(attributes, getSemanticModel, AttributeName, FullAttributeName, out _, out _))
+				if (_attributeHelper.HasAttribute(attributes, getSemanticModel, AttributeName, FullAttributeName, out _, out _))
 				{
 					return true;
 				}
@@ -50,7 +53,7 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsGeneratedCode(OperationAnalysisContext context)
 		{
 			string myFilePath = context.Operation.Syntax.SyntaxTree.FilePath;
-			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Operation.Syntax, () => { return context.Operation.SemanticModel; }); ;
+			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Operation.Syntax, () => { return context.Operation.SemanticModel; });
 		}
 
 
@@ -68,10 +71,15 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsGeneratedCode(string filePath)
 		{
-			string fileName = Helper.GetFileName(filePath);
+			Helper helper = new();
+			string fileName = helper.GetFileName(filePath);
+			// Various Microsoft tools generate files with this postfix.
 			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			// WinForms generate files with this postfix.
 			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
-			return isDesignerFile || isGeneratedFile;
+			// Visual Studio generates SuppressMessage attributes in this file.
+			bool isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
+			return isDesignerFile || isGeneratedFile || isSuppressionsFile;
 		}
 
 	}

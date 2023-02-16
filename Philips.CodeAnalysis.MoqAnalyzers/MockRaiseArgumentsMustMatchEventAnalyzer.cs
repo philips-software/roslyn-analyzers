@@ -19,8 +19,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string Description = @"Parameter mismatch";
 		private const string Category = Categories.RuntimeFailure;
 
-		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticIds.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(TypeMismatchRule, ArgumentCountRule); } }
 
@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Moq.MockRepository") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 				{
 					return;
 				}
@@ -56,7 +56,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			switch (identifierNameSyntax.Identifier.ValueText)
 			{
-				case @"Raise": AnalyzeInvocation(context, invocationExpressionSyntax); break;
+				case @"Raise":
+					AnalyzeInvocation(context, invocationExpressionSyntax);
+					break;
 				default:
 					return;
 			}
@@ -113,11 +115,16 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			SymbolInfo raiseSymbol = context.SemanticModel.GetSymbolInfo(invocationExpressionSyntax.Expression);
 
-			if (raiseSymbol.Symbol == null || raiseSymbol.Symbol is not IMethodSymbol raiseMethodSymbol)
+			if (raiseSymbol.Symbol is not IMethodSymbol raiseMethodSymbol)
 			{
 				return;
 			}
 
+			CheckDiagnostics(context, invocationExpressionSyntax, namedTypeSymbol, raiseMethodSymbol);
+		}
+
+		private void CheckDiagnostics(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, INamedTypeSymbol namedTypeSymbol, IMethodSymbol raiseMethodSymbol)
+		{
 			int firstArgument = 0;
 			int argumentsToCheck;
 			if (raiseMethodSymbol.Parameters.Last().IsParams)
@@ -132,19 +139,14 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 			else
 			{
-				bool isError = false;
 				//it has a single eventargs argument.  Compiler has made sure that the types are the same, make sure the delegate takes object sender, event args
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != 2)
 				{
-					isError = true;
+					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
+					return;
 				}
 
-				if (!isError && namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
-				{
-					isError = true;
-				}
-
-				if (isError)
+				if (namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
 				{
 					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
 					return;
@@ -171,5 +173,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				}
 			}
 		}
+
 	}
 }

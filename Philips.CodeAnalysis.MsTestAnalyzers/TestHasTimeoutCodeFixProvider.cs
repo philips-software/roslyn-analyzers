@@ -1,5 +1,8 @@
-﻿using System.Collections.Immutable;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using System.Composition;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +23,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestHasTimeoutAttribute)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -48,7 +51,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					context.RegisterCodeFix(
 						CodeAction.Create(
 							title: Title,
-							createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAttributeAnalyzer.DefaultTimeoutKey), attributeList, c),
+							createChangedDocument: c => AddTestTimeout(context.Document, diagnostic.Properties.GetValueOrDefault(TestHasTimeoutAnalyzer.DefaultTimeoutKey), attributeList, c),
 							equivalenceKey: Title),
 						diagnostic);
 				}
@@ -61,7 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			defaultTimeout ??= "1000";
 
 			ExpressionSyntax expression;
-			if (int.TryParse(defaultTimeout, out int integerTimeout))
+			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integerTimeout))
 			{
 				expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(integerTimeout));
 			}
@@ -82,22 +85,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeListSyntax attributes in attributeLists)
 			{
-				foreach (AttributeSyntax attributesyntax in attributes.Attributes)
+				AttributeSyntax attributeSyntax =
+					attributes.Attributes.FirstOrDefault(attr => attr.Name.ToString().Contains(@"Timeout"));
+				if (attributeSyntax != null)
 				{
-					if (attributesyntax.Name.ToString().Contains(@"Timeout"))
-					{
-						SyntaxNode newRoot = rootNode.ReplaceNode(attributesyntax, newAttribute);
+					SyntaxNode newRoot = rootNode.ReplaceNode(attributeSyntax, newAttribute);
 
-						return document.WithSyntaxRoot(newRoot);
-					}
+					return document.WithSyntaxRoot(newRoot);
 				}
 			}
 
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(newAttribute));
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(method.AttributeLists.Add(attributeList));
+			var newAttributeLists = method.AttributeLists.Add(attributeList);
+			MethodDeclarationSyntax newMethod = method.WithAttributeLists(newAttributeLists);
 
-			Document newDocument = document.WithSyntaxRoot(rootNode.ReplaceNode(method, newMethod));
+			var root = rootNode.ReplaceNode(method, newMethod);
+			Document newDocument = document.WithSyntaxRoot(root);
 			return newDocument;
 		}
 	}

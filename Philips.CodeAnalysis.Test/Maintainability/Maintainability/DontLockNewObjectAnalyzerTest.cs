@@ -1,34 +1,34 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System;
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class DontLockNewObjectAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DontLockNewObjectAnalyzer();
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("this", false)]
 		[DataRow("lockObj", false)]
 		[DataRow("new object()", true)]
 		[DataRow("new object().ToString()", true)]
 		[DataTestMethod]
-		public void PreventLockOnUncapturedVariable(string lockText, bool expectedError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PreventLockOnUncapturedVariableAsync(string lockText, bool isExpectedError)
 		{
 			string text = @$"
 public class Foo
@@ -39,11 +39,18 @@ public class Foo
 		lock({lockText}){{}}
 	}}
 }}
-";
 
-			VerifyCSharpDiagnostic(text, expectedError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.DontLockNewObject) : Array.Empty<DiagnosticResult>());
+			";
+
+			if (isExpectedError)
+			{
+				await VerifyDiagnostic(text, DiagnosticId.DontLockNewObject).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(text).ConfigureAwait(false);
+			}
 		}
 
-		#endregion
 	}
 }

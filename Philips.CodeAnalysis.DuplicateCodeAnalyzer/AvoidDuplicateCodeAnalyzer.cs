@@ -1,8 +1,9 @@
-// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,24 +24,27 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const string Description = @"Duplicate code is less maintainable";
 		private const string Category = Categories.Maintainability;
 
-		public int DefaultDuplicateTokenThreshold = 100;
+		public int DefaultDuplicateTokenThreshold { get; set; } = 100;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
-		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+
+		private const int MaxTokenCount = 200;
+		private const int MinTokenCount = 20;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
@@ -51,13 +55,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
+				AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				HashSet<ISymbol> allowed = new();
-				if (!options.IgnoreExceptionsFile)
+				if (options.ShouldUseExceptionsFile)
 				{
-					allowed = InitializeAllowed(compilationContext.Options.AdditionalFiles, compilationContext.Compilation);
+					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowed, options.GenerateExceptionsFile, configurationError);
+				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 			});
@@ -65,52 +69,36 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";
 
-		public virtual HashSet<ISymbol> InitializeAllowed(ImmutableArray<AdditionalText> additionalFiles, Compilation compilation)
+		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic diagnosticError)
 		{
-			foreach (AdditionalText additionalFile in additionalFiles)
-			{
-				string fileName = Path.GetFileName(additionalFile.Path);
-				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, AllowedFileName))
-				{
-					return LoadAllowedMethods(additionalFile.GetText(), compilation);
-				}
-			}
-			return new HashSet<ISymbol>();
-		}
-
-		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic error)
-		{
-			error = null;
+			diagnosticError = null;
 			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
 			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
 			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
-			options.IgnoreExceptionsFile = exceptionsOptions.IgnoreExceptionsFile;
-			options.GenerateExceptionsFile = exceptionsOptions.GenerateExceptionsFile;
+			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
+			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
 			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
-				bool isParseSuccessful = int.TryParse(strTokenCount, out int duplicateTokenThreshold);
+				bool isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture, out int duplicateTokenThreshold);
 
 				if (!isParseSuccessful)
 				{
 					duplicateTokenThreshold = DefaultDuplicateTokenThreshold;
-					error = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
+					diagnosticError = Diagnostic.Create(InvalidTokenCountRule, null, strTokenCount);
 				}
 
-				const int MaxTokenCount = 200;
 				if (duplicateTokenThreshold > MaxTokenCount)
 				{
-					error = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
+					diagnosticError = Diagnostic.Create(TokenCountTooBigRule, null, duplicateTokenThreshold, MaxTokenCount);
 					duplicateTokenThreshold = MaxTokenCount;
 				}
-				const int MinTokenCount = 20;
 				if (duplicateTokenThreshold < MinTokenCount)
 				{
-					error = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
+					diagnosticError = Diagnostic.Create(TokenCountTooSmallRule, null, duplicateTokenThreshold, MinTokenCount);
 					duplicateTokenThreshold = MinTokenCount;
 				}
 				options.TokenCount = duplicateTokenThreshold;
@@ -118,54 +106,20 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return options;
 		}
 
-		/// <summary>
-		/// Load the methods for which duplicate code is allowed.
-		/// </summary>
-		public virtual HashSet<ISymbol> LoadAllowedMethods(SourceText text, Compilation compilation)
-		{
-			HashSet<ISymbol> result = new();
-			foreach (TextLine textLine in text.Lines)
-			{
-				var line = textLine.ToString();
-				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(line, compilation);
-				if (!symbols.IsDefaultOrEmpty)
-				{
-					foreach (var symbol in symbols)
-					{
-						if (symbol is IMethodSymbol)
-						{
-							result.Add(symbol);
-						}
-						else if (symbol is ITypeSymbol typeSymbol)
-						{
-							var members = typeSymbol.GetMembers();
-							foreach (var member in members)
-							{
-								if (member is IMethodSymbol)
-								{
-									result.Add(member);
-								}
-							}
-						}
-					}
-				}
-			}
-			return result;
-		}
 
-		private class CompilationAnalyzer
+		private sealed class CompilationAnalyzer
 		{
-			private readonly DuplicateDetectorDictionary _library = new();
+			private readonly DuplicateDetector _library = new();
 			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
-			private readonly HashSet<ISymbol> _exceptions;
-			private readonly bool _generateExceptionsFile;
+			private readonly AllowedSymbols _allowedSymbols;
+			private readonly bool _shouldGenerateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, HashSet<ISymbol> allowed, bool generateExceptionsFile, Diagnostic configurationError)
+			public CompilationAnalyzer(int duplicateTokenThreshold, AllowedSymbols allowed, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
-				_exceptions = allowed;
-				_generateExceptionsFile = generateExceptionsFile;
+				_allowedSymbols = allowed;
+				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 				if (configurationError != null)
 				{
 					_diagnostics.Add(configurationError);
@@ -192,7 +146,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					}
 
 					var methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-					if (_exceptions.Contains(methodSymbol))
+					if (_allowedSymbols.IsAllowed(methodSymbol))
 					{
 						return;
 					}
@@ -208,28 +162,12 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 						if (rollingTokenSet.IsFull())
 						{
-							Evidence existingEvidence = _library.TryAdd(hash, evidence);
+							Evidence existingEvidence = _library.Register(hash, evidence);
 							if (existingEvidence != null)
 							{
 								Location location = evidence.LocationEnvelope.Contents();
 								Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
-
-								// We found a duplicate, but if it's partially duplicated with itself, ignore it.
-								if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
-								{
-									string shapeDetails = GetShapeDetails(token);
-									string reference = ToPrettyReference(existingEvidenceLocation.GetLineSpan());
-
-									_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
-
-									if (_generateExceptionsFile)
-									{
-										File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
-									}
-
-									// Don't pile on.  Move on to the next method.
-									return;
-								}
+								CreateDuplicateDiagnostic(location, existingEvidenceLocation, token, methodDeclarationSyntax);
 
 								// Don't pile on.  Move on to the next method.
 								return;
@@ -239,22 +177,48 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 				catch (Exception ex)
 				{
-					string result = string.Empty;
-					string[] lines = ex.StackTrace.Split(new char[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-					foreach (string line in lines)
-					{
-						if (line.StartsWith("line") && line.Length >= 8)
-						{
-							result += line.Substring(0, 8);
-							result += " ";
-						}
-					}
-					if (string.IsNullOrWhiteSpace(result))
-					{
-						result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
-					}
-					_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, obj.Node.GetLocation(), result, ex.Message));
+					CreateExceptionDiagnostic(ex, obj);
 				}
+			}
+
+			private void CreateDuplicateDiagnostic(Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
+			{
+				// We found a duplicate, but if it's partially duplicated with itself, ignore it.
+				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
+				{
+					string shapeDetails = GetShapeDetails(token);
+					var existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
+					string reference = ToPrettyReference(existingEvidenceLineSpan);
+
+					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
+
+					if (_shouldGenerateExceptionsFile)
+					{
+						File.AppendAllText(@"DuplicateCode.Allowed.GENERATED.txt", methodDeclarationSyntax.Identifier.ValueText + Environment.NewLine);
+					}
+				}
+			}
+
+			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
+			{
+				StringBuilder builder = new();
+				string[] lines = ex.StackTrace.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (string line in lines)
+				{
+					if (line.StartsWith("line") && line.Length >= 8)
+					{
+						var exception = line.Substring(0, 8);
+						builder.Append(exception);
+						builder.Append(' ');
+					}
+				}
+
+				string result = builder.ToString();
+				if (string.IsNullOrWhiteSpace(result))
+				{
+					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
+				}
+				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, syntaxNodeAnalysisContext.Node.GetLocation(), result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)
@@ -445,29 +409,27 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		}
 
 		public int TokenCount { get; set; }
-		public bool IgnoreExceptionsFile { get; set; }
-		public bool GenerateExceptionsFile { get; set; }
+		public bool ShouldUseExceptionsFile { get; set; }
+		public bool ShouldGenerateExceptionsFile { get; set; }
 	}
 
-	public class DuplicateDetectorDictionary
+	public class DuplicateDetector
 	{
 		private readonly Dictionary<int, List<Evidence>> _library = new();
 		private readonly object _lock = new();
 
-		public Evidence TryAdd(int key, Evidence value)
+		public Evidence Register(int key, Evidence value)
 		{
 			lock (_lock)
 			{
 				if (_library.TryGetValue(key, out List<Evidence> existingValues))
 				{
 					// We found a potential duplicate.  Is it actually?
-					foreach (Evidence e in existingValues)
+					var e = existingValues.FirstOrDefault(e => e.IsDuplicate(value));
+					if (e != null)
 					{
-						if (e.Components.SequenceEqual(value.Components))
-						{
-							// Yes, just return the duplicate information
-							return e;
-						}
+						// Yes, just return the duplicate information
+						return e;
 					}
 					// Our key exists already, but not us.  I.e., a hash collision.
 					existingValues.Add(value);
@@ -496,8 +458,14 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			Hash = componentSum;
 		}
 
+		public bool IsDuplicate(Evidence otherEvidence)
+		{
+			return Components.SequenceEqual(otherEvidence.Components);
+		}
+
 		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
-		public List<int> Components { get; }
+		private List<int> Components { get; }
+
 		public int Hash { get; }
 	}
 
@@ -534,7 +502,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public virtual LocationEnvelope GetLocationEnvelope()
 		{
-			return new LocationEnvelope(_syntaxToken.GetLocation());
+			var location = _syntaxToken.GetLocation();
+			return new LocationEnvelope(location);
 		}
 
 		public virtual SyntaxTree GetSyntaxTree()
@@ -546,16 +515,25 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			return _hash;
 		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is TokenInfo info && _syntaxToken.Equals(info._syntaxToken);
+		}
 	}
 
 	public class RollingHashCalculator<T>
 	{
-		protected Queue<T> _components = new();
+		private readonly Queue<T> _components = new();
+		protected ImmutableQueue<T> Components => ImmutableQueue.Create(_components.ToArray());
+
 		private readonly int _basePowMaxComponentsModulusCache;
 		private readonly int _base;
 		private readonly int _modulus;
+		private const int DefaultBaseModulus = 227;
+		private const int DefaultModulus = 1000005;
 
-		public RollingHashCalculator(int maxItems, int baseModulus = 227, int modulus = 1000005)
+		public RollingHashCalculator(int maxItems, int baseModulus = DefaultBaseModulus, int modulus = DefaultModulus)
 		{
 			MaxItems = maxItems;
 			_base = baseModulus;
@@ -570,13 +548,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			}
 		}
 
-		public Queue<T> Components { get { return _components; } }
-
 		public (List<int> components, int hash) ToComponentHashes()
 		{
 			int sum = 0;
-			var componentHashes = new List<int>(Components.Count);
-			foreach (T token in Components)
+			var componentHashes = new List<int>(_components.Count);
+			foreach (T token in _components)
 			{
 				int hashcode = token.GetHashCode();
 
@@ -593,6 +569,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public bool IsFull()
 		{
 			return _components.Count >= MaxItems;
+		}
+
+		public bool IsDuplicate(RollingHashCalculator<T> otherCalculator)
+		{
+			return _components.SequenceEqual(otherCalculator._components);
 		}
 
 		public T Add(T token)
@@ -660,7 +641,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
 				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
 				TextSpan textSpan = TextSpan.FromBounds(start, end);
-				Location location = Location.Create(firstToken.GetSyntaxTree(), textSpan);
+				var firstTokenSyntax = firstToken.GetSyntaxTree();
+				Location location = Location.Create(firstTokenSyntax, textSpan);
 
 				cache = new LocationEnvelope(location);
 
@@ -668,7 +650,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			};
 		}
 
-		public (int, Evidence) Add(TokenInfo token)
+		public (int hashCode, Evidence evidence) Add(TokenInfo token)
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 

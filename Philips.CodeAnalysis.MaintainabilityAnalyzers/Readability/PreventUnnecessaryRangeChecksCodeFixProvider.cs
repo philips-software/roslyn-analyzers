@@ -20,19 +20,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PreventUnnecessaryRangeChecksCodeFixProvider)), Shared]
 	public class PreventUnnecessaryRangeChecksCodeFixProvider : CodeFixProvider
 	{
-		#region Non-Public Data Members
-
 		private const string Title = "Don't check a collections' Length or Count before iterating over it";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.PreventUncessaryRangeChecks));
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
 			return WellKnownFixAllProviders.BatchFixer;
@@ -56,30 +46,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => RemoveIfStatement2(context.Document, node, c),
+						createChangedDocument: c => RemoveIfStatement(context.Document, node, c),
 						equivalenceKey: Title),
 					diagnostic);
 			}
 		}
 
 		private async Task<Document> RemoveIfStatement(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
-		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
-			SyntaxNode replaceNode = node.Statement;
-			SyntaxNode ifBlock = node.Statement;
-
-			if (ifBlock is BlockSyntax block)
-			{
-				replaceNode = block.Statements[0].WithLeadingTrivia(node.GetLeadingTrivia());
-			}
-
-			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
-
-			return document.WithSyntaxRoot(root);
-		}
-
-		private async Task<Document> RemoveIfStatement2(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
 			var root = await document.GetSyntaxRootAsync(cancellationToken);
 
@@ -103,13 +76,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			var newLine = SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, Environment.NewLine);
 
-			replaceNode = replaceNode.WithTrailingTrivia(trailingTrivia.Insert(0, newLine));
+			var trivia = trailingTrivia.Insert(0, newLine);
+			replaceNode = replaceNode.WithTrailingTrivia(trivia);
 
 			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
 
 			return document.WithSyntaxRoot(root);
 		}
-
-		#endregion
 	}
 }

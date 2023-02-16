@@ -2,10 +2,13 @@
 
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -15,13 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class AvoidInlineNewAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidInlineNewAnalyzer();
 		}
@@ -41,98 +38,135 @@ class Foo
 			return string.Format(baseline, content);
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
-		public void DontInlineNewCall()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorOnAllowedMethodsAsync()
 		{
-			VerifyDiagnostic(CreateFunction("string str = new object().ToString()"));
+			var file = CreateFunction("string str = new object().ToString()");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfPlacedInLocal()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontInlineNewCallAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("object obj = new object(); string str = obj.ToString();"));
+			var file = CreateFunction("int hash = new object().GetHashCode()");
+			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfPlacedInField()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfPlacedInLocalAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("_obj = new object(); string str = _obj.ToString();"));
+			var file = CreateFunction("object obj = new object(); string str = obj.ToString();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfPlacedInFieldAsync()
+		{
+			var file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[DataRow("new Foo()")]
 		[DataRow("(new Foo())")]
 		[DataTestMethod]
-		public void DontInlineNewCallCustomType(string newVarient)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontInlineNewCallCustomTypeAsync(string newVariant)
 		{
-			VerifyDiagnostic(CreateFunction($"string str = {newVarient}.ToString()"));
+			var file = CreateFunction($"int hash = {newVariant}.GetHashCode()");
+			await VerifyAsync(file).ConfigureAwait(false);
+		}
+
+		[DataRow("new Foo()")]
+		[DataRow("(new Foo())")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorInlineNewCallCustomTypeAllowedMethodAsync(string newVariant)
+		{
+			var file = CreateFunction($"string str = {newVariant}.ToString()");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfPlacedInLocalCustomType()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfPlacedInLocalCustomTypeAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("object obj = new Foo(); string str = obj.ToString();"));
+			var file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfPlacedInFieldCustomType()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfPlacedInFieldCustomTypeAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("_obj = new Foo(); string str = _obj.ToString();"));
+			var file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void NoErrorIfPlacedInContainer()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfPlacedInContainerAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("var v = new List<object>(); v.Add(new object());"));
+			var file = CreateFunction("var v = new List<object>(); v.Add(new object());");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfReturned()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfReturnedAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("return new object();"));
+			var file = CreateFunction("return new object();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void ErrorIfReturned()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ErrorIfReturnedAsync()
 		{
-			VerifyDiagnostic(CreateFunction("return new object().ToString();"));
+			var file = CreateFunction("return new object().GetHashCode();");
+			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void NoErrorIfThrown()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfReturnedAllowedMethodAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("throw new Exception();"));
+			var file = CreateFunction("return new object().ToString();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void ErrorIfThrown()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorIfThrownAsync()
 		{
-			VerifyDiagnostic(CreateFunction("throw new object().Foo;"));
+			var file = CreateFunction("throw new Exception();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
-		private void VerifyNoDiagnostic(string file)
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ErrorIfThrownAsync()
 		{
-			VerifyCSharpDiagnostic(file);
+			var file = CreateFunction("throw new object().Foo;");
+			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
-		private void VerifyDiagnostic(string file)
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoErrorOnAsSpanMethodAsync()
 		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidInlineNewAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, -1),
-				}
-			});
+			var file = CreateFunction("new string(\"\").AsSpan();");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
-		#endregion
+		private async Task VerifyAsync(string file)
+		{
+			await VerifyDiagnostic(file).ConfigureAwait(false);
+		}
 	}
 }

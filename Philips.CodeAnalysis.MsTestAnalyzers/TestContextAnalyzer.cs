@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"TestContext should not be included in test classes unless it is actually used.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -27,7 +27,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-
 			context.RegisterCompilationStartAction(startContext =>
 			{
 				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestContext") == null)
@@ -59,29 +58,27 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (returnNodes.Any())
 			{
 				ReturnStatementSyntax returnStatement = returnNodes.First();
-				if (returnStatement != null)
+				if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
 				{
-					if (returnStatement.Expression is IdentifierNameSyntax returnVar)
-					{
-						varName = returnVar.Identifier.ToString();
-					}
+					varName = returnVar.Identifier.ToString();
 				}
 			}
 
 			// find out if the property or its underlying variable is actually used
 			foreach (IdentifierNameSyntax identifier in context.Node.Parent.DescendantNodes().OfType<IdentifierNameSyntax>())
 			{
-				if ((identifier.Identifier.ToString() == propName) && (identifier.Parent != property) &&
+				if ((identifier.Identifier.ToString() == propName) &&
+					(identifier.Parent != property) &&
 					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the propery and it's not a type or the original instance, it's used
 					return;
 				}
 
-				if ((identifier.Identifier.ToString() == varName)
-					&& identifier.Parent is not VariableDeclarationSyntax
-					&& !propNodes.Contains(identifier)
-					&& context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
+				if ((identifier.Identifier.ToString() == varName) &&
+					identifier.Parent is not VariableDeclarationSyntax &&
+					!propNodes.Contains(identifier) &&
+					context.SemanticModel.GetSymbolInfo(identifier).Symbol is not ITypeSymbol)
 				{
 					// if we find the same identifier as the variable and it's not a type, the original declaration, or part of the property, it's used
 					return;
@@ -89,7 +86,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// if not, report a diagnostic error
-			Diagnostic diagnostic = Diagnostic.Create(Rule, context.Node.GetLocation());
+			var location = context.Node.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 			return;
 		}

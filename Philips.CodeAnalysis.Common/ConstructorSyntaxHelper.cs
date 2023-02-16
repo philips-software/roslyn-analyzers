@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public static class ConstructorSyntaxHelper
+	public class ConstructorSyntaxHelper
 	{
 		/// <summary>
 		/// CreateMapping
@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="context"></param>
 		/// <param name="constructors"></param>
 		/// <returns></returns>
-		public static Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
+		public IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();
 			Dictionary<ISymbol, ConstructorDeclarationSyntax> symbolToCtor = new();
@@ -31,20 +31,17 @@ namespace Philips.CodeAnalysis.Common
 
 				if (ctor.Initializer != null && ctor.Initializer.ThisOrBaseKeyword.IsKind(SyntaxKind.ThisKeyword))
 				{
-					var otherCostructor = context.SemanticModel.GetSymbolInfo(ctor.Initializer).Symbol;
-					deferredCtor[ctor] = otherCostructor;
+					var otherConstructor = context.SemanticModel.GetSymbolInfo(ctor.Initializer).Symbol;
+					deferredCtor[ctor] = otherConstructor;
 				}
 			}
 
 			Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> result = new();
 			foreach (var ctor in constructors)
 			{
-				if (deferredCtor.TryGetValue(ctor, out var otherCtor))
+				if (deferredCtor.TryGetValue(ctor, out var otherCtor) && otherCtor != null)
 				{
-					if (otherCtor != null)
-					{
-						result[ctor] = symbolToCtor[otherCtor];
-					}
+					result[ctor] = symbolToCtor[otherCtor];
 				}
 			}
 
@@ -57,7 +54,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="mapping"></param>
 		/// <param name="ctor"></param>
 		/// <returns></returns>
-		public static List<ConstructorDeclarationSyntax> GetCtorChain(Dictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
+		public IReadOnlyList<ConstructorDeclarationSyntax> GetCtorChain(IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
 		{
 			List<ConstructorDeclarationSyntax> chain = new() { ctor };
 

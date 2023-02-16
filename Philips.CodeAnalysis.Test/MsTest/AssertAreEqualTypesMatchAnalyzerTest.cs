@@ -2,11 +2,14 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -22,7 +25,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("d1", "b2", false)]
 		[DataRow("f1", "b2", false)]
 		[DataRow("x1", "b2", false)]
-		public void AreEqualTypesMatchTest(string arg1, string arg2, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AreEqualTypesMatchTestAsync(string arg1, string arg2, bool isError)
 		{
 			string baseline = @"
 namespace AssertAreEqualTypesMatchAnalyzerTest
@@ -45,23 +49,31 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 ";
 
 			string givenText = string.Format(baseline, arg1, arg2);
-			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, GetWellKnownTypeName(arg1), GetWellKnownTypeName(arg2));
+			var arg1Type = GetWellKnownTypeName(arg1);
+			var arg2Type = GetWellKnownTypeName(arg2);
+			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
 
-			DiagnosticResult[] expected = new [] { new DiagnosticResult
+			if (isError)
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualTypesMatch),
-				Message = new Regex(expectedMessage),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
+				var expected = new DiagnosticResult
 				{
-					new DiagnosticResultLocation("Test0.cs", 15, 7)
-				}
-			}};
-
-			VerifyCSharpDiagnostic(givenText, "Test0", isError ? expected : Array.Empty<DiagnosticResult>());
+					Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualTypesMatch),
+					Message = new Regex(expectedMessage),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
+					{
+						new DiagnosticResultLocation("Test0.cs", 15, 7)
+					}
+				};
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+			}
 		}
-		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualTypesMatchAnalyzer();
 		}

@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,42 +9,29 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreferNamedTuplesAnalyzer : DiagnosticAnalyzer
+	public class PreferNamedTuplesAnalyzer : SingleDiagnosticAnalyzer<TupleTypeSyntax, PreferNamedTuplesSyntaxNodeAction>
 	{
 		private const string Title = @"Prefer tuples that have names";
 		private const string MessageFormat = @"Name this tuple field";
 		private const string Description = @"Name this tuple field for readability";
-		private const string Category = Categories.Readability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreferTuplesWithNamedFields), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public PreferNamedTuplesAnalyzer()
+			: base(DiagnosticId.PreferTuplesWithNamedFields, Title, MessageFormat, Description, Categories.Readability)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.ValueTuple") == null)
-				{
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(AnalyzeTupleType, SyntaxKind.TupleType);
-			});
+			FullyQualifiedMetaDataName = StringConstants.TupleFullyQualifiedName;
 		}
+	}
 
-		private static void AnalyzeTupleType(SyntaxNodeAnalysisContext context)
+	public class PreferNamedTuplesSyntaxNodeAction : SyntaxNodeAction<TupleTypeSyntax>
+	{
+		public override void Analyze()
 		{
-			TupleTypeSyntax tupleExpressionSyntax = (TupleTypeSyntax)context.Node;
-
-			foreach (var element in tupleExpressionSyntax.Elements)
+			foreach (var element in Node.Elements)
 			{
 				if (element.Identifier.Kind() == SyntaxKind.None)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Rule, element.GetLocation()));
+					var location = element.GetLocation();
+					ReportDiagnostic(location);
 				}
 			}
 		}

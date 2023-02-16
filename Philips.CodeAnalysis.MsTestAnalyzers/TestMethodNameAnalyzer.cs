@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,43 +10,28 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestMethodNameAnalyzer : DiagnosticAnalyzer
+	public class TestMethodNameAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, TestMethodNameSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Test Method must not start with '{0}'";
-		private const string Title = @"Test Method names unhelpful prefix'";
+		private const string Title = @"Test Method names unhelpful prefix";
 		private const string Description = @"Test Method names must not start with 'Test', 'Ensure', or 'Verify'. Otherwise, they are more difficult to find in sorted lists in Test Explorer.";
-		private const string Category = Categories.Naming;
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodName), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public TestMethodNameAnalyzer()
+			: base(DiagnosticId.TestMethodName, Title, MessageFormat, Description, Categories.Naming)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AttributeList);
+			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute";
 		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+	}
+	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
+	{
+		public override void Analyze()
 		{
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
-
 			// Only interested in TestMethod attributes
-			bool found = false;
-			foreach (AttributeSyntax attribute in attributesNode.Attributes)
-			{
-				if (attribute.Name.ToString() == @"TestMethod")
-				{
-					found = true;
-				}
-			}
-			if (!found)
+			if (Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
 			{
 				return;
 			}
 
-			SyntaxNode methodNode = attributesNode.Parent;
+			SyntaxNode methodNode = Node.Parent;
 
 			// Confirm this is actually a method...
 			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
@@ -59,30 +44,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
 				{
-					// It's not mandatory to end with Test
-					//if (!token.ValueText.EndsWith(@"Test"))
-					//{
-					//	Diagnostic diagnostic = Diagnostic.Create(Rule, token.GetLocation(), @"end");
-					//	context.ReportDiagnostic(diagnostic);
-					//	return;
-					//}
-					if (token.ValueText.StartsWith(@"Test"))
+					if (token.ValueText.StartsWith(StringConstants.TestAttributeName))
 					{
-						invalidPrefix = @"Test";
+						invalidPrefix = StringConstants.TestAttributeName;
 					}
-					else if (token.ValueText.StartsWith(@"Ensure"))
+					else if (token.ValueText.StartsWith(StringConstants.EnsureAttributeName))
 					{
-						invalidPrefix = @"Ensure";
+						invalidPrefix = StringConstants.EnsureAttributeName;
 					}
-					else if (token.ValueText.StartsWith(@"Verify"))
+					else if (token.ValueText.StartsWith(StringConstants.VerifyAttributeName))
 					{
-						invalidPrefix = @"Verify";
+						invalidPrefix = StringConstants.VerifyAttributeName;
 					}
 
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
-						Diagnostic diagnostic = Diagnostic.Create(Rule, token.GetLocation(), invalidPrefix);
-						context.ReportDiagnostic(diagnostic);
+						var location = token.GetLocation();
+						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}
 				}

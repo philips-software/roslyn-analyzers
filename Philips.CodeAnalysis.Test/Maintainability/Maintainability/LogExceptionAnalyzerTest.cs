@@ -1,11 +1,14 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -15,7 +18,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class LogExceptionAnalyzerTest : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = "TestLog,TestTrace";
+		private const string configuredLogMethods = @"
+*.*.TestLog
+TestTrace
+";
+
 		private const string Correct = @"
 using System;
 
@@ -25,11 +32,33 @@ public class Program {
         try {
             Console.WriteLine('Hello world!');
         } catch {
-            Log.TestLog('Goodbye');            
+            Logger.TestLog('Goodbye');            
         }
     }
 
-    private static void LogDebug(string message) {
+    private class Logger {
+        public static void TestLog(string message) {
+        }
+    }
+}
+}";
+
+		private const string CorrectLogClass = @"
+using System;
+
+namespace LogExceptionUnitTests {
+public class Program {
+    public static void Main(string[] args) {
+        try {
+            Console.WriteLine('Hello world!');
+        } catch {
+            Log.SomeLog('Goodbye');            
+        }
+    }
+
+    private class Log {
+        public static void SomeLog(string message) {
+        }
     }
 }
 }";
@@ -46,10 +75,6 @@ public class Program {
             throw new AggregateException('message', ex);
         }
     }
-
-    private static void Debug(string message) {
-    }
-}
 }";
 
 		private const string CorrectVerboseTracer = @"
@@ -65,7 +90,9 @@ public class Program {
         }
     }
 
-    private static void Debug(string message) {
+    private class Tracer {
+        public static void TestTrace(string message) {
+        }
     }
 }
 }";
@@ -91,51 +118,50 @@ public class Program {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
-		[DataRow(Correct, DisplayName = "Correct"),
-			DataRow(CorrectThrow, DisplayName = "CorrectThrow"),
-			DataRow(CorrectVerboseTracer, DisplayName = "CorrectVerboseTracer")]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		[DataTestMethod]
+		[DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectLogClass, DisplayName = nameof(CorrectLogClass)),
+		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
+		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer))]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
-		[DataRow(Missing, DisplayName = "Missing")]
-		public void WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
+		[DataTestMethod]
+		[DataRow(Missing, DisplayName = nameof(Missing))]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggeredAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LogException); 
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.LogException).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LogExceptionAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.LogException) }.log_method_names", configuredLogMethods }
-			};
-			return options;
+			return base.GetAdditionalTexts().Add((LogExceptionAnalyzer.AllowedFileName, configuredLogMethods));
 		}
 	}
 }

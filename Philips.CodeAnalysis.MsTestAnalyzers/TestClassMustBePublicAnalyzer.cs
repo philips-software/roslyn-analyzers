@@ -18,10 +18,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override void OnTestClass(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax classDeclaration)
 		{
@@ -32,10 +32,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			//this is an error, unless the class contains an "AssemblyInitialize" within it.  If it does, it _must_ be static.
-			bool containsAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
+			bool hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
 			bool isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
 
-			if (containsAttributeThatMustBeStatic != isClassStatic)
+			if (hasAttributeThatMustBeStatic != isClassStatic)
 			{
 				context.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier));
 			}
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				if (Helper.HasAnyAttribute(method.AttributeLists, context, MsTestFrameworkDefinitions.AssemblyInitializeAttribute, MsTestFrameworkDefinitions.AssemblyCleanupAttribute))
+				if (AttributeHelper.HasAnyAttribute(method.AttributeLists, context, MsTestFrameworkDefinitions.AssemblyInitializeAttribute, MsTestFrameworkDefinitions.AssemblyCleanupAttribute))
 				{
 					return true;
 				}

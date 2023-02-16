@@ -25,6 +25,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
+		private readonly AttributeHelper _attributeHelper;
+
+		public AvoidSuppressMessageAttributeAnalyzer()
+			: this(new AttributeHelper())
+		{ }
+
+		public AvoidSuppressMessageAttributeAnalyzer(AttributeHelper attributeHelper)
+		{
+			_attributeHelper = attributeHelper;
+		}
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
@@ -46,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			});
 		}
 
-		private static ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
+		private ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
 		{
 			foreach (var file in options.AdditionalFiles)
 			{
@@ -73,7 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return ImmutableHashSet<string>.Empty;
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
+		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
 			if (generatedCodeDetector.IsGeneratedCode(context))
@@ -84,15 +95,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
 
 			if (
-				Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
-				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id)) 
+				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
+				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 			{
 				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
-					context.ReportDiagnostic(diagnostic);
+				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
-		private static bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
+		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
 		{
 			var symbol = semanticModel.GetDeclaredSymbol(node);
 
@@ -114,8 +125,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				@"SuppressMessage not allowed",
 				@"SuppressMessage is not allowed.",
 				@"SuppressMessage results in violations of codified coding guidelines.",
-				DiagnosticIds.AvoidSuppressMessage,
-				canBeSuppressed: false,
+				DiagnosticId.AvoidSuppressMessage,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 		}
 	}

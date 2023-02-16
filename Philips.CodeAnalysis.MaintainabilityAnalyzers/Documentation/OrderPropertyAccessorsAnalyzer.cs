@@ -10,33 +10,21 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class OrderPropertyAccessorsAnalyzer : DiagnosticAnalyzer
+	public class OrderPropertyAccessorsAnalyzer : SingleDiagnosticAnalyzer<PropertyDeclarationSyntax, OrderPropertyAccessorsSyntaxNodeAction>
 	{
 		private const string Title = @"Accessors should be ordered";
 		private const string MessageFormat = @"Accessors should be ordered.";
 		private const string Description = @"Properties should be ordered get then set (or init)";
-		private const string Category = Categories.Documentation;
+		public OrderPropertyAccessorsAnalyzer()
+			: base(DiagnosticId.OrderPropertyAccessors, Title, MessageFormat, Description, Categories.Documentation)
+		{ }
+	}
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.OrderPropertyAccessors), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+	public class OrderPropertyAccessorsSyntaxNodeAction : SyntaxNodeAction<PropertyDeclarationSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.PropertyDeclaration);
-			});
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
-
-			AccessorListSyntax accessors = node.AccessorList;
+			AccessorListSyntax accessors = Node.AccessorList;
 
 			if (accessors is null)
 			{
@@ -60,17 +48,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (accessor.Keyword.IsKind(SyntaxKind.SetKeyword) || accessor.Keyword.Text == "init")
 				{
 					setIndex = i;
-					continue;
 				}
 			}
 
 			if (setIndex < getIndex)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, accessors.GetLocation()));
+				var location = accessors.GetLocation();
+				ReportDiagnostic(location);
 			}
-
-
-			//get, set
 		}
 	}
 }

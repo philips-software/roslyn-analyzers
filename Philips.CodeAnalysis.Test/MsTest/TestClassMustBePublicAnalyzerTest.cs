@@ -1,31 +1,24 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
 	public class TestClassMustBePublicAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestClassMustBePublicAnalyzer();
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("", false)]
 		[DataRow("static", false)]
@@ -35,7 +28,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
 		[DataTestMethod]
-		public void TestClassMustBePublic(string modifier, bool isCorrect)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TestClassMustBePublicAsync(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,17 +46,17 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyCSharpDiagnostic(text);
+					await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 				}
 				else
 				{
-					VerifyCSharpDiagnostic(text, new DiagnosticResult()
+					await VerifyDiagnostic(text, new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
+						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,
-					});
+					}).ConfigureAwait(false);
 				}
 			}
 		}
@@ -76,7 +70,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected static", false)]
 		[DataRow("public", false)]
 		[DataTestMethod]
-		public void TestClassWithAssemblyInitializeMustBePublicStatic(string modifier, bool isCorrect)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TestClassWithAssemblyInitializeMustBePublicStaticAsync(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -93,21 +88,13 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 				if (isCorrect)
 				{
-					VerifyCSharpDiagnostic(text);
+					await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 				}
 				else
 				{
-					VerifyCSharpDiagnostic(text, new DiagnosticResult()
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassesMustBePublic),
-						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
-						Message = new Regex(".*"),
-						Severity = DiagnosticSeverity.Error,
-					});
+					await VerifyDiagnostic(text, DiagnosticId.TestClassesMustBePublic);
 				}
 			}
 		}
-
-		#endregion
 	}
 }

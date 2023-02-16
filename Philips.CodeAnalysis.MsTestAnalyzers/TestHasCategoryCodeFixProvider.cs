@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.TestHasCategoryAttribute)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -61,15 +61,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			SyntaxList<AttributeListSyntax> attributeLists = method.AttributeLists;
 
-			foreach (AttributeListSyntax attributes in attributeLists)
+			if (attributeLists.Any(list =>
+					list.Attributes.Any(attributeSyntax => attributeSyntax.Name.ToString().Contains(@"TestCategory"))))
 			{
-				foreach (AttributeSyntax attributesyntax in attributes.Attributes)
-				{
-					if (attributesyntax.Name.ToString().Contains(@"TestCategory"))
-					{
-						return document;
-					}
-				}
+				return document;
 			}
 
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
@@ -79,9 +74,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeSyntax attribute = SyntaxFactory.Attribute(name, arguments);
 
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(
-				SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(attribute));
+				SyntaxFactory.SingletonSeparatedList(attribute));
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(method.AttributeLists.Add(attributeList));
+			attributeLists = method.AttributeLists.Add(attributeList);
+			MethodDeclarationSyntax newMethod = method.WithAttributeLists(attributeLists);
 
 			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
 			Document newDocument = document.WithSyntaxRoot(newRoot);

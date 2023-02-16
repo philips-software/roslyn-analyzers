@@ -22,11 +22,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"DataTestMethods are only executed with DataRows";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor RuleShouldBeTestMethod = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor RuleShouldBeTestMethod = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsDataTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor RuleShouldBeDataTestMethod = new(Helper.ToDiagnosticId(DiagnosticIds.DataTestMethodsHaveDataRows),
+		private static readonly DiagnosticDescriptor RuleShouldBeDataTestMethod = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
@@ -39,35 +39,38 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			public DataTestMethodsHaveDataRowsImplementation(MsTestAttributeDefinitions definitions) : base(definitions)
 			{ }
-
-			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration,
+												out int dynamicDataCount, out int dataRowCount, out bool hasTestSource)
 			{
-				int dynamicDataCount = 0;
-				int dataRowCount = 0;
-				bool hasTestSource = false;
+				dynamicDataCount = 0;
+				dataRowCount = 0;
+				hasTestSource = false;
+
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					if (Helper.IsDataRowAttribute(attribute, context))
+					if (AttributeHelper.IsDataRowAttribute(attribute, context))
 					{
 						dataRowCount++;
 						continue;
 					}
 
-					if (Helper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
 						dynamicDataCount++;
 						continue;
 					}
 
 					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
-					if (symbol.Symbol is IMethodSymbol method)
+					if (symbol.Symbol is IMethodSymbol method && method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
 					{
-						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))
-						{
-							hasTestSource = true;
-						}
+						hasTestSource = true;
 					}
 				}
+			}
+
+			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
+			{
+				CollectSupportingData(context, methodDeclaration, out int dynamicDataCount, out int dataRowCount, out bool hasTestSource);
 
 				if (isDataTestMethod)
 				{

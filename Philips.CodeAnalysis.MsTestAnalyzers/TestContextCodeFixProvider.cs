@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.TestContext)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestContext)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -57,46 +57,43 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private async Task<Document> TestContextFix(Document document, SyntaxNode declaration, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
+			if (rootNode == null)
+			{
+				return document;
+			}
 
 			// find the underlying variable
 			IEnumerable<SyntaxNode> propNodes = declaration.DescendantNodes();
 			ReturnStatementSyntax returnStatement = propNodes.OfType<ReturnStatementSyntax>().First();
 			string varName = string.Empty;
-			if (returnStatement != null)
+			if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
 			{
-				if (returnStatement.Expression is IdentifierNameSyntax returnVar)
-				{
-					varName = returnVar.Identifier.ToString();
-				}
+				varName = returnVar.Identifier.ToString();
 			}
 
 			// remove the property
-			if (rootNode != null)
+			rootNode = rootNode.RemoveNode(declaration, SyntaxRemoveOptions.KeepNoTrivia);
+
+			if (!string.IsNullOrEmpty(varName))
 			{
-				rootNode = rootNode.RemoveNode(declaration, SyntaxRemoveOptions.KeepNoTrivia);
-
-				if (!string.IsNullOrEmpty(varName))
+				foreach (VariableDeclarationSyntax varDeclaration in rootNode.DescendantNodes()
+					.OfType<VariableDeclarationSyntax>())
 				{
-					foreach (VariableDeclarationSyntax varDeclaration in rootNode.DescendantNodes()
-						.OfType<VariableDeclarationSyntax>())
+					if (varDeclaration.Variables[0].Identifier.ToString() == varName)
 					{
-						if (varDeclaration.Variables[0].Identifier.ToString() == varName)
+						// remove the underlying variable
+						if (varDeclaration.Parent != null)
 						{
-							// remove the underlying variable
-							if (varDeclaration.Parent != null)
-							{
-								rootNode = rootNode.RemoveNode(varDeclaration.Parent, SyntaxRemoveOptions.KeepNoTrivia);
-							}
-
-							break;
+							rootNode = rootNode.RemoveNode(varDeclaration.Parent, SyntaxRemoveOptions.KeepNoTrivia);
 						}
+
+						break;
 					}
 				}
-
-				document = document.WithSyntaxRoot(rootNode);
 			}
 
-			return document;
+			var newDocument = document.WithSyntaxRoot(rootNode);
+			return newDocument;
 		}
 	}
 }

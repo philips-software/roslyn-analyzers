@@ -1,9 +1,15 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -52,7 +58,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow(@"public class A {{}}", false, 6, 2)]
 		[DataRow(@"class A {{}}", true, 6, 2)]
 		[DataRow(@"private class A {{}}", true, 6, 2)]
-		public void EnforcePublicInterfaceRegion(string given, bool isError, int line, int column)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EnforcePublicInterfaceRegionAsync(string given, bool isError, int line, int column)
 		{
 
 			string baseline = @"
@@ -63,7 +70,22 @@ class Foo
 	{0}
 	#endregion
 }}";
-			VerifyError(baseline, given, isError, 6, 2);
+			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
+
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnamedRegionTestAsync()
+		{
+			string baseline = @"
+class Foo
+{{
+	#region
+	private class A {{}}
+	#endregion
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
 
 		}
 
@@ -109,7 +131,8 @@ class Foo
 		[DataRow(@"delegate int();", true, 6, 14)]
 		[DataRow(@"private delegate int();", true, 6, 22)]
 		[DataRow(@"public delegate int();", true, 6, 21)]
-		public void EnforeNonPublicPropertiesMethodsRegion(string given, bool isError, int line, int column)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EnforeNonPublicPropertiesMethodsRegionAsync(string given, bool isError, int line, int column)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -119,7 +142,7 @@ class Foo
 	{0}
 	#endregion
 }}";
-			VerifyError(baseline, given, isError, 6, 2);
+			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -161,7 +184,8 @@ class Foo
 		[DataRow(@"delegate int();", false, 6, 2)]
 		[DataRow(@"private delegate int();", false, 6, 2)]
 		[DataRow(@"public delegate int();", true, 6, 21)]
-		public void EnforeNonPublicDataMembersRegion(string given, bool isError, int line, int column)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EnforeNonPublicDataMembersRegionAsync(string given, bool isError, int line, int column)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -171,7 +195,7 @@ class Foo
 	{0}
 	#endregion
 }}";
-			VerifyError(baseline, given, isError, 6, 2);
+			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -182,7 +206,8 @@ class Foo
 		[DataRow(@"Public Interface", false)]
 		[DataRow(@"#region", false)]
 		[DataRow(@"#regionPublic Interface", false)]
-		public void RegionNameTest(string given, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionNameTestAsync(string given, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -194,12 +219,13 @@ class Foo
 
 
 }}";
-			VerifyError(baseline, given, isError, 6, 2);
+			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
-		[DataRow(@"Non-Public Properties/Methods", true)]
-		public void DupliateRegionTest(string given, bool isError)
+		[DataRow(@"Non-Public Properties/Methods")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DupliateRegionTestAsync(string given)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -218,54 +244,43 @@ class Foo
 
 }}";
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
-			if (isError)
+			var result = new DiagnosticResult()
 			{
-				results = new[] { new DiagnosticResult()
-					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceNonDuplicateRegion),
-						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 8, 3)
-						}
-					}
-				};
-			}
-			else
-			{
-				results = Array.Empty<DiagnosticResult>();
-			}
-			VerifyCSharpDiagnostic(givenText, results);
+				Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
+				Message = new Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
+				Severity = DiagnosticSeverity.Error,
+				Locations = new[]
+				{
+					new DiagnosticResultLocation("Test0.cs", 8, 3)
+				}
+			};
+			await VerifyDiagnostic(givenText, result).ConfigureAwait(false);
 		}
 
-		private void VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
+		private async Task VerifyErrorAsync(string baseline, string given, bool isError, int line = 6, int column = 2)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var result = new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
+					Message = new Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.EnforceRegions),
-						Message = new System.Text.RegularExpressions.Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", line, column)
-						}
+						new DiagnosticResultLocation("Test0.cs", line, column)
 					}
 				};
+				await VerifyDiagnostic(givenText, result).ConfigureAwait(false);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
-			VerifyCSharpDiagnostic(givenText, results);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new EnforceRegionsAnalyzer();
 		}

@@ -1,10 +1,13 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -21,18 +24,18 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqualLiteral),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral),
 				Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
 			};
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualLiteralAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AssertAreEqualLiteralCodeFixProvider();
 		}
@@ -54,9 +57,10 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreNotEqual(true, !false)")]
 		[DataRow("Assert.AreNotEqual(false, true)")]
 		[DataRow("Assert.AreNotEqual(true, false)")]
-		public void CheckLiteral(string given)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckLiteralAsync(string given)
 		{
-			VerifyError(given);
+			await VerifyError(given).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -77,13 +81,14 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.AreEqual(!false, !Get())", "Assert.IsTrue(!Get())")]
 		[DataRow("Assert.AreNotEqual(!true, !Get())", "Assert.IsTrue(!Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())", "Assert.IsFalse(!Get())")]
-		public void CheckLiteralChanged(string given, string expected)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckLiteralChanged(string given, string expected)
 		{
 			OtherClassSyntax = @"
 static bool Get() { return true; }
 ";
 
-			VerifyChange(given, expected);
+			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -104,16 +109,18 @@ static bool Get() { return true; }
 		[DataRow("Assert.AreEqual(!false, !Get())")]
 		[DataRow("Assert.AreNotEqual(!true, !Get())")]
 		[DataRow("Assert.AreNotEqual(!false, !Get())")]
-		public void CheckLiteralNoChange(string given)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckLiteralNoChange(string given)
 		{
 			OtherClassSyntax = @"
 static bool? Get() { return true; }
 ";
 
-			VerifyNoChange(given);
+			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void AssertNullables()
 		{
 			// Confirm behavior of Assert.

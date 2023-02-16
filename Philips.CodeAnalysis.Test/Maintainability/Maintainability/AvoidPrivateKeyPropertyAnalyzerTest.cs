@@ -1,24 +1,26 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class AvoidPrivateKeyPropertyAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
-			using System.Globalization;
-			class Foo 
+			using System.Security.Cryptography.X509Certificates;
+            class Foo 
 			{{
 				public void Foo()
 				{{
@@ -27,55 +29,29 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}}
 			";
 
-
-		#endregion
-		#region Non-Public Properties/Methods
-
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(X509Certificate2).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPrivateKeyPropertyAnalyzer();
 		}
 
-		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
-		{
-			return new DiagnosticResultLocation("Test.cs", 8 + rowOffset, 8 + columnOffset);
-		}
-
-		#endregion
-
-		#region Test Methods
 		[DataTestMethod]
-		[DataRow(@"_ = new X509Certificate2().PrivateKey", 0, 2)]
+		[DataRow(@"_ = new X509Certificate2().PrivateKey")]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
-			_ = cert.PrivateKey;", 1, 0)]
-		public void AvoidPrivateKeyPropertyOnX509Certificate(string s, int row, int col)
+			_ = cert.PrivateKey;")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidPrivateKeyPropertyOnX509CertificateAsync(string s)
 		{
-
 			string code = string.Format(ClassString, s);
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPrivateKeyProperty),
-				Message = new Regex(".+ "),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					GetBaseDiagnosticLocation(row,col)
-				}
-			};
-
-			VerifyCSharpDiagnostic(code, expected);
+			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
-		#endregion
-
-
 	}
 }

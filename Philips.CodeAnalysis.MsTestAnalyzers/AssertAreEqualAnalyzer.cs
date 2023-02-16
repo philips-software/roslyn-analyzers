@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -18,9 +19,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Assert.AreEqual(<actual>, <expected>) => Assert.AreEqual(<expected>, <actual>) and Assert.AreEqual(null, <actual>) => Assert.IsNull(<actual>).";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqual), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
@@ -30,54 +31,43 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				SimpleNameSyntax name => name.ToString()
 			};
 
-			if (memberName is not @"AreEqual" and not @"AreNotEqual")
+			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			bool arg0Literal = IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
-			bool arg1Literal = IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
-			bool arg0Null = IsNull(argumentList.Arguments[0].Expression);
+			bool isArg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			bool isArg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			bool isArg0Null = IsNull(argumentList.Arguments[0].Expression);
 
-			if (!arg0Literal && !arg1Literal)
+			if (!isArg0Literal && !isArg1Literal)
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
-			if (arg0Literal && !arg0Null)
+			if (isArg0Literal && !isArg0Null)
 			{
-				return null;
+				return Array.Empty<Diagnostic>();
 			}
 
-			if (arg1Literal || arg0Null)
+			if (isArg1Literal || isArg0Null)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, invocationExpressionSyntax.GetLocation());
+				var location = invocationExpressionSyntax.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				return new[] { diagnostic };
 			}
 
-			return null;
+			return Array.Empty<Diagnostic>();
 		}
 
-		private bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
-		{
-			if (expression is LiteralExpressionSyntax literal)
-			{
-				Optional<object> literalValue = semanticModel.GetConstantValue(literal);
-
-				return literalValue.HasValue;
-			}
-
-			var constant = semanticModel.GetConstantValue(expression);
-			return constant.HasValue || Helper.IsConstantExpression(expression, semanticModel);
-		}
 
 		private bool IsNull(ExpressionSyntax expression)
 		{

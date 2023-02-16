@@ -1,12 +1,14 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -44,42 +46,39 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
-		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses))]
-		public void WhenConfigInvalidDefaultValueUsedAndCorrectCodePasses(string testCode)
+		[DataTestMethod]
+		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync))]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
-		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails))]
-		public void WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFails(string testCode)
+		[DataTestMethod]
+		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync))]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity).ConfigureAwait(false);
 		}
 
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LimitConditionComplexityAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
-				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new()
-			{
-				{ key, "not a number" }
-			};
-			return options;
+				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
+			return base.GetAdditionalAnalyzerConfigOptions().Add(key, "not a number");
 		}
 	}
 }

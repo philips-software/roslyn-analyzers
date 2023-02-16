@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,9 +18,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Test class cannot have a public method unless its a test method. Either change the access modifier or make it a test method";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		private readonly TestHelper _testHelper;
+		public TestClassPublicMethodShouldBeTestMethodAnalyzer()
+			: this(new TestHelper())
+		{ }
+		public TestClassPublicMethodShouldBeTestMethodAnalyzer(TestHelper testHelper)
+		{
+			_testHelper = testHelper;
+		}
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -53,7 +63,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (!Helper.IsTestClass(classDeclaration, context))
+			if (!_testHelper.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}
@@ -66,15 +76,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			bool isAllowedToBePublic = false;
-			foreach (AttributeData attribute in symbol.GetAttributes())
+			foreach (INamedTypeSymbol attribute in symbol.GetAttributes().Select(attr => attr.AttributeClass))
 			{
-				if (definitions.NonTestMethods.Contains(attribute.AttributeClass))
+				if (definitions.NonTestMethods.Contains(attribute))
 				{
 					isAllowedToBePublic = true;
 					break;
 				}
 
-				if (attribute.AttributeClass.IsDerivedFrom(definitions.TestMethodSymbol))
+				if (attribute.IsDerivedFrom(definitions.TestMethodSymbol))
 				{
 					isAllowedToBePublic = true;
 					break;
@@ -83,7 +93,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (!isAllowedToBePublic)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, methodDeclaration.GetLocation());
+				var location = methodDeclaration.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

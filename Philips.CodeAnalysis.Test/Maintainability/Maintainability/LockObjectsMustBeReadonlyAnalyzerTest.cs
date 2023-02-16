@@ -2,17 +2,20 @@
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class LockObjectsMustBeReadonlyAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LockObjectsMustBeReadonlyAnalyzer();
 		}
@@ -22,7 +25,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("static readonly object _foo", false)]
 		[DataRow("readonly object _foo", false)]
 		[DataTestMethod]
-		public void LockObjectsMustBeReadonly(string field, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -35,18 +39,20 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			else
+			{
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
-		public void LockObjectsMustBeReadonlyLocalVariables(string field, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyLocalVariablesAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -58,18 +64,20 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			else
+			{
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("object foo", false)]
 		[DataTestMethod]
-		public void LockObjectsMustBeReadonlyFunctionReturn(string field, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyFunctionReturnAsync(string field, bool isError)
 		{
 			const string template = @"using System;
 class Foo
@@ -86,17 +94,19 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
 			if (isError)
 			{
-				result = new[] { DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly) };
+				await VerifyDiagnostic(string.Format(template, field)).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, field), result);
+			else
+			{
+				await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+			}
 		}
 
 		[TestMethod]
-		public void LockObjectsMustBeReadonlyPartialStatement()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyPartialStatementAsync()
 		{
 			const string template = @"using System;
 class Foo
@@ -109,13 +119,12 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void LockObjectsMustBeReadonlyPartialStatement2()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyPartialStatement2Async()
 		{
 			const string template = @"using System;
 class Foo
@@ -128,13 +137,12 @@ class Foo
 	}}
 }}
 ";
-			var result = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void LockObjectsMustBeReadonlyVerifyErrorMessage()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyVerifyErrorMessageAsync()
 		{
 			const string template = @"using System;
 class Foo
@@ -147,15 +155,7 @@ class Foo
 	}}
 }}
 ";
-			var error = DiagnosticResultHelper.Create(DiagnosticIds.LocksShouldBeReadonly);
-			error.Message = new Regex("'_foo'");
-
-			var result = new DiagnosticResult[]
-			{
-				error,
-			};
-
-			VerifyCSharpDiagnostic(string.Format(template), result);
+			await VerifyDiagnostic(template, DiagnosticId.LocksShouldBeReadonly, regex: "'_foo'").ConfigureAwait(false);
 		}
 	}
 }

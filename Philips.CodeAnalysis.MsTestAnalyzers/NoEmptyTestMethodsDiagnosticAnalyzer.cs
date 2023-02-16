@@ -14,10 +14,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		private const string Title = @"No Test Methods";
 		public const string MessageFormat = @"Remove empty test method '{0}'";
-		private const string Description = @"Remove empty test method '{0}'";
+		private const string Description = MessageFormat;
 		private const string Category = Categories.Maintainability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 

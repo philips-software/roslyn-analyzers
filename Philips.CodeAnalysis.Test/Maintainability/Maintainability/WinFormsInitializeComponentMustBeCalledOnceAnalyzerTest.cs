@@ -1,4 +1,6 @@
-﻿#region Header
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+#region Header
 // © 2019 Koninklijke Philips N.V.  All rights reserved.
 // Reproduction or transmission in whole or in part, in any form or by any means, 
 // electronic, mechanical or otherwise, is prohibited without the prior  written consent of 
@@ -8,11 +10,14 @@
 #endregion
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -25,10 +30,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		#region Non-Public Properties/Methods
 
 		/// <summary>
-		/// GetCSharpDiagnosticAnalyzer
+		/// GetDiagnosticAnalyzer
 		/// </summary>
 		/// <returns></returns>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new WinFormsInitializeComponentMustBeCalledOnceAnalyzer();
 		}
@@ -173,7 +178,7 @@ class ContainerControl
 		{
 			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.InitializeComponentMustBeCalledOnce),
+				Id = Helper.ToDiagnosticId(DiagnosticId.InitializeComponentMustBeCalledOnce),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -184,57 +189,42 @@ class ContainerControl
 		}
 
 		/// <summary>
-		/// VerifyNoDiagnostic
-		/// </summary>
-		/// <param name="file"></param>
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file);
-		}
-
-		/// <summary>
 		/// VerifyDiagnosticOnFirst
 		/// </summary>
 		/// <param name="file"></param>
-		private void VerifyDiagnosticOnFirst(string file)
+		private async Task VerifyDiagnosticOnFirstAsync(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(11, 16);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			DiagnosticResult expected = GetDiagnosticResult(11, 16);
+			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// VerifyDiagnosticOnSecond
 		/// </summary>
 		/// <param name="file"></param>
-		private void VerifyDiagnosticOnSecond(string file)
+		private async Task VerifyDiagnosticOnSecondAsync(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(15, 3);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			DiagnosticResult expected = GetDiagnosticResult(15, 3);
+			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// VerifyDiagnosticeOnFirstAndSecond
 		/// </summary>
 		/// <param name="file"></param>
-		private void VerifyDiagnosticeOnFirstAndSecond(string file)
+		private async Task VerifyDiagnosticeOnFirstAndSecondAsync(string file)
 		{
-			DiagnosticResult diagnosticResult1 = GetDiagnosticResult(11, 16);
-			DiagnosticResult diagnosticResult2 = GetDiagnosticResult(15, 3);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult1, diagnosticResult2 };
-			VerifyCSharpDiagnostic(file, expected);
+			await VerifyDiagnostic(file, 2).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// VerifyDoubleDiagnostic
 		/// </summary>
 		/// <param name="file"></param>
-		private void VerifyDiagnosticOnClass(string file)
+		private async Task VerifyDiagnosticOnClassAsync(string file)
 		{
-			DiagnosticResult diagnosticResult = GetDiagnosticResult(9, 22);
-			DiagnosticResult[] expected = new DiagnosticResult[] { diagnosticResult };
-			VerifyCSharpDiagnostic(file, expected);
+			DiagnosticResult expected = GetDiagnosticResult(9, 22);
+			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
 		}
 
 		#endregion
@@ -250,25 +240,26 @@ class ContainerControl
 		[DataRow(@"", @"", true, true)]
 		[DataRow(@"InitializeComponent();", @"", false, true)]
 		[DataRow(@"", @"InitializeComponent();", false, false)]
-		public void WinFormsInitialComponentMustBeCalledOnceAnalyzers(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzersAsync(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
 		{
 			string code = CreateCode(param1, param2);
 
 			if (shouldGenerateDiagnosticOnFirst && !shouldGenerateDiagnosticOnSecond)
 			{
-				VerifyDiagnosticOnFirst(code);
+				await VerifyDiagnosticOnFirstAsync(code).ConfigureAwait(false);
 			}
 			else if (!shouldGenerateDiagnosticOnFirst & shouldGenerateDiagnosticOnSecond)
 			{
-				VerifyDiagnosticOnSecond(code);
+				await VerifyDiagnosticOnSecondAsync(code).ConfigureAwait(false);
 			}
 			else if (shouldGenerateDiagnosticOnFirst && shouldGenerateDiagnosticOnSecond)
 			{
-				VerifyDiagnosticeOnFirstAndSecond(code);
+				await VerifyDiagnosticeOnFirstAndSecondAsync(code).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyNoDiagnostic(code);
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 			}
 		}
 
@@ -277,10 +268,11 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
-		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructors()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructorsAsync()
 		{
 			string code = CreateCodeWithOutConstructors();
-			VerifyDiagnosticOnClass(code);
+			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -288,10 +280,11 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
-		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructorsAsync()
 		{
 			string code = CreateCodeWithDisjointConstructors();
-			VerifyNoDiagnostic(code);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -299,10 +292,11 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
-		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClass()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClassAsync()
 		{
 			string code = CreateCodeWithStaticConstructor();
-			VerifyDiagnosticOnClass(code);
+			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -310,10 +304,11 @@ class ContainerControl
 		/// </summary>
 		/// <param name="param"></param>
 		[TestMethod]
-		public void WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFileAsync()
 		{
 			string code = CreateCode(@"", @"");
-			VerifyCSharpDiagnostic(code, @"Test.Designer");
+			await VerifySuccessfulCompilation(code, @"Test.Designer").ConfigureAwait(false);
 		}
 
 		#endregion

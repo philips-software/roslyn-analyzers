@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,37 +13,42 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidPasswordAnalyzer : DiagnosticAnalyzer
+	public class AvoidPasswordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Password";
 		public const string MessageFormat = @"Naming something Password suggests a potential hard-coded password.";
 		private const string Description = @"Avoid hard-coded passwords.  (Avoid this analyzer by not naming something Password.)";
-		private const string Category = Categories.Security;
 
-		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticIds.AvoidPasswordField), 
-			Title, MessageFormat, Category, 
-			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private const string MsTestMetadataReference = "Microsoft.VisualStudio.TestTools.UnitTesting.Assert";
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public virtual bool ShouldAnalyzeTests { get; set; }
 
+		public AvoidPasswordAnalyzer()
+			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-			context.RegisterSyntaxTreeAction(AnalyzeComments);
+			context.RegisterCompilationStartAction(context =>
+			{
+				if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
+				{
+					context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+					context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+					context.RegisterSyntaxTreeAction(AnalyzeComments);
+				}
+			});
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			if (context.Node is PropertyDeclarationSyntax propertyDeclarationSyntax)
 			{
-				Diagnose(propertyDeclarationSyntax.Identifier.ValueText,
-					propertyDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+				var location = propertyDeclarationSyntax.GetLocation();
+				Diagnose(propertyDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
 
@@ -50,8 +56,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 			{
-				Diagnose(methodDeclarationSyntax.Identifier.ValueText,
-					methodDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+				var location = methodDeclarationSyntax.GetLocation();
+				Diagnose(methodDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
 
@@ -61,8 +67,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
 				{
-					Diagnose(variable.Identifier.ValueText,
-						fieldDeclarationSyntax.GetLocation(), context.ReportDiagnostic);
+					var location = fieldDeclarationSyntax.GetLocation();
+					Diagnose(variable.Identifier.ValueText, location, context.ReportDiagnostic);
 				}
 			}
 		}
@@ -74,18 +80,23 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			var comments = root.DescendantTrivia().Where((t) => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia));
 			foreach (SyntaxTrivia comment in comments)
 			{
-				Diagnose(comment.ToString(), comment.GetLocation(), context.ReportDiagnostic);
+				var location = comment.GetLocation();
+				Diagnose(comment.ToString(), location, context.ReportDiagnostic);
 			}
 		}
 
-		private Diagnostic CheckComment(string comment, Location location)
+		private Diagnostic Check(string comment, Location location)
 		{
-			return comment.ToLower().Contains(@"password") ? Diagnostic.Create(Rule, location) : null;
+			if (comment.ToLower(CultureInfo.CurrentCulture).Contains(@"password"))
+			{
+				return Diagnostic.Create(Rule, location);
+			}
+			return null;
 		}
 
 		private void Diagnose(string valueText, Location location, Action<Diagnostic> reportDiagnostic)
 		{
-			Diagnostic diagnostic = CheckComment(valueText, location);
+			Diagnostic diagnostic = Check(valueText, location);
 			if (diagnostic != null)
 			{
 				reportDiagnostic(diagnostic);

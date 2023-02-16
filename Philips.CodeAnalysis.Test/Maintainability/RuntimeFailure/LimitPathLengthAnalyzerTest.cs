@@ -1,10 +1,13 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 {
@@ -54,29 +57,32 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(ShortName, DisplayName = "ShortName"),
 		 DataRow(ShortAbsolutePath, DisplayName = "ShortAbsolutePath"),
 		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifyCSharpDiagnostic(Correct, filePath);
+			await VerifySuccessfulCompilation(Correct, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics should show up hare.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(LongName, DisplayName = "LongName"),
 		 DataRow(LongAbsolutePath, DisplayName = "LongAbsolutePath"),
 		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
 		 DataRow(GeneratedFilePath, DisplayName = "GeneratedFile")]
-		public void WhenPathIsTooLongDiagnosticIsRaised(string filePath) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitPathLength);
-			VerifyCSharpDiagnostic(Correct, filePath, expected);
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenPathIsTooLongDiagnosticIsRaisedAsync(string filePath)
+		{
+			await VerifyDiagnostic(Correct, DiagnosticId.LimitPathLength, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new LimitPathLengthAnalyzer();
 		}
 	}

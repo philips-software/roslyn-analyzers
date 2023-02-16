@@ -10,15 +10,15 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceEditorConfigAnalyzer : DiagnosticAnalyzer
+	public class EnforceEditorConfigAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Missing .editorconfig";
 		private const string MessageFormat = @"The project does not have a local .editorconfig file.";
 		private const string Description = @".editorconfig files help enforce and configure Analyzers";
-		private const string Category = Categories.Maintainability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.EnforceEditorConfig), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public EnforceEditorConfigAnalyzer()
+			: base(DiagnosticId.EnforceEditorConfig, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -27,8 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationAction(compilationContext =>
 			{
-				bool result = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
-				if (!result)
+				bool isPresent = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
+				if (!isPresent)
 				{
 					Diagnostic diagnostic = Diagnostic.Create(Rule, Location.None);
 					compilationContext.ReportDiagnostic(diagnostic);
@@ -42,12 +42,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				string fileName = Path.GetFileName(additionalFile.Path);
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
-				if (comparer.Equals(fileName, @".editorconfig"))
+				if (comparer.Equals(fileName, @".editorconfig") && additionalFile.GetText() != null)
 				{
-					if (additionalFile.GetText() != null)
-					{
-						return true;
-					}
+					return true;
 				}
 			}
 			return false;

@@ -24,9 +24,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Description = "Too long path.";
 		private const string Category = Categories.RuntimeFailure;
 
+		private const int MaxFilePathLength = 260;
+
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticIds.LimitPathLength),
+				Helper.ToDiagnosticId(DiagnosticId.LimitPathLength),
 				Title,
 				Message,
 				Category,
@@ -53,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
 			var filePath = context.Tree.FilePath;
-			if (filePath.Length > 260)
+			if (filePath.Length > MaxFilePathLength)
 			{
 				var location = Location.Create(context.Tree, TextSpan.FromBounds(0, 0));
 				var diagnostic = Diagnostic.Create(Rule, location, Path.GetFileName(filePath));

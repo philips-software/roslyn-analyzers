@@ -1,10 +1,13 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -113,7 +116,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = "Correct"),
 		 DataRow(CorrectTernary, DisplayName = "CorrectTernary"),
@@ -121,33 +124,37 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectInitializer, DisplayName = "CorrectInitializer"),
 		 DataRow(CorrectPropertyAssignment, DisplayName = "CorrectPropertyAssignment"),
 		 DataRow(CorrectNullCoalescing, DisplayName = "CorrectNullCoalescing")]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
-		public void WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.AvoidAssignmentInCondition);
-			VerifyCSharpDiagnostic(testCode, expected);
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaisedAsync(string testCode)
+		{
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifyCSharpDiagnostic(Violation, filePath);
+			await VerifySuccessfulCompilation(Violation, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new AvoidAssignmentInConditionAnalyzer();
 		}
 	}

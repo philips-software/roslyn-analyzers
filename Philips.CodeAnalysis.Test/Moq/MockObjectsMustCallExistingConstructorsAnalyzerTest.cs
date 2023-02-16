@@ -1,13 +1,15 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Linq;
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MoqAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Moq
 {
@@ -19,17 +21,16 @@ namespace Philips.CodeAnalysis.Test.Moq
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MockObjectsMustCallExistingConstructorsAnalyzer();
 		}
 
-		protected override MetadataReference[] GetMetadataReferences()
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
 			string mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
-
-			return base.GetMetadataReferences().Concat(new[] { reference }).ToArray();
+			return base.GetMetadataReferences().Add(reference);
 		}
 
 		#endregion
@@ -40,7 +41,8 @@ namespace Philips.CodeAnalysis.Test.Moq
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
-		public void ConstructorsMustExistViaNewMock(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -58,25 +60,20 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(12),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[TestMethod]
-		public void ConstructorsMustExistViaNewMock2()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaNewMock2Async()
 		{
 			const string template = @"
 using Moq;
@@ -93,22 +90,12 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = new[]
-			{
-				new DiagnosticResult()
-				{
-					Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-					Location = new DiagnosticResultLocation(12),
-					Severity = DiagnosticSeverity.Error,
-				}
-			};
-
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			await VerifyDiagnostic(template, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void ConstructorsMustExistViaNewMock3()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaNewMock3Async()
 		{
 			const string template = @"
 using Moq;
@@ -123,14 +110,12 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void MockBehaviorCanBeTakenFromMethodParameter()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MockBehaviorCanBeTakenFromMethodParameterAsync()
 		{
 			const string template = @"
 using Moq;
@@ -155,13 +140,12 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void MockBehaviorCanBeTakenFromLocal()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MockBehaviorCanBeTakenFromLocalAsync()
 		{
 			const string template = @"
 using Moq;
@@ -185,13 +169,12 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void MockBehaviorCanBeTakenFromField()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MockBehaviorCanBeTakenFromFieldAsync()
 		{
 			const string template = @"
 using Moq;
@@ -215,16 +198,15 @@ public static class Bar
 }}
 ";
 
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template), expectedErrors);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
-		public void DelegateConstructorsMustExistViaNewMock(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DelegateConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq
@@ -239,29 +221,23 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(10),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("{ TestProperty = string.Empty }", false)]
 		[DataRow("(MockBehavior.Default) { TestProperty = string.Empty }", false)]
 		[DataRow("(1, 2) { TestProperty = string.Empty }", true)]
 		[DataTestMethod]
-		public void DelegateConstructorsMustHandleNoArgumentList(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DelegateConstructorsMustHandleNoArgumentListAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -279,29 +255,23 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("-1, false", false)]
 		[DataRow("string.Empty, false", false)]
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataTestMethod]
-		public void ConstructorHandlesTypesCorrectly(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorHandlesTypesCorrectlyAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -319,22 +289,15 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("-1, false", false)]
@@ -342,7 +305,8 @@ public static class Bar
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataRow("DateTime.Now, false", false)]
 		[DataTestMethod]
-		public void ConstructorHandlesGenericsTypesCorrectly(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorHandlesGenericsTypesCorrectlyAsync(string arguments, bool isError)
 		{
 			const string template = @"using System;
 using Moq;
@@ -361,29 +325,23 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
-		public void ConstructorsMustExistViaCreate(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaCreateAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -401,27 +359,21 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("", false)]
 		[DataTestMethod]
-		public void ConstructorsMustExistViaMockOf(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaMockOfAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -438,22 +390,15 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("Mockable m = Mock.Of<")]
@@ -466,7 +411,8 @@ public static class Bar
 		[DataRow("Mockable m = repo.Create<Mockable")]
 		[DataRow("Mockable m = repo.Create<Mockable>")]
 		[DataTestMethod]
-		public void ConstructorsMustNotCauseCrash(string statement)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustNotCauseCrashAsync(string statement)
 		{
 			const string template = @"
 using Moq;
@@ -484,16 +430,15 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
-			VerifyCSharpDiagnostic(string.Format(template, statement), expectedErrors);
+			await VerifySuccessfulCompilation(string.Format(template, statement)).ConfigureAwait(false);
 		}
 
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
-		public void CanMockInterfaces(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CanMockInterfacesAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
@@ -510,28 +455,23 @@ public static class Bar
 	}}
 }}
 ";
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(12),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("string.Empty", false)]
 		[DataRow("null", false)]
 		[DataRow("int.MaxValue", true)]
 		[DataTestMethod]
-		public void ConstructorsMustHaveCorrectTypeParameters(string arguments, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustHaveCorrectTypeParametersAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using System;
@@ -549,22 +489,15 @@ public static class Bar
 	}}
 }}
 ";
-
-			DiagnosticResult[] expectedErrors = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
-				expectedErrors = new[]
-				{
-					new DiagnosticResult()
-					{
-						Id= Helper.ToDiagnosticId(DiagnosticIds.MockArgumentsMustMatchConstructor),
-						Location = new DiagnosticResultLocation(13),
-						Severity = DiagnosticSeverity.Error,
-					}
-				};
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, arguments), expectedErrors);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		#endregion

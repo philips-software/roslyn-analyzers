@@ -1,6 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,55 +10,94 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ProhibitDynamicKeywordAnalyzer : DiagnosticAnalyzer
+	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
 		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
-		private const string Description = @"The ""dynamic"" keyword is not checked for type safety at compile time and is prohibited.";
-		private const string Category = Categories.Maintainability;
+		private const string Description = @"The ""dynamic"" keyword is not checked for type safety at compile time.";
+		private const string DynamicIdentifier = "dynamic";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.DynamicKeywordProhibited), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public ProhibitDynamicKeywordAnalyzer()
+			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.IdentifierName);
+			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
-			IdentifierNameSyntax identifierNameSyntax = (IdentifierNameSyntax)context.Node;
-
-			if (!IsIdentifierDynamicType(context, identifierNameSyntax))
+			var method = (MethodDeclarationSyntax)context.Node;
+			if (IsDynamicType(context, method.ReturnType))
 			{
-				return;
+				var returnLocation = method.ReturnType.GetLocation();
+				ReportDiagnostic(context, returnLocation);
 			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, identifierNameSyntax.GetLocation()));
+			if (HasDynamicType(context, method.ParameterList))
+			{
+				var location = method.ParameterList.GetLocation();
+				ReportDiagnostic(context, location);
+			}
 		}
 
-		private bool IsIdentifierDynamicType(SyntaxNodeAnalysisContext context, IdentifierNameSyntax identifierNameSyntax)
+		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			if (identifierNameSyntax.Identifier.ValueText == "dynamic" && !identifierNameSyntax.Parent.IsKind(SyntaxKind.Argument) &&
-				!identifierNameSyntax.Parent.IsKind(SyntaxKind.SimpleMemberAccessExpression))
+			var prop = (PropertyDeclarationSyntax)context.Node;
+			if (IsDynamicType(context, prop.Type))
 			{
-				return true;
+				var returnLocation = prop.Type.GetLocation();
+				ReportDiagnostic(context, returnLocation);
 			}
+		}
 
-			if (identifierNameSyntax.IsVar)
+		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
+		{
+			var variable = (VariableDeclarationSyntax)context.Node;
+			if (IsDynamicType(context, variable.Type))
 			{
-				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(identifierNameSyntax);
+				var returnLocation = variable.Type.GetLocation();
+				ReportDiagnostic(context, returnLocation);
+			}
+			if (variable.Variables.Any(v => HasDynamicType(context, v.Initializer)))
+			{
+				var returnLocation = variable.Type.GetLocation();
+				ReportDiagnostic(context, returnLocation);
+			}
+		}
 
+		private static bool IsDynamicType(SyntaxNodeAnalysisContext context, TypeSyntax typeSyntax)
+		{
+			if (typeSyntax is SimpleNameSyntax { Identifier.ValueText: DynamicIdentifier })
+			{
+				// Double check the semantic model (to distinguish a variable named 'dynamic').
+				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(typeSyntax);
 				if (symbol.Symbol is IDynamicTypeSymbol)
 				{
 					return true;
 				}
 			}
 
+			if (typeSyntax is GenericNameSyntax generic && generic.TypeArgumentList.Arguments.Any(gen => IsDynamicType(context, gen)))
+			{
+				return true;
+			}
+
 			return false;
+		}
+
+		private static bool HasDynamicType(SyntaxNodeAnalysisContext context, SyntaxNode node)
+		{
+			return node != null && node.DescendantNodes().OfType<SimpleNameSyntax>().Any(id => IsDynamicType(context, id));
+		}
+
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		{
+			context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 	}
 }

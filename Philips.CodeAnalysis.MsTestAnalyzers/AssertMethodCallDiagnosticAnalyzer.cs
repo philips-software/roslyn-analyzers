@@ -1,21 +1,25 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class AssertMethodCallDiagnosticAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
+		protected Helper Helper { get; set; }
 
-		#endregion
-
-		#region Non-Public Properties/Methods
+		protected AssertMethodCallDiagnosticAnalyzer()
+			: this(new Helper())
+		{ }
+		protected AssertMethodCallDiagnosticAnalyzer(Helper helper)
+		{
+			Helper = helper;
+		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
@@ -25,11 +29,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith("Assert"))
+			if (memberAccessExpression.Expression is IdentifierNameSyntax identifier && identifier.Identifier.Text.EndsWith(StringConstants.Assert))
 			{
-				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression) ?? Array.Empty<Diagnostic>())
+				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression))
 				{
-					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith("Microsoft.VisualStudio.TestTools.UnitTesting.Assert"))
+					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 					{
 						return;
 					}
@@ -38,12 +42,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 		}
-
 		protected abstract IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression);
 
-		#endregion
-
-		#region Public Interface
 
 		public sealed override void Initialize(AnalysisContext context)
 		{
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
 				{
 					return;
 				}
@@ -60,8 +60,5 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 			});
 		}
-
-
-		#endregion
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,11 +14,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoNestedStringFormatsAnalyzer : DiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string NestedStringFormatTitle = @"Don't nest string.Format (or similar) methods";
 		private const string NestedStringFormatMessageFormat = @"Don't nest a call to {0} inside a call to {1}";
-		private const string NestedStringFormatDescription = @"Don't nest string.Format (or similar) methods";
+		private const string NestedStringFormatDescription = NestedStringFormatTitle;
 
 		private const string UnnecessaryStringFormatTitle = @"Don't call string.Format unnecessarily";
 		private const string UnnecessaryStringFormatMessageFormat = UnnecessaryStringFormatTitle;
@@ -24,14 +24,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private const string Category = Categories.Maintainability;
 
-		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Compiled);
+		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
-		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticIds.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
+		private static readonly DiagnosticDescriptor NestedRule = new(Helper.ToDiagnosticId(DiagnosticId.NoNestedStringFormats), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
+		private static readonly DiagnosticDescriptor UnnecessaryRule = new(Helper.ToDiagnosticId(DiagnosticId.NoUnnecessaryStringFormats), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
 
 		private void Analyze(CompilationStartAnalysisContext context)
 		{
@@ -111,48 +107,59 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (returnType.SpecialType is SpecialType.System_String or SpecialType.System_Void)
 			{
-				var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
+				CheckParameters(operationContext, invocation, formatStringParameterIndex, returnType, argument);
+			}
+		}
 
-				if (paramsArguments is IArrayCreationOperation arrayCreation)
+		private void CheckParameters(OperationAnalysisContext operationContext, IInvocationOperation invocation,
+			int formatStringParameterIndex, ITypeSymbol returnType, IOperation argument)
+		{
+			var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
+
+			if (paramsArguments is IArrayCreationOperation arrayCreation)
+			{
+				if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
 				{
-					if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
+					//string format with no arguments
+					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+					return;
+				}
+
+				CheckStringLiteral(operationContext, argument, arrayCreation);
+			}
+			else if (
+				paramsArguments is IConversionOperation conversion &&
+				argument.Kind == OperationKind.Literal &&
+				argument.Type.SpecialType == SpecialType.System_String &&
+				((string)argument.ConstantValue.Value) == "{0}" &&
+				conversion.Operand.Type.SpecialType == SpecialType.System_String)
+			{
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+			}
+		}
+
+		private void CheckStringLiteral(OperationAnalysisContext operationContext, IOperation argument,
+			IArrayCreationOperation arrayCreation)
+		{
+			if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
+			{
+				string formatValue = (string)argument.ConstantValue.Value;
+
+				if (_formatRegex.IsMatch(formatValue))
+				{
+					if (arrayCreation.Initializer.ElementValues.Length == 0)
 					{
-						//string format with no arguments
-						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+						//string format ala string.format("{0}")
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
+							argument.Syntax.GetLocation()));
 						return;
 					}
 
-					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
+					if (ArrayContainsString(0, arrayCreation))
 					{
-						string formatValue = (string)argument.ConstantValue.Value;
-
-						if (_formatRegex.IsMatch(formatValue))
-						{
-							if (arrayCreation.Initializer.ElementValues.Length == 0)
-							{
-								//string format ala string.format("{0}");
-								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-								return;
-							}
-
-							if (ArrayContainsString(0, arrayCreation))
-							{
-								//string format ala string.format("{0}", 3);
-								operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-								return;
-							}
-						}
-					}
-				}
-				else if (paramsArguments is IConversionOperation conversion)
-				{
-					if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
-					{
-						if (((string)argument.ConstantValue.Value) == "{0}" && conversion.Operand.Type.SpecialType == SpecialType.System_String)
-						{
-							operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
-							return;
-						}
+						//string format ala string.format("{0}", 3)
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
+							argument.Syntax.GetLocation()));
 					}
 				}
 			}
@@ -284,10 +291,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return false;
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(NestedRule, UnnecessaryRule);
 
 		public override void Initialize(AnalysisContext context)
@@ -297,7 +300,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationStartAction(Analyze);
 		}
-
-		#endregion
 	}
 }

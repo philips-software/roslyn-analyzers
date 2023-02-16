@@ -1,57 +1,51 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
 	public class AssertAreEqualAnalyzerTest : AssertCodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
 		{
 			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AssertAreEqual),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual),
 				Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
 			};
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AssertAreEqualAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AssertAreEqualCodeFixProvider();
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		[TestMethod]
-		public void CheckDefaultBehavior()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckDefaultBehaviorAsync()
 		{
-			VerifyNoError(@"
+			await VerifyNoError(@"
 string GetValue()
 {
 	return string.Empty;
 }
 
 Assert.AreEqual(default, GetValue());
-");
+").ConfigureAwait(false);
 		}
 
 		[DataRow(true, null, "-1", true)]
@@ -79,7 +73,8 @@ Assert.AreEqual(default, GetValue());
 		[DataRow(false, "1u", null, false)]
 		[DataRow(false, "0u", null, false)]
 		[DataTestMethod]
-		public void CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
 		{
 			string expectedParameter = arg0 ?? "GetValue()";
 			string actualParameter = arg1 ?? "GetValue()";
@@ -106,13 +101,23 @@ int GetValue()
 Assert.AreEqual({expectedParameter}, {actualParameter});
 ";
 
+			string fixTemplate = @$"
+int GetValue()
+{{
+	return 0;
+}}
+
+Assert.AreEqual({actualParameter}, {expectedParameter});
+";
+
 			if (isError)
 			{
-				VerifyError(template);
+				await VerifyError(template).ConfigureAwait(false);
+				await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 			}
 			else
 			{
-				VerifyNoError(template);
+				await VerifyNoError(template).ConfigureAwait(false);
 			}
 		}
 
@@ -123,7 +128,8 @@ Assert.AreEqual({expectedParameter}, {actualParameter});
 		[DataRow("1u")]
 		[DataRow("0u")]
 		[DataTestMethod]
-		public void CheckNull(string arg)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNull(string arg)
 		{
 			string template = @$"
 Assert.AreEqual(null, {arg});
@@ -132,22 +138,42 @@ Assert.AreEqual(null, {arg});
 Assert.IsNull({arg});
 ";
 
-			VerifyChange(template, fixTemplate);
+			await VerifyChange(template, fixTemplate).ConfigureAwait(false);
 		}
 
-		[TestMethod]
-		public void CheckWillIgnoreTypeArgument()
+		[DataRow("-1")]
+		[DataRow("1")]
+		[DataRow("0")]
+		[DataRow("-1u")]
+		[DataRow("1u")]
+		[DataRow("0u")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNotNull(string arg)
 		{
-			VerifyError(@"
+			string template = @$"
+Assert.AreNotEqual(null, {arg});
+";
+			string fixTemplate = @$"
+Assert.IsNotNull({arg});
+";
+
+			await VerifyChange(template, fixTemplate).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckWillIgnoreTypeArgumentAsync()
+		{
+			await VerifyError(@"
 string GetValue()
 {
 	return string.Empty;
 }
 
 Assert.AreEqual<string>(GetValue(), null);
-");
+").ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

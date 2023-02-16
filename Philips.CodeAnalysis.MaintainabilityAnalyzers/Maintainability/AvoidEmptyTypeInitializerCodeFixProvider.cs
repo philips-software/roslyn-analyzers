@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private const string Title = "Don't have empty constructors";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidEmptyTypeInitializer));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyTypeInitializer));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -51,17 +51,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
-			var newCtor = ctor.WithLeadingTrivia(ctor.GetLeadingTrivia().Where(x => !(x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || x.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))).ToArray());
+			var leadingTrivia = ctor.GetLeadingTrivia().Where(x => !(x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || x.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))).ToArray();
+			var newCtor = ctor.WithLeadingTrivia(leadingTrivia);
 
 			rootNode = rootNode.ReplaceNode(ctor, newCtor);
 
 			ClassDeclarationSyntax cls = rootNode.DescendantNodesAndSelf().OfType<ClassDeclarationSyntax>().First(x => x.Identifier.Text == ctor.Identifier.Text);
 
-			ctor = (ConstructorDeclarationSyntax)cls.Members.First(x => x.IsKind(SyntaxKind.ConstructorDeclaration) && ((ConstructorDeclarationSyntax)x).Modifiers.Any(SyntaxKind.StaticKeyword));
+			var newConstructor = (ConstructorDeclarationSyntax)cls.Members.First(x => x.IsKind(SyntaxKind.ConstructorDeclaration) && ((ConstructorDeclarationSyntax)x).Modifiers.Any(SyntaxKind.StaticKeyword));
 
-			rootNode = rootNode.RemoveNode(ctor, SyntaxRemoveOptions.KeepDirectives | SyntaxRemoveOptions.KeepExteriorTrivia);
+			var newRoot = rootNode.RemoveNode(newConstructor, SyntaxRemoveOptions.KeepDirectives | SyntaxRemoveOptions.KeepExteriorTrivia);
 
-			return document.WithSyntaxRoot(rootNode);
+			return document.WithSyntaxRoot(newRoot);
 		}
 	}
 }

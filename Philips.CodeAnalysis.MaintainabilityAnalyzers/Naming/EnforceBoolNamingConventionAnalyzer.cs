@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -13,38 +12,31 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceBoolNamingConventionAnalyzer : DiagnosticAnalyzer
+	public class EnforceBoolNamingConventionAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private static readonly Regex _privateFieldRegex = new(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline);
-		private static readonly Regex _publicFieldRegex = new(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline);
-		private static readonly Regex _localRegex = new(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline);
+		private static readonly Regex _privateFieldRegex = new(@"^(_(is|are|should|has|does|was))[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _publicFieldRegex = new(@"^(Is|Are|Should|Has|Does|Was)[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _localRegex = new(@"^(is|are|should|has|does|was)[A-Z0-9].*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
 		private const string Description = @"";
-		private const string Category = Categories.Naming;
 
-		private readonly bool _checkLocalVariables;
-		private readonly bool _checkFieldVariables;
+		private readonly bool _shouldCheckLocalVariables;
+		private readonly bool _shouldCheckFieldVariables;
 
 		public EnforceBoolNamingConventionAnalyzer() : this(true, true) { }
 
-		public EnforceBoolNamingConventionAnalyzer(bool checkLocalVariables, bool checkFieldVariables)
+		public EnforceBoolNamingConventionAnalyzer(bool shouldCheckLocalVariables, bool shouldCheckFieldVariables)
+			: base(DiagnosticId.EnforceBoolNamingConvention, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{
-			_checkLocalVariables = checkLocalVariables;
-			_checkFieldVariables = checkFieldVariables;
+			_shouldCheckLocalVariables = shouldCheckLocalVariables;
+			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
-
-		public List<DiagnosticDescriptor> Rules = new()
-		{
-			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.EnforceBoolNamingConvention), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
-		};
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rules.ToArray()); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 
 			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
@@ -74,7 +66,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], foreachStatement.Identifier.GetLocation(), foreachStatement.Identifier.ValueText);
+			var location = foreachStatement.Identifier.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -88,65 +81,70 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			foreach (VariableDeclaratorSyntax syntax in variableDeclaration.Variables)
+			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(syntax => syntax.Identifier))
 			{
-				bool shouldCheck;
-				Regex validator;
-				switch (variableDeclaration.Parent.Kind())
-				{
-					case SyntaxKind.LocalDeclarationStatement:
-						{
-							LocalDeclarationStatementSyntax localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
-							if (!IsTypeBool(localDeclaration.Declaration.Type, context.SemanticModel))
-							{
-								continue;
-							}
-
-							shouldCheck = _checkLocalVariables;
-							validator = _localRegex;
-							break;
-						}
-					case SyntaxKind.FieldDeclaration:
-						{
-							FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
-
-							if (!IsTypeBool(fieldDeclaration.Declaration.Type, context.SemanticModel))
-							{
-								continue;
-							}
-
-							shouldCheck = _checkFieldVariables;
-
-							if (IsFieldPublic(fieldDeclaration) || IsFieldConst(fieldDeclaration))
-							{
-								validator = _publicFieldRegex;
-							}
-							else
-							{
-								validator = _privateFieldRegex;
-							}
-
-							break;
-						}
-					default:
-						shouldCheck = false;
-						validator = _privateFieldRegex;
-						break;
-				}
-
-				if (!shouldCheck)
+				if (!ShouldCheck(variableDeclaration, context, out Regex validator))
 				{
 					continue;
 				}
 
-				if (IsNameValid(validator, syntax.Identifier))
+				if (IsNameValid(validator, identifier))
 				{
 					continue;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(Rules[0], syntax.Identifier.GetLocation(), syntax.Identifier.ValueText);
+				var location = identifier.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
+		}
+
+		private bool ShouldCheck(VariableDeclarationSyntax variableDeclaration, SyntaxNodeAnalysisContext context, out Regex validator)
+		{
+			validator = null;
+			bool shouldCheck;
+			switch (variableDeclaration.Parent.Kind())
+			{
+				case SyntaxKind.LocalDeclarationStatement:
+					{
+						LocalDeclarationStatementSyntax localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
+						if (!IsTypeBool(localDeclaration.Declaration.Type, context.SemanticModel))
+						{
+							return false;
+						}
+
+						shouldCheck = _shouldCheckLocalVariables;
+						validator = _localRegex;
+						break;
+					}
+				case SyntaxKind.FieldDeclaration:
+					{
+						FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
+
+						if (!IsTypeBool(fieldDeclaration.Declaration.Type, context.SemanticModel))
+						{
+							return false;
+						}
+
+						shouldCheck = _shouldCheckFieldVariables;
+
+						if (IsFieldPublic(fieldDeclaration) || IsFieldConst(fieldDeclaration))
+						{
+							validator = _publicFieldRegex;
+						}
+						else
+						{
+							validator = _privateFieldRegex;
+						}
+
+						break;
+					}
+				default:
+					shouldCheck = false;
+					validator = _privateFieldRegex;
+					break;
+			}
+			return shouldCheck;
 		}
 
 		private void AnalyzeParameter(SyntaxNodeAnalysisContext context)
@@ -176,7 +174,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], parameter.Identifier.GetLocation(), parameter.Identifier.ValueText);
+			var location = parameter.Identifier.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, parameter.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -200,12 +199,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var type = context.SemanticModel.GetDeclaredSymbol(property);
-			if (type is IPropertySymbol propertySymbol)
+			if (type is IPropertySymbol propertySymbol && propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
 			{
-				if (propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
-				{
-					return;
-				}
+				return;
 			}
 
 			Regex validator = _publicFieldRegex;
@@ -215,7 +211,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], property.Identifier.GetLocation(), property.Identifier.ValueText);
+			var location = property.Identifier.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, property.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 

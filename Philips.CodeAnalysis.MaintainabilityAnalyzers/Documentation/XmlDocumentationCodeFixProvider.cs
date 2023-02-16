@@ -18,10 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	{
 		private const string Title = "Remove empty Summary comments";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.EmptyXmlComments), Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue)); }
-		}
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

@@ -1,18 +1,22 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
+using System.Collections.Immutable;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
 	public class TestClassPublicMethodShouldBeTestMethodTest : DiagnosticVerifier
 	{
-		protected override (string name, string content)[] GetAdditionalSourceCode()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			string code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -23,7 +27,7 @@ public class DerivedTestMethod : TestMethodAttribute
 
 ";
 
-			return new[] { ("DerivedTestMethod.cs", code) };
+			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
 		[DataTestMethod]
@@ -33,7 +37,8 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow(@"protected", false)]
 		[DataRow(@"protected internal", false)]
 		[DataRow(@"private protected", false)]
-		public void MethodAccessModifierTest(string given, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodAccessModifierTestAsync(string given, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -47,14 +52,15 @@ class Foo
 }}
 ";
 
-			VerifyError(baseline, given, isError);
+			await VerifyErrorAsync(baseline, given, isError).ConfigureAwait(false);
 
 		}
 
 		[DataTestMethod]
 		[DataRow(@"[TestClass]", true)]
 		[DataRow(@"", false)]
-		public void ClassTypeTest(string given, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ClassTypeTestAsync(string given, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,7 +73,7 @@ class Foo
   }}
 }}
 ";
-			VerifyError(baseline, given, isError);
+			await VerifyErrorAsync(baseline, given, isError).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -81,7 +87,8 @@ class Foo
 		[DataRow(@"[ClassCleanup()]", false)]
 		[DataRow(@"[ClassInitialize()", false)]
 		[DataRow(@"", true)]
-		public void MethodTypeTest(string given, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodTypeTestAsync(string given, bool isError)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -94,36 +101,34 @@ class Foo
   }}
 }}
 ";
-			VerifyError(baseline, given, isError);
+			await VerifyErrorAsync(baseline, given, isError).ConfigureAwait(false);
 
 		}
 
-		private void VerifyError(string baseline, string given, bool isError)
+		private async Task VerifyErrorAsync(string baseline, string given, bool isError)
 		{
 			string givenText = string.Format(baseline, given);
-			DiagnosticResult[] results;
 			if (isError)
 			{
-				results = new[] { new DiagnosticResult()
+				var result = new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod),
+					Message = new Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
+					Severity = DiagnosticSeverity.Error,
+					Locations = new[]
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticIds.TestClassPublicMethodShouldBeTestMethod),
-						Message = new System.Text.RegularExpressions.Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
-						Severity = DiagnosticSeverity.Error,
-						Locations = new[]
-						{
-							new DiagnosticResultLocation("Test0.cs", 7, 3)
-						}
+						new DiagnosticResultLocation("Test0.cs", 7, 3)
 					}
 				};
+				await VerifyDiagnostic(givenText, result).ConfigureAwait(false);
 			}
 			else
 			{
-				results = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
-			VerifyCSharpDiagnostic(givenText, results);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestClassPublicMethodShouldBeTestMethodAnalyzer();
 		}

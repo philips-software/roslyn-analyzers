@@ -1,17 +1,18 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 {
 	[TestClass]
 	public class DereferenceNullAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DereferenceNullAnalyzer();
 		}
@@ -32,9 +33,10 @@ class Foo
 }}
 ";
 		}
-		
+
 		[TestMethod]
-		public void DereferenceNullAsExpressionWithNestedExpression()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionWithNestedExpressionAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -64,10 +66,9 @@ Instruction i = method.Body.Instructions[0];
 		}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
-		
+
 		/// <summary>
 		/// In this test, y is de-referenced after "y = obj as string" without first checking or re-assigning y.
 		/// </summary>
@@ -79,11 +80,12 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "string t1 = y.ToString()")]
 		[DataRow("string z = \"hi\"", "int t2 = y.Length")]
-		public void DereferenceNullAsExpressionFindingTest(string content1, string content2)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionFindingTestAsync(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -98,15 +100,18 @@ Instruction i = method.Body.Instructions[0];
 		[DataRow("y=string.Empty", "int t2 = y.Length")]
 		[DataRow("if (y==null) int b = 0", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
-		public void DereferenceNullAsExpressionNoFindingTest(string content1, string content2)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionNoFindingTestAsync(string content1, string content2)
 		{
-			string testCode = string.Format(GetTemplate(), content1, content2);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			var format = GetTemplate();
+			string testCode = string.Format(format, content1, content2);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionDifferentBlockTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionDifferentBlockTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -123,12 +128,13 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfDereferenceTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -145,12 +151,12 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfCheckDereferenceTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -167,11 +173,74 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfCheckDereference2Test()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTestAsync()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return (y != null && y.ToString() == @"");
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTestAsync()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public void Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    if (y == null || y.ToString() == @"""")
+    {{
+       string t0 = ""hi"";
+    }}
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTestAsync()
+		{
+			string testCode = @"
+class Foo 
+{{
+  public bool Foo()
+  {{
+    string x = String.Empty;
+    object obj = x;
+    string y = obj as string;
+    return y == null || y.ToString() == @"";
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckDereference2TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -188,12 +257,13 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfCheckDereference3Test()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckDereference3TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -207,11 +277,12 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfCheckDereference4Test()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckDereference4TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -228,11 +299,12 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
-		
+
 		[TestMethod]
-		public void DereferenceNullAsExpressionIfCheckHasValueTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionIfCheckHasValueTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -249,11 +321,12 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionWhileCheckDereferenceTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionWhileCheckDereferenceTestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -270,13 +343,13 @@ class Foo
   }}
 }}
 ";
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.DereferenceNull);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void DereferenceNullAsExpressionWhileCheckDereference2Test()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionWhileCheckDereference2TestAsync()
 		{
 			string testCode = @"
 class Foo 
@@ -293,7 +366,7 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 	}

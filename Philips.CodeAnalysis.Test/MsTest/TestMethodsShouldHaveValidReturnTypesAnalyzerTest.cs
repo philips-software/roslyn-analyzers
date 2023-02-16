@@ -1,10 +1,13 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -17,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsShouldHaveValidReturnTypesAnalyzer();
 		}
@@ -35,7 +38,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(true, "Task", false)]
 		[DataRow(true, "Task<int>", true)]
 		[DataTestMethod]
-		public void TestMethodsMustReturnVoid(bool isAsync, string returnType, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TestMethodsMustReturnVoidAsync(bool isAsync, string returnType, bool isError)
 		{
 			string code = $@"using System;
 using System.Threading.Tasks;
@@ -48,7 +52,14 @@ public class Tests
 	public {(isAsync ? "async" : string.Empty)} {returnType} Foo() {{ throw new Exception(); }}
 }}";
 
-			VerifyCSharpDiagnostic(code, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.TestMethodsMustHaveValidReturnType) : Array.Empty<DiagnosticResult>());
+			if (isError)
+			{
+				await VerifyDiagnostic(code, DiagnosticId.TestMethodsMustHaveValidReturnType).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		#endregion

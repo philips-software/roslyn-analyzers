@@ -1,42 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
+using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 {
 	[TestClass]
 	public class CopyrightPresentAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		private const string configuredCompanyName = @"Koninklijke Philips N.V.";
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new CopyrightPresentAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent) }.company_name", configuredCompanyName  }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent)}.company_name", configuredCompanyName);
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow(@"#region H
 			#endregion", false, 2)]
@@ -54,6 +45,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"#region Header
 // © Koninklijke Philips N.V. 2021
 #endregion", true, 2)]
+		[DataRow(@"#region Header
+//
+// © Koninklijke Philips N.V. 2021
+#endregion", false, 0)]
+		[DataRow(@"#region Header
+
+// © Koninklijke Philips N.V. 2021
+#endregion", true, 0)]
 		[DataRow(@"#region © Koninklijke Philips N.V. 2021
 //
 // All rights are reserved. Reproduction or transmission in whole or in part,
@@ -81,9 +80,15 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"/* Copyright Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"// © Koninklijke Philips N.V. 2021", true, -1)]
 		[DataRow(@"/* © Koninklijke Philips N.V. 2021", true, -1)]
+		[DataRow(@"// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+namespace Philips.CodeAnalysis.Common
+{
+}", true, -1)]
 		[DataRow(@"", false, 2)]
 		[DataTestMethod]
-		public void HeaderIsDetected(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task HeaderIsDetectedAsync(string content, bool isGood, int errorStartLine)
 		{
 			string baseline = @"{0}
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -96,31 +101,31 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
+			int errorEndLine = errorStartLine;
 
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
+				var expected = new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.CopyrightPresent),
+					Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
 					Message = new Regex(".+"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-					new DiagnosticResultLocation("Test0.cs", errorLine, 1)
-				} }
+						new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
+					}
 				};
+				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
-		public void HeaderIsDetected2()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task HeaderIsDetected2Async()
 		{
 			string baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
@@ -130,22 +135,17 @@ class Foo
   }}
 }}
 ";
-			string givenText = baseline;
-
-			DiagnosticResult[] expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.CopyrightPresent) };
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(baseline).ConfigureAwait(false);
 		}
 
 		[DataRow(@"")]
 		[DataRow(@"
 ")]
-		[TestMethod]
-		public void EmptyUnitIsIgnored(string text)
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyUnitIsIgnoredAsync(string text)
 		{
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(text, expected);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 
@@ -187,13 +187,28 @@ using System.Reflection;
 [assembly: global::System.Runtime.Versioning.TargetFrameworkAttribute()]
 ", "Blah.Designer")]
 		[DataTestMethod]
-		public void AutogeneratedIsIgnored(string text, string filenamePrefix)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AutogeneratedIsIgnoredAsync(string text, string filenamePrefix)
 		{
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(text, filenamePrefix, expected);
+			await VerifySuccessfulCompilation(text, filenamePrefix).ConfigureAwait(false);
 		}
 
-		#endregion
+		[DataTestMethod]
+		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DogFoodMaintainability(string folder, string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow("MsTestAttributeDefinitions")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void DogFoodMsTest(string analyzerName)
+		{
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
+			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+		}
 	}
 }

@@ -1,18 +1,23 @@
-﻿using System.Collections.Generic;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class TestHasTimeoutTest : AssertCodeFixVerifier
+	public class TestHasTimeoutAnalyzerTest : AssertCodeFixVerifier
 	{
-		public TestHasTimeoutTest()
+		public TestHasTimeoutAnalyzerTest()
 		{
 			OtherClassSyntax = @"
 class TestTimeouts
@@ -31,14 +36,12 @@ class TestDefinitions
 }";
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return new()
-			{
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration" },
-				{  $"dotnet_code_quality.{TestHasTimeoutAttributeAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke" }
-			};
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Unit", "TestTimeouts.CiAppropriate,TestTimeouts.CiAcceptable")
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Integration", "TestTimeouts.Integration")
+				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke");
 		}
 
 		[DataTestMethod]
@@ -46,35 +49,36 @@ class TestDefinitions
 		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\n    [Timeout(1000)]")]
 		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n    [Timeout(TestTimeouts.CiAppropriate)]")]
-
-		public void TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
-
-		public void TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
-
-		public void TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.CiAppropriate)]")]
-		public void TimeoutAttributeWrong(string methodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeWrongAsync(string methodAttributes)
 		{
-			VerifyError(string.Empty, methodAttributes);
+			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -82,9 +86,10 @@ class TestDefinitions
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAcceptable)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.Smoke)]")]
-		public void TimeoutAttributeCorrect(string methodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeCorrect(string methodAttributes)
 		{
-			VerifyNoChange(string.Empty, methodAttributes);
+			await VerifyNoChange(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
 
@@ -95,9 +100,10 @@ class TestDefinitions
 		[DataRow("[TestMethod, Owner(\"\"), Timeout(1)]")]
 		[DataRow("[DataTestMethod, Timeout(1)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n [Timeout(TestTimeouts.CiAppropriate)]")]
-		public void TimeoutAttributePresent(string methodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributePresent(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -105,28 +111,30 @@ class TestDefinitions
 		[DataRow("[TestCleanup]")]
 		[DataRow("[AssemblyInitialize]")]
 		[DataRow("[DataRow]")]
-		public void DoesNotApplyToNonTestMethods(string methodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoesNotApplyToNonTestMethods(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AttributesInMethodsDontCauseCrash()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"
 [TestMethod, Timeout(1)]
 var foo = 4;
 ";
 
-			VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod, Timeout(1)]");
+			await VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod, Timeout(1)]").ConfigureAwait(false);
 		}
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestHasTimeoutAttribute),
-				Message = new Regex(TestHasTimeoutAttributeAnalyzer.MessageFormat),
+				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasTimeoutAttribute),
+				Message = new Regex(TestHasTimeoutAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
@@ -135,14 +143,14 @@ var foo = 4;
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasTimeoutCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new TestHasTimeoutAttributeAnalyzer();
+			return new TestHasTimeoutAnalyzer();
 		}
 	}
 }

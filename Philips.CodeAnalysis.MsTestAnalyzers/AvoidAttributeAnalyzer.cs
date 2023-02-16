@@ -14,13 +14,24 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidAttributeAnalyzer : DiagnosticAnalyzer
 	{
-		public const string AvoidAttributesWhitelist = @"AvoidAttributesWhitelist.txt";
+		public const string AttributesWhitelist = @"AvoidAttributesWhitelist.txt";
 
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
 
 		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
+
+		private readonly AttributeHelper _attributeHelper;
+
+		public AvoidAttributeAnalyzer()
+			: this(new AttributeHelper())
+		{ }
+
+		public AvoidAttributeAnalyzer(AttributeHelper attributeHelper)
+		{
+			_attributeHelper = attributeHelper;
+		}
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -49,7 +60,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			foreach (var file in options.AdditionalFiles)
 			{
-				if (Path.GetFileName(file.Path) != AvoidAttributesWhitelist)
+				if (Path.GetFileName(file.Path) != AttributesWhitelist)
 				{
 					continue;
 				}
@@ -72,7 +83,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return ImmutableHashSet<string>.Empty;
 		}
 
-		private static void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
+		private void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
 			GeneratedCodeDetector generatedCodeDetector = new();
 			if (generatedCodeDetector.IsGeneratedCode(context))
@@ -84,13 +95,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeModel attribute in attributes)
 			{
-				if (!Helper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
+				if (!_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
 				{
 					continue;
 				}
 
 				string id = null;
-				if (attribute.CanBeSuppressed && IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out id))
+				if (attribute.IsSuppressible && IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out id))
 				{
 					continue;
 				}
@@ -100,7 +111,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 		}
 
-		private static bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
+		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
 		{
 			var symbol = semanticModel.GetDeclaredSymbol(node);
 
@@ -119,7 +130,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			var builder = ImmutableArray.CreateBuilder<DiagnosticDescriptor>();
 
-			builder.AddRange(attributes.SelectMany(x => x.Value).Select(x => x.Rule));
+			var items = attributes.SelectMany(x => x.Value)
+									.Select(x => x.Rule);
+			builder.AddRange(items);
 
 			return builder.ToImmutable();
 		}
@@ -131,54 +144,54 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				@"Owner attribute not allowed",
 				@"Tests may not use the Owner attribute.",
 				@"The Owner attribute is no more relevant.",
-				DiagnosticIds.AvoidOwnerAttribute,
-				canBeSuppressed: false,
+				DiagnosticId.AvoidOwnerAttribute,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 
-			var ignoreAttribute = new AttributeModel(@"Ignore",
+			var removedAttribute = new AttributeModel(@"Ignore",
 				@"Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute",
 				@"Ignore attribute not allowed",
 				@"Tests may not use the Ignore attribute.",
 				@"The Ignore attribute creates dead code and build warnings.  Rather than ignoring a test, fix it or remove it.  (Rely on Version Control to save it.)",
-				DiagnosticIds.AvoidIgnoreAttribute,
-				canBeSuppressed: false,
+				DiagnosticId.AvoidIgnoreAttribute,
+				isSuppressible: false,
 				isEnabledByDefault: true);
 
 			var testInitializeAttribute = new AttributeModel(MsTestFrameworkDefinitions.TestInitializeAttribute,
 				@"TestInitialize methods not allowed",
 				@"Tests may not have any TestInitialize methods. ({0})",
 				@"TestInitialize methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidTestInitializeMethod,
-				canBeSuppressed: true,
+				DiagnosticId.AvoidTestInitializeMethod,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var classInitializeAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassInitializeAttribute,
 				@"ClassInitialize methods not allowed",
 				@"Tests may not have any ClassInitialize methods. ({0})",
 				@"ClassInitialize methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidClassInitializeMethod,
-				canBeSuppressed: true,
+				DiagnosticId.AvoidClassInitializeMethod,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var classCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.ClassCleanupAttribute,
 				@"ClassCleanup methods not allowed",
 				@"Tests may not have any ClassCleanup methods. ({0})",
 				@"ClassCleanup methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidClassCleanupMethod,
-				canBeSuppressed: true,
+				DiagnosticId.AvoidClassCleanupMethod,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var testCleanupAttribute = new AttributeModel(MsTestFrameworkDefinitions.TestCleanupAttribute,
 				@"TestCleanup methods not allowed",
 				@"Tests may not have any TestCleanup methods. ({0})",
 				@"TestCleanup methods are not deterministic and can create unexpected test results.",
-				DiagnosticIds.AvoidTestCleanupMethod,
-				canBeSuppressed: true,
+				DiagnosticId.AvoidTestCleanupMethod,
+				isSuppressible: true,
 				isEnabledByDefault: true);
 
 			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
-			builder["Microsoft.VisualStudio.TestTools.UnitTesting.Assert"] = ImmutableArray.Create(ownerAttribute, ignoreAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
+			builder[StringConstants.AssertFullyQualifiedName] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
 
 			return builder.ToImmutable();
 		}

@@ -1,10 +1,13 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -114,42 +117,44 @@ namespace InnerExceptionUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Correct, DisplayName = "Correct"),
 			DataRow(NoRethrow, DisplayName = "NoRethrow"),
 			DataRow(RethrowOriginal, DisplayName = "RethrowOriginal"),
 			DataRow(HttpResponseInline, DisplayName = "HttpResponseInline"),
 			DataRow(HttpResponseSeparate, DisplayName = "HttpResponseSeparate")]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(ThrowOther, DisplayName = "ThrowOther")]
-		public void WhenInnerExceptionIsMissingDiagnosticIsTriggered(string testCode)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenInnerExceptionIsMissingDiagnosticIsTriggeredAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.ThrowInnerException);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(ThrowOther, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new ThrowInnerExceptionAnalyzer();
 		}

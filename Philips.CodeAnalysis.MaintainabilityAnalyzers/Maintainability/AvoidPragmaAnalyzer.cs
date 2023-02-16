@@ -1,7 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,43 +10,31 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidPragmaAnalyzer : DiagnosticAnalyzer
+	public class AvoidPragmaAnalyzer : SingleDiagnosticAnalyzer<PragmaWarningDirectiveTriviaSyntax, AvoidPragmaSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid Pragma Warning";
 		public const string MessageFormat = @"Do not use #pragma warning";
-		private const string Description = @"Do not use #pragma warning";
-		private const string Category = Categories.Maintainability;
+		private const string Description = MessageFormat;
 
-		public List<DiagnosticDescriptor> Rules = new()
+		public AvoidPragmaAnalyzer()
+			: base(DiagnosticId.AvoidPragma, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
+	}
+
+	public class AvoidPragmaSyntaxNodeAction : SyntaxNodeAction<PragmaWarningDirectiveTriviaSyntax>
+	{
+		public override void Analyze()
 		{
-			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description),
-		};
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rules.ToArray()); } }
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.PragmaWarningDirectiveTrivia);
-		}
-
-		private void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			if (context.Node is not PragmaWarningDirectiveTriviaSyntax pragma)
+			string myOwnId = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma);
+			if (Node.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName))
+									.Any(i => i.ToString().Contains(myOwnId)))
 			{
 				return;
 			}
 
-			string myOwnId = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma);
-			if (pragma.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName)).Any(i => i.ToString().Contains(myOwnId)))
-			{
-				return;
-			}
-
-			CSharpSyntaxNode violation = pragma;
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation());
-			context.ReportDiagnostic(diagnostic);
+			CSharpSyntaxNode violation = Node;
+			var location = violation.GetLocation();
+			ReportDiagnostic(location);
 		}
 	}
 }

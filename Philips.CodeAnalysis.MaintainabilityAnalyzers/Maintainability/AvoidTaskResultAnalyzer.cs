@@ -18,13 +18,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		private const string ContainingNamespace = @"Tasks";
 		private const string ContainingType = @"Task";
-		public string Identifier = @"Result";
+		private const string Identifier = @"Result";
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("System.Threading.Tasks.Task") == null)
+				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
 				{
 					return;
 				}
@@ -56,7 +56,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
 					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, propertySyntax.Name.GetLocation());
+					var location = propertySyntax.Name.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

@@ -1,6 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,17 +11,25 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PositiveNamingAnalyzer : DiagnosticAnalyzer
+	public class PositiveNamingAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Positive Naming";
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
-		private const string Description = @"Properties and variables should be named using positive wording.";
-		private const string Category = Categories.Naming;
+		private const string Description = MessageFormat;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PositiveNaming), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 		private static readonly string[] negativeWords = { "disable", "ignore", "missing", "absent" };
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		private readonly TestHelper _testHelper;
+
+		public PositiveNamingAnalyzer()
+			: this(new TestHelper())
+		{ }
+
+		public PositiveNamingAnalyzer(TestHelper testHelper)
+			: base(DiagnosticId.PositiveNaming, Title, MessageFormat, Description, Categories.Naming)
+		{
+			_testHelper = testHelper;
+		}
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -30,11 +39,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
 
-		private static void AnalyzeVariable(SyntaxNodeAnalysisContext context)
+		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
 		{
 			VariableDeclarationSyntax node = (VariableDeclarationSyntax)context.Node;
 
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
@@ -44,37 +53,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				return;
 			}
-			foreach (var variable in variables)
+			foreach (var variable in variables.Where(v => !IsPositiveName(v.Identifier.Text)))
 			{
-				if (!IsPositiveName(variable.Identifier.Text))
-				{
-					CreateDiagnostic(context, node.GetLocation());
-				}
+				var loc = variable.GetLocation();
+				CreateDiagnostic(context, loc);
 			}
 		}
 
-		private static void AnalyzeProperty(SyntaxNodeAnalysisContext context)
+		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
 
-			if (Helper.IsInTestClass(context))
+			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
 
 			if (!IsPositiveName(node.Identifier.Text))
 			{
-				CreateDiagnostic(context, node.GetLocation());
+				var location = node.GetLocation();
+				CreateDiagnostic(context, location);
 			}
 		}
 
-		private static void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
+		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
 			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
-		private static bool IsPositiveName(string name) {
+		private bool IsPositiveName(string name)
+		{
 			var lower = name.ToLowerInvariant();
 			foreach (var word in negativeWords)
 			{

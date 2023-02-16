@@ -1,12 +1,14 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -60,52 +62,50 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
-			VerifyCSharpDiagnostic(testCode);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
-		public void WhenConditionIsTooComplexDiagnosticIsTriggered(string testCode)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenConditionIsTooComplexDiagnosticIsTriggeredAsync(string testCode)
 		{
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.LimitConditionComplexity);
-			VerifyCSharpDiagnostic(testCode, expected);
+			await VerifyDiagnostic(testCode, DiagnosticId.LimitConditionComplexity).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(Wrong, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
-		public void WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{
-			VerifyCSharpDiagnostic(testCode, filePath);
+			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticVerifier"/>
 		/// </summary>
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LimitConditionComplexityAnalyzer();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
-				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity)}.max_operators";
-			Dictionary<string, string> options = new()
-			{
-				{ key, ConfiguredMaxOperators.ToString() }
-			};
-			return options;
+				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
+			return base.GetAdditionalAnalyzerConfigOptions().Add(key, ConfiguredMaxOperators.ToString());
 		}
 	}
 }

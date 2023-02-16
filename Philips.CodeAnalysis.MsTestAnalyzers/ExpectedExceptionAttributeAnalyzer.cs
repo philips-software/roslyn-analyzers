@@ -10,43 +10,28 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class ExpectedExceptionAttributeAnalyzer : DiagnosticAnalyzer
+	public class ExpectedExceptionAttributeAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, ExpectedExceptionAttributeSyntaxNodeAction>
 	{
-		public const string MessageFormat = @"Tests may not use the ExpectedException attribute. Use the AssertEx.Throws method instead.";
+		public const string MessageFormat = @"Tests may not use the ExpectedException attribute. Use ThrowsException instead.";
 		private const string Title = @"ExpectedException attribute not allowed";
 		private const string Description = @"The [ExpectedException()] attribute does not have line number granularity and trips the debugger anyway.  Use AssertEx.Throws() instead.";
-		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.ExpectedExceptionAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
-
-		public override void Initialize(AnalysisContext context)
+		public ExpectedExceptionAttributeAnalyzer()
+			: base(DiagnosticId.ExpectedExceptionAttribute, Title, MessageFormat, Description, Categories.Maintainability)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedExceptionAttribute") == null)
-				{
-					return;
-				}
-
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AttributeList);
-			});
+			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedExceptionAttribute";
 		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+	}
+	public class ExpectedExceptionAttributeSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
+	{
+		public override void Analyze()
 		{
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
-
-			foreach (AttributeSyntax attribute in attributesNode.Attributes)
+			foreach (AttributeSyntax attribute in Node.Attributes)
 			{
 				if (attribute.Name.ToString().Contains(@"ExpectedException"))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, attribute.GetLocation());
-					context.ReportDiagnostic(diagnostic);
+					var location = attribute.GetLocation();
+					ReportDiagnostic(location);
 					return;
 				}
 			}

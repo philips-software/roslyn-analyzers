@@ -1,12 +1,9 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
-
+using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Philips.CodeAnalysis.Common;
@@ -17,29 +14,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Diagnostic for variable assignment inside an if condition.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidAssignmentInConditionAnalyzer : DiagnosticAnalyzer
+	public class AvoidAssignmentInConditionAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = "Assignment in condition.";
-		private const string Message = "Assignment within condition.";
-		private const string Description = "Assignment in condition.";
-		private const string Category = Categories.Maintainability;
+		private const string MessageFormat = Title;
+		private const string Description = Title;
+		private readonly GeneratedCodeDetector _detector = new();
 
-		private static readonly DiagnosticDescriptor Rule =
-			new(
-				Helper.ToDiagnosticId(DiagnosticIds.AvoidAssignmentInCondition),
-				Title,
-				Message,
-				Category,
-				DiagnosticSeverity.Error,
-				isEnabledByDefault: true,
-				description: Description
-			);
-
-		/// <summary>
-		/// <inheritdoc cref="DiagnosticAnalyzer"/>
-		/// </summary>
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Rule);
+		public AvoidAssignmentInConditionAnalyzer()
+			: base(DiagnosticId.AvoidAssignmentInCondition, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
@@ -54,8 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_detector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -66,8 +49,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeTernary(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_detector.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -78,16 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void CheckDescendantHasNoAssignment(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
-			bool found = false;
-			foreach (var child in node.DescendantTokens())
-			{
-				if (child.IsKind(SyntaxKind.EqualsToken))
-				{
-					found = true;
-					break;
-				}
-			}
-			if (found)
+			if (node.DescendantTokens().Any(child => child.IsKind(SyntaxKind.EqualsToken)))
 			{
 				var location = node.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location));

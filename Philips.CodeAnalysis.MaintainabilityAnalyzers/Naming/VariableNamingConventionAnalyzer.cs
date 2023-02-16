@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
@@ -13,34 +12,27 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class VariableNamingConventionAnalyzer : DiagnosticAnalyzer
+	public class VariableNamingConventionAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline);
-		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline);
-		private static readonly Regex _eventRegex = new(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline);
+		private static readonly Regex _fieldRegex = new(@"^(_|[A-Z]).*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _localRegex = new(@"^([a-z]|[A-Z]).*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private static readonly Regex _eventRegex = new(@"^[A-Z][a-zA-Z0-9]*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		private const string Title = @"Follow variable naming coding guidelines";
 		private const string MessageFormat = @"Rename variable '{0}' to fit coding guidelines";
 		private const string Description = @"";
-		private const string Category = Categories.Naming;
 
-		private readonly bool _checkLocalVariables;
-		private readonly bool _checkFieldVariables;
+		private readonly bool _shouldCheckLocalVariables;
+		private readonly bool _shouldCheckFieldVariables;
 
 		public VariableNamingConventionAnalyzer() : this(true, true) { }
 
-		public VariableNamingConventionAnalyzer(bool checkLocalVariables, bool checkFieldVariables)
+		public VariableNamingConventionAnalyzer(bool shouldCheckLocalVariables, bool shouldCheckFieldVariables)
+			: base(DiagnosticId.VariableNamingConventions, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{
-			_checkLocalVariables = checkLocalVariables;
-			_checkFieldVariables = checkFieldVariables;
+			_shouldCheckLocalVariables = shouldCheckLocalVariables;
+			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
-
-		public List<DiagnosticDescriptor> Rules = new()
-		{
-			new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description),
-		};
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rules.ToArray()); } }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -68,7 +60,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			CSharpSyntaxNode violation = foreachStatement;
-			Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation(), foreachStatement.Identifier.ValueText);
+			var location = violation.GetLocation();
+			Diagnostic diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -82,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			foreach (var syntax in variableDeclaration.Variables)
+			foreach (var identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
 			{
 				bool shouldCheck;
 				Regex validator;
@@ -90,12 +83,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				{
 					case SyntaxKind.ForStatement:
 					case SyntaxKind.UsingStatement:
-						shouldCheck = _checkLocalVariables;
+						shouldCheck = _shouldCheckLocalVariables;
 						validator = _localRegex;
 						break;
 					case SyntaxKind.LocalDeclarationStatement:
 						{
-							shouldCheck = _checkLocalVariables;
+							shouldCheck = _shouldCheckLocalVariables;
 							validator = _localRegex;
 							break;
 						}
@@ -108,13 +101,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 								continue;
 							}
 
-							shouldCheck = _checkFieldVariables;
+							shouldCheck = _shouldCheckFieldVariables;
 
 							validator = _fieldRegex;
 							break;
 						}
 					case SyntaxKind.EventFieldDeclaration:
-						shouldCheck = _checkFieldVariables;
+						shouldCheck = _shouldCheckFieldVariables;
 						validator = _eventRegex;
 						break;
 					default:
@@ -129,13 +122,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				if (IsNameValid(validator, syntax.Identifier))
+				if (IsNameValid(validator, identifier))
 				{
 					continue;
 				}
 
 				CSharpSyntaxNode violation = variableDeclaration;
-				Diagnostic diagnostic = Diagnostic.Create(Rules[0], violation.GetLocation(), syntax.Identifier.ValueText);
+				var location = violation.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

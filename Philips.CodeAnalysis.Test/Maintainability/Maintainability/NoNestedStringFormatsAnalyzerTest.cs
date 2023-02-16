@@ -1,21 +1,37 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class NoNestedStringFormatsAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoNestedStringFormatsAnalyzer();
 		}
 
+		private async Task VerifyNoNestedAsync(string code)
+		{
+			await VerifyDiagnostic(code, DiagnosticId.NoNestedStringFormats).ConfigureAwait(false);
+		}
+		private async Task VerifyNoUnnecessaryAsync(string code)
+		{
+			await VerifyDiagnostic(code, DiagnosticId.NoUnnecessaryStringFormats).ConfigureAwait(false);
+		}
+
+
 		[TestMethod]
-		public void CatchesNestedStringFormat()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesNestedStringFormatAsync()
 		{
 			const string template = @"
 using System;
@@ -27,12 +43,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			await VerifyNoNestedAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchesNestedInterpolatedStringFormat()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesNestedInterpolatedStringFormatAsync()
 		{
 			const string template = @"
 using System;
@@ -44,12 +60,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			await VerifyNoNestedAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchesNestedInterpolatedStringFormatCustomMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesNestedInterpolatedStringFormatCustomMethodAsync()
 		{
 			const string template = @"
 using System;
@@ -66,12 +82,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoNestedStringFormats));
+			await VerifyNoNestedAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyAsync()
 		{
 			const string template = @"
 using System;
@@ -84,12 +100,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly2()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly2Async()
 		{
 			const string template = @"
 using System;
@@ -113,14 +129,14 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[DataRow("{0}")]
 		[DataRow("{1}")]
 		[DataTestMethod]
-		public void DontStringFormatUselessly2a(string arg)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly2aAsync(string arg)
 		{
 			string template = $@"
 using System;
@@ -142,12 +158,12 @@ class Foo
 	}}
 }}
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly3()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly3Async()
 		{
 			const string template = @"
 using System;
@@ -160,12 +176,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly3a()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly3aAsync()
 		{
 			const string template = @"
 using System;
@@ -179,11 +195,12 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly4()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly4Async()
 		{
 			const string template = @"
 using System;
@@ -204,14 +221,14 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 
 
 		[TestMethod]
-		public void DontStringFormatUselessly5()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly5Async()
 		{
 			const string template = @"
 using System;
@@ -224,12 +241,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly6()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly6Async()
 		{
 			const string template = @"
 using System;
@@ -250,12 +267,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly6a()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly6aAsync()
 		{
 			const string template = @"
 using System;
@@ -280,12 +297,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselesslyFromStringMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyFromStringMethodAsync()
 		{
 			const string template = @"
 using System;
@@ -306,12 +323,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselesslyFromIntField()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyFromIntFieldAsync()
 		{
 			const string template = @"
 using System;
@@ -332,12 +349,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselesslyFromLocal()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyFromLocalAsync()
 		{
 			const string template = @"
 using System;
@@ -359,12 +376,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselesslyFromParameter()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyFromParameterAsync()
 		{
 			const string template = @"
 using System;
@@ -385,12 +402,12 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselesslyFromOutParameter()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyFromOutParameterAsync()
 		{
 			const string template = @"
 using System;
@@ -417,14 +434,14 @@ class Foo
 	}
 }
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[DataRow("\"{0}\"", ", errorMessage", true)]
 		[DataRow("\"this is a test\"", "", false)]
 		[DataTestMethod]
-		public void DontStringFormatUselesslyLogStatement(string format, string args, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselesslyLogStatementAsync(string format, string args, bool isError)
 		{
 			const string template = @"
 using System;
@@ -457,19 +474,22 @@ class Foo
 	}}
 }}
 ";
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
+			var code = string.Format(template, format, args);
 			if (isError)
 			{
-				expected = new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats) };
+				await VerifyNoUnnecessaryAsync(code).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(string.Format(template, format, args), expected);
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
 
 		[DataRow("$\"{0}\"")]
 		[DataRow("$\"this is a test\"")]
 		[DataRow("$\"{errorMessage}\"")]
 		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void DontStringFormatUselesslyIssue134(string format)
 		{
 			const string template = @"
@@ -488,11 +508,12 @@ class Foo
 	}}
 }}
 ";
-			VerifyCSharpDiagnostic(string.Format(template, format));
+			VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void DontStringFormatUselessly6b()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly6bAsync()
 		{
 			const string template = @"
 using System;
@@ -516,13 +537,14 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 
 
 		[TestMethod]
-		public void DontStringFormatUselessly6c()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DontStringFormatUselessly6cAsync()
 		{
 			const string template = @"
 using System;
@@ -536,11 +558,12 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchesNoNestedStringFormat()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesNoNestedStringFormatAsync()
 		{
 			const string template = @"
 using System;
@@ -553,11 +576,12 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchesNoNestedStringFormat2()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesNoNestedStringFormat2Async()
 		{
 			const string template = @"
 using System;
@@ -570,14 +594,15 @@ class Foo
 }
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[DataRow(@"$""{Environment.NewLine}""")]
 		[DataRow(@"string.Format(""{0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""{0}"", new object[] { Environment.NewLine })")]
 		[DataTestMethod]
-		public void ErrorsOnPropertyLikeStrings(string argument)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ErrorsOnPropertyLikeStringsAsync(string argument)
 		{
 			string template = @$"
 using System;
@@ -589,8 +614,7 @@ class Foo
 	}}
 }}
 ";
-
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.NoUnnecessaryStringFormats));
+			await VerifyNoUnnecessaryAsync(template).ConfigureAwait(false);
 		}
 
 		[DataRow(@"$""{Test()}""")]
@@ -600,7 +624,8 @@ class Foo
 		[DataRow(@"string.Format(""This is a test {0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""This is a test {0}"", new object[] { Environment.NewLine })")]
 		[DataTestMethod]
-		public void IgnoresFormatStringsWithAdditionalText(string argument)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoresFormatStringsWithAdditionalTextAsync(string argument)
 		{
 			string template = @$"
 using System;
@@ -616,7 +641,7 @@ class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 	}
 }

@@ -20,19 +20,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidTaskResultCodeFixProvider)), Shared]
 	public class AvoidTaskResultCodeFixProvider : CodeFixProvider
 	{
-		#region Non-Public Data Members
-
 		private const string Title = "Use await";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidTaskResult));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult));
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
 			return WellKnownFixAllProviders.BatchFixer;
@@ -63,11 +53,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> ReplaceWithAwait(Document document, MemberAccessExpressionSyntax resultExpression, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
+			var trivia = resultExpression.GetLeadingTrivia();
 			var newExpression = SyntaxFactory.AwaitExpression(resultExpression.Expression);
-			rootNode = rootNode.ReplaceNode(resultExpression, newExpression.WithLeadingTrivia(newExpression.GetLeadingTrivia())).WithAdditionalAnnotations(Formatter.Annotation);
+			var newExpressionWithLeadingTrivia = newExpression.WithLeadingTrivia(trivia).WithAdditionalAnnotations(Formatter.Annotation);
+			rootNode = rootNode.ReplaceNode(resultExpression, newExpressionWithLeadingTrivia);
 			return document.WithSyntaxRoot(rootNode);
 		}
-
-		#endregion
 	}
 }

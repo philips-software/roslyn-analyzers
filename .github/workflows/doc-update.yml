@@ -1,0 +1,91 @@
+name: doc-update
+
+on:
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Check if documentation is updated
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v3
+        with:
+          fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
+
+      - name: Documentation check
+        run: |
+          BRANCH=${{github.head_ref}}
+          TARGET=${{github.base_ref}}
+          echo "Pull request on $BRANCH to target $TARGET"
+          if [[ -z "$TARGET" ]]
+          then
+            # We do NOT run on a pull request branch, ignore silently.
+            exit 0
+          fi
+          while read status file
+          do
+            if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_ANALYZER="true"
+              echo "Added Analyzer: $file"
+            fi
+            if [[ "$file" =~ ^\.github/workflows/.+\.yml$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_WORKFLOW="true"
+              echo "Added YAML file: $file"
+            fi            
+            if [[ "$file" =~ ^\.github/workflows/ci.yml$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_CI="true"
+              echo "Modified CI YAML file"
+            fi            
+            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_MARKDOWN="true"
+              echo "Modified markdown file: $file"
+            fi
+            if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]
+            then
+              UPDATED_PROJECT="true"
+              echo "Modified project file: $file"
+            fi            
+            if [[ "$file" =~ ^.+Test\.cs$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_TEST="true"
+              echo "Modified Test code file: $file"
+            fi            
+          done < <(git diff --name-status origin/$TARGET..HEAD)
+          echo
+          
+          # See if we have an Analyzer added
+          echo "Conclusion:"
+          if [[ ! -z "$ADDED_ANALYZER" ]]
+          then
+            if [[ -z "$UPDATED_MARKDOWN" ]]
+            then
+              echo "You forgot to update the user documentation MarkDown file."
+              exit 1
+            fi
+            if [[ -z "$UPDATED_PROJECT" ]]
+            then
+              echo "You forgot to update the changelog in the project file."
+              exit 1
+            fi
+            if [[ -z "$ADDED_TEST" ]]
+            then
+              echo "You forgot to add a unit test class."
+              exit 1
+            fi
+            echo "Added analyzer has all the associated files updated."
+          fi
+          
+          # See if we have an Workflow added
+          if [[ ! -z "$ADDED_WORKFLOW" ]]
+          then
+            if [[ -z "$UPDATED_CI" ]]
+            then
+              echo "You forgot to update the CI.yml file with your workflow."
+              exit 1
+            fi
+            echo "Added workflow has all the associated files updated."
+          fi

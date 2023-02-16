@@ -1,0 +1,31 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  codeql:
+    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
+
+  pinnedactions:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
+
+  build:
+    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+
+  sonarcloud:
+    uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
+    secrets:
+      sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
+      
+  docupdate:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
+
+  dogfood:
+    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
+
+  performance:
+    uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master

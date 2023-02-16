@@ -10,26 +10,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class AssertIsTrueFalseDiagnosticAnalyzer : AssertMethodCallDiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			bool isIsTrue;
 			string memberName = memberAccessExpression.Name.ToString();
 			switch (memberName)
 			{
-				case "IsTrue":
+				case StringConstants.IsTrue:
 					isIsTrue = true;
 					break;
-				case "IsFalse":
+				case StringConstants.IsFalse:
 					isIsTrue = false;
 					break;
 				default:
-					return null;
+					return Array.Empty<Diagnostic>();
 			}
 
 			Diagnostic result = Check(context, invocationExpressionSyntax, invocationExpressionSyntax.ArgumentList, isIsTrue);
@@ -46,10 +40,5 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		}
 
 		protected abstract Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue);
-
-		#endregion
-
-		#region Public Interface
-		#endregion
 	}
 }

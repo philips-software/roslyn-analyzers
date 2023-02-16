@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -17,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
@@ -28,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			HashSet<MethodDeclarationSyntax> testMethods = new();
 			foreach (MemberDeclarationSyntax member in classDeclaration.Members)
 			{
-				if (member is not MethodDeclarationSyntax method || !Helper.IsTestMethod(method, context))
+				if (member is not MethodDeclarationSyntax method || !TestHelper.IsTestMethod(method, context))
 				{
 					continue;
 				}
@@ -37,14 +38,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			HashSet<string> seenNames = new();
-			foreach (MethodDeclarationSyntax method in testMethods)
+			foreach (var methodIdentifier in testMethods
+						 .Select(method => method.Identifier)
+						 .Where(id => !seenNames.Add(id.ToString())))
 			{
-				if (seenNames.Add(method.Identifier.ToString()))
-				{
-					continue;
-				}
-
-				context.ReportDiagnostic(Diagnostic.Create(Rule, method.Identifier.GetLocation(), method.Identifier));
+				context.ReportDiagnostic(Diagnostic.Create(Rule, methodIdentifier.GetLocation(), methodIdentifier));
 			}
 		}
 	}

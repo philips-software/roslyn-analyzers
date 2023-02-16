@@ -1,11 +1,15 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -17,15 +21,16 @@ Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
-		protected override (string name, string content)[] GetAdditionalTexts()
+		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return new[] { ("NotFile.txt", "data"), (AvoidAttributeAnalyzer.AvoidAttributesWhitelist, allowedMethodName) };
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidAttributeAnalyzer.AttributesWhitelist, allowedMethodName));
 		}
 
 		[DataTestMethod]
 		[DataRow(@"[TestMethod, Ignore]", 16)]
 		[DataRow(@"[Ignore]", 4)]
-		public void AvoidIgnoreAttributeTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidIgnoreAttributeTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -41,7 +46,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidIgnoreAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidIgnoreAttribute),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -50,7 +55,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
@@ -58,7 +63,8 @@ class Foo
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[Owner(""MK"")]", 4)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
-		public void AvoidOwnerAttributeTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidOwnerAttributeTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -74,7 +80,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidOwnerAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidOwnerAttribute),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -83,12 +89,13 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(@"[TestInitialize]", 4)]
-		public void AvoidTestInitializeMethodTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidTestInitializeMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -104,7 +111,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTestInitializeMethod),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -113,13 +120,14 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[TestCleanup]", 4)]
-		public void AvoidTestCleanupMethodTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidTestCleanupMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -135,7 +143,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidTestCleanupMethod),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -144,13 +152,14 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[ClassInitialize]", 4)]
-		public void AvoidClassInitializeMethodTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidClassInitializeMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -166,7 +175,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidClassInitializeMethod),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -175,13 +184,14 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow(@"[ClassCleanup]", 4)]
-		public void AvoidClassCleanupMethodTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidClassCleanupMethodTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -197,7 +207,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidClassCleanupMethod),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -206,7 +216,7 @@ class Foo
 				}
 			};
 
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -214,7 +224,8 @@ class Foo
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
-		public void WhitelistIsApplied(string test)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhitelistIsAppliedAsync(string test)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -228,7 +239,7 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -236,7 +247,8 @@ class Foo
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]
 		[DataRow(@"[TestCleanup]")]
-		public void WhitelistIsAppliedUnresolvable(string test)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhitelistIsAppliedUnresolvableAsync(string test)
 		{
 			string baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -251,10 +263,10 @@ class Foo
 ";
 			string givenText = string.Format(baseline, test);
 
-			VerifyCSharpDiagnostic(givenText);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
-		
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
 		}

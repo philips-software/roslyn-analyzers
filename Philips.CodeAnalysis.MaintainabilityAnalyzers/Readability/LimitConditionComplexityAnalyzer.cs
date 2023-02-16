@@ -1,14 +1,13 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
-using System.Linq;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-
 using Philips.CodeAnalysis.Common;
+using System.Collections.Immutable;
+using System.Globalization;
+using System.Linq;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
@@ -21,12 +20,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Title = "Limit the number of clauses in a condition";
 		private const string Message =
 			"Found {0} clauses in the condition statement. Limit the number of clauses in the condition statement, to not more than {1} (or define max_operators in .editorconfig to customize).";
-		private const string Description = "Limit the number of clauses in a condition";
+		private const string Description = Title;
 		private const string Category = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticIds.LimitConditionComplexity),
+				Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity),
 				Title,
 				Message,
 				Category,
@@ -56,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 						startContext.Options,
 						startContext.Compilation);
 					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
-					if (int.TryParse(maxStr, out int parsedMax))
+					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsedMax))
 					{
 						_maxOperators = parsedMax;
 					}
@@ -93,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var numOperators = conditionNode.DescendantTokens().Where(IsLogicalOperator).Count();
+			var numOperators = conditionNode.DescendantTokens().Count(IsLogicalOperator);
 			if (numOperators >= _maxOperators)
 			{
 				var newLineLocation = conditionNode.GetLocation();

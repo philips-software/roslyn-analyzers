@@ -1,10 +1,13 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -14,13 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class PreferNamedTuplesAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreferNamedTuplesAnalyzer();
 		}
@@ -39,31 +36,32 @@ class Foo
 			return string.Format(baseline, argument);
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[DataRow("(int Foo, int Bar)")]
 		[DataTestMethod]
-		public void NamedTuplesDontCauseErrors(string argument)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NamedTuplesDontCauseErrorsAsync(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument));
+			var source = CreateFunction(argument);
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
 		[DataRow("(int, int)")]
 		[DataTestMethod]
-		public void ErrorIfTupleElementsDoNotHaveNames(string argument)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ErrorIfTupleElementsDoNotHaveNamesAsync(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			var source = CreateFunction(argument);
+			await VerifyDiagnostic(source, 2).ConfigureAwait(false);
 		}
 
 		[DataRow("(int Foo, int)")]
 		[DataTestMethod]
-		public void ErrorIfTupleElementDoesNotHaveName(string argument)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ErrorIfTupleElementDoesNotHaveNameAsync(string argument)
 		{
-			VerifyCSharpDiagnostic(CreateFunction(argument), DiagnosticResultHelper.Create(DiagnosticIds.PreferTuplesWithNamedFields));
+			var source = CreateFunction(argument);
+			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

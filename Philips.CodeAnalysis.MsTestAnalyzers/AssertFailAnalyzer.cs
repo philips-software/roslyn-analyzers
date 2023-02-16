@@ -8,11 +8,6 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	internal class AssertMetadata
-	{
-		public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
-	}
-
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AssertFailAnalyzer : DiagnosticAnalyzer
 	{
@@ -21,9 +16,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+		private sealed class AssertMetadata
+		{
+			public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
+		}
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
-				INamedTypeSymbol assertClass = startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.Assert");
+				INamedTypeSymbol assertClass = startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName);
 
 				if (assertClass == null)
 				{
@@ -66,13 +66,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// check if they did this:
 			// if/else/foreach/using ( something )
 			// { Assert.Fail() }
-			if (expressionOperation.Parent is IBlockOperation blockOperation)
+			if (expressionOperation.Parent is IBlockOperation blockOperation && CheckBlock(blockOperation, expressionOperation))
 			{
-				if (CheckBlock(blockOperation, expressionOperation))
-				{
-					obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
-					return;
-				}
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				return;
 			}
 
 			// bare if/else (IE, no block)
@@ -107,7 +104,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return false;
 			}
 
-			// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail;
+			// the assert.fail is the last operation.  Check if they are ending the loop with an if(blah) continue; fail.
 
 			IOperation previous = blockOperation.Operations[index - 1];
 

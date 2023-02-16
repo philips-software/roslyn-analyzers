@@ -1,8 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -10,42 +9,55 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidInlineNewAnalyzer : DiagnosticAnalyzer
+	public class AvoidInlineNewAnalyzer : SingleDiagnosticAnalyzer<ObjectCreationExpressionSyntax, AvoidInlineNewSyntaxNodeAction>
 	{
 		private const string Title = @"Do not inline new T() calls";
 		private const string MessageFormat = @"Do not inline the constructor call for class {0}";
 		private const string Description = @"Create a local variable, or a field for the temporary instance of class '{0}'";
-		private const string Category = Categories.Readability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidInlineNew), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public AvoidInlineNewAnalyzer()
+			: base(DiagnosticId.AvoidInlineNew, Title, MessageFormat, Description, Categories.Readability)
+		{ }
+	}
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+	public class AvoidInlineNewSyntaxNodeAction : SyntaxNodeAction<ObjectCreationExpressionSyntax>
+	{
+		private static readonly HashSet<string> AllowedMethods = new() { StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan" };
 
-		public override void Initialize(AnalysisContext context)
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ObjectCreationExpression);
-		}
-
-		private static void Analyze(SyntaxNodeAnalysisContext context)
-		{
-			ObjectCreationExpressionSyntax oce = (ObjectCreationExpressionSyntax)context.Node;
-
-			SyntaxNode parent = oce.Parent;
+			SyntaxNode parent = Node.Parent;
 
 			if (!IsInlineNew(parent))
 			{
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, oce.GetLocation(), oce.Type.ToString()));
+			if (IsCallingAllowedMethod(parent))
+			{
+				return;
+			}
+
+			var location = Node.GetLocation();
+			ReportDiagnostic(location, Node.Type.ToString());
 		}
 
 		private static bool IsInlineNew(SyntaxNode node)
 		{
-			return node is MemberAccessExpressionSyntax
-			|| (node is ParenthesizedExpressionSyntax syntax && IsInlineNew(syntax.Parent));
+			return
+				node is MemberAccessExpressionSyntax ||
+				(node is ParenthesizedExpressionSyntax syntax && IsInlineNew(syntax.Parent));
+		}
+
+		private static bool IsCallingAllowedMethod(SyntaxNode node)
+		{
+			if (node is ParenthesizedExpressionSyntax syntax)
+			{
+				return IsCallingAllowedMethod(syntax.Parent);
+			}
+			return
+				node is MemberAccessExpressionSyntax memberAccess &&
+				AllowedMethods.Contains(memberAccess.Name.Identifier.Text);
 		}
 	}
 }

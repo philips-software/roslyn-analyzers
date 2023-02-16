@@ -9,41 +9,26 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreventUseOfGotoAnalyzer : DiagnosticAnalyzer
+	public class PreventUseOfGotoAnalyzer : SingleDiagnosticAnalyzer
 	{
-		#region Non-Public Data Members
-
 		private const string Title = @"Do not use goto";
-		private const string MessageFormat = @"Do not use goto";
-		private const string Description = @"Do not use goto";
+		private const string MessageFormat = Title;
+		private const string Description = Title;
 
-		private const string Category = Categories.Maintainability;
-
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.GotoNotAllowed), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		#endregion
-
-		#region Non-Public Properties/Methods
+		public PreventUseOfGotoAnalyzer()
+			: base(DiagnosticId.GotoNotAllowed, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		private void Analyze(SyntaxNodeAnalysisContext analysisContext)
 		{
 			analysisContext.ReportDiagnostic(Diagnostic.Create(Rule, analysisContext.Node.GetLocation()));
 		}
 
-		#endregion
-
-		#region Public Interface
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-
 		public override void Initialize(AnalysisContext context)
 		{
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.GotoStatement, SyntaxKind.LabeledStatement, SyntaxKind.GotoCaseStatement, SyntaxKind.GotoDefaultStatement);
 		}
-
-		#endregion
 	}
 }

@@ -1,27 +1,20 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
 	public class NoProtectedFieldsAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		#endregion
-
-		#region Public Interface
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NoProtectedFieldsAnalyzer();
 		}
@@ -32,17 +25,21 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("private", false)]
 		[DataRow("internal", false)]
 		[DataTestMethod]
-		public void ProtectedFieldsRaiseError(string modifiers, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ProtectedFieldsRaiseErrorAsync(string modifiers, bool isError)
 		{
 			const string template = @"""
 class Foo {{ {0} string _foo; }}
 """;
-
-			DiagnosticResult[] expected = isError ? new[] { DiagnosticResultHelper.Create(DiagnosticIds.NoProtectedFields) } : Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(string.Format(template, modifiers), expected);
+			var code = string.Format(template, modifiers);
+			if (isError)
+			{
+				await VerifyDiagnostic(code).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
 		}
-
-		#endregion
 	}
 }

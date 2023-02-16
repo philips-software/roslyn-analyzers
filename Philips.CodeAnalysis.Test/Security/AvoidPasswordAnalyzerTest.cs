@@ -1,15 +1,24 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Collections.Immutable;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.SecurityAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Security
 {
 	[TestClass]
 	public class AvoidPasswordAnalyzerTest : DiagnosticVerifier
 	{
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPasswordAnalyzer();
 		}
@@ -34,11 +43,56 @@ class Foo
 		[DataRow("public string Password {get; set;}", @"")]
 		[DataRow(@"", "/*  MyPassword */")]
 		[DataRow(@"", "//  MyPassword")]
-		public void CheckPasswordTest(string content0, string content1)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckPasswordTestAsync(string content0, string content1)
 		{
-			string testCode = string.Format(GetTemplate(), content0, content1);
-			var expected = DiagnosticResultHelper.CreateArray(DiagnosticIds.AvoidPasswordField);
-			VerifyCSharpDiagnostic(testCode, expected);
+			// These would normally fail, but by default we're in the context of a MS Test environment, which short-circuits the analyzer.
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class AvoidPasswordAnalyzerInMsTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			// Our test environment always loads the MsTests Metadata references.
+			// However, this is precisely when we want to disable this analyzer, and that makes it hard to Unit Test!
+			var analyzer = new AvoidPasswordAnalyzer
+			{
+				ShouldAnalyzeTests = true
+			};
+			return analyzer;
+		}
+
+		private string GetTemplate()
+		{
+			return @"
+class Foo 
+{{
+  {0}
+  public void Foo()
+  {{
+    {1};
+  }}
+}}
+";
+		}
+
+		[DataTestMethod]
+		[DataRow("private string _x, _password);", @"")]
+		[DataRow("private const string MyPassword = \"Hi\");", @"")]
+		[DataRow("public string Password {get; set;}", @"")]
+		[DataRow(@"", "/*  MyPassword */")]
+		[DataRow(@"", "//  MyPassword")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckPasswordTestAsync(string content0, string content1)
+		{
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
+			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -47,10 +101,12 @@ class Foo
 		[DataRow("public string MyProperty {get; set;}", @"")]
 		[DataRow(@"", "/*  MyComment */")]
 		[DataRow(@"", "//  MyComment")]
-		public void CheckNoPasswordTest(string content0, string content1)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNoPasswordTestAsync(string content0, string content1)
 		{
-			string testCode = string.Format(GetTemplate(), content0, content1);
-			VerifyCSharpDiagnostic(testCode, Array.Empty<DiagnosticResult>());
+			var format = GetTemplate();
+			string testCode = string.Format(format, content0, content1);
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
 }

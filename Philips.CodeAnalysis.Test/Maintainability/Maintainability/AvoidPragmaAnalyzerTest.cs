@@ -1,11 +1,14 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -14,7 +17,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
-		public void PragmaWarningNotAvoidedTest(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PragmaWarningNotAvoidedTestAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 class Foo 
@@ -26,23 +30,12 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidPragma),
-				Message = new Regex(AvoidPragmaAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test.cs", 6, expectedColumn)
-				}
-			};
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void PragmaAllowedDisableSelf()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PragmaAllowedDisableSelfAsync()
 		{
 			string text = @"
 class Foo 
@@ -54,12 +47,13 @@ class Foo
   }}
 }}
 ";
-			VerifyCSharpDiagnostic(text);
+			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(@"#pragma warning disable 100", 5)]
-		public void PragmaAllowedGeneratedCode(string test, int expectedColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PragmaAllowedGeneratedCodeAsync(string test, int expectedColumn)
 		{
 			string baseline = @"
 class Foo 
@@ -71,12 +65,11 @@ class Foo
 }}
 ";
 			string givenText = string.Format(baseline, test);
-
-			VerifyCSharpDiagnostic(givenText, "Test.Designer");
+			await VerifySuccessfulCompilation(givenText, "Test.Designer").ConfigureAwait(false);
 		}
 
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPragmaAnalyzer();
 		}

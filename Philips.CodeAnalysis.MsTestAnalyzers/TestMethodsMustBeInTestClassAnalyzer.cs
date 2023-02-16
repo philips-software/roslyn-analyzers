@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Tests are only executed if they are [TestClass]";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustBeInTestClass),
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustBeInTestClass),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
@@ -31,11 +31,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		private class TestMethodsMustBeInTestClass : Implementation
+		private sealed class TestMethodsMustBeInTestClass : Implementation
 		{
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				if (Helper.IsInTestClass(context))
+				TestHelper testHelper = new();
+				if (testHelper.IsInTestClass(context))
 				{
 					return;
 				}

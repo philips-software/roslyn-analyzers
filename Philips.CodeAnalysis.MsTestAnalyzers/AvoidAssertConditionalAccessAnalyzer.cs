@@ -20,14 +20,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.AvoidAssertConditionalAccess), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			string memberName = memberAccessExpression.Name.ToString();
-			if (memberName is not @"AreEqual" and not @"AreNotEqual")
+			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				yield break;
 			}
@@ -46,7 +46,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (syntax.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, syntax.GetLocation());
+					var location = syntax.GetLocation();
+					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 					yield return diagnostic;
 				}
 			}

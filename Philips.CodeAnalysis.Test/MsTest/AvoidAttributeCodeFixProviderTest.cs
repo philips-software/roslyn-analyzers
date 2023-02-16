@@ -1,19 +1,21 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
 	[TestClass]
-	public class AvoidAttributeCodeFixProviderTest : AssertCodeFixVerifier
+	public class AvoidAttributeCodeFixProviderTest : CodeFixVerifier
 	{
-
 		private readonly string baseline = @"
             using Microsoft.VisualStudio.TestTools.UnitTesting;
             [TestClass]
@@ -33,54 +35,58 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[DataTestMethod]
 		[DataRow("[TestInitialize]\n public void SomeMethod() {int i = 5;}")]
-		public void AvoidTestInitializeCodeFixProviderTest(string testMethod)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidTestInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestInitializeMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestInitializeMethod);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
-			VerifyCSharpFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow("[ClassInitialize]\n public void SomeMethod() {int i = 5;}")]
-		public void AvoidClassInitializeCodeFixProviderTest(string testMethod)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidClassInitializeCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassInitializeMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassInitializeMethod);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
-			VerifyCSharpFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[TestCleanup]\n public void SomeMethod() {int i = 5;}")]
-		public void AvoidTestCleanupCodeFixProviderTest(string testMethod)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidTestCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidTestCleanupMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestCleanupMethod);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
-			VerifyCSharpFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("[ClassCleanup]\n public void SomeMethod() {int i = 5;}")]
-		public void AvoidClassCleanupCodeFixProviderTest(string testMethod)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidClassCleanupCodeFixProviderTest(string testMethod)
 		{
 			string givenText = string.Format(baseline, testMethod);
 
-			var expected = GetExpectedDiagnostic(DiagnosticIds.AvoidClassCleanupMethod);
-			VerifyCSharpDiagnostic(givenText, expected);
+			var expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassCleanupMethod);
+			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 
-			VerifyCSharpFix(givenText, expectedText);
+			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
-		private DiagnosticResult GetExpectedDiagnostic(DiagnosticIds id)
+		private DiagnosticResult GetExpectedDiagnostic(DiagnosticId id)
 		{
 			return new DiagnosticResult
 			{
@@ -94,19 +100,14 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidMethodsCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAttributeAnalyzer();
-		}
-
-		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
-		{
-			throw new System.NotImplementedException();
 		}
 	}
 }

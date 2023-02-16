@@ -1,12 +1,16 @@
-﻿using System;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System;
 using System.Collections.Generic;
-
+using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 {
@@ -21,30 +25,27 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new XmlDocumentationShouldAddValueAnalyzer();
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new XmlDocumentationCodeFixProvider();
 		}
 
-		protected override Dictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			Dictionary<string, string> options = new()
-			{
-				{ $@"dotnet_code_quality.{ Helper.ToDiagnosticId(DiagnosticIds.XmlDocumentationShouldAddValue) }.additional_useless_words", configuredAdditionalUselessWords  }
-			};
-			return options;
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue)}.additional_useless_words", configuredAdditionalUselessWords);
 		}
 
 		#endregion
 
 		#region Public Interface
 		[TestMethod]
-		public void DefaultWhiteSpaceTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DefaultWhiteSpaceTestAsync()
 		{
 			string content = $@"
 /// <summary>
@@ -55,11 +56,12 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyClassTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyClassTestAsync()
 		{
 			string content = $@"
 /// <summary></summary>
@@ -68,11 +70,12 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyMethodTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyMethodTestAsync()
 		{
 			string content = $@"
 public class TestClass
@@ -84,11 +87,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyPropertyTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyPropertyTestAsync()
 		{
 			string content = $@"
 public class TestClass
@@ -98,11 +102,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyFieldTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyFieldTestAsync()
 		{
 			string content = $@"
 public class TestClass
@@ -112,11 +117,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyEventTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyEventTestAsync()
 		{
 			string content = $@"
 public class TestClass
@@ -126,11 +132,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void EmptyEnumTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyEnumTestAsync()
 		{
 			string content = $@"
 public enum TestEnumeration
@@ -140,17 +147,17 @@ public enum TestEnumeration
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
 		[DataTestMethod]
-		public void ValueAddClassTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddClassInvalidTestsAsync(string text)
 		{
 			string content = $@"
 /// <summary>{text}</summary>
@@ -159,20 +166,35 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Gets an dummy Foo", true)]
-		[DataRow("Gets a rom", true)]
-		[DataRow("Gets a roms", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
-		public void ValueAddMethodTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddClassValidTestsAsync(string text)
+		{
+			string content = $@"
+/// <summary>{text}</summary>
+public class Foo
+{{
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
+		[DataRow("Gets an dummy Foo")]
+		[DataRow("Gets a rom")]
+		[DataRow("Gets a roms")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddMethodInvalidTestsAsync(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -184,20 +206,37 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Gets and sets the Foo", true)]
-		[DataRow("Gets or sets the Foo", true)]
-		[DataRow("Gets/sets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
-		public void ValueAddPropertyTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddMethodValidTestsAsync(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public void Foo()
+	{{
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Gets and sets the Foo")]
+		[DataRow("Gets or sets the Foo")]
+		[DataRow("Gets/sets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddPropertyInvalidTestsAsync(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -210,18 +249,38 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+		}
+
+		[DataRow("Get an instance of Foo to please Bar")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddPropertyValidTestsAsync(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public int Foo
+	{{
+		get;
+	}}
+}}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 
-		[DataRow("foo", true)]
-		[DataRow("Gets Foo", true)]
-		[DataRow("Gets the Foo", true)]
-		[DataRow("Get an instance of Foo", true)]
-		[DataRow("Gets an instance of Foo", true)]
-		[DataRow("Get an instance of Foo to please Bar", false)]
+
+		[DataRow("foo")]
+		[DataRow("Gets Foo")]
+		[DataRow("Gets the Foo")]
+		[DataRow("Get an instance of Foo")]
+		[DataRow("Gets an instance of Foo")]
 		[DataTestMethod]
-		public void ValueAddFieldTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddFieldInvalidTestsAsync(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -231,18 +290,34 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("Fire Foo", true)]
-		[DataRow("Fires the Foo", true)]
-		[DataRow("Fires the Foo event", true)]
-		[DataRow("Raise Foo", true)]
-		[DataRow("Raises an instance of the Foo event", true)]
-		[DataRow("Raised when Foo happens", false)]
+		[DataRow("Get an instance of Foo to please Bar")]
 		[DataTestMethod]
-		public void ValueAddEventTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddFieldValidTestsAsync(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public int Foo;
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[DataRow("On Foo")]
+		[DataRow("Fire Foo")]
+		[DataRow("Fires the Foo")]
+		[DataRow("Fires the Foo event")]
+		[DataRow("Raise Foo")]
+		[DataRow("Raises an instance of the Foo event")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEventInvalidTestsAsync(string text)
 		{
 			string content = $@"
 public class TestClass
@@ -252,14 +327,29 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("It is Foo", true)]
-		[DataRow("When it is Foo", false)]
+		[DataRow("Raised when Foo happens")]
 		[DataTestMethod]
-		public void ValueAddEnumTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEventValidTestsAsync(string text)
+		{
+			string content = $@"
+public class TestClass
+{{
+	/// <summary>{text}</summary>
+	public event System.EventHandler Foo;
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[DataRow("On Foo")]
+		[DataRow("It is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEnumTestsAsync(string text)
 		{
 			string content = $@"
 /// <summary>{text}</summary>
@@ -269,14 +359,30 @@ public enum Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
-		[DataRow("On Foo", true)]
-		[DataRow("It is Foo", true)]
-		[DataRow("When it is Foo", false)]
+		[DataRow("When it is Foo")]
 		[DataTestMethod]
-		public void ValueAddEnumMemberTests(string text, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEnumValidTestsAsync(string text)
+		{
+			string content = $@"
+/// <summary>{text}</summary>
+public enum Foo
+{{
+	Member = 1,
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[DataRow("On Foo")]
+		[DataRow("It is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEnumMemberInvalidTestsAsync(string text)
 		{
 			string content = $@"
 public enum TestEnumeration
@@ -285,16 +391,32 @@ public enum TestEnumeration
 	Foo = 1,
 }}
 ";
-
-			VerifyCSharpDiagnostic(content, isError ? DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue) : Array.Empty<DiagnosticResult>());
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
+
+		[DataRow("When it is Foo")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ValueAddEnumMemberValidTestsAsync(string text)
+		{
+			string content = $@"
+public enum TestEnumeration
+{{
+	/// <summary>{text}</summary>
+	Foo = 1,
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
 
 		[DataRow("event System.EventHandler Foo;")]
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
-		public void CodeFixEmptyTests(string text)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CodeFixEmptyTests(string text)
 		{
 			string errorContent = $@"
 public class TestClass
@@ -313,9 +435,8 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.EmptyXmlComments));
-
-			VerifyCSharpFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[DataRow("event System.EventHandler Foo;")]
@@ -323,7 +444,8 @@ public class TestClass
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
 		[DataTestMethod]
-		public void CodeFixValueTests(string text)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CodeFixValueTests(string text)
 		{
 			string errorContent = $@"
 public class TestClass
@@ -340,13 +462,13 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(errorContent, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
-
-			VerifyCSharpFix(errorContent, fixedContent);
+			await VerifyDiagnostic(errorContent, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void InheritDocTests()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task InheritDocTestsAsync()
 		{
 			string content = $@"
 public class TestClass
@@ -359,11 +481,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void RemarksOnlyTests()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RemarksOnlyTestsAsync()
 		{
 			string content = $@"
 using System;
@@ -378,11 +501,12 @@ public class TestClass
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, Array.Empty<DiagnosticResult>());
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void ConstructorTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorTestAsync()
 		{
 			string content = $@"
 public class Foo
@@ -396,7 +520,7 @@ public class Foo
 }}
 ";
 
-			VerifyCSharpDiagnostic(content, DiagnosticResultHelper.CreateArray(DiagnosticIds.XmlDocumentationShouldAddValue));
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 		#endregion
 	}

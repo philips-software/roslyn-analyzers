@@ -12,20 +12,19 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DisallowDisposeRegistrationAnalyzer : DiagnosticAnalyzer
+	public class DisallowDisposeRegistrationAnalyzer : SingleDiagnosticAnalyzer
 	{
 		public const string Title = @"Dispose Registration";
 		public const string MessageFormat = @"Erroneous registration of an event in a Dispose method.  Did you mean to unregister?";
 		public const string Description = @"MyClass.Event += MyHandler is not allowed in a Dispose method.  Should be MyClass.Event -= MyHandler.";
-		public const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.DisallowDisposeRegistration), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public DisallowDisposeRegistrationAnalyzer()
+			: base(DiagnosticId.DisallowDisposeRegistration, Title, MessageFormat, Description, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AddAssignmentExpression);
 		}
@@ -36,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (ancestorMethods.Any())
 			{
 				MethodDeclarationSyntax parentMethod = ancestorMethods.First();
-				if (parentMethod.Identifier.Text == @"Dispose")
+				if (parentMethod.Identifier.Text == StringConstants.Dispose)
 				{
 					IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(parentMethod);
 					if ((methodSymbol != null) && methodSymbol.ToString().Contains(".Dispose("))

@@ -1,11 +1,14 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -17,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#endregion
 
 		#region Non-Public Properties/Methods
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestMethodsShouldHaveUniqueNamesAnalyzer();
 		}
@@ -27,7 +30,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		#region Public Interface
 
 		[TestMethod]
-		public void TestMethodsMustHaveUniqueNames()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodsMustHaveUniqueNamesTestAsync()
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -46,20 +50,22 @@ public class Tests
 	public void Foo(object o, object y) { }
 }";
 
-			VerifyCSharpDiagnostic(code, new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, null) },
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-			},
-			new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.TestMethodsMustHaveUniqueNames),
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, null) },
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-			});
+			await VerifyDiagnostic(code, new[]{
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
+					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 11, null) },
+					Message = new Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				},
+				new DiagnosticResult()
+				{
+					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
+					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 15, null) },
+					Message = new Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				}
+			}).ConfigureAwait(false);
 		}
 
 		#endregion

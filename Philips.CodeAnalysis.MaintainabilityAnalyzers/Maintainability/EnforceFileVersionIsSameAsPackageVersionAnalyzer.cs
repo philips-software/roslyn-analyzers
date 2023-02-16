@@ -10,14 +10,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : DiagnosticAnalyzer
+	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Ensure FileVersion is the same as PackageVersion";
 		public const string MessageFormat = @"The FileVersion ({0}) must be the same as the PackageVersion ({1}).";
-		private const string Category = Categories.Maintainability;
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.EnforceFileVersionIsSameAsPackageVersion), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public EnforceFileVersionIsSameAsPackageVersionAnalyzer()
+			: base(DiagnosticId.EnforceFileVersionIsSameAsPackageVersion, Title, MessageFormat, Title, Categories.Maintainability)
+		{ }
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -35,24 +35,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			foreach (var attr in attributes)
 			{
-				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyFileVersionAttribute))
+				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyFileVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
-					if (!attr.ConstructorArguments.IsEmpty)
-					{
-						fileVersion = new Version((string)attr.ConstructorArguments[0].Value ?? string.Empty);
-						fileVersion = SetRevisionToZeroIfMissing(fileVersion);
-					}
+					fileVersion = new Version((string)attr.ConstructorArguments[0].Value ?? string.Empty);
+					fileVersion = SetRevisionToZeroIfMissing(fileVersion);
 				}
 
-				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute))
+				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
-					if (!attr.ConstructorArguments.IsEmpty)
-					{
-						string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
-						string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
-						informationalVersion = new Version(strippedsourceRevisionId);
-						informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
-					}
+					string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
+					string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
+					informationalVersion = new Version(strippedsourceRevisionId);
+					informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
 				}
 			}
 
@@ -70,11 +64,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private Version SetRevisionToZeroIfMissing(Version version)
 		{
+			Version sanitizedVersion = version;
 			if (version.Revision < 0)
 			{
-				version = new Version(version.Major, version.Minor, version.Build, 0);
+				sanitizedVersion = new Version(version.Major, version.Minor, version.Build, 0);
 			}
-			return version;
+			return sanitizedVersion;
 		}
 
 		private string RemoveVersionSuffix(string version)
@@ -89,12 +84,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private string RemoveSuffix(string version, char suffixSymbol)
 		{
+			string sanitizedVersion = version;
 			int index = version.IndexOf(suffixSymbol);
 			if (index >= 0)
 			{
-				version = version.Substring(0, index);
+				sanitizedVersion = version.Substring(0, index);
 			}
-			return version;
+			return sanitizedVersion;
 		}
 	}
 }

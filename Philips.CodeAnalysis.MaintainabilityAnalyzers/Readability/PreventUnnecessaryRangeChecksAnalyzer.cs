@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -11,62 +10,52 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreventUnnecessaryRangeChecksAnalyzer : DiagnosticAnalyzer
+	public class PreventUnnecessaryRangeChecksAnalyzer : SingleDiagnosticAnalyzer<IfStatementSyntax, PreventUnnecessaryRangeChecksSyntaxNodeAction>
 	{
 		private const string Title = @"Unnecessary Range Checks";
 		public const string MessageFormat = @"Do not check the length of a list/array before iterating over it";
-		private const string Description = @"";
-		private const string Category = Categories.Readability;
-
-		public DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticIds.PreventUncessaryRangeChecks), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		private const string Description = MessageFormat;
 
 		public PreventUnnecessaryRangeChecksAnalyzer()
+			: base(DiagnosticId.PreventUncessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
 		{ }
+	}
 
-		public override void Initialize(AnalysisContext context)
+	public class PreventUnnecessaryRangeChecksSyntaxNodeAction : SyntaxNodeAction<IfStatementSyntax>
+	{
+		public override void Analyze()
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
+			if (Node.Else != null)
+			{
+				return;
+			}
 
-			context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
+			if (Node.Condition == null)
+			{
+				return;
+			}
+
+			if (!TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax))
+			{
+				return;
+			}
+
+			if (!IsCountGreaterThanZero(Node.Condition, forEachStatementSyntax.Expression, Context.SemanticModel))
+			{
+				return;
+			}
+
+			var location = Node.IfKeyword.GetLocation();
+			ReportDiagnostic(location);
 		}
 
-		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
-		{
-			IfStatementSyntax ifStatementSyntax = (IfStatementSyntax)context.Node;
-
-			if (ifStatementSyntax.Else != null)
-			{
-				return;
-			}
-
-			if (ifStatementSyntax.Condition == null)
-			{
-				return;
-			}
-
-			if (!TryFindForeach(ifStatementSyntax, out ForEachStatementSyntax forEachStatementSyntax))
-			{
-				return;
-			}
-
-			if (!IsCountGreaterThanZero(ifStatementSyntax.Condition, forEachStatementSyntax.Expression, context.SemanticModel))
-			{
-				return;
-			}
-
-			context.ReportDiagnostic(Diagnostic.Create(Rule, ifStatementSyntax.IfKeyword.GetLocation()));
-		}
-
-		private bool TryFindForeach(IfStatementSyntax ifStatementSyntax, out ForEachStatementSyntax forEachStatementSyntax)
+		private bool TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax)
 		{
 			forEachStatementSyntax = null;
 
-			if (ifStatementSyntax.Statement is not BlockSyntax block)
+			if (Node.Statement is not BlockSyntax block)
 			{
-				forEachStatementSyntax = ifStatementSyntax.Statement as ForEachStatementSyntax;
+				forEachStatementSyntax = Node.Statement as ForEachStatementSyntax;
 
 				return forEachStatementSyntax != null;
 			}
@@ -83,11 +72,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private bool IsCountGreaterThanZero(ExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
-			return condition is ParenthesizedExpressionSyntax parenthesized
-				? IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel)
-				: condition is BinaryExpressionSyntax binaryExpressionSyntax
-					&& IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
+			bool isGreaterThanZero;
+			if (condition is ParenthesizedExpressionSyntax parenthesized)
+			{
+				isGreaterThanZero = IsCountGreaterThanZero(parenthesized.Expression, foreachExpression, semanticModel);
+			}
+			else
+			{
+				isGreaterThanZero = condition is BinaryExpressionSyntax binaryExpressionSyntax &&
+						 IsCountGreaterThanZero(binaryExpressionSyntax, foreachExpression, semanticModel);
+			}
+
+			return isGreaterThanZero;
 		}
+
 		private bool IsCountGreaterThanZero(BinaryExpressionSyntax condition, ExpressionSyntax foreachExpression, SemanticModel semanticModel)
 		{
 			switch (condition.OperatorToken.Kind())
@@ -134,40 +132,40 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return ifIdentifier.Identifier.Text == identifier.Identifier.Text;
 			}
 
-			if (foreachExpression is MemberAccessExpressionSyntax memberAccess && ifExpression is MemberAccessExpressionSyntax ifMemberAccess)
+			if (foreachExpression is not MemberAccessExpressionSyntax memberAccess || ifExpression is not MemberAccessExpressionSyntax ifMemberAccess)
 			{
-				static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
-				{
-					var leftSymbol = model.GetSymbolInfo(left);
-					if (leftSymbol.Symbol is null)
-					{
-						return false;
-					}
+				return false;
+			}
 
-					var rightSymbol = model.GetSymbolInfo(right);
-					return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
-				}
+			var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
+			var ifMemberAccessNodes = ifMemberAccess.DescendantNodesAndSelf().ToList();
 
-				var foreachMemberAccessNodes = memberAccess.DescendantNodesAndSelf().ToList();
-				var ifMemberAccessNodes = ifMemberAccess.DescendantNodesAndSelf().ToList();
+			if (foreachMemberAccessNodes.Count != ifMemberAccessNodes.Count)
+			{
+				return false;
+			}
 
-				if (foreachMemberAccessNodes.Count != ifMemberAccessNodes.Count)
+			static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
+			{
+				var leftSymbol = model.GetSymbolInfo(left);
+				if (leftSymbol.Symbol is null)
 				{
 					return false;
 				}
 
-				for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
-				{
-					if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
-					{
-						return false;
-					}
-				}
-
-				return true;
+				var rightSymbol = model.GetSymbolInfo(right);
+				return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
 			}
 
-			return false;
+			for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
+			{
+				if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		private bool TryGetIdentifiers(ExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)
@@ -175,10 +173,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			ifIdentifier = null;
 			method = null;
 
-			return expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax
-				? TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method)
-				: expression is InvocationExpressionSyntax invocationExpression
-				&& TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
+			return expression is MemberAccessExpressionSyntax memberAccessExpressionSyntax ?
+				TryGetIdentifiers(memberAccessExpressionSyntax, out ifIdentifier, out method) :
+				expression is InvocationExpressionSyntax invocationExpression &&
+				TryGetIdentifiers(invocationExpression.Expression, out ifIdentifier, out method);
 		}
 
 		private bool TryGetIdentifiers(MemberAccessExpressionSyntax expression, out ExpressionSyntax ifIdentifier, out IdentifierNameSyntax method)

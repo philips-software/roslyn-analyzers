@@ -1,10 +1,13 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -14,13 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AvoidMsFakesAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidMsFakesAnalyzer();
 		}
@@ -40,42 +37,21 @@ class Foo
 			return string.Format(baseline, content);
 		}
 
-		#endregion
-
-		#region Public Interface
 
 		[TestMethod]
-		public void AvoidMsFakesTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidMsFakesTestAsync()
 		{
-			VerifyDiagnostic(CreateFunction("using (ShimsContext.Create()) {}"));
+			var file = CreateFunction("using (ShimsContext.Create()) {}");
+			await VerifyDiagnostic(file).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AvoidMsFakesNotRelevantTest()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidMsFakesNotRelevantTestAsync()
 		{
-			VerifyNoDiagnostic(CreateFunction("using (new MemoryStream()) {}"));
+			var file = CreateFunction("using (new MemoryStream()) {}");
+			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
-
-
-		private void VerifyNoDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file);
-		}
-
-		private void VerifyDiagnostic(string file)
-		{
-			VerifyCSharpDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidMsFakesAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 6, -1),
-				}
-			});
-		}
-
-		#endregion
 	}
 }

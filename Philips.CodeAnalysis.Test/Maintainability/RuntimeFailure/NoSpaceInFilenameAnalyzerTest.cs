@@ -1,10 +1,13 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 {
@@ -35,27 +38,30 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(CorrectName, DisplayName = "CorrectName"),
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
-		public void WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
 		{
-			VerifyCSharpDiagnostic(Correct, filePath);
+			await VerifySuccessfulCompilation(Correct, filePath).ConfigureAwait(false);
 		}
 
 		/// <summary>
 		/// Diagnostic is expected to show up.
 		/// </summary>
-		[TestMethod]
+		[DataTestMethod]
 		[DataRow(SpaceName, 1, 1, DisplayName = "SpaceName"),
 		 DataRow(SpaceAbsolutePath, 1, 1, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
-		public void WhenFileNameHasSpaceDiagnosticIsRaised(string filePath, int line, int column) {
-			var expected = DiagnosticResultHelper.Create(DiagnosticIds.NoSpaceInFilename);
-			VerifyCSharpDiagnostic(Correct, filePath, expected);
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenFileNameHasSpaceDiagnosticIsRaisedAsync(string filePath, int line, int column)
+		{
+			await VerifyDiagnostic(Correct, DiagnosticId.NoSpaceInFilename, filePath).ConfigureAwait(false);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer() {
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
 			return new NoSpaceInFilenameAnalyzer();
 		}
 	}

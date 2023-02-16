@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.202
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{587845EE-5F8F-4E49-B140-B970758F8A49}"
 	ProjectSection(SolutionItems) = preProject
@@ -25,6 +25,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.Benchmark", "Philips.CodeAnalysis.Benchmark\Philips.CodeAnalysis.Benchmark.csproj", "{D9B847FB-E395-4875-86E9-C69B47B8D77C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Philips.CodeAnalysis.SecurityAnalyzers", "Philips.CodeAnalysis.SecurityAnalyzers\Philips.CodeAnalysis.SecurityAnalyzers.csproj", "{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Philips.CodeAnalysis.AnalyzerPerformance", "Philips.CodeAnalysis.AnalyzerPerformance\Philips.CodeAnalysis.AnalyzerPerformance.csproj", "{C8FE7AA4-5C8C-49E2-B36F-DDD7B785C9B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,10 @@ Global
 		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A776409-A4CE-46C2-A795-1A54B1EA2D1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8FE7AA4-5C8C-49E2-B36F-DDD7B785C9B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8FE7AA4-5C8C-49E2-B36F-DDD7B785C9B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8FE7AA4-5C8C-49E2-B36F-DDD7B785C9B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8FE7AA4-5C8C-49E2-B36F-DDD7B785C9B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

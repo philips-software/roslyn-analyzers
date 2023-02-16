@@ -1,9 +1,13 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
@@ -11,21 +15,30 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	/// Class for testing AvoidStaticMethodAnalyzer
 	/// </summary>
 	[TestClass]
-	public class AvoidStaticMethodAnalyzerTest : DiagnosticVerifier
+	public class AvoidStaticMethodAnalyzerTest : CodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidStaticMethodAnalyzer();
 		}
 
-		protected string CreateFunction(string methodStaticModifier, string classStaticModifier = "", string externKeyword = "", string methodName = "GoodTimes", string returnType = "void", string localMethodModifier = "", string foreignMethodModifier = "", bool factoryMethod = false)
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
+			return new AvoidStaticMethodCodeFixProvider();
+		}
+
+		protected string CreateFunction(string methodStaticModifier, string classStaticModifier = "", string externKeyword = "", string methodName = "GoodTimes", string returnType = "void", string localMethodModifier = "", string foreignMethodModifier = "", bool isFactoryMethod = false)
+		{
+			if (!string.IsNullOrWhiteSpace(methodStaticModifier))
+			{
+				methodStaticModifier += @" ";
+			}
+
+			if (!string.IsNullOrWhiteSpace(externKeyword))
+			{
+				externKeyword += @" ";
+			}
+
 			string localMethod = $@"public {localMethodModifier} string BaBaBummmm(string services)
 					{{
 						return services;
@@ -39,7 +52,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			string useLocalMethod = (localMethodModifier == "static") ? $@"BaBaBummmm(""testing"")" : string.Empty;
 			string useForeignMethod = (foreignMethodModifier == "static") ? $@"BaBaBa(""testing"")" : string.Empty;
 
-			string objectDeclaration = factoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
+			string objectDeclaration = isFactoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
 
 			return $@"
 			namespace Sweet {{
@@ -47,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				{{
 					{localMethod}
 
-					public {methodStaticModifier} {externKeyword} {returnType} {methodName}()
+					public {methodStaticModifier}{externKeyword}{returnType} {methodName}()
 					{{
 						{objectDeclaration}
 						{useLocalMethod}
@@ -62,73 +75,80 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			}}";
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		[TestMethod]
-		public void AllowExternalCode()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowExternalCodeAsync()
 		{
 			string template = CreateFunction("static", externKeyword: "extern");
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void IgnoreIfInStaticClass()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreIfInStaticClassAsync()
 		{
 			string template = CreateFunction("static", classStaticModifier: "static");
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void OnlyCatchStaticMethods()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task OnlyCatchStaticMethodsAsync()
 		{
 			string template = CreateFunction("");
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AllowStaticMainMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowStaticMainMethodAsync()
 		{
 			string template = CreateFunction("static", methodName: "Main");
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void IgnoreIfCallsLocalStaticMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreIfCallsLocalStaticMethodAsync()
 		{
 			string template = CreateFunction("static", localMethodModifier: "static");
 			// should still catch the local static method being used
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidStaticMethods));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchIfUsesForeignStaticMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchIfUsesForeignStaticMethodAsync()
 		{
 			string template = CreateFunction("static", foreignMethodModifier: "static");
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidStaticMethods));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AllowStaticFactoryMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowStaticFactoryMethodAsync()
 		{
-			string template = CreateFunction("static", factoryMethod: true);
-			VerifyCSharpDiagnostic(template);
+			string template = CreateFunction("static", isFactoryMethod: true);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AllowStaticDynamicDataMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowStaticDynamicDataMethodAsync()
 		{
 			string template = CreateFunction("static", returnType: "IEnumerable<object[]>");
-			VerifyCSharpDiagnostic(template);
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void CatchPlainStaticMethod()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchPlainStaticMethod()
 		{
 			string template = CreateFunction("static");
-			VerifyCSharpDiagnostic(template, DiagnosticResultHelper.Create(DiagnosticIds.AvoidStaticMethods));
+			await VerifyDiagnostic(template).ConfigureAwait(false);
+
+			string fixedCode = CreateFunction(@"");
+			await VerifyFix(template, fixedCode).ConfigureAwait(false);
 		}
-		#endregion
 	}
 }

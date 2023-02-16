@@ -1,12 +1,15 @@
-// � 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
@@ -19,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new VariableNamingConventionAnalyzer();
 		}
@@ -28,10 +31,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		#region Public Interface
 
-		[DataRow("foo", false, 3)]
-		[DataRow("_foo", true, 3)]
+		[DataRow("foo", false)]
+		[DataRow("_foo", true)]
 		[DataTestMethod]
-		public void FieldVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -40,39 +44,27 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 13)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("foo", true, 3)]
-		[DataRow("Foo", true, 3)]
-		[DataRow("Foo_", true, 3)]
-		[DataRow("_Foo", true, 3)]
-		[DataRow("__foo", true, 3)]
-		[DataRow("__Foo", true, 3)]
-		[DataRow("_foo", true, 3)]
-		[DataRow("_foo_", true, 3)]
+		[DataRow("foo", true)]
+		[DataRow("Foo", true)]
+		[DataRow("Foo_", true)]
+		[DataRow("_Foo", true)]
+		[DataRow("__foo", true)]
+		[DataRow("__Foo", true)]
+		[DataRow("_foo", true)]
+		[DataRow("_foo_", true)]
 		[DataTestMethod]
-		public void FieldVariableNameIgnoresPublicFields(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableNameIgnoresPublicFieldsAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -81,31 +73,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 13)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromArray()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromArrayAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -113,14 +93,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = baseline;
-
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromConstant()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -129,13 +107,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromCastConstant()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromCastConstantAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -144,13 +121,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromCharArray()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromCharArrayAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -159,13 +135,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromImplicitArray()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromImplicitArrayAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -174,13 +149,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromImplicitArrayInitializer()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromImplicitArrayInitializerAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -189,13 +163,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromArrayWrittenTo()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromArrayWrittenToAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -209,14 +182,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 
 		[TestMethod]
-		public void FieldVariableFromFunction()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromFunctionAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -226,13 +198,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromDateTime()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromDateTimeAsync()
 		{
 			string baseline = @"public static class Foo 
 {{
@@ -241,13 +212,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void FieldVariableFromConstantValue()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldVariableFromConstantValueAsync()
 		{
 			string baseline = @"class Foo 
 {{
@@ -256,20 +226,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = baseline;
 
-			DiagnosticResult[] expected = Array.Empty<DiagnosticResult>();
-
-			VerifyCSharpDiagnostic(givenText, expected);
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
-		[DataRow("foo", false, 3)]
-		[DataRow("Foo", true, 3)]
-		[DataRow("_Foo", false, 3)]
-		[DataRow("__foo", false, 3)]
-		[DataRow("__Foo", false, 3)]
-		[DataRow("_foo", false, 3)]
-		[DataRow("_foo_", false, 3)]
+		[DataRow("foo", false)]
+		[DataRow("Foo", true)]
+		[DataRow("_Foo", false)]
+		[DataRow("__foo", false)]
+		[DataRow("__Foo", false)]
+		[DataRow("_foo", false)]
+		[DataRow("_foo_", false)]
 		[DataTestMethod]
-		public void EventNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EventNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -277,39 +246,26 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 18)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("i", true, 5)]
-		[DataRow("ms", true, 5)]
-		[DataRow("foo", true, 5)]
-		[DataRow("_Foo", false, 5)]
-		[DataRow("__foo", false, 5)]
-		[DataRow("__Foo", false, 5)]
-		[DataRow("_foo", false, 5)]
+		[DataRow("i", true)]
+		[DataRow("ms", true)]
+		[DataRow("foo", true)]
+		[DataRow("_Foo", false)]
+		[DataRow("__foo", false)]
+		[DataRow("__Foo", false)]
+		[DataRow("_foo", false)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrect(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -321,37 +277,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 ";
 			string givenText = string.Format(baseline, content);
 
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 9)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("Foo", "const", true, 5)]
-		[DataRow("Foo", "const", true, 5)]
-		[DataRow("_Foo", "const", false, 5)]
-		[DataRow("__foo", "const", false, 5)]
-		[DataRow("__Foo", "const", false, 5)]
-		[DataRow("_foo", "const", false, 5)]
+		[DataRow("Foo", "const", true)]
+		[DataRow("Foo", "const", true)]
+		[DataRow("_Foo", "const", false)]
+		[DataRow("__foo", "const", false)]
+		[DataRow("__Foo", "const", false)]
+		[DataRow("_foo", "const", false)]
 		[DataTestMethod]
-		public void AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AttributedLocalVariableNameIsCorrectAsync(string content, string attribute, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -362,38 +306,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content, attribute);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 8 + attribute.Length + 2)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("int i; for(i=0;i<5;i++){}", true, 5, 9)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false, 5, 9)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false, 5, 9)]
-		[DataRow("for(var i=0;i<5;i++){}", true, 5, 13)]
-		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
-		[DataRow("for(var _i=0;i<5;i++){}", false, 5, 13)]
+		[DataRow("int i; for(i=0;i<5;i++){}", true)]
+		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
+		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
+		[DataRow("for(var i=0;i<5;i++){}", true)]
+		[DataRow("for(var _i=0;i<5;i++){}", false)]
+		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrectForLoop(string content, bool isGood, int errorLine, int errorColumn)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectForLoopAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -404,35 +335,22 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, errorColumn)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("using(var i = new MemoryStream()){}", true, 5)]
-		[DataRow("using(var _i = new MemoryStream()){}", false, 5)]
-		[DataRow("using(var _I = new MemoryStream()){}", false, 5)]
+		[DataRow("using(var i = new MemoryStream()){}", true)]
+		[DataRow("using(var _i = new MemoryStream()){}", false)]
+		[DataRow("using(var _I = new MemoryStream()){}", false)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrectUsing(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectUsingAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -443,35 +361,22 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 15)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
-		[DataRow("foreach(var i in new[] { 1, 2 }){}", true, 5)]
-		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false, 5)]
-		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false, 5)]
+		[DataRow("foreach(var i in new[] { 1, 2 }){}", true)]
+		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false)]
+		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false)]
 		[DataTestMethod]
-		public void LocalVariableNameIsCorrectForeach(string content, bool isGood, int errorLine)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
 			string baseline = @"class Foo 
 {{
@@ -482,28 +387,14 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 }}
 ";
 			string givenText = string.Format(baseline, content);
-
-			DiagnosticResult[] expected;
-
 			if (isGood)
 			{
-				expected = Array.Empty<DiagnosticResult>();
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				expected = new[] { new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticIds.VariableNamingConventions),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-					new DiagnosticResultLocation("Test.cs", errorLine, 9)
-				} }
-				};
+				await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(givenText, expected);
 		}
 
 		#endregion

@@ -1,20 +1,20 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
 	public class NamespacePrefixAnalyzerTest1 : DiagnosticVerifier
 	{
-
-		#region Non-Public Data Members
-
 		private const string ClassString = @"
 			using System;
 			using System.Globalization;
@@ -29,32 +29,26 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}}
 			";
 
-		#endregion
-
-		#region Non-Public Properties/Methods
 		private DiagnosticResultLocation GetBaseDiagnosticLocation(int rowOffset = 0, int columnOffset = 0)
 		{
 			return new DiagnosticResultLocation("Test.cs", 4 + rowOffset, 14 + columnOffset);
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new NamespacePrefixAnalyzer();
 		}
 
-		#endregion
-
-
-		#region Test Methods
 
 		[TestMethod]
-		public void ReportEmptyNamespacePrefix()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ReportEmptyNamespacePrefixAsync()
 		{
 
 			string code = string.Format(ClassString, "");
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.NamespacePrefix),
+				Id = Helper.ToDiagnosticId(DiagnosticId.NamespacePrefix),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -63,9 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				}
 			};
 
-			VerifyCSharpDiagnostic(code, expected);
+			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }

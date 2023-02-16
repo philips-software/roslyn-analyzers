@@ -2,10 +2,13 @@
 
 
 using System;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
@@ -21,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		#region Non-Public Properties/Methods
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreferTupleFieldNamesAnalyzer();
 		}
@@ -49,16 +52,18 @@ class Foo
 		[DataRow("data.Item2", true)]
 		[DataRow("data.num", false)]
 		[DataTestMethod]
-		public void NamedTuplesDontCauseErrors(string argument, bool isError)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NamedTuplesDontCauseErrorsAsync(string argument, bool isError)
 		{
-			DiagnosticResult[] results = Array.Empty<DiagnosticResult>();
-
+			var source = CreateFunction(argument);
 			if (isError)
 			{
-				results = DiagnosticResultHelper.CreateArray(DiagnosticIds.PreferUsingNamedTupleField);
+				await VerifyDiagnostic(source, DiagnosticId.PreferUsingNamedTupleField).ConfigureAwait(false);
 			}
-
-			VerifyCSharpDiagnostic(CreateFunction(argument), results);
+			else
+			{
+				await VerifySuccessfulCompilation(source).ConfigureAwait(false);
+			}
 		}
 
 		#endregion

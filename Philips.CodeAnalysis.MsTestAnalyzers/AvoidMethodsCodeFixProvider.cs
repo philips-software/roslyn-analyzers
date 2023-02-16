@@ -24,10 +24,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			get
 			{
-				return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidTestInitializeMethod),
-			  Helper.ToDiagnosticId(DiagnosticIds.AvoidClassInitializeMethod),
-			  Helper.ToDiagnosticId(DiagnosticIds.AvoidClassCleanupMethod),
-			  Helper.ToDiagnosticId(DiagnosticIds.AvoidTestCleanupMethod));
+				return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
+			  Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
+			  Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
+			  Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod));
 			}
 		}
 

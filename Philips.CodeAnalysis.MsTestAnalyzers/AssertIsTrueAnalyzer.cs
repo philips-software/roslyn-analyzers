@@ -15,16 +15,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string IsEqualTitle = @"Assert.IsTrue/IsFalse Usage";
 		private const string IsEqualMessageFormat = @"Do not call IsTrue/IsFalse if AreEqual/AreNotEqual will suffice";
 		private const string IsEqualDescription = @"Assert.IsTrue(<actual> == <expected>) => Assert.AreEqual(<expected>, <actual>)";
-
 		private const string Category = Categories.Maintainability;
+		private const string EqualsName = "Equals";
 
-		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticIds.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
+		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(IsEqualRule); } }
 
 		protected override Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue)
 		{
 			var kind = test.Kind();
+			var location = node.GetLocation();
 			switch (kind)
 			{
 				case SyntaxKind.LogicalNotExpression:
@@ -34,17 +35,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				case SyntaxKind.LogicalAndExpression:
 					if (isIsTrue)
 					{
-						return Diagnostic.Create(IsEqualRule, node.GetLocation());
+						return Diagnostic.Create(IsEqualRule, location);
 					}
 					return null;
 				case SyntaxKind.EqualsExpression:
 				case SyntaxKind.NotEqualsExpression:
-					return Diagnostic.Create(IsEqualRule, node.GetLocation());
+					return Diagnostic.Create(IsEqualRule, location);
 				case SyntaxKind.InvocationExpression:
 					//they are calling a function.  Don't let them calls .Equals or something like that.
 					if (CheckForEqualityFunction(context, (InvocationExpressionSyntax)test))
 					{
-						return Diagnostic.Create(IsEqualRule, node.GetLocation());
+						return Diagnostic.Create(IsEqualRule, location);
 					}
 					return null;
 				case SyntaxKind.IdentifierName:
@@ -57,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static bool CheckForEqualityFunction(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax test)
 		{
-			if (test.Expression is not MemberAccessExpressionSyntax member || member.Name.ToString() != "Equals")
+			if (test.Expression is not MemberAccessExpressionSyntax member || member.Name.ToString() != EqualsName)
 			{
 				//they called something that wasn't a member function.  Maybe a static method.
 				return false;
@@ -71,7 +72,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			//would love to check if the types are actually IComparable<> here.  Speaks to intent.
-			return sym.Name == "Equals";
+			return sym.Name == EqualsName;
 		}
 	}
 }

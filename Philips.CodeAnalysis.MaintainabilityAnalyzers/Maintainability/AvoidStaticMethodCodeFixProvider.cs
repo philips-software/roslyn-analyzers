@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticIds.AvoidStaticMethods)); }
+			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidStaticMethods)); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> RemoveModifier(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
-			var modifierToRemove = method.Modifiers.Where(m => m.ValueText == @"static").First();
+			var modifierToRemove = method.Modifiers.First(m => m.ValueText == @"static");
 			var newModifiers = method.Modifiers.Remove(modifierToRemove);
 
 			MethodDeclarationSyntax newMethod = method.WithModifiers(newModifiers);

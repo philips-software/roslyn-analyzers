@@ -1,12 +1,15 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MsTestAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
@@ -22,36 +25,39 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataTestMethod]
 		[DataRow("[TestMethod, Description(TestDescriptions.longDescription)]", "[TestMethod]")]
 		[DataRow("[TestMethod, Description(\"asdfasdkfasdfkasd\")]", "[TestMethod]")]
-		public void IncorrectDescriptionAttribute(string methodAttributes, string expectedMethodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IncorrectDescriptionAttribute(string methodAttributes, string expectedMethodAttributes)
 		{
-			VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes);
+			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
 
 		[DataTestMethod]
 		[DataRow("[TestMethod][Description(TestDescriptions.shortDescription)]")]
 		[DataRow("[TestMethod, Description(TestDescriptions.shortDescription)]")]
-		public void CorrectDescriptionAttribute(string methodAttributes)
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CorrectDescriptionAttribute(string methodAttributes)
 		{
-			VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes);
+			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
 		[TestMethod]
-		public void AttributesInMethodsDontCauseCrash()
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AttributesInMethodsDontCauseCrash()
 		{
 			const string body = @"
 [TestMethod, Description(TestDescriptions.shortDescription)]
 var foo = 4;
 ";
 
-			VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod]");
+			await VerifyNoChange(methodBody: body, methodAttributes: "[TestMethod]").ConfigureAwait(false);
 		}
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticIds.AvoidDescriptionAttribute),
+				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidDescriptionAttribute),
 				Message = new Regex(TestHasDescriptionAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -61,12 +67,12 @@ var foo = 4;
 			};
 		}
 
-		protected override CodeFixProvider GetCSharpCodeFixProvider()
+		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new TestHasDescriptionCodeFixProvider();
 		}
 
-		protected override DiagnosticAnalyzer GetCSharpDiagnosticAnalyzer()
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new TestHasDescriptionAnalyzer();
 		}
