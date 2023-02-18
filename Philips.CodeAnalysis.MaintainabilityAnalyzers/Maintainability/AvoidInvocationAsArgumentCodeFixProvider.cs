@@ -45,12 +45,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Find the nested method call identified by the diagnostic.
 			SyntaxNode node = root.FindNode(diagnosticSpan, false, true);
 			ExpressionSyntax expressionNode = node as ExpressionSyntax;
-			if (expressionNode == null)
+			if (expressionNode == null && node is ArgumentSyntax argumentNode)
 			{
-				if (node is ArgumentSyntax argumentNode)
-				{
-					expressionNode = argumentNode.Expression;
-				}
+				expressionNode = argumentNode.Expression;
 			}
 
 			// Make sure it's part of a statement that we know how to handle.
