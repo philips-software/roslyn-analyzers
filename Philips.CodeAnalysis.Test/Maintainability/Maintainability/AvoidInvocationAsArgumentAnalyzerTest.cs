@@ -1,12 +1,8 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using Microsoft.CodeAnalysis;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Serialization;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -21,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidInvocationAsArgumentTestAsync()
+		public async Task AvoidInvocationAsArgumentTest()
 		{
 			string template = @"
 class Foo
@@ -282,6 +278,41 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsMixedStaticAndInstanceMemberAccessArgumentFixTest()
+		{
+			string errorContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public static void Moo(string value) { }
+  public void Moew(string value) { }
+  public void MyTest()
+  {
+     Meow(Foo.Moo(Do()));
+  }
+}
+";
+			string fixedContent = @"
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public static void Moo(string value) { }
+  public void Moew(string value) { }
+  public void MyTest()
+  {
+     var resultOfDo = Do();
+     var resultOfMeow = Meow(resultOfDo);
+     Foo.Moo(resultOfMoew);
+  }
+}
+";
+
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentLocalAssignmentTest()
 		{
 			string errorContent = @"
@@ -489,7 +520,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidInvocationAsArgumentFixExpressionTestAsync()
+		public async Task AvoidInvocationAsArgumentFixExpressionTest()
 		{
 			string errorContent = @"
 class Meow { public Meow(string x) {} }
