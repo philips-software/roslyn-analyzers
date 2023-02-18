@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -21,6 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class EnableDocumentationCreationAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
+		[ExcludeFromCodeCoverage]
 		public override void Analyze()
 		{
 			if (Node.SyntaxTree.Options.DocumentationMode == DocumentationMode.None)
