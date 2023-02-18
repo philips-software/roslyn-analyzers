@@ -1,9 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,7 +20,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <summary>
 		/// Boilerplate initialization for the Analyzer
 		/// </summary>
-		/// <exception cref="InvalidDataException">When an Analyzer with a new type of SyntaxKind is added.</exception>
+		/// <exception cref="InvalidOperationException">When an Analyzer with a new type of SyntaxKind is added.</exception>
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
