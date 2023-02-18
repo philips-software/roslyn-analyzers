@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
-		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; } = null;
+		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
 
 		public void AddException(string exceptionTypeName, string description)
 		{

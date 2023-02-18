@@ -316,9 +316,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// </summary>
 		/// <param name="memberLocation"></param>
 		/// <param name="context"></param>
-		private static void CreateDiagnostic(Location memberLocation, SyntaxNodeAnalysisContext context, string regionName, DiagnosticDescriptor Rule)
+		private static void CreateDiagnostic(Location memberLocation, SyntaxNodeAnalysisContext context, string regionName, DiagnosticDescriptor rule)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, memberLocation, regionName);
+			Diagnostic diagnostic = Diagnostic.Create(rule, memberLocation, regionName);
 			context.ReportDiagnostic(diagnostic);
 		}
 

@@ -59,6 +59,14 @@ dotnet_style_qualification_for_event = false:error
 dotnet_style_require_accessibility_modifiers = always:error
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
+# Parameters must be camel case
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_rule.parameter_must_be_camel_case.symbols  = parameters
+dotnet_naming_rule.parameter_must_be_camel_case.style    = camel_case
+dotnet_naming_rule.parameter_must_be_camel_case.severity = error
+
+
 # IDE0060 should not trip on [DataRow] tests
 #dotnet_code_quality_unused_parameters = non_public
 
