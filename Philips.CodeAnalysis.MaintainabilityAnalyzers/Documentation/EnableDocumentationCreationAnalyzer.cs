@@ -3,7 +3,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -22,15 +21,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class EnableDocumentationCreationAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
-		private const int DiagnosticSpanStart = 0;
-		private const int DiagnosticSpanEnd = 3;
-
 		public override void Analyze()
 		{
 			if (Node.SyntaxTree.Options.DocumentationMode == DocumentationMode.None)
 			{
-				var location = Node.SyntaxTree.GetLocation(TextSpan.FromBounds(DiagnosticSpanStart, DiagnosticSpanEnd));
-				ReportDiagnostic(location);
+				ReportDiagnostic();
 			}
 		}
 	}
