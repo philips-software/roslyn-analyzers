@@ -133,7 +133,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != argumentsToCheck)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
+					var location = invocationExpressionSyntax.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
 			}
@@ -142,13 +143,15 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				//it has a single eventargs argument.  Compiler has made sure that the types are the same, make sure the delegate takes object sender, event args
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != 2)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
+					var location = invocationExpressionSyntax.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
 
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
 				{
-					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, invocationExpressionSyntax.GetLocation()));
+					var location = invocationExpressionSyntax.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
 
@@ -169,7 +172,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (!conversion.IsImplicit)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(TypeMismatchRule, argument.GetLocation(), argument.Expression, typeSymbol.Symbol?.Name, expectedType.Name));
+					var location = argument.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(TypeMismatchRule, location, argument.Expression, typeSymbol.Symbol?.Name, expectedType.Name));
 				}
 			}
 		}
