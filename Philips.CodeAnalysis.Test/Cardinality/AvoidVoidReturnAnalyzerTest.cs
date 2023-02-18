@@ -1,9 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -20,6 +19,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 		//No diagnostics expected to show up
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForEmptyFiles()
 		{
 			var test = "";
@@ -29,6 +29,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 		//No diagnostics expected to show up
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForNonVoidPredefinedReturnTypes()
 		{
 			var test = @"
@@ -44,6 +45,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForNonVoidMethods()
 		{
 			var test = @"
@@ -66,6 +68,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FireForVoidReturn()
 		{
 			var test = @"
@@ -83,6 +86,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 		// It's impossible to avoid void methods when they override those of base class
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForOverriddenVoidReturn()
 		{
 			var test = @"
