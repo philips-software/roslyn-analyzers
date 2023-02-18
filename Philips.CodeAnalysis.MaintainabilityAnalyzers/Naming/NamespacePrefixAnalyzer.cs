@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NamespacePrefixAnalyzer : DiagnosticAnalyzer
 	{
-		private const string TitleForIncorrectPrefix = @"Namespace must use  predefined prefixes";
+		private const string TitleForIncorrectPrefix = @"Namespace uses predefined prefix";
 		private const string MessageFormatForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
 		private const string DescriptionForIncorrectPrefix = MessageFormatForIncorrectPrefix;
 
