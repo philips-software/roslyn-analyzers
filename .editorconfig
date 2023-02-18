@@ -78,6 +78,7 @@ dotnet_diagnostic.CA1847.severity = none
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
 
+dotnet_diagnostic.CA1724.severity = error
 dotnet_diagnostic.CA1825.severity = error
 dotnet_diagnostic.CA1827.severity = error
 dotnet_diagnostic.CA1829.severity = error
