@@ -233,7 +233,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return false;
 			}
 
-			operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, argument.Syntax.GetLocation(), targetMethod.ToDisplayString(), target.TargetMethod.ToDisplayString()));
+			var location = argument.Syntax.GetLocation();
+			var displayString = targetMethod.ToDisplayString();
+			var targetDisplayString = target.TargetMethod.ToDisplayString();
+			operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, displayString, targetDisplayString));
 			return true;
 		}
 
