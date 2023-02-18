@@ -474,7 +474,7 @@ class Foo
 		return document;
 	}
 }";
-			string regex = MakeRegex(48);
+			string regex = MakeRegex(40);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 	}

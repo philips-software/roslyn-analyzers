@@ -47,18 +47,7 @@ class Foo
   }}
 }}
 ";
-			var result = new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument),
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 20, 19)
-				}
-			};
-
-			await VerifyDiagnostic(template, result).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.AvoidInvocationAsArgument, line: 20, column: 19).ConfigureAwait(false);
 		}
 
 		[TestMethod]

@@ -17,11 +17,6 @@ namespace Philips.CodeAnalysis.Test.Moq
 	[TestClass]
 	public class MockRaiseArgumentsMustMatchEventAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new MockRaiseArgumentsMustMatchEventAnalyzer();
@@ -34,10 +29,6 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 			return base.GetMetadataReferences().Add(reference);
 		}
-
-		#endregion
-
-		#region Public Interface
 
 		[DataRow(false, "m.Object, EventArgs.Empty")]
 		[DataTestMethod]
@@ -292,7 +283,5 @@ public static class Bar
 
 			await VerifyDiagnostic(string.Format(template, arguments), result).ConfigureAwait(false);
 		}
-
-		#endregion
 	}
 }
