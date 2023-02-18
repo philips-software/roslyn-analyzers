@@ -13,9 +13,14 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 	[TestClass]
 	public class AvoidVoidReturnAnalyzerTest : DiagnosticVerifier
 	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidVoidReturnAnalyzer();
+		}
+
 		//No diagnostics expected to show up
 		[TestMethod]
-		public async Task NotFireForEmptyFilesAsync()
+		public async Task NotFireForEmptyFiles()
 		{
 			var test = "";
 
@@ -24,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 		//No diagnostics expected to show up
 		[TestMethod]
-		public async Task NotFireForNonVoidMethodsAsync()
+		public async Task NotFireForNonVoidPredefinedReturnTypes()
 		{
 			var test = @"
     namespace ConsoleApplication1
@@ -39,7 +44,29 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		}
 
 		[TestMethod]
-		public async Task FireForVoidReturnAsync()
+		public async Task NotFireForNonVoidMethods()
+		{
+			var test = @"
+    namespace ConsoleApplication1
+    {
+        public class Foo
+        {
+        }
+
+        public class Meow
+        {
+            public Foo Hi()
+            {
+                return new Foo();
+            }
+        }
+    }";
+
+			await VerifySuccessfulCompilation(test);
+		}
+
+		[TestMethod]
+		public async Task FireForVoidReturn()
 		{
 			var test = @"
     namespace ConsoleApplication1
@@ -56,7 +83,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 
 		// It's impossible to avoid void methods when they override those of base class
 		[TestMethod]
-		public async Task NotFireForOverriddenVoidReturnAsync()
+		public async Task NotFireForOverriddenVoidReturn()
 		{
 			var test = @"
     namespace ConsoleApplication1
@@ -76,11 +103,6 @@ namespace Philips.CodeAnalysis.Test.Cardinality
     }";
 
 			await VerifyDiagnostic(test, regex: "Foo", line: 6);
-		}
-
-		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
-		{
-			return new AvoidVoidReturnAnalyzer();
 		}
 	}
 }
