@@ -35,19 +35,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		#region Verifier wrappers
 
-		protected async Task VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*", int? line = null, int? column = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName, regex).ConfigureAwait(false);
+			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName, regex, line, column).ConfigureAwait(false);
 		}
 
-		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*", int? line = null, int? column = null)
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(id),
-				Location = new DiagnosticResultLocation(null),
+				Location = new DiagnosticResultLocation(null, line, column),
 				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
 			};
