@@ -301,8 +301,7 @@ class Foo
   public void MyTest()
   {
      var resultOfDo = Do();
-     var resultOfMeow = Meow(resultOfDo);
-     Foo.Moo(resultOfMoew);
+     Meow(Foo.Moo(resultOfDo));
   }
 }
 ";
