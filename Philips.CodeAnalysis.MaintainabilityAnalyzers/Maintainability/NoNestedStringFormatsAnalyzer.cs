@@ -76,8 +76,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
-					interpolation.Syntax.GetLocation()));
+				var location = interpolation.Syntax.GetLocation();
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 			}
 		}
 
@@ -101,7 +101,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					}
 					break;
 				case OperationKind.InterpolatedString:
-					operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, argument.Syntax.GetLocation(), "an interpolated string", invocation.TargetMethod.ToDisplayString()));
+					var location = argument.Syntax.GetLocation();
+					var displayString = invocation.TargetMethod.ToDisplayString();
+					operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, "an interpolated string", displayString));
 					break;
 			}
 
@@ -121,7 +123,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
 				{
 					//string format with no arguments
-					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+					var location = argument.Syntax.GetLocation();
+					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 					return;
 				}
 
@@ -134,7 +137,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				((string)argument.ConstantValue.Value) == "{0}" &&
 				conversion.Operand.Type.SpecialType == SpecialType.System_String)
 			{
-				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, argument.Syntax.GetLocation()));
+				var location = argument.Syntax.GetLocation();
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 			}
 		}
 
@@ -150,16 +154,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					if (arrayCreation.Initializer.ElementValues.Length == 0)
 					{
 						//string format ala string.format("{0}")
-						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
-							argument.Syntax.GetLocation()));
+						var location = argument.Syntax.GetLocation();
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 						return;
 					}
 
 					if (ArrayContainsString(0, arrayCreation))
 					{
 						//string format ala string.format("{0}", 3)
-						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule,
-							argument.Syntax.GetLocation()));
+						var location = argument.Syntax.GetLocation();
+						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 					}
 				}
 			}

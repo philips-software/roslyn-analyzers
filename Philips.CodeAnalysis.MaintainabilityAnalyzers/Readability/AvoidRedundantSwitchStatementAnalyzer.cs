@@ -56,7 +56,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Cases[0].Syntax.GetLocation()));
+			var location = operation.Cases[0].Syntax.GetLocation();
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
@@ -79,7 +80,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Arms[0].Syntax.GetLocation()));
+			var location = operation.Arms[0].Syntax.GetLocation();
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 	}
 }

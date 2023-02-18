@@ -74,7 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					continue;
 				}
 
-				context.ReportDiagnostic(Diagnostic.Create(Rule, fieldReference.Syntax.GetLocation(), element.Name, field.Name));
+				var location = fieldReference.Syntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, element.Name, field.Name));
 			}
 		}
 	}

@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If nested calls (e.g., Foo(Bar(Meow()))), only trigger the outer violation Bar(Meow())
-			if (Node.Ancestors().OfType<ArgumentSyntax>().Any(arg => !IsStaticMethod(arg)))
+			if (Node.Ancestors().OfType<ArgumentSyntax>().Any(arg => !IsStaticMethod(arg.Expression)))
 			{
 				return;
 			}
@@ -67,8 +67,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// This is debatable, and ideally warrants a configuration option.
 			if (invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
 			{
-				var symbol = Context.SemanticModel.GetSymbolInfo(callee).Symbol;
-				if (symbol.IsStatic)
+				bool isStatic = IsStaticMethod(callee);
+				if (isStatic)
 				{
 					return;
 				}
@@ -78,9 +78,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ReportDiagnostic(location, Node.ToString());
 		}
 
-		private bool IsStaticMethod(ArgumentSyntax argument)
+		private bool IsStaticMethod(SyntaxNode node)
 		{
-			var symbol = Context.SemanticModel.GetSymbolInfo(argument.Expression).Symbol;
+			var symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 			return symbol is { IsStatic: true };
 		}
 	}
