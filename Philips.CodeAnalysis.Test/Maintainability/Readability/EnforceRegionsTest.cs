@@ -244,17 +244,7 @@ class Foo
 
 }}";
 			string givenText = string.Format(baseline, given);
-			var result = new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
-				Message = new Regex(EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 8, 3)
-				}
-			};
-			await VerifyDiagnostic(givenText, result).ConfigureAwait(false);
+			await VerifyDiagnostic(givenText, DiagnosticId.EnforceNonDuplicateRegion, regex: EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat, line: 8, column: 3).ConfigureAwait(false);
 		}
 
 		private async Task VerifyErrorAsync(string baseline, string given, bool isError, int line = 6, int column = 2)
@@ -262,17 +252,7 @@ class Foo
 			string givenText = string.Format(baseline, given);
 			if (isError)
 			{
-				var result = new DiagnosticResult()
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.EnforceRegions),
-					Message = new Regex(EnforceRegionsAnalyzer.EnforceRegionMessageFormat),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", line, column)
-					}
-				};
-				await VerifyDiagnostic(givenText, result).ConfigureAwait(false);
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceRegions, regex: EnforceRegionsAnalyzer.EnforceRegionMessageFormat, line: line, column: column).ConfigureAwait(false);
 			}
 			else
 			{
