@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.Benchmark
 				}
 			}
 		}
-		private void TestDictionary(DuplicateDetector _library, int baseModulus, int modulus)
+		private void TestDictionary(DuplicateDetector library, int baseModulus, int modulus)
 		{
 			A.Data.AsParallel().ForAll(kvp =>
 			{
@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.Benchmark
 
 					if (rollingTokenSet.IsFull())
 					{
-						_ = _library.Register(hash, evidence);
+						_ = library.Register(hash, evidence);
 					}
 				}
 			});
