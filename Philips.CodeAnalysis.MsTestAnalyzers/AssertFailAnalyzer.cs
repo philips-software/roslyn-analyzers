@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private sealed class AssertMetadata
 		{
@@ -68,20 +68,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// { Assert.Fail() }
 			if (expressionOperation.Parent is IBlockOperation blockOperation && CheckBlock(blockOperation, expressionOperation))
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				var location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 				return;
 			}
 
 			// bare if/else (IE, no block)
 			if (expressionOperation.Parent is IConditionalOperation)
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				var location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 
 			// bare foreach loop
 			if (expressionOperation.Parent is IForEachLoopOperation)
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				var location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 
