@@ -78,18 +78,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 
 		private async Task VerifyAsync(string file)
 		{
-			await VerifyDiagnostic(file,
-				new DiagnosticResult()
-				{
-					Id = AllowedSymbolsTestAnalyzer.Rule.Id,
-					Message = new Regex("AllowedSymbolsFound"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", null, null)
-					}
-				}
-			).ConfigureAwait(false);
+			await VerifyDiagnostic(file, AllowedSymbolsTestAnalyzer.Rule.Id, regex: "AllowedSymbolsFound").ConfigureAwait(false);
 		}
 	}
 }

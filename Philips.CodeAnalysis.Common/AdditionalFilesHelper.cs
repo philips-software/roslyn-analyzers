@@ -11,6 +11,9 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Common
 {
+	/// <summary>
+	/// Helper class for handling &lt;AdditionalFiles&gt; elements.
+	/// </summary>
 	public class AdditionalFilesHelper
 	{
 		private readonly ImmutableArray<AdditionalText> _additionalFiles;

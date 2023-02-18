@@ -59,6 +59,14 @@ dotnet_style_qualification_for_event = false:error
 dotnet_style_require_accessibility_modifiers = always:error
 csharp_preferred_modifier_order = public,private,protected,internal,static,extern,new,virtual,abstract,sealed,override,readonly,unsafe,volatile,async
 
+# Parameters must be camel case
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+dotnet_naming_style.camel_case.capitalization = camel_case
+dotnet_naming_rule.parameter_must_be_camel_case.symbols  = parameters
+dotnet_naming_rule.parameter_must_be_camel_case.style    = camel_case
+dotnet_naming_rule.parameter_must_be_camel_case.severity = error
+
+
 # IDE0060 should not trip on [DataRow] tests
 #dotnet_code_quality_unused_parameters = non_public
 
@@ -78,6 +86,7 @@ dotnet_diagnostic.CA1847.severity = none
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
 
+dotnet_diagnostic.CA1724.severity = error
 dotnet_diagnostic.CA1825.severity = error
 dotnet_diagnostic.CA1827.severity = error
 dotnet_diagnostic.CA1829.severity = error
@@ -85,6 +94,9 @@ dotnet_diagnostic.CA1853.severity = error
 dotnet_diagnostic.CA2016.severity = error
 dotnet_diagnostic.CA2211.severity = error
 dotnet_diagnostic.CA2241.severity = error
+
+# Temporarly diabled to fix the tech dept.
+dotnet_diagnostic.CS1591.severity = none
 
 # We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.
 dotnet_diagnostic.SYSLIB1045.severity = none

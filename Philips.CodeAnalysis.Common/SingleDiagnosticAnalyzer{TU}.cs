@@ -1,9 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -11,7 +8,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer<T, U> : SingleDiagnosticAnalyzer where T : SyntaxNode where U : SyntaxNodeAction<T>, new()
+	public abstract class SingleDiagnosticAnalyzer<T, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where T : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<T>, new()
 	{
 		public string FullyQualifiedMetaDataName { get; protected set; }
 
@@ -23,7 +20,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <summary>
 		/// Boilerplate initialization for the Analyzer
 		/// </summary>
-		/// <exception cref="InvalidDataException">When an Analyzer with a new type of SyntaxKind is added.</exception>
+		/// <exception cref="InvalidOperationException">When an Analyzer with a new type of SyntaxKind is added.</exception>
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -54,7 +51,7 @@ namespace Philips.CodeAnalysis.Common
 				return;
 			}
 
-			U syntaxNodeAction = new()
+			TSyntaxNodeAction syntaxNodeAction = new()
 			{
 				Context = context,
 				Node = (T)context.Node,

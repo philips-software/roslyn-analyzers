@@ -124,7 +124,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		private void CopyChildrenFrom(CallTreeNode source)
 		{
-			foreach(var child in source._children)
+			foreach (var child in source._children)
 			{
 				var newChild = new CallTreeNode(child.Method, this);
 				_children.Add(newChild);

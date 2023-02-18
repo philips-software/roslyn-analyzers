@@ -1,0 +1,3 @@
+# Functional Programming
+
+This category of diagnostics...
