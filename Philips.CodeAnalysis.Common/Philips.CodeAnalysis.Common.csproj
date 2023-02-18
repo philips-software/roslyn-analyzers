@@ -1,9 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net7.0;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
+    <AnalysisLevel>latest-Recommended</AnalysisLevel>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <ReportAnalyzer>true</ReportAnalyzer>
     <Version>1.0.3.0</Version>
   </PropertyGroup>
   <ItemGroup>
