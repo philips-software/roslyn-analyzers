@@ -9,9 +9,9 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class MethodPredicates
 	{
-		public static bool IsNotOverridden(this MethodDeclarationSyntax methodDeclarationSyntax)
+		public static bool IsOverridden(this MethodDeclarationSyntax methodDeclarationSyntax)
 		{
-			return !methodDeclarationSyntax.Modifiers.Any(SyntaxKind.OverrideKeyword);
+			return methodDeclarationSyntax.Modifiers.Any(SyntaxKind.OverrideKeyword);
 		}
 
 		public static bool ReturnsVoid(this MethodDeclarationSyntax methodDeclarationSyntax)

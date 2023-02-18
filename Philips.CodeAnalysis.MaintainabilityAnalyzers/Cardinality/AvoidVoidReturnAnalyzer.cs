@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 	public class AvoidVoidReturnAnalyzer : SingleDiagnosticAnalyzer<MethodDeclarationSyntax, AvoidVoidReturnSyntaxNodeAction>
 	{
 		private const string Title = @"Method returns void";
-		private const string MessageFormat = @"Method {0} returns void";
+		private const string MessageFormat = @"Method '{0}' returns void";
 		private const string Description = @"Void returns imply a hidden side effect, since there is otherwise a singularly unique unit function.";
 
 		public AvoidVoidReturnAnalyzer()
@@ -25,23 +25,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 	{
 		public override void Analyze()
 		{
-			/*
-			if (Node.ReturnsVoid() &&
-				!Node.IsOverridden())
-			{
-				ReportDiagnostic(Node);
-			}
-*/
-			var result = Optional(Node)
-				.Filter(MethodPredicates.ReturnsVoid)
-				.Filter(MethodPredicates.IsNotOverridden)
-				.Select(CreateDiagnostic)
+			Optional(Node)
+				.Filter((m) => m.ReturnsVoid())
+				.Filter((m) => !m.IsOverridden())
+				.Select((m) => m.CreateDiagnostic(Rule))
 				.Iter(Context.ReportDiagnostic);
-		}
-
-		private Diagnostic CreateDiagnostic(MethodDeclarationSyntax methodDeclarationSyntax)
-		{
-			return methodDeclarationSyntax.CreateDiagnostic(Rule);
 		}
 	}
 }
