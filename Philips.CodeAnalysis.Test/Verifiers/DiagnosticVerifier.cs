@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName).ConfigureAwait(false);
+			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName, regex).ConfigureAwait(false);
 		}
 
 		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
