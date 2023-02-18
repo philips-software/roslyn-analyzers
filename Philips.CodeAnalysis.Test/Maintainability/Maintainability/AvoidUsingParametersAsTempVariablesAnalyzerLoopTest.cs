@@ -12,10 +12,10 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	/// <summary>
-	/// Test class for <see cref="AvoidChangingLoopVariablesAnalyzer"/>.
+	/// Test class for <see cref="AvoidUsingParametersAsTempVariablesAnalyzer"/>.
 	/// </summary>
 	[TestClass]
-	public class AvoidChangingLoopVariablesAnalyzerTest : DiagnosticVerifier
+	public class AvoidUsingParametersAsTempVariablesAnalyzerLoopTest : DiagnosticVerifier
 	{
 		private const string Correct = @"
 namespace AvoidUsingParametersTest {
