@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var parts = exceptionTypeName.Split(',');
 			foreach (var part in parts)
 			{
-				docHelper.AddException(part, string.Empty);
+				docHelper.AddException(part);
 			}
 			var newComment = docHelper.CreateDocumentation();
 
