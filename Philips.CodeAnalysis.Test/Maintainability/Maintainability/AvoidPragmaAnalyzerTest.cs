@@ -16,9 +16,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class AvoidPragmaAnalyzerTest : DiagnosticVerifier
 	{
 		[DataTestMethod]
-		[DataRow(@"#pragma warning disable 100", 5)]
+		[DataRow(@"#pragma warning disable 100")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PragmaWarningNotAvoidedTestAsync(string test, int expectedColumn)
+		public async Task PragmaWarningNotAvoidedTestAsync(string test)
 		{
 			string baseline = @"
 class Foo 
@@ -51,9 +51,9 @@ class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(@"#pragma warning disable 100", 5)]
+		[DataRow(@"#pragma warning disable 100")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PragmaAllowedGeneratedCodeAsync(string test, int expectedColumn)
+		public async Task PragmaAllowedGeneratedCodeAsync(string test)
 		{
 			string baseline = @"
 class Foo 
