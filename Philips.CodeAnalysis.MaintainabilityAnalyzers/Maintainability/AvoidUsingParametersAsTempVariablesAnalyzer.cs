@@ -56,14 +56,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var parameters = assignment.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault()?.ParameterList;
 			if (parameters != null && parameters.Parameters.Any(para => !para.Modifiers.Any(SyntaxKind.OutKeyword) && !para.Modifiers.Any(SyntaxKind.RefKeyword) && para.Identifier.Text == assignedVariableName))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(TempRule, assigned.GetLocation(), assignedVariableName));
+				var location = assigned.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(TempRule, location, assignedVariableName));
 			}
 
 			var loopVariable = assignment.Ancestors().OfType<ForStatementSyntax>().FirstOrDefault()?.Declaration?.Variables.FirstOrDefault();
 			// Check: Avoid changing loop variables.
 			if (loopVariable != null && loopVariable.Identifier.Text == assignedVariableName)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(LoopRule, assigned.GetLocation(), assignedVariableName));
+				var location = assigned.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(LoopRule, location, assignedVariableName));
 			}
 		}
 	}

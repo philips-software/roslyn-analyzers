@@ -59,7 +59,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, invocationOperation.Syntax.GetLocation(), invocationOperation.TargetMethod.Name));
+			var location = invocationOperation.Syntax.GetLocation();
+			context.ReportDiagnostic(Diagnostic.Create(Rule, location, invocationOperation.TargetMethod.Name));
 		}
 
 		private bool HasMultipleCallables(int position, SemanticModel semanticModel, ImmutableArray<ISymbol> statics, IMethodSymbol currentMethod)
