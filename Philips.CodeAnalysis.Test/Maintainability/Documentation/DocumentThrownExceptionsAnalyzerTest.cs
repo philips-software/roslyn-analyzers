@@ -278,11 +278,11 @@ public class Foo
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongNoDoc, CorrectWithThrow, DisplayName = nameof(WrongNoDoc))]
-		[DataRow(WrongInProperty, CorrectInProperty, DisplayName = nameof(WrongInProperty))]
-		[DataRow(WrongRethrow, CorrectRethrow, DisplayName = nameof(WrongRethrow))]
+		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc))]
+		[DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty))]
+		[DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task MissingDocumentationShouldTriggerDiagnosticAsync(string testCode, string fixedCode)
+		public async Task MissingDocumentationShouldTriggerDiagnosticAsync(string testCode)
 		{
 			// See https://github.com/dotnet/roslyn/issues/58210. Until decide how we want to handle this, these will pass.
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
