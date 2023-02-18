@@ -69,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				// Check constructors of an Exception.
 				bool? withinExceptionClass =
-					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith("Exception");
+					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith(StringConstants.Exception);
 				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
 					var loc = Node.ThrowKeyword.GetLocation();

@@ -309,7 +309,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				solution = solution.AddMetadataReference(projectId, references);
 			}
 
-			OptionSet newOptionSet = solution.Options.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2);
+			OptionSet newOptionSet = solution.Options
+				.WithChangedOption(new OptionKey(FormattingOptions.IndentationSize, LanguageNames.CSharp), 2)
+				.WithChangedOption(new OptionKey(FormattingOptions.TabSize, LanguageNames.CSharp), 2)
+				.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, LanguageNames.CSharp), false);
 			Workspace workspace = solution.Workspace;
 			var newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
 			workspace.TryApplyChanges(newSolution);

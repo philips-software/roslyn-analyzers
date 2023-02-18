@@ -11,6 +11,14 @@ namespace Philips.CodeAnalysis.Common
 
 		public int Compare(string x, string y)
 		{
+			if (x == null)
+			{
+				return -1;
+			}
+			if (y == null)
+			{
+				return 1;
+			}
 			var dotX = Math.Max(x.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
 			var comparableX = x.Substring(dotX);
 
@@ -22,14 +30,6 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool Equals(string x, string y)
 		{
-			if (x == null)
-			{
-				return y == null;
-			}
-			if (y == null)
-			{
-				return false;
-			}
 			return Compare(x, y) == 0;
 		}
 
