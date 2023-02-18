@@ -26,13 +26,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private static readonly Regex WildcardRegex =
 			new(".*", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
-		#region To be implemented by Test classes
+
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
 		protected abstract DiagnosticAnalyzer GetDiagnosticAnalyzer();
 
-		#endregion
 
 		#region Verifier wrappers
 
