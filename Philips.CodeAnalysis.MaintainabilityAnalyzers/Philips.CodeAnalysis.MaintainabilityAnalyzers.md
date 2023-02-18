@@ -87,4 +87,5 @@
 | [PH2134](../Documentation/Diagnostics/PH2134.md)  | Set properties in any order                  | Getting other properties in a setter makes this setter dependent on the order in which these properties are set. |
 | [PH2135](../Documentation/Diagnostics/PH2135.md)  | Match namespace and Assembly Name            | The Assembly Name and Namespace must match. |
 | [PH2136](../Documentation/Diagnostics/PH2136.md)  | Avoid duplicate strings                      | Duplicate strings are less maintainable. |
+| [PH2138](../Documentation/Diagnostics/PH2138.md)  | Avoid void returns                           | Methods that return void are mysterious. |
 | [PH2139](../Documentation/Diagnostics/PH2139.md)  | Enable documentation creation                | Add XML documentation generation to the project file, to be able to see Diagnostics for XML documentation. |
