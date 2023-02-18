@@ -172,30 +172,13 @@ class ContainerControl
 ";
 		}
 
-
-
-		private DiagnosticResult GetDiagnosticResult(int row, int col)
-		{
-			return new DiagnosticResult()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.InitializeComponentMustBeCalledOnce),
-				Message = new Regex(".*"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", row,col),
-				}
-			};
-		}
-
 		/// <summary>
 		/// VerifyDiagnosticOnFirst
 		/// </summary>
 		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnFirstAsync(string file)
 		{
-			DiagnosticResult expected = GetDiagnosticResult(11, 16);
-			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 11, column: 16).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -204,8 +187,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnSecondAsync(string file)
 		{
-			DiagnosticResult expected = GetDiagnosticResult(15, 3);
-			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 15, column: 3).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -223,8 +205,7 @@ class ContainerControl
 		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnClassAsync(string file)
 		{
-			DiagnosticResult expected = GetDiagnosticResult(9, 22);
-			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 9, column: 22).ConfigureAwait(false);
 		}
 
 		#endregion

@@ -32,17 +32,7 @@ class Foo
   public void MyHandler(object sender, EventArgs e) => {{ }}
 }}
 ";
-			DiagnosticResult expected = new()
-			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.DisallowDisposeRegistration),
-				Message = new Regex(DisallowDisposeRegistrationAnalyzer.MessageFormat),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 7, 5)
-				}
-			};
-			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(givenText, DiagnosticId.DisallowDisposeRegistration, regex: DisallowDisposeRegistrationAnalyzer.MessageFormat, line: 7, column: 5).ConfigureAwait(false);
 
 			string expectedText = givenText.Replace(@"+=", @"-=");
 

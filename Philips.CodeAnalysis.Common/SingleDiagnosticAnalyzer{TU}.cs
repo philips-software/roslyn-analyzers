@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer<T, U> : SingleDiagnosticAnalyzer where T : SyntaxNode where U : SyntaxNodeAction<T>, new()
+	public abstract class SingleDiagnosticAnalyzer<T, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where T : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<T>, new()
 	{
 		public string FullyQualifiedMetaDataName { get; protected set; }
 
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Common
 				return;
 			}
 
-			U syntaxNodeAction = new()
+			TSyntaxNodeAction syntaxNodeAction = new()
 			{
 				Context = context,
 				Node = (T)context.Node,

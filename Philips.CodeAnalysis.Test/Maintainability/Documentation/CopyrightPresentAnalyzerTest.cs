@@ -101,25 +101,13 @@ class Foo
 ";
 			string givenText = string.Format(baseline, content);
 
-			int errorEndLine = errorStartLine;
-
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 			}
 			else
 			{
-				var expected = new DiagnosticResult
-				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent),
-					Message = new Regex(".+"),
-					Severity = DiagnosticSeverity.Error,
-					Locations = new[]
-					{
-						new DiagnosticResultLocation("Test0.cs", errorStartLine, 1, errorEndLine, null)
-					}
-				};
-				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
+				await VerifyDiagnostic(givenText, DiagnosticId.CopyrightPresent, line: errorStartLine).ConfigureAwait(false);
 			}
 		}
 
