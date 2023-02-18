@@ -10,5 +10,6 @@ namespace Philips.CodeAnalysis.Common
 		public const string Readability = @"Readability";
 		public const string RuntimeFailure = @"Runtime Failure";
 		public const string Security = @"Security";
+		public const string FunctionalProgramming = @"Functional Programming";
 	}
 }
