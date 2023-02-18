@@ -160,6 +160,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// If the region is an end region(at index position odd), look for corresponding start region added in the previous loop and update the endLocation in LocationRangeModel object
 		/// </summary>
 		/// <param name="regions">Regions found in the file</param>
+		/// <param name="context">Tha Analysis context</param>
 		/// <returns>Dictionary of region name and LocationRangeModel object</returns>
 		private static IReadOnlyDictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
@@ -314,8 +315,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Create a diagnostic rule for the analyzer
 		/// </summary>
-		/// <param name="memberLocation"></param>
-		/// <param name="context"></param>
 		private static void CreateDiagnostic(Location memberLocation, SyntaxNodeAnalysisContext context, string regionName, DiagnosticDescriptor rule)
 		{
 			Diagnostic diagnostic = Diagnostic.Create(rule, memberLocation, regionName);
