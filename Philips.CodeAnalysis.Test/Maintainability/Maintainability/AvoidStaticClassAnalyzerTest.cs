@@ -205,16 +205,7 @@ AllowedEnumeration";
 
 		private void Verify(string file)
 		{
-			VerifyDiagnostic(file, new DiagnosticResult()
-			{
-				Id = AvoidStaticClassesAnalyzer.Rule.Id,
-				Message = new Regex(".+"),
-				Severity = DiagnosticSeverity.Error,
-				Locations = new[]
-				{
-					new DiagnosticResultLocation("Test0.cs", 3, -1),
-				}
-			}).ConfigureAwait(false);
+			VerifyDiagnostic(file, AvoidStaticClassesAnalyzer.Rule.Id, line: 3, column: -1).ConfigureAwait(false);
 		}
 	}
 
