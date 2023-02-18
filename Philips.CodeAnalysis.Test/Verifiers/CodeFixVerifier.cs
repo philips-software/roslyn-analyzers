@@ -74,6 +74,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
+		/// <param name="scope">Scope for the FixAllProvider. </param>
 		private async Task VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
 		{
 			var document = CreateDocument(oldSource);

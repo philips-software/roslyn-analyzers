@@ -8,6 +8,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ReportAnalyzer>true</ReportAnalyzer>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Version>1.0.3.0</Version>
   </PropertyGroup>
   <ItemGroup>

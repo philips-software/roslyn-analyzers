@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// We need to pass to DataFlowAnalysis a statement that is before y.ToString() for the endStatement.
 		/// But if the firstStatement is the if clause, it includes the entire if block, of which endStatement is inside of.
 		/// This causes DataFlowAnalysis to throw an exception.
-
+		/// 
 		/// Stated differently (and more problematically), DataFlowAnalysis only works on statements in the same statement list, ie the same block.
 		/// https://github.com/kislyuk/roslyn/blob/89169a3380e48fc834c72e38355867881d030e94/Src/Compilers/CSharp/Source/Compilation/SyntaxTreeSemanticModel.cs#L1902
 		///

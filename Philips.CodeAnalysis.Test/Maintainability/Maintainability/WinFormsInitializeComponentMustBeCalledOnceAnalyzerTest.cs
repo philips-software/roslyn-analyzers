@@ -215,7 +215,6 @@ class ContainerControl
 		/// <summary>
 		/// WinFormsInitialComponentMustBeCalledOnceAnalyzers
 		/// </summary>
-		/// <param name="param"></param>
 		[DataTestMethod]
 		[DataRow(@"InitializeComponent();", @"InitializeComponent();", true, false)]
 		[DataRow(@"", @"", true, true)]
@@ -247,7 +246,6 @@ class ContainerControl
 		/// <summary>
 		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructors
 		/// </summary>
-		/// <param name="param"></param>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructorsAsync()
@@ -259,7 +257,6 @@ class ContainerControl
 		/// <summary>
 		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors
 		/// </summary>
-		/// <param name="param"></param>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructorsAsync()
@@ -271,7 +268,6 @@ class ContainerControl
 		/// <summary>
 		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClass
 		/// </summary>
-		/// <param name="param"></param>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClassAsync()
@@ -283,7 +279,6 @@ class ContainerControl
 		/// <summary>
 		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile
 		/// </summary>
-		/// <param name="param"></param>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFileAsync()
