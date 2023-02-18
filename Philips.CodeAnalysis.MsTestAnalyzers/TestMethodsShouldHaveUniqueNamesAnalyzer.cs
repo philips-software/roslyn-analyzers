@@ -42,7 +42,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						 .Select(method => method.Identifier)
 						 .Where(id => !seenNames.Add(id.ToString())))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodIdentifier.GetLocation(), methodIdentifier));
+				var location = methodIdentifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodIdentifier));
 			}
 		}
 	}

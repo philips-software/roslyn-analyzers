@@ -164,8 +164,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsFunction(invocationExpression.ArgumentList, out bool isNotEquals);
 
+			var functionName = DetermineFunction(isIsTrue, isNotEquals, false);
 			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(DetermineFunction(isIsTrue, isNotEquals, false))
+					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
 			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
 
@@ -180,8 +181,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsEquals(kind, invocationExpression.ArgumentList, out bool isNotEquals, out bool isNullArgument);
 
+			var functionName = DetermineFunction(isIsTrue, isNotEquals, isNullArgument);
 			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
-					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(DetermineFunction(isIsTrue, isNotEquals, isNullArgument))
+					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
 			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
 

@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (!TryGetExpectedParameters(methodDeclaration, context, out expectedNumberOfParameters))
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+						var location = methodDeclaration.Identifier.GetLocation();
+						context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 						return;
 					}
 				}
@@ -59,7 +60,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
 				{
-					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+					var location = methodDeclaration.Identifier.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 				}
 			}
 

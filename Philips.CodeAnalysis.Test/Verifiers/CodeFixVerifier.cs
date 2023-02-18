@@ -139,10 +139,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					var newDiagnostics2 = await GetCompilerDiagnostics(document).ConfigureAwait(false);
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
+					var newDiagnosticsString = newCompilerDiagnostics.Select(d => d.ToString());
+					var rootString = syntaxRoot?.ToFullString();
 					Assert.Fail(
-						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
-							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-							syntaxRoot.ToFullString()));
+						$"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newDiagnosticsString)}\r\n\r\nNew document:\r\n{rootString}\r\n");
 				}
 			}
 
