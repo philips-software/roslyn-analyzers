@@ -28,7 +28,9 @@ jobs:
 
       - name: Prepare to eat Dogfood
         run: |
+          echo "::remove-matcher owner=csc::"
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
+          
           rm -f ./.editorconfig
           cat > ./.editorconfig << EOF
           root = true
@@ -38,9 +40,6 @@ jobs:
           dotnet_diagnostic.CS1591.severity = none
           EOF
           
-          # Clean up any formatting issues that could pollute GH annotations
-          dotnet format
-         
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
