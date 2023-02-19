@@ -140,7 +140,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 		}
 
-		private static void AdjustExceptionFilter(List<ExceptionHandler> catchHandlers, Instruction instruction, Stack<string> filteredExceptions)
+		private static void AdjustExceptionFilter(IReadOnlyList<ExceptionHandler> catchHandlers, Instruction instruction, Stack<string> filteredExceptions)
 		{
 			foreach (var filter in catchHandlers)
 			{
