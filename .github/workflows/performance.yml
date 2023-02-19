@@ -29,6 +29,7 @@ jobs:
       - name: Prepare to eat Dogfood
         run: |
           dotnet nuget add source $GITHUB_WORKSPACE/Packages
+          rm -f ./.editorconfig
           cat > ./.editorconfig << EOF
           root = true
           [*.cs]
