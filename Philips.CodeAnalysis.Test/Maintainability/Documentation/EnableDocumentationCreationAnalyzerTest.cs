@@ -1,6 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,4 +38,26 @@ public class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
+
+	[TestClass]
+	public class EnableDocumentationCreationAnalyzer2Test : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new EnableDocumentationCreationAnalyzer();
+		}
+
+		protected override ParseOptions GetParseOptions()
+		{
+			return new CSharpParseOptions(documentationMode: DocumentationMode.None);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task InvalidDocumentationModeTriggersDiagnostic()
+		{
+			await VerifyDiagnostic(@"").ConfigureAwait(false);
+		}
+	}
+
 }
