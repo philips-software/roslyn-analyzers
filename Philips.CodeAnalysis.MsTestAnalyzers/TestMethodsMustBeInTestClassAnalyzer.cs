@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private sealed class TestMethodsMustBeInTestClass : Implementation
 		{
-			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
+			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, IReadOnlyCollection<INamedTypeSymbol> presentAttributes)
 			{
 				TestHelper testHelper = new();
 				if (testHelper.IsInTestClass(context))
