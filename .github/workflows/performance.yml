@@ -62,6 +62,8 @@ jobs:
           dotnet_diagnostic.IDE0200.severity = suggestion
           dotnet_diagnostic.IDE0260.severity = suggestion
           dotnet_diagnostic.PH2006.severity = suggestion
+          dotnet_diagnostic.PH2015.severity = suggestion
+          dotnet_diagnostic.SYSLIB1045.severity = suggestion
           EOF
           
           rm -f ./Directory.Build.props
