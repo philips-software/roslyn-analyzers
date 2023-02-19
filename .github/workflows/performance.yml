@@ -36,13 +36,16 @@ jobs:
           root = true
           [*.cs]
           dotnet_analyzer_diagnostic.severity = warning
+          dotnet_analyzer_diagnostic.category-Style.severity = warning
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
           dotnet_diagnostic.CA1305.severity = suggestion
           dotnet_diagnostic.CA1310.severity = suggestion
           dotnet_diagnostic.CS1591.severity = suggestion
           dotnet_diagnostic.CA1822.severity = suggestion
+          dotnet_diagnostic.CA1824.severity = suggestion
           dotnet_diagnostic.CA1845.severity = suggestion
+          dotnet_diagnostic.CA1847.severity = suggestion
           dotnet_diagnostic.CA1852.severity = suggestion
           dotnet_diagnostic.IDE0005.severity = suggestion
           dotnet_diagnostic.IDE0008.severity = suggestion
