@@ -43,7 +43,7 @@ jobs:
           dotnet_diagnostic.CA1310.severity = suggestion
           dotnet_diagnostic.CS1591.severity = suggestion
           dotnet_diagnostic.CA1822.severity = suggestion
-          dotnet_diagnostic.CA1824.severity = suggestion
+          dotnet_diagnostic.CA1824.severity = none
           dotnet_diagnostic.CA1845.severity = suggestion
           dotnet_diagnostic.CA1847.severity = suggestion
           dotnet_diagnostic.CA1852.severity = suggestion
