@@ -22,7 +22,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class EnableDocumentationCreationAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
-		[ExcludeFromCodeCoverage]
 		public override void Analyze()
 		{
 			if (Node.SyntaxTree.Options.DocumentationMode == DocumentationMode.None)

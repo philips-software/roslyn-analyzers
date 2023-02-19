@@ -232,6 +232,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			return ImmutableArray<MetadataReference>.Empty;
 		}
 
+		protected virtual ParseOptions GetParseOptions()
+		{
+			return new CSharpParseOptions();
+		}
+
 		protected virtual ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
 			return ImmutableArray<(string name, string content)>.Empty;
@@ -291,6 +296,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				.AddMetadataReference(projectId, UnitTestingReference)
 				.AddMetadataReference(projectId, GeneratedCodeReference)
 				.AddMetadataReference(projectId, ThreadingReference);
+
+			var parseOptions = GetParseOptions();
+			solution = solution.WithProjectParseOptions(projectId, parseOptions);
 
 			foreach (var testReferences in GetMetadataReferences())
 			{
