@@ -519,6 +519,46 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentFixNamedArgumentsTest()
+		{
+			string errorContent = @"
+class Meow { public Meow(string x) {} }
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public void Moo(string x) { }
+  public void MyTest()
+  {
+     int i;
+     switch (i)
+     {
+       case 0: Moo(x: Do()); break;
+     }
+  }
+}
+";
+			string fixedContent = @"
+class Meow { public Meow(string x) {} }
+class Foo
+{
+  public string Do() { return ""hi"";}
+  public void Moo(string x) { }
+  public void MyTest()
+  {
+     int i;
+     switch (i)
+     {
+       case 0: var x = Do(); Moo(x: x); break;
+     }
+  }
+}
+";
+			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
+			await VerifyFix(errorContent, fixedContent).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixExpressionTest()
 		{
 			string errorContent = @"
