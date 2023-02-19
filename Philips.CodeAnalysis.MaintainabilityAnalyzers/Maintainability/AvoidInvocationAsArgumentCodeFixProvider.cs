@@ -43,15 +43,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the nested method call identified by the diagnostic.
-			ExpressionSyntax node = root.FindNode(diagnosticSpan, false, true) as ExpressionSyntax;
+			SyntaxNode node = root.FindNode(diagnosticSpan, false, true);
+			ExpressionSyntax expressionNode = node as ExpressionSyntax;
+			if (expressionNode == null && node is ArgumentSyntax argumentNode)
+			{
+				expressionNode = argumentNode.Expression;
+			}
 
 			// Make sure it's part of a statement that we know how to handle.
 			// For example, we do not currently handle method expressions (ie =>)
-			StatementSyntax fullExistingExpressionSyntax = node?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<ReturnStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<IfStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<WhileStatementSyntax>();
+			StatementSyntax fullExistingExpressionSyntax = expressionNode?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<ReturnStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			if (fullExistingExpressionSyntax != null)
 			{
@@ -59,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => ExtractLocalVariable(context.Document, node, c),
+						createChangedDocument: c => ExtractLocalVariable(context.Document, expressionNode, c),
 						equivalenceKey: Title),
 					diagnostic);
 			}
