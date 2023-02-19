@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -125,19 +124,19 @@ namespace DontUseMagicNumbersTests {
     }
 }";
 
-		private const string WrongInstanceField = @"
-namespace DontUseMagicNumbersTests {
-    public class Number {
-        private int Magic = 5;
-    }
-}";
-
-		private const string WrongConstLocal = @"
+		private const string CorrectConstLocal = @"
 namespace DontUseMagicNumbersTests {
     public class Number {
         public void Main() {
             const int Magic = 5;
         }
+    }
+}";
+
+		private const string WrongInstanceField = @"
+namespace DontUseMagicNumbersTests {
+    public class Number {
+        private int Magic = 5;
     }
 }";
 
@@ -176,6 +175,7 @@ namespace DontUseMagicNumbersTests {
 		 DataRow(CorrectPowerOf2, DisplayName = nameof(CorrectPowerOf2)),
 		 DataRow(CorrectAngle, DisplayName = nameof(CorrectAngle)),
 		 DataRow(CorrectInEnum, DisplayName = nameof(CorrectInEnum)),
+		 DataRow(CorrectConstLocal, DisplayName = nameof(CorrectConstLocal)),
 		 DataRow(CorrectInTestClass, DisplayName = nameof(CorrectInTestClass))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
@@ -188,7 +188,6 @@ namespace DontUseMagicNumbersTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(WrongInstanceField, DisplayName = nameof(WrongInstanceField)),
-		 DataRow(WrongConstLocal, DisplayName = nameof(WrongConstLocal)),
 		 DataRow(WrongLocal, DisplayName = nameof(WrongLocal)),
 		 DataRow(WrongPropertyInitializer, DisplayName = nameof(WrongPropertyInitializer))]
 		[TestCategory(TestDefinitions.UnitTests)]
