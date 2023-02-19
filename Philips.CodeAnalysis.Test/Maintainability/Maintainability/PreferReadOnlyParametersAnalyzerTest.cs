@@ -26,6 +26,16 @@ namespace PreferReadOnlyTests {
 	}
 }";
 
+		private const string CorrectNoParameters = @"
+using System.Collection.Generic;
+namespace PreferReadOnlyTests {
+	public class Program {
+		public static void Main() {
+			// Does nothing
+		}
+	}
+}";
+
 		private const string CorrectIndexer = @"
 using System.Collection.Generic;
 namespace PreferReadOnlyTests {
@@ -78,6 +88,7 @@ namespace PreferReadOnlyTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectNoParameters, DisplayName = nameof(CorrectNoParameters)),
 		 DataRow(CorrectIndexer, DisplayName = nameof(CorrectIndexer)),
 		 DataRow(CorrectInvocation, DisplayName = nameof(CorrectInvocation))]
 		[TestCategory(TestDefinitions.UnitTests)]
