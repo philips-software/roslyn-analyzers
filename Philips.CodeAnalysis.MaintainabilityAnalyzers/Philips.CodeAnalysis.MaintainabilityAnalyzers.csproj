@@ -120,6 +120,7 @@
       * Introduce PH2135: Match namespace and Assembly Name. This extends the functionality that was previously claimed by PH2006 but never enforced.
 	  * Introduce PH2136: Avoid duplicate strings.
       * Introduce PH2139: Enable documentation creation.
+	  * Introduce PH2140: Prefer readonly parameters.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
 	  <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
