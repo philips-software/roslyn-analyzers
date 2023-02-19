@@ -36,8 +36,8 @@ jobs:
           dotnet_analyzer_diagnostic.severity = warning
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_diagnostic.CS1591.severity = none
-          EOF
-          
+          EOF          
+         
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
@@ -68,7 +68,9 @@ jobs:
 
       - name: Dogfood Performance
         continue-on-error: true
-        run: dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
+        run: |
+          cat ./.editorconfig
+          dotnet build -binaryLogger --configuration Debug /p:RunAnalyzersDuringBuild=true
         
       - name: Analyze Performance
         run: |
