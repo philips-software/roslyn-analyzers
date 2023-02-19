@@ -35,8 +35,8 @@ jobs:
           cat > ./.editorconfig << EOF
           root = true
           [*.cs]
-          dotnet_analyzer_diagnostic.severity = warn
-          dotnet_analyzer_diagnostic.category-Style.severity = warn
+          dotnet_analyzer_diagnostic.severity = warning
+          dotnet_analyzer_diagnostic.category-Style.severity = warning
           dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
           dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
           dotnet_diagnostic.CA1305.severity = none
