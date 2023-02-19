@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -22,7 +23,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class PreferReadOnlyParametersNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		private static readonly List<string> ReadWriteCollections = new() { "System.Array", "System.Collections.Generic.List", "System.Span" };
+		private static readonly List<string> ReadWriteCollections = new() { "System.Array", "System.Collections.Generic.List", "System.Collections.Generic.IList", "System.Collections.IList", "System.Collections.Generic.Dictionary", "System.Collections.Generic.HashSet", "System.Span" };
+		private static readonly List<string> WriteMethods = new() { "Add", "AddRange", "Clear", "Insert", "InsertRange", "Remove", "RemoveAt", "RemoveRange", "RemoveWhere", "Reverse", "Sort" };
 		private readonly NamespaceIgnoringComparer _comparer = new();
 
 		public override void Analyze()
@@ -39,11 +41,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return;
 			}
-			var accesses = Node.DescendantNodes().OfType<MemberAccessExpressionSyntax>().ToList();
+			var accesses = Node.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
 			var setters = Node.DescendantNodes()
 				.OfType<AssignmentExpressionSyntax>()
-				.Select(ass => ass.Left as ElementAccessExpressionSyntax).ToList();
-			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>().ToList();
+				.Select(ass => ass.Left as ElementAccessExpressionSyntax);
+			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			foreach (ParameterSyntax collectionParameter in collections)
 			{
 				var parameterName = collectionParameter.Identifier.Text;
@@ -63,11 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool IsReadWriteCollection(TypeSyntax type, IReadOnlyDictionary<string, string> aliases)
 		{
-			if (type == null)
-			{
-				return false;
-			}
-			var fullName = type.GetFullName(aliases);
+			var fullName = type?.GetFullName(aliases);
 			return ReadWriteCollections.Any(col => _comparer.Compare(fullName, col) == 0);
 		}
 
@@ -78,7 +76,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsModifyingMember(SimpleNameSyntax name)
 		{
-			return name.Identifier.Text is "Add" or "AddRange" or "Clear" or "Insert" or "InsertRange" or "Remove" or "RemoveAt" or "RemoveRange" or "Reverse" or "Sort";
+			var nameString = name.Identifier.Text;
+			return WriteMethods.Any(method => StringComparer.OrdinalIgnoreCase.Compare(nameString, method) == 0);
 		}
 
 		private bool RequiresReadWrite(InvocationExpressionSyntax invocation, string parameterName)
@@ -102,7 +101,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool IsReadOnly(ISymbol symbol)
 		{
-			return symbol.Name.ToLowerInvariant().Contains("readonly");
+			var symbolName = symbol.Name.ToLowerInvariant();
+			return symbolName.Contains("readonly") || _comparer.Compare(symbolName, "System.Collections.Generic.IEnumerable") == 0;
 		}
 	}
 }

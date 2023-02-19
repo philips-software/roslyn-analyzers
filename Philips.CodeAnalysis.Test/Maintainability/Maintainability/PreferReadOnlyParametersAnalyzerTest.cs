@@ -60,6 +60,17 @@ namespace PreferReadOnlyTests {
 	}
 }";
 
+		private const string CorrectIEnumerable = @"
+using System.Collection.Generic;
+using System.Linq;
+namespace PreferReadOnlyTests {
+	public class Program {
+		public static int Main(IEnumerable<string> args) {
+			return args.FirstOrDefault(item => item  == ""42"");
+		}
+	}
+}";
+
 		private const string Wrong = @"
 using System.Collection.Generic;
 namespace PreferReadOnlyTests {
@@ -83,6 +94,17 @@ namespace PreferReadOnlyTests {
 	}
 }";
 
+		private const string WrongLinq = @"
+using System.Collection.Generic;
+using System.Linq;
+namespace PreferReadOnlyTests {
+	public class Program {
+		public static int Main(IList<string> args) {
+			return args.FirstOrDefault(item => item  == ""42"");
+		}
+	}
+}";
+
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
@@ -90,7 +112,8 @@ namespace PreferReadOnlyTests {
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectNoParameters, DisplayName = nameof(CorrectNoParameters)),
 		 DataRow(CorrectIndexer, DisplayName = nameof(CorrectIndexer)),
-		 DataRow(CorrectInvocation, DisplayName = nameof(CorrectInvocation))]
+		 DataRow(CorrectInvocation, DisplayName = nameof(CorrectInvocation)),
+		 DataRow(CorrectIEnumerable, DisplayName = nameof(CorrectIEnumerable))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
@@ -103,6 +126,7 @@ namespace PreferReadOnlyTests {
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[DataRow(WrongInvocation, DisplayName = nameof(WrongInvocation))]
+		[DataRow(WrongLinq, DisplayName = nameof(WrongLinq))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggeredAsync(string testCode)
 		{
