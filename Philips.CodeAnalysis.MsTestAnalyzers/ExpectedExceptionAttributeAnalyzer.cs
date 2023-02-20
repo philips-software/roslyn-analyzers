@@ -29,7 +29,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				var location = Location.Create(Node.SyntaxTree, Node.Attributes.FullSpan);
 				ReportDiagnostic(location);
-				return;
 			}
 		}
 	}
