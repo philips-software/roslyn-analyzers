@@ -15,9 +15,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class AvoidStaticClassAnalyzerTest : CodeFixVerifier
 	{
