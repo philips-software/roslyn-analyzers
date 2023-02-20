@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,10 +14,10 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
-	//	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EmptyXmlCommentsCodeFixProvider)), Shared]
+	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XmlDocumentationCodeFixProvider)), Shared]
 	public class XmlDocumentationCodeFixProvider : CodeFixProvider
 	{
-		private const string Title = "Remove empty Summary comments";
+		private const string Title = "Remove Summary";
 
 		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue));
 
