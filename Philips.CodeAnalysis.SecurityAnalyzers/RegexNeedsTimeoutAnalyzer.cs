@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class RegexNeedsTimeoutAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"RegEx needs a timeout";
+		private const string Title = @"Regex needs a timeout";
 		public const string MessageFormat = @"When constructing a new Regex instance, provide a timeout.";
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
