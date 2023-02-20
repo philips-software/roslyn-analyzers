@@ -60,7 +60,6 @@ jobs:
           dotnet_diagnostic.IDE0072.severity = none
           dotnet_diagnostic.IDE0130.severity = none
           dotnet_diagnostic.IDE0200.severity = none
-          dotnet_diagnostic.IDE0260.severity = none
           dotnet_diagnostic.PH2006.severity = none
           dotnet_diagnostic.PH2015.severity = none
           dotnet_diagnostic.SYSLIB1045.severity = none
