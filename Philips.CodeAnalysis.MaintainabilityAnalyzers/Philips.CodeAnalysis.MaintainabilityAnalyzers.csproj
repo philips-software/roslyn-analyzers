@@ -12,6 +12,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
+    <!--PackageId>Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood</PackageId-->
     <PackageOutputPath>../Packages</PackageOutputPath>
     <Authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</Authors>
     <Company>Philips</Company>
@@ -118,7 +119,7 @@
       * Introduce PH2134: Set properties in any order.
       * PH2090 now also uses an AdditionalFile on top of the existing .editorconfig option to configure allowed methods.
       * Introduce PH2135: Match namespace and Assembly Name. This extends the functionality that was previously claimed by PH2006 but never enforced.
-	  * Introduce PH2136: Avoid duplicate strings.
+	    * Introduce PH2136: Avoid duplicate strings.
       * Introduce PH2139: Enable documentation creation.
     </PackageReleaseNotes>
 	  <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>

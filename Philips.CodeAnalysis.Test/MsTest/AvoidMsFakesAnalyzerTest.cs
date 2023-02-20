@@ -11,9 +11,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.MsTest
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class AvoidMsFakesAnalyzerTest : DiagnosticVerifier
 	{

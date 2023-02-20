@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mono.Cecil.Cil;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -58,6 +59,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		{
 			var code = GetLargeFileContents(nameof(AvoidDuplicateStringLoadTest)).ToString();
 			await VerifyDiagnostic(code, Count).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringDefaultConsoleAppTest()
+		{
+			var code = @"
+namespace ConsoleApp2
+{
+	internal class Program
+	{
+		static void Main(string[] args)
+		{
+			Console.WriteLine(""Hello, World!"");
+		}
+	}
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		[TestMethod]

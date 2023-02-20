@@ -7,9 +7,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public class RegionVisitor : CSharpSyntaxWalker
 	{
 		private readonly List<DirectiveTriviaSyntax> _regions = new();

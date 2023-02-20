@@ -2,9 +2,6 @@
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	public static class StringConstants
 	{
 		public const string ThrownExceptionPropertyKey = "MissingExceptionDocumentation";

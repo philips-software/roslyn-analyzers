@@ -10,12 +10,6 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class ConstructorSyntaxHelper
 	{
-		/// <summary>
-		/// CreateMapping
-		/// </summary>
-		/// <param name="context"></param>
-		/// <param name="constructors"></param>
-		/// <returns></returns>
 		public IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();
@@ -48,12 +42,6 @@ namespace Philips.CodeAnalysis.Common
 			return result;
 		}
 
-		/// <summary>
-		/// GetCtorChain
-		/// </summary>
-		/// <param name="mapping"></param>
-		/// <param name="ctor"></param>
-		/// <returns></returns>
 		public IReadOnlyList<ConstructorDeclarationSyntax> GetCtorChain(IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping, ConstructorDeclarationSyntax ctor)
 		{
 			List<ConstructorDeclarationSyntax> chain = new() { ctor };

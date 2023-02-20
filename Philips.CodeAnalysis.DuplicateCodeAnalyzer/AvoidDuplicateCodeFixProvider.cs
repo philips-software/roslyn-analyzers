@@ -32,11 +32,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return new AvoidDuplicateCodeFixAllProvider();
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="context"></param>
-		/// <returns></returns>
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			Project project = context.Document.Project;
