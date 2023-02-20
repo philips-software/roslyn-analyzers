@@ -1,18 +1,11 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
-using System.Data;
-using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
-using Philips.CodeAnalysis.Test;
-using System.Text.RegularExpressions;
 using Moq;
-using Castle.Core.Internal;
 using System.Collections.Immutable;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;

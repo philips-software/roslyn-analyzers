@@ -2,9 +2,7 @@
 
 using System.Collections.Immutable;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
