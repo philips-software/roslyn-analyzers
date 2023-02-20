@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				case SyntaxKind.LogicalNotExpression:
 					//recurse a bit here.
-					Check(context, node, ((PrefixUnaryExpressionSyntax)test).Operand, isIsTrue);
+					_ = Check(context, node, ((PrefixUnaryExpressionSyntax)test).Operand, isIsTrue);
 					return null;
 				case SyntaxKind.LogicalAndExpression:
 					if (isIsTrue)

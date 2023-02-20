@@ -508,7 +508,7 @@ class Foo
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
+			_ = VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
 		}
 
 		[TestMethod]

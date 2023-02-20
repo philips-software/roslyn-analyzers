@@ -15,6 +15,9 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
+	/// <summary>
+	/// 
+	/// </summary>
 	[TestClass]
 	public class AvoidStaticClassAnalyzerTest : CodeFixVerifier
 	{
@@ -202,7 +205,7 @@ AllowedEnumeration";
 
 		private void Verify(string file)
 		{
-			VerifyDiagnostic(file, AvoidStaticClassesAnalyzer.Rule.Id, line: 3, column: -1).ConfigureAwait(false);
+			_ = VerifyDiagnostic(file, AvoidStaticClassesAnalyzer.Rule.Id, line: 3, column: -1).ConfigureAwait(false);
 		}
 	}
 
@@ -222,7 +225,7 @@ AllowedEnumeration";
 		{
 			AllowedSymbols allowedSymbols = new(null);
 			allowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
-			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
+			_ = _mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
 			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}

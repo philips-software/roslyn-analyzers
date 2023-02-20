@@ -32,6 +32,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return new AvoidDuplicateCodeFixAllProvider();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="context"></param>
+		/// <returns></returns>
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
 			Project project = context.Document.Project;
@@ -200,8 +205,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				StringBuilder appending = new();
 				foreach (string methodName in newMethodNames)
 				{
-					appending.Append(methodName);
-					appending.Append(Environment.NewLine);
+					_ = appending.Append(methodName);
+					_ = appending.Append(Environment.NewLine);
 				}
 
 				SourceText newSourceText = AvoidDuplicateCodeFixProvider.MakeNewSourceText(sourceText, appending.ToString());

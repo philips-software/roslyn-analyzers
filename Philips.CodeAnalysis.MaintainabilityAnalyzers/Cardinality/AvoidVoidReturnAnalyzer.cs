@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 	{
 		public override void Analyze()
 		{
-			Optional(Node)
+			_ = Optional(Node)
 				.Filter((m) => m.ReturnsVoid())
 				.Filter((m) => !m.IsOverridden())
 				.Select((m) => m.CreateDiagnostic(Rule))

@@ -114,7 +114,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var exType = GetResultingTypeName(instruction.Previous, body.Instructions);
 				if (exType != null && !IsThrownExceptionFiltered(exType.FullName, filteredExceptions))
 				{
-					openExceptions.Add(exType.FullName);
+					_ = openExceptions.Add(exType.FullName);
 				}
 			}
 		}
@@ -133,7 +133,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					{
 						if (!IsThrownExceptionFiltered(newException, filteredExceptions))
 						{
-							openExceptions.Add(newException);
+							_ = openExceptions.Add(newException);
 						}
 					}
 				}
@@ -151,7 +151,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				if (instruction.Offset == filter.HandlerStart.Offset)
 				{
-					filteredExceptions.Pop();
+					_ = filteredExceptions.Pop();
 				}
 			}
 		}

@@ -32,14 +32,14 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			if (Current is null)
 			{
 				Current = FindDeepest(_root);
-				_visited.Add(Current);
+				_ = _visited.Add(Current);
 				return true;
 			}
 
 			var nextSibling = Current.GetNextSibling();
 			var next = FindDeepest(nextSibling) ?? BackTrack();
 			Current = next;
-			_visited.Add(Current);
+			_ = _visited.Add(Current);
 			return Current != null;
 		}
 

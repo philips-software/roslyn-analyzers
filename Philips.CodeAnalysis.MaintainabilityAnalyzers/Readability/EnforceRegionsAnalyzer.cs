@@ -87,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (RegionChecks.TryGetValue(pair.Key, out var functionToCall))
 				{
 					var membersOfRegion = GetMembersOfRegion(members, pair.Value);
-					functionToCall(membersOfRegion, context);
+					_ = functionToCall(membersOfRegion, context);
 				}
 			}
 

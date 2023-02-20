@@ -187,7 +187,7 @@ using System.Reflection;
 		public void DogFoodMaintainability(string folder, string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
-			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			_ = VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -196,7 +196,7 @@ using System.Reflection;
 		public void DogFoodMsTest(string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
-			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			_ = VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 	}
 }

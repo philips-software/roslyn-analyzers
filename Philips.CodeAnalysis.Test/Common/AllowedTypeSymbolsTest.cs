@@ -54,7 +54,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
 		{
 			var file = GenerateCodeFile(nsName, typeName);
-			VerifyAsync(file).ConfigureAwait(false);
+			_ = VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
