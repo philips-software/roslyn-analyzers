@@ -70,10 +70,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				// Check constructors of an Exception.
 				bool? withinExceptionClass =
 					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith(StringConstants.Exception);
-				if ((withinExceptionClass.HasValue && (bool)withinExceptionClass) || constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
+				if (withinExceptionClass.HasValue && (bool)withinExceptionClass)
 				{
 					var loc = Node.ThrowKeyword.GetLocation();
 					ReportDiagnostic(loc, "constructor of an Exception derived type");
+				}
+				if (constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
+				{
+					var loc = Node.ThrowKeyword.GetLocation();
+					ReportDiagnostic(loc, "static constructor");
 				}
 			}
 		}
