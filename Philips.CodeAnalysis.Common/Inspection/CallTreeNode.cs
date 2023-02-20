@@ -25,7 +25,6 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		public static CallTreeNode CreateCallTree(MethodDefinition entryPoint)
 		{
-			// TODO: Investigate why clearing the cache changes the outcome.
 			Cache.Clear();
 			var root = new CallTreeNode(entryPoint, null);
 			CreateCallTree(root);
