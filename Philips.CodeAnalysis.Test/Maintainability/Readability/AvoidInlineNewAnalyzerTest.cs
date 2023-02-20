@@ -10,9 +10,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class AvoidInlineNewAnalyzerTest : DiagnosticVerifier
 	{
