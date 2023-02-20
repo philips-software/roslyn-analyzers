@@ -184,19 +184,19 @@ using System.Reflection;
 		[DataTestMethod]
 		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DogFoodMaintainability(string folder, string analyzerName)
+		public async Task DogFoodMaintainability(string folder, string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
-			_ = VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("MsTestAttributeDefinitions")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DogFoodMsTest(string analyzerName)
+		public async Task DogFoodMsTest(string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
-			_ = VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 	}
 }

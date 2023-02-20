@@ -51,10 +51,10 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		 DataRow("SomeNamespace", "AllowedMethodName"),
 		 DataRow("Philips.Detailed.AType", "AllowedMethodInFullNamespace")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
+		public async Task AllowedSymbolShouldBeReportDiagnostics(string nsName, string typeName)
 		{
 			var file = GenerateCodeFile(nsName, typeName);
-			_ = VerifyAsync(file).ConfigureAwait(false);
+			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -78,7 +78,15 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 
 		private async Task VerifyAsync(string file)
 		{
-			await VerifyDiagnostic(file, AllowedSymbolsTestAnalyzer.Rule.Id, regex: "AllowedSymbolsFound").ConfigureAwait(false);
+			DiagnosticResult expected = new()
+			{
+				Id = AllowedSymbolsTestAnalyzer.Rule.Id,
+				Message = new Regex("AllowedSymbolsFound"),
+				Severity = DiagnosticSeverity.Error,
+				Location = new DiagnosticResultLocation("Test0.cs", null, null)
+			};
+
+			await VerifyDiagnostic(file, expected).ConfigureAwait(false);
 		}
 	}
 }
