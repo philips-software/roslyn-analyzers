@@ -1,6 +1,4 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;

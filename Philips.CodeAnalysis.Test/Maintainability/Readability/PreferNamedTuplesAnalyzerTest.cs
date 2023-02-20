@@ -4,7 +4,6 @@
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
