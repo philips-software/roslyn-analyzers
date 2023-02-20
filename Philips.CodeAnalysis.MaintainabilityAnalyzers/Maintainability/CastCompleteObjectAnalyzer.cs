@@ -26,7 +26,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			var container = Node.ParameterList.Parameters.FirstOrDefault()?.Type;
-			// TODO: Consider banning explicitly casting to string, in favor of overriding ToString().
 			if (
 				container == null ||
 				Context.SemanticModel.GetSymbolInfo(Node.Type).Symbol is not INamedTypeSymbol convertTo ||
