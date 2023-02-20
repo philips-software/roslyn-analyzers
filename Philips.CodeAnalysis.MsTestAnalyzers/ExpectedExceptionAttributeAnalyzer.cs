@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class ExpectedExceptionAttributeAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, ExpectedExceptionAttributeSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Tests may not use the ExpectedException attribute. Use ThrowsException instead.";
-		private const string Title = @"ExpectedException attribute not allowed";
+		private const string Title = @"Avoid ExpectedException attribute";
 		private const string Description = @"The [ExpectedException()] attribute does not have line number granularity and trips the debugger anyway.  Use AssertEx.Throws() instead.";
 
 		public ExpectedExceptionAttributeAnalyzer()
