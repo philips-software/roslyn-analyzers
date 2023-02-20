@@ -84,14 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool IsPositiveName(string name)
 		{
 			var lower = name.ToLowerInvariant();
-			foreach (var word in negativeWords)
-			{
-				if (lower.Contains(word))
-				{
-					return false;
-				}
-			}
-			return true;
+			return !negativeWords.Any(lower.Contains);
 		}
 	}
 }
