@@ -3,13 +3,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Philips.CodeAnalysis.Common;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
