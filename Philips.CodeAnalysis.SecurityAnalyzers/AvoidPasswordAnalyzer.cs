@@ -1,7 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;

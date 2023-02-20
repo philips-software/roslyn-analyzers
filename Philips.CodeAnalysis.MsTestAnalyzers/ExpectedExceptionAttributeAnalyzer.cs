@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -12,7 +11,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class ExpectedExceptionAttributeAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, ExpectedExceptionAttributeSyntaxNodeAction>
 	{
 		public const string MessageFormat = @"Tests may not use the ExpectedException attribute. Use ThrowsException instead.";
-		private const string Title = @"Avoid ExpectedException attribute";
+		private const string Title = @"ExpectedException attribute not allowed";
 		private const string Description = @"The [ExpectedException()] attribute does not have line number granularity and trips the debugger anyway.  Use AssertEx.Throws() instead.";
 
 		public ExpectedExceptionAttributeAnalyzer()
@@ -25,10 +24,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public override void Analyze()
 		{
-			if (Node.Attributes.Any(attr => attr.Name.ToString().Contains(@"ExpectedException")))
+			foreach (AttributeSyntax attribute in Node.Attributes)
 			{
-				var location = Location.Create(Node.SyntaxTree, Node.Attributes.FullSpan);
-				ReportDiagnostic(location);
+				if (attribute.Name.ToString().Contains(@"ExpectedException"))
+				{
+					var location = attribute.GetLocation();
+					ReportDiagnostic(location);
+					return;
+				}
 			}
 		}
 	}

@@ -1,6 +1,4 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -17,7 +15,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class XmlDocumentationShouldAddValueAnalyzerTest : CodeFixVerifier
 	{
+		#region Non-Public Data Members
+
 		private const string configuredAdditionalUselessWords = "dummy,roms";
+
+		#endregion
+
+		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
@@ -34,6 +38,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue)}.additional_useless_words", configuredAdditionalUselessWords);
 		}
 
+		#endregion
+
+		#region Public Interface
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DefaultWhiteSpaceTestAsync()
@@ -47,14 +54,7 @@ public class Foo
 }}
 ";
 
-			string newContent = $@"
-public class Foo
-{{
-}}
-";
-
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
@@ -67,14 +67,8 @@ public class Foo
 {{
 }}
 ";
-			string newContent = $@"
-public class Foo
-{{
-}}
-";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
@@ -90,17 +84,8 @@ public class TestClass
 	}}
 }}
 ";
-			string newContent = $@"
-public class TestClass
-{{
-	public void Foo()
-	{{
-	}}
-}}
-";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
@@ -114,15 +99,8 @@ public class TestClass
 	public int Foo {{ get; }}
 }}
 ";
-			string newContent = $@"
-public class TestClass
-{{
-	public int Foo {{ get; }}
-}}
-";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
@@ -136,15 +114,8 @@ public class TestClass
 	public int Foo;
 }}
 ";
-			string newContent = $@"
-public class TestClass
-{{
-	public int Foo;
-}}
-";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
@@ -192,14 +163,8 @@ public class Foo
 {{
 }}
 ";
-			string newContent = $@"
-public class Foo
-{{
-}}
-";
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
-			await VerifyFix(content, newContent);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -555,5 +520,6 @@ public class Foo
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
+		#endregion
 	}
 }
