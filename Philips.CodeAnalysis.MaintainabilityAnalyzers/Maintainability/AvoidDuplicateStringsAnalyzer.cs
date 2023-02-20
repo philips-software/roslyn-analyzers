@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (!usedLiterals.TryAdd(literalText, location))
 			{
-				usedLiterals.TryGetValue(literalText, out Location firstLocation);
+				_ = usedLiterals.TryGetValue(literalText, out Location firstLocation);
 				var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
 				var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
 				ReportDiagnostic(location, firstFilename, firstLineNumber, literalText);

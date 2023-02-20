@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					if (AttributeHelper.IsDataRowAttribute(attribute, context))
 					{
 						int argumentCount = attribute.ArgumentList.Arguments.Count((arg) => { return arg.NameEquals?.Name.Identifier.ValueText != @"DisplayName"; });
-						dataRowParameters.Add(argumentCount);
+						_ = dataRowParameters.Add(argumentCount);
 						continue;
 					}
 

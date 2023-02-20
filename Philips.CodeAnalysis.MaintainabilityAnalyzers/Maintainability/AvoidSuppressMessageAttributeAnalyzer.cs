@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					foreach (var textLine in text.Lines)
 					{
 						var line = textLine.ToString();
-						builder.Add(line);
+						_ = builder.Add(line);
 					}
 				}
 

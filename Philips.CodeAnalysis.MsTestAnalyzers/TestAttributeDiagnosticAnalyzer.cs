@@ -63,12 +63,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (definitions.NonTestMethods.Contains(attribute))
 				{
-					presentAttributes.Add(attribute);
+					_ = presentAttributes.Add(attribute);
 				}
 
 				if (attribute.IsDerivedFrom(definitions.TestMethodSymbol))
 				{
-					presentAttributes.Add(attribute);
+					_ = presentAttributes.Add(attribute);
 				}
 			}
 

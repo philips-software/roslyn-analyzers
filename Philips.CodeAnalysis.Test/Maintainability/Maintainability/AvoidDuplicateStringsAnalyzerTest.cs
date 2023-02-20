@@ -40,9 +40,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			StringBuilder sb = new($"namespace DuplicateStringsTest {{ public class {className} {{ public void MethodA() {{");
 			for (int i = Start; i < Start + Count; i++)
 			{
-				sb.AppendLine($"string str{i} = \"{i}\";");
+				_ = sb.AppendLine($"string str{i} = \"{i}\";");
 			}
-			sb.AppendLine("}}}}}}");
+			_ = sb.AppendLine("}}}}}}");
 			return sb;
 		}
 

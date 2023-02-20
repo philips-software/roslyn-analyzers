@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("true");
+			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("true");
 			return new NamespaceMatchFilePathAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 

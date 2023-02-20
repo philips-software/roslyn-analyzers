@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 			else
 			{
-				_allowedLines.Add(line);
+				_ = _allowedLines.Add(line);
 			}
 		}
 
@@ -120,15 +120,15 @@ namespace Philips.CodeAnalysis.Common
 		{
 			if (symbol is IMethodSymbol methodSymbol)
 			{
-				_allowedMethods.Add(methodSymbol);
+				_ = _allowedMethods.Add(methodSymbol);
 			}
 			else if (symbol is ITypeSymbol typeSymbol)
 			{
-				_allowedTypes.Add(typeSymbol);
+				_ = _allowedTypes.Add(typeSymbol);
 			}
 			else if (symbol is INamespaceSymbol namespaceSymbol)
 			{
-				_allowedNamespaces.Add(namespaceSymbol);
+				_ = _allowedNamespaces.Add(namespaceSymbol);
 			}
 			else
 			{

@@ -155,7 +155,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 					foreach (SyntaxToken token in body.DescendantTokens())
 					{
-						GetShapeDetails(token);
+						_ = GetShapeDetails(token);
 
 						// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
 						(int hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
@@ -208,8 +208,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					if (line.StartsWith("line") && line.Length >= 8)
 					{
 						var exception = line.Substring(0, 8);
-						builder.Append(exception);
-						builder.Append(' ');
+						_ = builder.Append(exception);
+						_ = builder.Append(' ');
 					}
 				}
 
@@ -395,8 +395,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 							result = result.Replace(@"Token", "");
 							break;
 					}
-					details.Append(result);
-					details.Append(' ');
+					_ = details.Append(result);
+					_ = details.Append(' ');
 				}
 				return details.ToString().Trim();
 			}

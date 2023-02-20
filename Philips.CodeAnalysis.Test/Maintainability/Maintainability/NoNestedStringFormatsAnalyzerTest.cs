@@ -489,7 +489,7 @@ class Foo
 		[DataRow("$\"{errorMessage}\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DontStringFormatUselesslyIssue134(string format)
+		public async Task DontStringFormatUselesslyIssue134(string format)
 		{
 			const string template = @"
 using System;
@@ -507,7 +507,7 @@ class Foo
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
