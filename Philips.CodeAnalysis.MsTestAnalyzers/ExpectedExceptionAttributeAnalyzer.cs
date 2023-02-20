@@ -24,14 +24,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public override void Analyze()
 		{
-			foreach (AttributeSyntax attribute in Node.Attributes)
+			if (Node.Attributes.Any(attr => attr.Name.ToString().Contains(@"ExpectedException")))
 			{
-				if (attribute.Name.ToString().Contains(@"ExpectedException"))
-				{
-					var location = attribute.GetLocation();
-					ReportDiagnostic(location);
-					return;
-				}
+				var location = Location.Create(Node.SyntaxTree, Node.Attributes.FullSpan);
+				ReportDiagnostic(location);
 			}
 		}
 	}
