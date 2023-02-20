@@ -62,6 +62,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringDefaultConsoleAppTest()
+		{
+			var code = @"
+namespace ConsoleApp2
+{
+	internal class Program
+	{
+		static void Main(string[] args)
+		{
+			Console.WriteLine(""Hello, World!"");
+		}
+	}
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringNestedClassesTest()
 		{
 			var code = @"
