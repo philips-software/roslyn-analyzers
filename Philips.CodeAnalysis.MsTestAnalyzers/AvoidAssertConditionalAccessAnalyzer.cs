@@ -34,18 +34,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var argumentList = invocationExpressionSyntax.ArgumentList;
 
-			if (argumentList is null || argumentList.Arguments.Count < 2)
+			if (argumentList.Arguments.Count < 2)
 			{
 				yield break;
 			}
 
 			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
-			foreach (ArgumentSyntax syntax in arguments.Where(arg => arg.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression)))
+			foreach (ArgumentSyntax syntax in arguments.Where(InConditionalAccess))
 			{
 				var location = syntax.GetLocation();
 				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
 				yield return diagnostic;
 			}
+		}
+
+		private static bool InConditionalAccess(ArgumentSyntax argument)
+		{
+			return argument.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression);
 		}
 	}
 }

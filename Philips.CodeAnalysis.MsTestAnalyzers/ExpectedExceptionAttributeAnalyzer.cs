@@ -25,9 +25,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public override void Analyze()
 		{
-			foreach (AttributeSyntax attribute in Node.Attributes.Where(attr => attr.Name.ToString().Contains(@"ExpectedException")))
+			if (Node.Attributes.Any(attr => attr.Name.ToString().Contains(@"ExpectedException")))
 			{
-				var location = attribute.GetLocation();
+				var location = Location.Create(Node.SyntaxTree, Node.Attributes.FullSpan);
 				ReportDiagnostic(location);
 				return;
 			}
