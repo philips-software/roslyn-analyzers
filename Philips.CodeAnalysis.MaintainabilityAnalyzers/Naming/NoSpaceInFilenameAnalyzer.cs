@@ -5,10 +5,9 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	/// <summary>
 	/// Report on file names with spaces, as these tend to cause scripting issues.
