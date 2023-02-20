@@ -39,17 +39,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				yield break;
 			}
 
-			ArgumentSyntax expected = argumentList.Arguments[0];
-			ArgumentSyntax actual = argumentList.Arguments[1];
-
-			foreach (ArgumentSyntax syntax in new[] { expected, actual })
+			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
+			foreach (ArgumentSyntax syntax in arguments.Where(arg => arg.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression)))
 			{
-				if (syntax.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression))
-				{
-					var location = syntax.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-					yield return diagnostic;
-				}
+				var location = syntax.GetLocation();
+				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				yield return diagnostic;
 			}
 		}
 	}
