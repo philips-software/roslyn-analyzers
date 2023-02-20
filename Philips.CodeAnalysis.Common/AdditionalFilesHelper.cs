@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Common
 			HashSet<string> result = new();
 			foreach (TextLine line in text.Lines)
 			{
-				result.Add(line.ToString());
+				_ = result.Add(line.ToString());
 			}
 
 			return result;

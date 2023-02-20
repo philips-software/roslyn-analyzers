@@ -121,7 +121,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var projects = new HashSet<Project>();
 			foreach (var document in documents)
 			{
-				projects.Add(document.Project);
+				_ = projects.Add(document.Project);
 			}
 
 			var diagnostics = new List<Diagnostic>();
@@ -323,7 +323,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, LanguageNames.CSharp), false);
 			Workspace workspace = solution.Workspace;
 			var newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
-			workspace.TryApplyChanges(newSolution);
+			_ = workspace.TryApplyChanges(newSolution);
 
 			foreach (var m in solution.GetProject(projectId).MetadataReferences)
 			{

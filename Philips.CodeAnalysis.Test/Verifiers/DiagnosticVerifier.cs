@@ -295,7 +295,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private void FormatDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, StringBuilder builder, bool isLast)
 		{
-			builder.AppendLine("// " + diagnostic.ToString());
+			_ = builder.AppendLine("// " + diagnostic.ToString());
 
 			var analyzerType = analyzer.GetType();
 			var rules = analyzer.SupportedDiagnostics;
@@ -307,7 +307,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					var location = diagnostic.Location;
 					if (location == Location.None)
 					{
-						builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
+						_ = builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
 					}
 					else
 					{
@@ -317,7 +317,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 						string resultMethodName = "GetCSharpResultAt";
 						var linePosition = diagnostic.Location.GetLineSpan().StartLinePosition;
 
-						builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
+						_ = builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
 							resultMethodName,
 							linePosition.Line + 1,
 							linePosition.Character + 1,
@@ -327,10 +327,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 					if (!isLast)
 					{
-						builder.Append(',');
+						_ = builder.Append(',');
 					}
 
-					builder.AppendLine();
+					_ = builder.AppendLine();
 					break;
 				}
 			}

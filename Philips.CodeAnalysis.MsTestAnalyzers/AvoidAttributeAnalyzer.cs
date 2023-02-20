@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					foreach (var textLine in text.Lines)
 					{
 						string line = textLine.ToString();
-						builder.Add(line);
+						_ = builder.Add(line);
 					}
 				}
 

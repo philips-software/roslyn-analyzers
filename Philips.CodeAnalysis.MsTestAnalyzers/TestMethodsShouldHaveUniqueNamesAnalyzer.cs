@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				testMethods.Add(method);
+				_ = testMethods.Add(method);
 			}
 
 			HashSet<string> seenNames = new();

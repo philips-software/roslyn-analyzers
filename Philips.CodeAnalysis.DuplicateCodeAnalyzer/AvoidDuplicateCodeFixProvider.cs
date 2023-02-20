@@ -200,8 +200,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				StringBuilder appending = new();
 				foreach (string methodName in newMethodNames)
 				{
-					appending.Append(methodName);
-					appending.Append(Environment.NewLine);
+					_ = appending.Append(methodName);
+					_ = appending.Append(Environment.NewLine);
 				}
 
 				SourceText newSourceText = AvoidDuplicateCodeFixProvider.MakeNewSourceText(sourceText, appending.ToString());
