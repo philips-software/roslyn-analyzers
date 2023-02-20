@@ -187,24 +187,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
 			{
-				foreach (ISymbol assignedValue in result.ReadInside)
-				{
-					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-					{
-						// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-						isOurSymbolReadOrWritten = true;
-						break;
-					}
-				}
-
-				foreach (ISymbol assignedValue in result.WrittenInside)
-				{
-					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-					{
-						isOurSymbolReadOrWritten = true;
-						break;
-					}
-				}
+				isOurSymbolReadOrWritten |= result.ReadInside.Any(assignedValue => SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol));
+				isOurSymbolReadOrWritten |= result.WrittenInside.Any(assignedValue => SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol));
 			}
 
 			return isOurSymbolReadOrWritten;
