@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzer
 	{
-		private const string EmptyTitle = @"Summary XML comments";
+		private const string EmptyTitle = @"Avoid empty Summary XML comments";
 		private const string EmptyMessageFormat = @"Summary XML comments must be useful or non-existent.";
 		private const string EmptyDescription = @"Summary XML comments for classes, methods, etc. must be useful or non-existent.";
 		private const string ValueTitle = @"Documentation text should add value";
@@ -27,8 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating its name.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: ValueDescription);
-		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: EmptyDescription);
+		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: ValueDescription);
+		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords =
 			new(new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
