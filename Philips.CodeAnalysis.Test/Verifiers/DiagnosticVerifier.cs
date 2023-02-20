@@ -26,29 +26,28 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private static readonly Regex WildcardRegex =
 			new(".*", RegexOptions.Compiled | RegexOptions.Singleline, TimeSpan.FromSeconds(1));
-		#region To be implemented by Test classes
+
 		/// <summary>
 		/// Get the Analyzer being tested - to be implemented in non-abstract class
 		/// </summary>
 		protected abstract DiagnosticAnalyzer GetDiagnosticAnalyzer();
 
-		#endregion
 
 		#region Verifier wrappers
 
-		protected async Task VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, string filenamePrefix = null, string assemblyName = null, string regex = ".*", int? line = null, int? column = null)
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName).ConfigureAwait(false);
+			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName, regex, line, column).ConfigureAwait(false);
 		}
 
-		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*")
+		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*", int? line = null, int? column = null)
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
 				Id = Helper.ToDiagnosticId(id),
-				Location = new DiagnosticResultLocation(null),
+				Location = new DiagnosticResultLocation(null, line, column),
 				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
 			};
@@ -168,12 +167,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			{
 				var actual = actualResults.ElementAt(i);
 				var expected = expectedResults[i];
+				var diagnosticString = FormatDiagnostics(analyzer, actual);
 
 				if (expected.Line == -1 && expected.Column == -1)
 				{
 					Assert.AreEqual(Location.None, actual.Location,
-							string.Format("Expected:\nA project diagnostic with No location\nActual:\n{0}",
-							FormatDiagnostics(analyzer, actual)));
+						$"Expected:\nA project diagnostic with No location\nActual:\n{diagnosticString}");
 				}
 				else
 				{
@@ -182,9 +181,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					var additionalLocations = actual.AdditionalLocations.ToArray();
 
 					Assert.AreEqual(expected.Locations.Count - 1, additionalLocations.Length,
-							string.Format("Expected {0} additional locations but got {1} for Diagnostic:\r\n    {2}\r\n",
-								expected.Locations.Count - 1, additionalLocations.Length,
-								FormatDiagnostics(analyzer, actual)));
+						$"Expected {expected.Locations.Count - 1} additional locations but got {additionalLocations.Length} for Diagnostic:\r\n    {diagnosticString}\r\n");
 
 					for (int j = 0; j < additionalLocations.Length; ++j)
 					{
@@ -199,20 +196,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private void CheckDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic actual, DiagnosticResult expected)
 		{
+			var diagnosticString = FormatDiagnostics(analyzer, actual);
 			Assert.AreEqual(expected.Id, actual.Id,
-					string.Format("Expected diagnostic id to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Id, actual.Id, FormatDiagnostics(analyzer, actual)));
+				$"Expected diagnostic id to be \"{expected.Id}\" was \"{actual.Id}\"\r\n\r\nDiagnostic:\r\n    {diagnosticString}\r\n");
 
 			Assert.AreEqual(expected.Severity, actual.Severity,
-					string.Format("Expected diagnostic severity to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Severity, actual.Severity, FormatDiagnostics(analyzer, actual)));
+				$"Expected diagnostic severity to be \"{expected.Severity}\" was \"{actual.Severity}\"\r\n\r\nDiagnostic:\r\n    {diagnosticString}\r\n");
 
 			var input = actual.GetMessage();
 			if (expected.Message != null)
 			{
+				var actualMessage = actual.GetMessage();
 				Assert.IsTrue(expected.Message.IsMatch(input),
-					string.Format("Expected diagnostic message to be \"{0}\" was \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Message, actual.GetMessage(), FormatDiagnostics(analyzer, actual)));
+					$"Expected diagnostic message to be \"{expected.Message}\" was \"{actualMessage}\"\r\n\r\nDiagnostic:\r\n    {diagnosticString}\r\n");
 			}
 		}
 
@@ -221,8 +217,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			// Only check line position if there is an actual line in the real diagnostic
 			if (actualLinePosition > 0 && expectedLine.HasValue)
 			{
+				var diagnosticsString = FormatDiagnostics(analyzer, diagnostic);
 				Assert.AreEqual(expectedLine, actualLinePosition + 1,
-					$"Expected diagnostic to {startOrEnd} on line \"{expectedLine}\" was actually on line \"{actualLinePosition + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+					$"Expected diagnostic to {startOrEnd} on line \"{expectedLine}\" was actually on line \"{actualLinePosition + 1}\"\r\n\r\nDiagnostic:\r\n    {diagnosticsString}\r\n");
 			}
 		}
 
@@ -233,8 +230,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				expectedColumn.HasValue &&
 				expectedColumn != -1)
 			{
+				var diagnosticsString = FormatDiagnostics(analyzer, diagnostic);
 				Assert.AreEqual(expectedColumn, actualCharacterPosition + 1,
-					$"Expected diagnostic to {startOrEnd} at column \"{expectedColumn}\" was actually at column \"{actualCharacterPosition + 1}\"\r\n\r\nDiagnostic:\r\n    {FormatDiagnostics(analyzer, diagnostic)}\r\n");
+					$"Expected diagnostic to {startOrEnd} at column \"{expectedColumn}\" was actually at column \"{actualCharacterPosition + 1}\"\r\n\r\nDiagnostic:\r\n    {diagnosticsString}\r\n");
 			}
 		}
 
@@ -261,9 +259,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			if (expected.Path != null)
 			{
+				var diagnosticsString = FormatDiagnostics(analyzer, diagnostic);
 				Assert.IsTrue(actualSpan.Path == expected.Path || (actualSpan.Path != null && actualSpan.Path.Contains("Test0.") && expected.Path.Contains("Test.")),
-					string.Format("Expected diagnostic to be in file \"{0}\" was actually in file \"{1}\"\r\n\r\nDiagnostic:\r\n    {2}\r\n",
-						expected.Path, actualSpan.Path, FormatDiagnostics(analyzer, diagnostic)));
+					$"Expected diagnostic to be in file \"{expected.Path}\" was actually in file \"{actualSpan.Path}\"\r\n\r\nDiagnostic:\r\n    {diagnosticsString}\r\n");
 			}
 
 			return actualSpan;
@@ -275,7 +273,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		private string FormatWrongDiagnosticCount(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, int expectedCount, int actualCount)
 		{
 			string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
-			return string.Format("Mismatch between number of diagnostics returned, expected \"{0}\" actual \"{1}\"\r\n\r\nDiagnostics:\r\n{2}\r\n", expectedCount, actualCount, diagnosticsOutput);
+			return
+				$"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n";
 		}
 
 		/// <summary>

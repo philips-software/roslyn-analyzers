@@ -97,29 +97,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <returns>An instance of TypeSyntax from the Roslyn Model</returns>
 		private static TypeSyntax CreateGenericTypeSyntax(string identifier, params TypeSyntax[] arguments)
 		{
+			var args = arguments.Select(
+				x =>
+				{
+					if (x is GenericNameSyntax generic)
+					{
+						return
+							CreateGenericTypeSyntax(
+								generic.Identifier.ToString(),
+								generic.TypeArgumentList.Arguments.ToArray()
+							);
+					}
+					return x;
+				});
+
 			return
 				SyntaxFactory.GenericName(
 					SyntaxFactory.Identifier(identifier),
 					SyntaxFactory.TypeArgumentList(
-						SyntaxFactory.SeparatedList(
-							arguments.Select(
-								x =>
-								{
-									if (x is GenericNameSyntax generic)
-									{
-										return
-											CreateGenericTypeSyntax(
-												generic.Identifier.ToString(),
-												generic.TypeArgumentList.Arguments.ToArray()
-											);
-									}
-									else
-									{
-										return x;
-									}
-								}
-							)
-						)
+						SyntaxFactory.SeparatedList(args)
 					)
 				);
 		}

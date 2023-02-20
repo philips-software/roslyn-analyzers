@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
@@ -44,10 +44,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
+				var location = methodDeclaration.ReturnType.GetLocation();
+				var returnTypeString =
+					methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 				if (!methodSymbol.IsAsync)
 				{
 					// error.  Not async, doesn't return void.
-					context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), context.Compilation.GetSpecialType(SpecialType.System_Void).ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+					var voidString = context.Compilation.GetSpecialType(SpecialType.System_Void)
+						.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+					context.ReportDiagnostic(Diagnostic.Create(Rule, location, voidString, returnTypeString));
 					return;
 				}
 
@@ -57,7 +62,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), _taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+				var taskString = _taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, taskString, returnTypeString));
 			}
 		}
 	}

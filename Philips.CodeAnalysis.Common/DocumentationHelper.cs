@@ -46,9 +46,9 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
-		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; } = null;
+		public DocumentationCommentTriviaSyntax ExistingDocumentation { get; private set; }
 
-		public void AddException(string exceptionTypeName, string description)
+		public void AddException(string exceptionTypeName)
 		{
 			var exceptionType = SyntaxFactory.ParseTypeName(exceptionTypeName);
 			var cref = SyntaxFactory.TypeCref(exceptionType);

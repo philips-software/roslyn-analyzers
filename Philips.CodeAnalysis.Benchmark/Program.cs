@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Benchmark
 	}
 
 	[ExcludeFromCodeCoverage]
-	public class Input
+	public class InputDataSet
 	{
 		public string Folder { get; set; }
 		public IReadOnlyDictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> Data { get; set; }
@@ -48,10 +48,10 @@ namespace Philips.CodeAnalysis.Benchmark
 		private const int Modulus2 = 1000005;
 
 		[ParamsSource(nameof(ValuesForA))]
-		public Input A { get; set; }
+		public InputDataSet A { get; set; }
 
 		// public property
-		public IEnumerable<Input> ValuesForA
+		public IEnumerable<InputDataSet> ValuesForA
 		{
 			get
 			{
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.Benchmark
 						}
 					}
 
-					yield return new Input { Data = tokens, Folder = dir };
+					yield return new InputDataSet { Data = tokens, Folder = dir };
 				}
 			}
 		}

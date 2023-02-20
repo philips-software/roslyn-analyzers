@@ -61,7 +61,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (retValType.Symbol is IMethodSymbol method && method.ReturnType.SpecialType == SpecialType.System_Void)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, lambdaExpressionSyntax.GetLocation()));
+				var location = lambdaExpressionSyntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 
@@ -93,7 +94,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+			var location = methodDeclaration.ReturnType.GetLocation();
+			var displayString = methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+			context.ReportDiagnostic(Diagnostic.Create(Rule, location, displayString));
 		}
 
 

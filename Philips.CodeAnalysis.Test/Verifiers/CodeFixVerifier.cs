@@ -74,6 +74,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expectedSource">A class in the form of a string after the CodeFix was applied to it</param>
 		/// <param name="codeFixIndex">Index determining which codefix to apply if there are multiple</param>
 		/// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
+		/// <param name="scope">Scope for the FixAllProvider. </param>
 		private async Task VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
 		{
 			var document = CreateDocument(oldSource);
@@ -138,10 +139,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					var newDiagnostics2 = await GetCompilerDiagnostics(document).ConfigureAwait(false);
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
+					var newDiagnosticsString = newCompilerDiagnostics.Select(d => d.ToString());
+					var rootString = syntaxRoot?.ToFullString();
 					Assert.Fail(
-						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
-							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-							syntaxRoot.ToFullString()));
+						$"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newDiagnosticsString)}\r\n\r\nNew document:\r\n{rootString}\r\n");
 				}
 			}
 

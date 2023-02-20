@@ -51,11 +51,11 @@ namespace PathTooLongUnitTest {
 		/// Diagnostic is expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(SpaceName, 1, 1, DisplayName = "SpaceName"),
-		 DataRow(SpaceAbsolutePath, 1, 1, DisplayName = "SpaceAbsolutePath"),
-		 DataRow(SpaceRelativePath, 1, 1, DisplayName = "SpaceRelativePath")]
+		[DataRow(SpaceName, DisplayName = "SpaceName"),
+		 DataRow(SpaceAbsolutePath, DisplayName = "SpaceAbsolutePath"),
+		 DataRow(SpaceRelativePath, DisplayName = "SpaceRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenFileNameHasSpaceDiagnosticIsRaisedAsync(string filePath, int line, int column)
+		public async Task WhenFileNameHasSpaceDiagnosticIsRaisedAsync(string filePath)
 		{
 			await VerifyDiagnostic(Correct, DiagnosticId.NoSpaceInFilename, filePath).ConfigureAwait(false);
 		}

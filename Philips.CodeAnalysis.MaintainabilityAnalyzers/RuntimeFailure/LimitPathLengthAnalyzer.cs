@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 {
 	/// <summary>
 	/// Report on file names that are too long for windows to handle properly.
-	/// See <seealso cref="https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation"/>
+	/// See <seealso href="https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation"/>
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LimitPathLengthAnalyzer : DiagnosticAnalyzer

@@ -218,7 +218,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				{
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
 				}
-				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, syntaxNodeAnalysisContext.Node.GetLocation(), result, ex.Message));
+
+				var location = syntaxNodeAnalysisContext.Node.GetLocation();
+				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)

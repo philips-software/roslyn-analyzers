@@ -131,5 +131,7 @@ namespace Philips.CodeAnalysis.Common
 		NamespaceMatchAssemblyName = 2135,
 		AvoidDuplicateStrings = 2136,
 		RegexNeedsTimeout = 2137,
+		AvoidVoidReturn = 2138,
+		EnableDocumentationCreation = 2139,
 	}
 }
