@@ -79,11 +79,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
 			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
-			string strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
+			var strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
-				bool isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture, out int duplicateTokenThreshold);
+				var isParseSuccessful = int.TryParse(strTokenCount, NumberStyles.Integer, CultureInfo.InvariantCulture, out var duplicateTokenThreshold);
 
 				if (!isParseSuccessful)
 				{
@@ -128,7 +128,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			private string ToPrettyReference(FileLinePositionSpan fileSpan)
 			{
-				string file = Path.GetFileName(fileSpan.Path);
+				var file = Path.GetFileName(fileSpan.Path);
 
 				// This API uses 0-based line positioning, so add 1
 				return $@"{file} line {fileSpan.StartLinePosition.Line + 1} character {fileSpan.StartLinePosition.Character + 1}";
@@ -158,7 +158,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						_ = GetShapeDetails(token);
 
 						// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
-						(int hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
+						(var hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
 
 						if (rollingTokenSet.IsFull())
 						{
@@ -186,9 +186,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				// We found a duplicate, but if it's partially duplicated with itself, ignore it.
 				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
 				{
-					string shapeDetails = GetShapeDetails(token);
+					var shapeDetails = GetShapeDetails(token);
 					FileLinePositionSpan existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
-					string reference = ToPrettyReference(existingEvidenceLineSpan);
+					var reference = ToPrettyReference(existingEvidenceLineSpan);
 
 					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
@@ -202,18 +202,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
 			{
 				StringBuilder builder = new();
-				string[] lines = ex.StackTrace.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-				foreach (string line in lines)
+				var lines = ex.StackTrace.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+				foreach (var line in lines)
 				{
 					if (line.StartsWith("line") && line.Length >= 8)
 					{
-						string exception = line.Substring(0, 8);
+						var exception = line.Substring(0, 8);
 						_ = builder.Append(exception);
 						_ = builder.Append(' ');
 					}
 				}
 
-				string result = builder.ToString();
+				var result = builder.ToString();
 				if (string.IsNullOrWhiteSpace(result))
 				{
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
@@ -235,7 +235,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				List<SyntaxToken> tokens = new();
 				SyntaxToken currentToken = token;
-				for (int i = 0; i < _duplicateTokenThreshold; i++)
+				for (var i = 0; i < _duplicateTokenThreshold; i++)
 				{
 					tokens.Add(currentToken);
 					currentToken = currentToken.GetPreviousToken();
@@ -543,7 +543,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			_basePowMaxComponentsModulusCache = _base;
 			_basePowMaxComponentsModulusCache %= _modulus;
-			for (int i = 1; i < MaxItems; i++)
+			for (var i = 1; i < MaxItems; i++)
 			{
 				_basePowMaxComponentsModulusCache *= _base;
 				_basePowMaxComponentsModulusCache %= _modulus;
@@ -552,11 +552,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public (List<int> components, int hash) ToComponentHashes()
 		{
-			int sum = 0;
+			var sum = 0;
 			var componentHashes = new List<int>(_components.Count);
 			foreach (T token in _components)
 			{
-				int hashcode = token.GetHashCode();
+				var hashcode = token.GetHashCode();
 
 				componentHashes.Add(hashcode);
 				sum += hashcode;
@@ -582,7 +582,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			_components.Enqueue(token);
 			T purgedHashComponent = default;
-			bool isPurged = false;
+			var isPurged = false;
 			if (_components.Count > MaxItems)
 			{
 				// Remove old value
@@ -640,8 +640,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					return firstToken.GetLocationEnvelope();
 				}
 
-				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
-				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
+				var start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
+				var end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
 				var textSpan = TextSpan.FromBounds(start, end);
 				SyntaxTree firstTokenSyntax = firstToken.GetSyntaxTree();
 				var location = Location.Create(firstTokenSyntax, textSpan);
@@ -656,7 +656,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 
-			(List<int> components, int hash) = _hashCalculator.ToComponentHashes();
+			(List<int> components, var hash) = _hashCalculator.ToComponentHashes();
 
 			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
 			Evidence e = new(locationEnvelope, components, hash);

@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, int nodeCount)
 		{
 			// Hack: Linux has one method call more for Exists.
-			int expectedNodeCount = nodeCount;
+			var expectedNodeCount = nodeCount;
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && methodName == @"Exists")
 			{
 				expectedNodeCount++;

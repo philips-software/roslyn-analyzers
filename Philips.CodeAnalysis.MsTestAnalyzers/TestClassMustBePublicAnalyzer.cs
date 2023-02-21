@@ -33,8 +33,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			//this is an error, unless the class contains an "AssemblyInitialize" within it.  If it does, it _must_ be static.
-			bool hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
-			bool isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
+			var hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
+			var isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
 
 			if (hasAttributeThatMustBeStatic != isClassStatic)
 			{

@@ -17,12 +17,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 	{
 		private static string CreateClass(string fieldType, bool isDisposable)
 		{
-			string faces = string.Empty;
+			var faces = string.Empty;
 			if (isDisposable)
 			{
 				faces = ": IDisposable";
 			}
-			string baseline = @"
+			var baseline = @"
 namespace MyNamespace
 {{
   class FooClass{1}
@@ -45,7 +45,7 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string fieldType, bool isDisposable)
 		{
-			string source = CreateClass(fieldType, isDisposable);
+			var source = CreateClass(fieldType, isDisposable);
 			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
@@ -56,7 +56,7 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoDiagnosticIsTriggeredForStructsAsync()
 		{
-			string source = @"
+			var source = @"
 namespace MyNamespace
 {{
   struct FooStruct
@@ -77,7 +77,7 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenNotDisposableHasUnmanagedFieldsDiagnosticIsRaisedAsync(string fieldType)
 		{
-			string source = CreateClass(fieldType, false);
+			var source = CreateClass(fieldType, false);
 			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
 

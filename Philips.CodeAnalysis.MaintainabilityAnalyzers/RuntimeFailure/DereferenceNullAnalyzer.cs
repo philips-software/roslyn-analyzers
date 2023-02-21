@@ -126,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private bool HasNullCheck(ExpressionSyntax condition)
 		{
-			string conditionAsString = condition.ToString();
+			var conditionAsString = condition.ToString();
 			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
 			{
 				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
@@ -165,15 +165,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
-			(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
-			(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
+			(StatementSyntax firstStatementOfAnalysis, var firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
+			(StatementSyntax lastStatementOfAnalysis, var lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
 			if (CheckStatements(lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
 			{
 				return;
 			}
 
-			bool isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
+			var isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
 			if (!isOurSymbolReadOrWritten)
 			{
 				Report(identifierNameSyntax);
@@ -183,7 +183,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
 			StatementSyntax lastStatementOfAnalysis, ISymbol ourSymbol)
 		{
-			bool isOurSymbolReadOrWritten = false;
+			var isOurSymbolReadOrWritten = false;
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
 			{

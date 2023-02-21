@@ -30,10 +30,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			int getIndex = -1;
-			int setIndex = int.MaxValue;
+			var getIndex = -1;
+			var setIndex = int.MaxValue;
 
-			for (int i = 0; i < accessors.Accessors.Count; i++)
+			for (var i = 0; i < accessors.Accessors.Count; i++)
 			{
 				AccessorDeclarationSyntax accessor = accessors.Accessors[i];
 

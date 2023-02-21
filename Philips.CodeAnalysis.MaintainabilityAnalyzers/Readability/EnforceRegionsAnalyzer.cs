@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static string GetRegionName(DirectiveTriviaSyntax region)
 		{
-			string regionName = string.Empty;
+			var regionName = string.Empty;
 
 			Microsoft.CodeAnalysis.Text.TextLineCollection lines = region.GetText().Lines;
 
@@ -116,7 +116,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			if (i % 2 == 0)
 			{
-				string regionName = GetRegionName(region);
+				var regionName = GetRegionName(region);
 				if (regionName.Length <= 0)
 				{
 					return;
@@ -132,7 +132,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					else
 					{
 						Location location = region.GetLocation();
-						int lineNumber = GetMemberLineNumber(location);
+						var lineNumber = GetMemberLineNumber(location);
 
 						regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
 						regionStartName = regionName;
@@ -165,8 +165,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static IReadOnlyDictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = new();
-			string regionStartName = "";
-			for (int i = 0; i < regions.Count; i++)
+			var regionStartName = "";
+			for (var i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];
 				PopulateRegionLocation(ref regionStartName, regionLocations, region, i, context);
@@ -194,7 +194,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
 		{
 			Location location = member.GetLocation();
-			int memberLocation = GetMemberLineNumber(location);
+			var memberLocation = GetMemberLineNumber(location);
 			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
 		}
 
@@ -256,7 +256,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			// Delegate
 			// Enum
 			modifiers = default;
-			bool shouldCheck = false;
+			var shouldCheck = false;
 			switch (member.Kind())
 			{
 				case SyntaxKind.ConstructorDeclaration:
@@ -398,7 +398,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static void VerifyMemberForNonPublicDataMemberRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
 			SyntaxTokenList modifiers = default;
-			bool shouldProcess = false;
+			var shouldProcess = false;
 			switch (member.Kind())
 			{
 				case SyntaxKind.FieldDeclaration:

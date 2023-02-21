@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			Location location = methodDeclaration.ReturnType.GetLocation();
-			string displayString = methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+			var displayString = methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 			context.ReportDiagnostic(Diagnostic.Create(Rule, location, displayString));
 		}
 

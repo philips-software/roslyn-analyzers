@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 				}
 			};
 			AssertCodeHelper helper = new();
-			string code = helper.GetText(test, string.Empty, string.Empty);
+			var code = helper.GetText(test, string.Empty, string.Empty);
 			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
 		}
 

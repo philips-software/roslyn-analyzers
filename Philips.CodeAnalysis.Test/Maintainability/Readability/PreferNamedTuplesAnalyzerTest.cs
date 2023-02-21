@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string argument)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo({0} data)
@@ -38,7 +38,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrorsAsync(string argument)
 		{
-			string source = CreateFunction(argument);
+			var source = CreateFunction(argument);
 			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
@@ -47,7 +47,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementsDoNotHaveNamesAsync(string argument)
 		{
-			string source = CreateFunction(argument);
+			var source = CreateFunction(argument);
 			await VerifyDiagnostic(source, 2).ConfigureAwait(false);
 		}
 
@@ -56,7 +56,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementDoesNotHaveNameAsync(string argument)
 		{
-			string source = CreateFunction(argument);
+			var source = CreateFunction(argument);
 			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
 	}

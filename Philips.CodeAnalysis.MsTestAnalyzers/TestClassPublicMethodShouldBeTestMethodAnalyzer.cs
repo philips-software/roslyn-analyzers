@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			bool isAllowedToBePublic = false;
+			var isAllowedToBePublic = false;
 			foreach (INamedTypeSymbol attribute in symbol.GetAttributes().Select(attr => attr.AttributeClass))
 			{
 				if (definitions.NonTestMethods.Contains(attribute))

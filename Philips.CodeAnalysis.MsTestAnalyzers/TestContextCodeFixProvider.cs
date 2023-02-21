@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// find the underlying variable
 			IEnumerable<SyntaxNode> propNodes = declaration.DescendantNodes();
 			ReturnStatementSyntax returnStatement = propNodes.OfType<ReturnStatementSyntax>().First();
-			string varName = string.Empty;
+			var varName = string.Empty;
 			if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
 			{
 				varName = returnVar.Identifier.ToString();

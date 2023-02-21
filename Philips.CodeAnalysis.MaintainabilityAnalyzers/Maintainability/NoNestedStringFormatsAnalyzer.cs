@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var invocation = (IInvocationOperation)operationContext.Operation;
 
-			if (!IsStringFormatMethod(invocation.TargetMethod, out ITypeSymbol returnType, out int formatStringParameterIndex))
+			if (!IsStringFormatMethod(invocation.TargetMethod, out ITypeSymbol returnType, out var formatStringParameterIndex))
 			{
 				return;
 			}
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					break;
 				case OperationKind.InterpolatedString:
 					Location location = argument.Syntax.GetLocation();
-					string displayString = invocation.TargetMethod.ToDisplayString();
+					var displayString = invocation.TargetMethod.ToDisplayString();
 					operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, "an interpolated string", displayString));
 					break;
 			}
@@ -147,7 +147,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
 			{
-				string formatValue = (string)argument.ConstantValue.Value;
+				var formatValue = (string)argument.ConstantValue.Value;
 
 				if (_formatRegex.IsMatch(formatValue))
 				{
@@ -234,8 +234,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			Location location = argument.Syntax.GetLocation();
-			string displayString = targetMethod.ToDisplayString();
-			string targetDisplayString = target.TargetMethod.ToDisplayString();
+			var displayString = targetMethod.ToDisplayString();
+			var targetDisplayString = target.TargetMethod.ToDisplayString();
 			operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, displayString, targetDisplayString));
 			return true;
 		}

@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			SyntaxToken literal = Node.Token;
-			string literalText = literal.Text.Trim('\\', '\"');
+			var literalText = literal.Text.Trim('\\', '\"');
 			if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 			{
 				return;
@@ -58,8 +58,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (!usedLiterals.TryAdd(literalText, location))
 			{
 				_ = usedLiterals.TryGetValue(literalText, out Location firstLocation);
-				string firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
-				int firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
+				var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
+				var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
 				ReportDiagnostic(location, firstFilename, firstLineNumber, literalText);
 			}
 		}

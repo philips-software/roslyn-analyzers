@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			// Look for throw statements and check them.
-			bool hasBadThrowNodes = Node.DescendantNodes()
+			var hasBadThrowNodes = Node.DescendantNodes()
 				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(node));
 			if (hasBadThrowNodes)
 			{
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		// Alternatively, also allow the HttpResponseException method using in ASP .NET Core.
 		private bool IsCorrectThrow(ThrowStatementSyntax node)
 		{
-			bool isOk = true;
+			var isOk = true;
 			System.Collections.Generic.IEnumerable<ObjectCreationExpressionSyntax> newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
 			if (newNodes.Any())
 			{

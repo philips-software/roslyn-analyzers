@@ -157,7 +157,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
 			}
 
-			for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
+			for (var i = 0; i < foreachMemberAccessNodes.Count; i++)
 			{
 				if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
 				{

@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
 				AttributeHelper attributeHelper = new();
-				bool hasCategory = attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
+				var hasCategory = attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
 
 				if (!attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
 					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && allowed.Any())
 					{
-						string firstAllowedTimeout = allowed.First();
+						var firstAllowedTimeout = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
 					}
 
@@ -104,18 +104,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				if (!TryExtractAttributeArgument(context, argumentSyntax, out string timeoutString, out int _))
+				if (!TryExtractAttributeArgument(context, argumentSyntax, out var timeoutString, out int _))
 				{
 					return;
 				}
 
-				if (IsIncorrectTimeout(timeoutString, category, out string errorText))
+				if (IsIncorrectTimeout(timeoutString, category, out var errorText))
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
 					if (TryGetAllowedTimeouts(category, out ImmutableList<string> allowed) && allowed.Any())
 					{
-						string firstAllowed = allowed.First();
+						var firstAllowed = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowed);
 					}
 
@@ -157,7 +157,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				if (!timeouts.Contains(argumentString))
 				{
 					List<string> timeoutStrings = new();
-					foreach (string timeoutString in timeouts)
+					foreach (var timeoutString in timeouts)
 					{
 						timeoutStrings.Add($"\"{timeoutString}\"");
 					}

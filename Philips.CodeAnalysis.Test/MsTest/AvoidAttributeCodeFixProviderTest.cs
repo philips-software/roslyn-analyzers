@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestInitializeCodeFixProviderTest(string testMethod)
 		{
-			string givenText = string.Format(baseline, testMethod);
+			var givenText = string.Format(baseline, testMethod);
 
 			DiagnosticResult expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestInitializeMethod);
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassInitializeCodeFixProviderTest(string testMethod)
 		{
-			string givenText = string.Format(baseline, testMethod);
+			var givenText = string.Format(baseline, testMethod);
 
 			DiagnosticResult expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassInitializeMethod);
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestCleanupCodeFixProviderTest(string testMethod)
 		{
-			string givenText = string.Format(baseline, testMethod);
+			var givenText = string.Format(baseline, testMethod);
 
 			DiagnosticResult expected = GetExpectedDiagnostic(DiagnosticId.AvoidTestCleanupMethod);
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassCleanupCodeFixProviderTest(string testMethod)
 		{
-			string givenText = string.Format(baseline, testMethod);
+			var givenText = string.Format(baseline, testMethod);
 
 			DiagnosticResult expected = GetExpectedDiagnostic(DiagnosticId.AvoidClassCleanupMethod);
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);

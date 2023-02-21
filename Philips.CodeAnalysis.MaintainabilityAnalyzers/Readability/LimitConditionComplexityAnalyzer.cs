@@ -54,8 +54,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					var additionalFiles = new AdditionalFilesHelper(
 						startContext.Options,
 						startContext.Compilation);
-					string maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
-					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsedMax))
+					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
+					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedMax))
 					{
 						_maxOperators = parsedMax;
 					}
@@ -92,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			int numOperators = conditionNode.DescendantTokens().Count(IsLogicalOperator);
+			var numOperators = conditionNode.DescendantTokens().Count(IsLogicalOperator);
 			if (numOperators >= _maxOperators)
 			{
 				Location newLineLocation = conditionNode.GetLocation();

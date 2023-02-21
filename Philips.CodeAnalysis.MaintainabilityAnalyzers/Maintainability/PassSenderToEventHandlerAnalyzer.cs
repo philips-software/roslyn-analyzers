@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			string eventName = variable.Identifier.Text;
+			var eventName = variable.Identifier.Text;
 
 			TypeDeclarationSyntax parent = Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
 			if (parent == null)

@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public async Task AvoidPublicMemberVariablesTestAsync(string content, bool isError)
 		{
 			const string template = @"public class C {{    {0}       }}";
-			string classContent = string.Format(template, content);
+			var classContent = string.Format(template, content);
 			if (isError)
 			{
 				await VerifyDiagnostic(classContent).ConfigureAwait(false);

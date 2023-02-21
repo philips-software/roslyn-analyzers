@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
-			string methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
+			var methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
 			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
 				return;
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// This is debatable, and ideally warrants a configuration option.
 			if (invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
 			{
-				bool isStatic = IsStaticMethod(callee);
+				var isStatic = IsStaticMethod(callee);
 				if (isStatic)
 				{
 					return;

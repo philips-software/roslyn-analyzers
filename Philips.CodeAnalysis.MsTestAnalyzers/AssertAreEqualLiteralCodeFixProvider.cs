@@ -88,14 +88,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private InvocationExpressionSyntax ConvertToInvocation(SimpleNameSyntax calledMethod, ExpressionSyntax literalExpected, ExpressionSyntax actual, ExpressionSyntax message)
 		{
-			bool isLiteralTrue = GetMethod(literalExpected);
+			var isLiteralTrue = GetMethod(literalExpected);
 
 			if (calledMethod.ToString() == StringConstants.AreNotEqualMethodName)
 			{
 				isLiteralTrue = !isLiteralTrue;
 			}
 
-			string method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
+			var method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
 
 			ArgumentListSyntax argumentListSyntax = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[] { SyntaxFactory.Argument(actual) }));
 

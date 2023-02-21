@@ -57,9 +57,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private async Task<Document> AssertIsTrueFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
 		{
-			string calledMethod = ((MemberAccessExpressionSyntax)invocationExpression.Expression).Name.Identifier.Text;
+			var calledMethod = ((MemberAccessExpressionSyntax)invocationExpression.Expression).Name.Identifier.Text;
 
-			bool isIsTrue = calledMethod == StringConstants.IsTrue;
+			var isIsTrue = calledMethod == StringConstants.IsTrue;
 
 			ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
 
@@ -122,7 +122,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return document;
 			}
 
-			int statementIndex = parentBlock.Statements.IndexOf(x => x.Contains(invocationExpression));
+			var statementIndex = parentBlock.Statements.IndexOf(x => x.Contains(invocationExpression));
 
 			StatementSyntax statement = parentBlock.Statements[statementIndex];
 
@@ -161,9 +161,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			ArgumentListSyntax newArguments = DecomposeEqualsFunction(invocationExpression.ArgumentList, out bool isNotEquals);
+			ArgumentListSyntax newArguments = DecomposeEqualsFunction(invocationExpression.ArgumentList, out var isNotEquals);
 
-			string functionName = DetermineFunction(isIsTrue, isNotEquals, false);
+			var functionName = DetermineFunction(isIsTrue, isNotEquals, false);
 			MemberAccessExpressionSyntax memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
@@ -178,9 +178,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			ArgumentListSyntax newArguments = DecomposeEqualsEquals(kind, invocationExpression.ArgumentList, out bool isNotEquals, out bool isNullArgument);
+			ArgumentListSyntax newArguments = DecomposeEqualsEquals(kind, invocationExpression.ArgumentList, out var isNotEquals, out var isNullArgument);
 
-			string functionName = DetermineFunction(isIsTrue, isNotEquals, isNullArgument);
+			var functionName = DetermineFunction(isIsTrue, isNotEquals, isNullArgument);
 			MemberAccessExpressionSyntax memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));

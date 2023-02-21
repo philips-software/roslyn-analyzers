@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void AnalyzeMethod(SyntaxNode node)
 		{
 			// Check overriden methods of Object.
-			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
+			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out var specialMethodKind))
 			{
 				Location loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, specialMethodKind);
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (node is ConstructorDeclarationSyntax constructorDeclaration)
 			{
 				// Check constructors of an Exception.
-				bool? withinExceptionClass =
+				var withinExceptionClass =
 					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith(StringConstants.Exception);
 				if (withinExceptionClass.HasValue && (bool)withinExceptionClass)
 				{

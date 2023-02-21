@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (Node.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
 			{
-				string propertyName = prop.Identifier.Text;
+				var propertyName = prop.Identifier.Text;
 				Location loc = Node.GetLocation();
 				ReportDiagnostic(loc, propertyName);
 			}

@@ -34,11 +34,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			int previousViolationLine = InitialCodeLine;
+			var previousViolationLine = InitialCodeLine;
 			foreach (Location location in comments.Where(comment => comment.ToString().EndsWith(";"))
 											 .Select(node => node.GetLocation()))
 			{
-				int lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
+				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 				if (lineNumber - previousViolationLine > 1)
 				{
 					ReportDiagnostic(location, lineNumber);

@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (argument.Parent is ArgumentListSyntax argumentList)
 			{
-				int index = argumentList.Arguments.IndexOf(argument);
+				var index = argumentList.Arguments.IndexOf(argument);
 				if (index == 0)
 				{
 					ArgumentSyntax thisArgument = SyntaxFactory.Argument(SyntaxFactory.ThisExpression()).WithTriviaFrom(argument);
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				else if (index == 1)
 				{
 					SemanticModel semanticModel = await document.GetSemanticModelAsync(c);
-					string typeName = semanticModel?.GetTypeInfo(argument, c).Type?.Name ?? "EventArgs";
+					var typeName = semanticModel?.GetTypeInfo(argument, c).Type?.Name ?? "EventArgs";
 					ArgumentSyntax emptyArgument = SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeName), SyntaxFactory.IdentifierName("Empty"))).WithTriviaFrom(argument);
 					rootNode = rootNode.ReplaceNode(argument, emptyArgument);
 				}

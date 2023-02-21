@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			string memberName = memberAccessExpression.Name switch
+			var memberName = memberAccessExpression.Name switch
 			{
 				GenericNameSyntax generic => generic.Identifier.ToString(),
 				SimpleNameSyntax name => name.ToString()
@@ -44,9 +44,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			bool isArg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
-			bool isArg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
-			bool isArg0Null = IsNull(argumentList.Arguments[0].Expression);
+			var isArg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			var isArg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			var isArg0Null = IsNull(argumentList.Arguments[0].Expression);
 
 			if (!isArg0Literal && !isArg1Literal)
 			{

@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string mockReference = typeof(Mock<>).Assembly.Location;
+			var mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 			return base.GetMetadataReferences().Add(reference);
 		}
@@ -61,7 +61,7 @@ public static class Program
 }}
 ";
 
-			string text = string.Format(Template, isExtensionMethod ? "this" : "", call);
+			var text = string.Format(Template, isExtensionMethod ? "this" : "", call);
 			if (isError)
 			{
 				await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
@@ -73,7 +73,7 @@ public static class Program
 
 			if (!string.IsNullOrEmpty(fixedText))
 			{
-				string newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
+				var newText = string.Format(Template, isExtensionMethod ? "this" : "", fixedText);
 				await VerifyFix(text, newText).ConfigureAwait(false);
 			}
 		}
@@ -97,10 +97,10 @@ public static class Foo
   }}
 }}
 ";
-			string text = string.Format(Template, "Bar(obj, null)");
+			var text = string.Format(Template, "Bar(obj, null)");
 			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
-			string newText = string.Format(Template, "obj.Bar(null)");
+			var newText = string.Format(Template, "obj.Bar(null)");
 			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 
@@ -128,10 +128,10 @@ public static class Foo
   }}
 }}
 ";
-			string text = string.Format(Template, "RemoveByKeys(dict, items)");
+			var text = string.Format(Template, "RemoveByKeys(dict, items)");
 			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
-			string newText = string.Format(Template, "dict.RemoveByKeys(items)");
+			var newText = string.Format(Template, "dict.RemoveByKeys(items)");
 			await VerifyFix(text, newText).ConfigureAwait(false);
 		}
 

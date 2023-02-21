@@ -248,7 +248,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			List<DocumentInfo> list = new();
 			ImmutableArray<(string name, string content)> details = GetAdditionalTexts();
 			TestTextLoader textLoader = new();
-			foreach ((string name, string content) in details)
+			foreach ((var name, var content) in details)
 			{
 				var docId = DocumentId.CreateNewId(projectId);
 				textLoader.Register(docId, content);
@@ -277,10 +277,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>A Project created out of the Documents created from the source strings</returns>
 		private Project CreateProject(string[] sources, string filenamePrefix = null, string assemblyName = null)
 		{
-			bool isCustomPrefix = filenamePrefix != null;
+			var isCustomPrefix = filenamePrefix != null;
 			filenamePrefix ??= DefaultFilePathPrefix;
-			string fileExt = CSharpDefaultFileExt;
-			string projectName = assemblyName ?? TestProjectName;
+			var fileExt = CSharpDefaultFileExt;
+			var projectName = assemblyName ?? TestProjectName;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
 			ImmutableArray<DocumentInfo> documentInfos = GetAdditionalDocumentInfos(projectId);
@@ -305,8 +305,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				solution = solution.AddMetadataReference(projectId, testReferences);
 			}
 
-			string[] trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
-			string[] neededAssemblies = new[]
+			var trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
+			var neededAssemblies = new[]
 			{
 				"System.Runtime",
 				"mscorlib",
@@ -330,11 +330,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				Trace.WriteLine($"{m.Display}: {m.Properties}");
 			}
 
-			int count = 0;
+			var count = 0;
 			ImmutableArray<(string name, string content)> additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
-				string newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
+				var newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
 
 				count++;
 
@@ -342,7 +342,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			}).Concat(additionalSourceCode);
 
-			foreach ((string name, string content) in data)
+			foreach ((var name, var content) in data)
 			{
 				var documentId = DocumentId.CreateNewId(projectId, debugName: name);
 				solution = solution.AddDocument(documentId, name, SourceText.From(content));

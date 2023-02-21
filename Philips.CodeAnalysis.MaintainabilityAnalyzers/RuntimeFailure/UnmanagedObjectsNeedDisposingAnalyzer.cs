@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 			if (IsUnmanaged(Node.Declaration.Type) && !TypeImplementsIDisposable())
 			{
-				string variableName = Node.Declaration.Variables[0].Identifier.Text;
+				var variableName = Node.Declaration.Variables[0].Identifier.Text;
 				Location loc = Node.Declaration.Variables[0].Identifier.GetLocation();
 				ReportDiagnostic(loc, variableName);
 			}
@@ -45,10 +45,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private bool IsUnmanaged(TypeSyntax type)
 		{
-			string typeStr = type.ToString();
-			bool isIntPtr = typeStr.Contains("IntPtr");
-			bool isPointer = typeStr.Contains('*');
-			bool isHandle = typeStr.ToLowerInvariant().Contains("handle");
+			var typeStr = type.ToString();
+			var isIntPtr = typeStr.Contains("IntPtr");
+			var isPointer = typeStr.Contains('*');
+			var isHandle = typeStr.ToLowerInvariant().Contains("handle");
 			return isIntPtr || isPointer || isHandle;
 		}
 

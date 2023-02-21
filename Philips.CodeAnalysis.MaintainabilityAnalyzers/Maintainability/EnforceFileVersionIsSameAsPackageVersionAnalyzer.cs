@@ -42,8 +42,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyInformationalVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
-					string strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
-					string strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
+					var strippedVersionSuffix = RemoveVersionSuffix((string)attr.ConstructorArguments[0].Value);
+					var strippedsourceRevisionId = RemoveSourceRevisionId(strippedVersionSuffix);
 					informationalVersion = new Version(strippedsourceRevisionId);
 					informationalVersion = SetRevisionToZeroIfMissing(informationalVersion);
 				}
@@ -83,8 +83,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private string RemoveSuffix(string version, char suffixSymbol)
 		{
-			string sanitizedVersion = version;
-			int index = version.IndexOf(suffixSymbol);
+			var sanitizedVersion = version;
+			var index = version.IndexOf(suffixSymbol);
 			if (index >= 0)
 			{
 				sanitizedVersion = version.Substring(0, index);

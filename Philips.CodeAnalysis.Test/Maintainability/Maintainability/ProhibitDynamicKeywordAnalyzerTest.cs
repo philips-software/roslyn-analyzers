@@ -57,7 +57,7 @@ dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DuplicateCodeAnalyzerCrash()
 		{
-			string path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "AvoidDuplicateCodeAnalyzer.cs");
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.DuplicateCodeAnalyzer", "AvoidDuplicateCodeAnalyzer.cs");
 			await VerifySuccessfulCompilationFromFile(path);
 		}
 

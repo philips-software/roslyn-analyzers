@@ -108,7 +108,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				INamedTypeSymbol exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 				if (exceptionSymbol != null)
 				{
-					string docId = exceptionSymbol.GetDocumentationCommentId();
+					var docId = exceptionSymbol.GetDocumentationCommentId();
 					File.AppendAllText(@"StaticClasses.Allowed.GENERATED.txt", $"~{docId}{Environment.NewLine}");
 				}
 			}

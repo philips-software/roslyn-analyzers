@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = @"
+			var code = @"
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -56,8 +56,8 @@ public class Tests
 	public void Foo({1}) {{ }}
 }}";
 
-			string parameterListString = string.Empty;
-			for (int i = 0; i < parameters; i++)
+			var parameterListString = string.Empty;
+			for (var i = 0; i < parameters; i++)
 			{
 				parameterListString = string.Format("{0}, int p{1}", parameterListString, i);
 			}
@@ -113,8 +113,8 @@ public class Tests
 	public void Foo({0}) {{ }}
 }}";
 
-			string parameterListString = string.Empty;
-			for (int i = 0; i < parameters; i++)
+			var parameterListString = string.Empty;
+			for (var i = 0; i < parameters; i++)
 			{
 				parameterListString = string.Format("{0}, int p{1}", parameterListString, i);
 			}
@@ -127,7 +127,7 @@ public class Tests
 		{
 			const string DataTestMethod = "[DataTestMethod]";
 
-			foreach (bool hasDisplayName in new[] { true, false })
+			foreach (var hasDisplayName in new[] { true, false })
 			{
 				yield return new object[] { DataTestMethod, 1, 1, false, hasDisplayName, true };
 				yield return new object[] { DataTestMethod, 1, 2, false, hasDisplayName, false };
@@ -159,20 +159,20 @@ public class Tests
 	{{ return Array.Empty<object[]>(); }}
 }}";
 
-			string[] parameterListStrings = new string[parameters];
-			for (int i = 0; i < parameters; i++)
+			var parameterListStrings = new string[parameters];
+			for (var i = 0; i < parameters; i++)
 			{
 				parameterListStrings[i] = $"int p{i}";
 			}
 
-			string parameterListString = string.Join(',', parameterListStrings);
+			var parameterListString = string.Join(',', parameterListStrings);
 
-			string dataRow = string.Empty;
+			var dataRow = string.Empty;
 
 			if (dataRowParameters >= 0)
 			{
 				List<string> dataRowParametersStrings = new();
-				for (int i = 0; i < dataRowParameters; i++)
+				for (var i = 0; i < dataRowParameters; i++)
 				{
 					dataRowParametersStrings.Add(i.ToString());
 				}
@@ -182,12 +182,12 @@ public class Tests
 					dataRowParametersStrings.Add("DisplayName = \"blah\"");
 				}
 
-				string dataRowText = $"[DataRow({string.Join(',', dataRowParametersStrings)})]";
+				var dataRowText = $"[DataRow({string.Join(',', dataRowParametersStrings)})]";
 
 				dataRow = dataRowText;
 			}
 
-			string code = string.Format(template, testType, parameterListString, dataRow, isDynamicData ? "[DynamicData(nameof(GetVariants))]" : string.Empty);
+			var code = string.Format(template, testType, parameterListString, dataRow, isDynamicData ? "[DynamicData(nameof(GetVariants))]" : string.Empty);
 
 			if (isCorrect)
 			{

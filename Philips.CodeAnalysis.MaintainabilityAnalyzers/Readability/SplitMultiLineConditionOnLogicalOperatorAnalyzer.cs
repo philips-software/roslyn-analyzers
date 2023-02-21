@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			// Report the location of the nearest SyntaxNode.
 			Location loc = violation.Parent?.GetLocation();
-			int lineNumber = loc.GetLineSpan().StartLinePosition.Line + 1;
+			var lineNumber = loc.GetLineSpan().StartLinePosition.Line + 1;
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc, lineNumber));
 		}
 
@@ -105,8 +105,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private bool IsMultiLine(Location loc)
 		{
 			FileLinePositionSpan lineSpan = loc.GetLineSpan();
-			int startLine = lineSpan.StartLinePosition.Line;
-			int endLine = lineSpan.EndLinePosition.Line;
+			var startLine = lineSpan.StartLinePosition.Line;
+			var endLine = lineSpan.EndLinePosition.Line;
 			return startLine != endLine;
 		}
 

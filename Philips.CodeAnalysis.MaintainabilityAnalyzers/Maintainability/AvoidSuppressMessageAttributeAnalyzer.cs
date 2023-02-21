@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					foreach (Microsoft.CodeAnalysis.Text.TextLine textLine in text.Lines)
 					{
-						string line = textLine.ToString();
+						var line = textLine.ToString();
 						_ = builder.Add(line);
 					}
 				}
@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (
 				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation) &&
-				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out string id))
+				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 			{
 				var diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 				context.ReportDiagnostic(diagnostic);

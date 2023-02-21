@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string argument)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo((string, int num) data)
@@ -51,7 +51,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrorsAsync(string argument, bool isError)
 		{
-			string source = CreateFunction(argument);
+			var source = CreateFunction(argument);
 			if (isError)
 			{
 				await VerifyDiagnostic(source, DiagnosticId.PreferUsingNamedTupleField).ConfigureAwait(false);

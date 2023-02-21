@@ -71,13 +71,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static bool IsAllowedNumber(string text)
 		{
 			// Initialize with first number that is NOT allowed.
-			long parsed = FirstInvalidNumber;
-			string trimmed = text.ToLower(CultureInfo.InvariantCulture).TrimEnd('f', 'd', 'l', 'm', 'u');
-			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
+			var parsed = FirstInvalidNumber;
+			var trimmed = text.ToLower(CultureInfo.InvariantCulture).TrimEnd('f', 'd', 'l', 'm', 'u');
+			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integer))
 			{
 				parsed = integer;
 			}
-			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
 			{
 				double rounded = (long)value;
 				if (Math.Abs(rounded - value) < double.Epsilon)
@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsPowerOf(long nut, int bas)
 		{
-			long current = 1L;
+			var current = 1L;
 			while (nut > current)
 			{
 				current *= bas;
@@ -105,8 +105,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsStaticOrConst(FieldDeclarationSyntax field)
 		{
-			bool isStatic = field.Modifiers.Any(SyntaxKind.StaticKeyword);
-			bool isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
+			var isStatic = field.Modifiers.Any(SyntaxKind.StaticKeyword);
+			var isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
 			return isStatic || isConst;
 		}
 	}

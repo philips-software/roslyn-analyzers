@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = @"
+			var code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class DerivedTestMethod : TestMethod
@@ -70,7 +70,7 @@ public {2} class Tests : {3}
 
 			await VerifySuccessfulCompilation(string.Format(template, "[TestClass]", testType, classQualifier, baseClass)).ConfigureAwait(false);
 
-			string code = string.Format(template, "", testType, classQualifier, baseClass);
+			var code = string.Format(template, "", testType, classQualifier, baseClass);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.TestMethodsMustBeInTestClass).ConfigureAwait(false);

@@ -61,13 +61,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			string filename = Path.GetFileNameWithoutExtension(tree.FilePath);
-			int indexOfDot = filename.IndexOf('.');
+			var filename = Path.GetFileNameWithoutExtension(tree.FilePath);
+			var indexOfDot = filename.IndexOf('.');
 			if (indexOfDot != -1)
 			{
 				filename = filename.Substring(0, indexOfDot);
 			}
-			int indexOfCurly = filename.IndexOf('{');
+			var indexOfCurly = filename.IndexOf('{');
 			if (indexOfCurly != -1)
 			{
 				filename = filename.Substring(0, indexOfCurly);

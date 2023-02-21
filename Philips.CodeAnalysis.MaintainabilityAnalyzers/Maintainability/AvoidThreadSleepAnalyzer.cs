@@ -39,8 +39,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			string memberName = memberAccessExpression.Expression.ToString();
-			string name = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Expression.ToString();
+			var name = memberAccessExpression.Name.ToString();
 
 			if (memberName == @"Thread" && name == @"Sleep")
 			{

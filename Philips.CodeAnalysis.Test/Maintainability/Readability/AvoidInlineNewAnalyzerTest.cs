@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string content)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -38,7 +38,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorOnAllowedMethodsAsync()
 		{
-			string file = CreateFunction("string str = new object().ToString()");
+			var file = CreateFunction("string str = new object().ToString()");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -46,7 +46,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontInlineNewCallAsync()
 		{
-			string file = CreateFunction("int hash = new object().GetHashCode()");
+			var file = CreateFunction("int hash = new object().GetHashCode()");
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
@@ -54,7 +54,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfPlacedInLocalAsync()
 		{
-			string file = CreateFunction("object obj = new object(); string str = obj.ToString();");
+			var file = CreateFunction("object obj = new object(); string str = obj.ToString();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -62,7 +62,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfPlacedInFieldAsync()
 		{
-			string file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
+			var file = CreateFunction("_obj = new object(); string str = _obj.ToString();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -72,7 +72,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontInlineNewCallCustomTypeAsync(string newVariant)
 		{
-			string file = CreateFunction($"int hash = {newVariant}.GetHashCode()");
+			var file = CreateFunction($"int hash = {newVariant}.GetHashCode()");
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
@@ -82,7 +82,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorInlineNewCallCustomTypeAllowedMethodAsync(string newVariant)
 		{
-			string file = CreateFunction($"string str = {newVariant}.ToString()");
+			var file = CreateFunction($"string str = {newVariant}.ToString()");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -90,7 +90,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfPlacedInLocalCustomTypeAsync()
 		{
-			string file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
+			var file = CreateFunction("object obj = new Foo(); string str = obj.ToString();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -98,7 +98,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfPlacedInFieldCustomTypeAsync()
 		{
-			string file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
+			var file = CreateFunction("_obj = new Foo(); string str = _obj.ToString();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -107,7 +107,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfPlacedInContainerAsync()
 		{
-			string file = CreateFunction("var v = new List<object>(); v.Add(new object());");
+			var file = CreateFunction("var v = new List<object>(); v.Add(new object());");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -115,7 +115,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfReturnedAsync()
 		{
-			string file = CreateFunction("return new object();");
+			var file = CreateFunction("return new object();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -123,7 +123,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfReturnedAsync()
 		{
-			string file = CreateFunction("return new object().GetHashCode();");
+			var file = CreateFunction("return new object().GetHashCode();");
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
@@ -131,7 +131,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfReturnedAllowedMethodAsync()
 		{
-			string file = CreateFunction("return new object().ToString();");
+			var file = CreateFunction("return new object().ToString();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -139,7 +139,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorIfThrownAsync()
 		{
-			string file = CreateFunction("throw new Exception();");
+			var file = CreateFunction("throw new Exception();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -147,7 +147,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfThrownAsync()
 		{
-			string file = CreateFunction("throw new object().Foo;");
+			var file = CreateFunction("throw new object().Foo;");
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
@@ -155,7 +155,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorOnAsSpanMethodAsync()
 		{
-			string file = CreateFunction("new string(\"\").AsSpan();");
+			var file = CreateFunction("new string(\"\").AsSpan();");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 

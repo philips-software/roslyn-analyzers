@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
 			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out string missingExceptionTypeName))
+			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out var missingExceptionTypeName))
 			{
 				return;
 			}
@@ -55,8 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxNode newRoot = root;
 
 			DocumentationHelper docHelper = new(node);
-			string[] parts = exceptionTypeName.Split(',');
-			foreach (string part in parts)
+			var parts = exceptionTypeName.Split(',');
+			foreach (var part in parts)
 			{
 				docHelper.AddException(part);
 			}

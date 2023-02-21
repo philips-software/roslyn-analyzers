@@ -136,11 +136,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static string NiceVariableName(ExpressionSyntax argumentSyntax)
 		{
-			string niceName = @"renameMe";
+			var niceName = @"renameMe";
 			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
 			{
-				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
-				int indexOfDot = newNameSuffix.LastIndexOf('.');
+				var newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+				var indexOfDot = newNameSuffix.LastIndexOf('.');
 				if (indexOfDot != -1)
 				{
 					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);

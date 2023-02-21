@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
-				string fileName = Path.GetFileName(additionalFile.Path);
+				var fileName = Path.GetFileName(additionalFile.Path);
 				if (StringComparer.OrdinalIgnoreCase.Equals(fileName, filenameToInitialize))
 				{
 					SourceText allowedMethods = additionalFile.GetText();
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			if (line.StartsWith("~"))
 			{
-				string id = line.Substring(1);
+				var id = line.Substring(1);
 				ImmutableArray<ISymbol> symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
 				if (!symbols.IsDefaultOrEmpty)
 				{
@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			foreach (TextLine textLine in text.Lines)
 			{
-				string line = StripComments(textLine.ToString());
+				var line = StripComments(textLine.ToString());
 				if (!string.IsNullOrWhiteSpace(line))
 				{
 					RegisterLine(line);
@@ -139,11 +139,11 @@ namespace Philips.CodeAnalysis.Common
 
 		private bool MatchesAnyLine(INamespaceSymbol ns, INamedTypeSymbol type, IMethodSymbol method)
 		{
-			string nsName = ns.ToString();
-			string typeName = type.Name;
+			var nsName = ns.ToString();
+			var typeName = type.Name;
 			return _allowedLines.Any(line =>
 			{
-				string[] parts = line.Split('.');
+				var parts = line.Split('.');
 				if (parts.Length == 1)
 				{
 					return (method == null) ? line == typeName : line == method.Name;
@@ -161,12 +161,12 @@ namespace Philips.CodeAnalysis.Common
 
 		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
 		{
-			string methodName = method?.Name;
-			bool isMatch = true;
-			int length = parts.Length;
-			int nsIndex = length - NamespaceIndexDelta;
-			int typeIndex = length - TypeIndexDelta;
-			int methodIndex = length - MethodIndexDelta;
+			var methodName = method?.Name;
+			var isMatch = true;
+			var length = parts.Length;
+			var nsIndex = length - NamespaceIndexDelta;
+			var typeIndex = length - TypeIndexDelta;
+			var methodIndex = length - MethodIndexDelta;
 			if (method == null)
 			{
 				nsIndex = length - TypeIndexDelta;
@@ -175,7 +175,7 @@ namespace Philips.CodeAnalysis.Common
 
 			if (parts[nsIndex] != Wildcard)
 			{
-				string fullNs = string.Join(".", parts, 0, nsIndex + 1);
+				var fullNs = string.Join(".", parts, 0, nsIndex + 1);
 				isMatch &= fullNs == nsName;
 			}
 
@@ -195,12 +195,12 @@ namespace Philips.CodeAnalysis.Common
 
 		private string StripComments(string input)
 		{
-			string stripped = input;
+			var stripped = input;
 			// Remove Banned API style messages
-			int semiColonIndex = input.IndexOf(';');
-			int hashIndex = input.IndexOf('#');
-			int singleLineCommentIndex = input.IndexOf("//");
-			int index = (semiColonIndex >= 0) ? semiColonIndex : input.Length;
+			var semiColonIndex = input.IndexOf(';');
+			var hashIndex = input.IndexOf('#');
+			var singleLineCommentIndex = input.IndexOf("//");
+			var index = (semiColonIndex >= 0) ? semiColonIndex : input.Length;
 			index = (hashIndex >= 0) ? Math.Min(index, hashIndex) : index;
 			index = (singleLineCommentIndex >= 0) ? Math.Min(index, singleLineCommentIndex) : index;
 			if (index < input.Length)

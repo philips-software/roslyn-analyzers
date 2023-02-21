@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			string memberName = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Name.ToString();
 			if (memberName is not StringConstants.IsTrue and not StringConstants.IsFalse)
 			{
 				return;

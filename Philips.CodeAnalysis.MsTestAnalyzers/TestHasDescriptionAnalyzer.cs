@@ -38,8 +38,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				string descriptionName = argument.ToString();
-				string value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
+				var descriptionName = argument.ToString();
+				var value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
 				if (descriptionName.Contains("\"") || value.Length > MaxDescriptionLength)
 				{
 					var diagnostic = Diagnostic.Create(Rule, location);

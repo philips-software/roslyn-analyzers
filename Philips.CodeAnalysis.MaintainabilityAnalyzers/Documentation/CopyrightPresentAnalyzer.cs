@@ -82,17 +82,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private bool CheckCopyrightStatement(SyntaxTrivia trivia)
 		{
-			string comment = trivia.ToFullString();
+			var comment = trivia.ToFullString();
 			// Check the copyright mark itself
-			bool hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
+			var hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
 
 			// Check the year
-			bool hasYear = yearRegex.IsMatch(comment);
+			var hasYear = yearRegex.IsMatch(comment);
 
 			// Check the company name, only if it is configured.
 			var additionalFilesHelper = new AdditionalFilesHelper(Context.Options, Context.Compilation);
-			string companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
-			bool hasCompanyName = string.IsNullOrEmpty(companyName) || comment.Contains(companyName);
+			var companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
+			var hasCompanyName = string.IsNullOrEmpty(companyName) || comment.Contains(companyName);
 
 			return hasCopyright && hasYear && hasCompanyName;
 		}

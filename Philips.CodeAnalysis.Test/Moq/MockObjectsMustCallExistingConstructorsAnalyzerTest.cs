@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string mockReference = typeof(Mock<>).Assembly.Location;
+			var mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 			return base.GetMetadataReferences().Add(reference);
 		}
@@ -60,7 +60,7 @@ public static class Bar
 }}
 ";
 
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -221,7 +221,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -255,7 +255,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -289,7 +289,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -325,7 +325,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -359,7 +359,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -390,7 +390,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -455,7 +455,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
@@ -489,7 +489,7 @@ public static class Bar
 	}}
 }}
 ";
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);

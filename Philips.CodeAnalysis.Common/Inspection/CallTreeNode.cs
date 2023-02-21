@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		public static bool IsCallInstruction(Instruction instruction)
 		{
-			byte opCode = instruction.OpCode.Op2;
+			var opCode = instruction.OpCode.Op2;
 			return opCode is CallOpcode or VirtualCallOpcode or NewObjectCallOpcode;
 		}
 
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 				return null;
 			}
 			List<CallTreeNode> siblings = Parent._children;
-			int index = siblings.IndexOf(this);
+			var index = siblings.IndexOf(this);
 			if (index < siblings.Count - 1)
 			{
 				return siblings[index + 1];

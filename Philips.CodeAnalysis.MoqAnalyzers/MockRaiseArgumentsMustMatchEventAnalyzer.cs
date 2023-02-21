@@ -125,7 +125,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private void CheckDiagnostics(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, INamedTypeSymbol namedTypeSymbol, IMethodSymbol raiseMethodSymbol)
 		{
-			int firstArgument = 0;
+			var firstArgument = 0;
 			int argumentsToCheck;
 			if (raiseMethodSymbol.Parameters.Last().IsParams)
 			{
@@ -162,7 +162,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				}
 			}
 
-			for (int i = firstArgument; i < argumentsToCheck; i++)
+			for (var i = firstArgument; i < argumentsToCheck; i++)
 			{
 				ArgumentSyntax argument = invocationExpressionSyntax.ArgumentList.Arguments[i + 1 - firstArgument];
 				ITypeSymbol expectedType = namedTypeSymbol.DelegateInvokeMethod.Parameters[i].Type;

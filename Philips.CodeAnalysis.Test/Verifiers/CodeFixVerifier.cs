@@ -89,8 +89,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					$"CodeFixProvider {codeFixProvider.GetType().Name} is not registered to fix the reported diagnostics: {string.Join(',', analyzerDiagnosticIds)}.");
 			}
 
-			int attempts = analyzerDiagnostics.Count();
-			for (int i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
+			var attempts = analyzerDiagnostics.Count();
+			for (var i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
 			{
 				var actions = new List<CodeAction>();
 				Microsoft.CodeAnalysis.Diagnostic firstDiagnostic = analyzerDiagnostics.First();
@@ -139,7 +139,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
 					IEnumerable<string> newDiagnosticsString = newCompilerDiagnostics.Select(d => d.ToString());
-					string rootString = syntaxRoot?.ToFullString();
+					var rootString = syntaxRoot?.ToFullString();
 					Assert.Fail(
 						$"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newDiagnosticsString)}\r\n\r\nNew document:\r\n{rootString}\r\n");
 				}
@@ -147,15 +147,15 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			//after applying all of the code fixes, there shouldn't be any problems remaining
 			Helper helper = new();
-			int numberOfDiagnostics = analyzerDiagnostics.Count();
+			var numberOfDiagnostics = analyzerDiagnostics.Count();
 			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
 			//after applying all of the code fixes, compare the resulting string to the inputted one
-			string actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
-			string[] actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-			string[] expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
+			var actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			var expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
-			for (int i = 0; i < actualSourceLines.Length; i++)
+			for (var i = 0; i < actualSourceLines.Length; i++)
 			{
 				// Trimming the lines, to ignore indentation differences.
 				Assert.AreEqual(expectedSourceLines[i].Trim(), actualSourceLines[i].Trim(), $"Source line {i}");

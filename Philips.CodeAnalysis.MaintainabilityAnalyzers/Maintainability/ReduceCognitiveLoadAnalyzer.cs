@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private int CalcCognitiveLoad(BlockSyntax blockSyntax)
 		{
-			int cognitiveLoad = 1;
+			var cognitiveLoad = 1;
 			foreach (BlockSyntax descBlockSyntax in blockSyntax.DescendantNodes().OfType<BlockSyntax>())
 			{
 				cognitiveLoad += CalcCognitiveLoad(descBlockSyntax);
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return;
 			}
-			int cognitiveLoad = CalcCognitiveLoad(blockSyntax);
+			var cognitiveLoad = CalcCognitiveLoad(blockSyntax);
 
 			cognitiveLoad += blockSyntax.DescendantTokens().Count((token) =>
 			{
@@ -81,8 +81,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				AdditionalFilesHelper additionalFilesHelper = (Analyzer as ReduceCognitiveLoadAnalyzer).AdditionalFilesHelper;
 				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
-				string configuredMaxCognitiveLoad = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
-				if (int.TryParse(configuredMaxCognitiveLoad, NumberStyles.Integer, CultureInfo.InvariantCulture, out int maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
+				var configuredMaxCognitiveLoad = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
+				if (int.TryParse(configuredMaxCognitiveLoad, NumberStyles.Integer, CultureInfo.InvariantCulture, out var maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
 				{
 					MaxCognitiveLoad = maxAllowedCognitiveLoad;
 					return;

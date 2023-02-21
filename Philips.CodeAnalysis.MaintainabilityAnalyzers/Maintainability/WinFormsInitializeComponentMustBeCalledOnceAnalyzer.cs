@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				IReadOnlyList<ConstructorDeclarationSyntax> chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
 
-				if (!IsInitializeComponentInConstructorChainOnce(chain, out int count))
+				if (!IsInitializeComponentInConstructorChainOnce(chain, out var count))
 				{
 					Location location;
 					if (ctor.Initializer == null)
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private int IsInitializeComponentInConstructor(ConstructorDeclarationSyntax constructor)
 		{
-			int count = 0;
+			var count = 0;
 			foreach (InvocationExpressionSyntax invocation in constructor.DescendantNodes().OfType<InvocationExpressionSyntax>())
 			{
 				if (invocation.Expression is not IdentifierNameSyntax name)

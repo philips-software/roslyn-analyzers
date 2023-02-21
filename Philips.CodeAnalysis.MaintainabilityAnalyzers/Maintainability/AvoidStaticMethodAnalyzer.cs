@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Check if this method is being used for DynamicData, if so, let it go
-			string returnType = Node.ReturnType.ToString();
+			var returnType = Node.ReturnType.ToString();
 			if (string.Equals(returnType, "IEnumerable<object[]>", StringComparison.OrdinalIgnoreCase))
 			{
 				return;

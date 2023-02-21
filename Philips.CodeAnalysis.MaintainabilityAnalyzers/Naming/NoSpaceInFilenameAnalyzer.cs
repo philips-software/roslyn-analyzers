@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			string filePath = context.Tree.FilePath;
+			var filePath = context.Tree.FilePath;
 			if (filePath.IndexOf(' ') != -1)
 			{
 				var location = Location.Create(context.Tree, TextSpan.FromBounds(0, 0));

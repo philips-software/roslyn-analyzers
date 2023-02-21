@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			defaultTimeout ??= "1000";
 
 			ExpressionSyntax expression;
-			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integerTimeout))
+			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerTimeout))
 			{
 				expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(integerTimeout));
 			}

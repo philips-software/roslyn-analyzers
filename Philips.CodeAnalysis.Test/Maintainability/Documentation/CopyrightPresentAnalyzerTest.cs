@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.Common
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task HeaderIsDetectedAsync(string content, bool isGood, int errorStartLine)
 		{
-			string baseline = @"{0}
+			var baseline = @"{0}
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -97,7 +97,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -113,7 +113,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task HeaderIsDetected2Async()
 		{
-			string baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			var baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
   public void Foo()
@@ -184,7 +184,7 @@ using System.Reflection;
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DogFoodMaintainability(string folder, string analyzerName)
 		{
-			string path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
 			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 
@@ -193,7 +193,7 @@ using System.Reflection;
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DogFoodMsTest(string analyzerName)
 		{
-			string path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
+			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
 			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 	}

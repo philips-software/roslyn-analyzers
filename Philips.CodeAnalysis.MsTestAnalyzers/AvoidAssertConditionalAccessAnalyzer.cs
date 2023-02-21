@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			string memberName = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Name.ToString();
 			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				yield break;

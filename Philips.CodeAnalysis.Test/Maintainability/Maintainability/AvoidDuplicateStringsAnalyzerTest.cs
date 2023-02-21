@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringNoErrorAsync(string literal1, string literal2, bool isClass)
 		{
-			string testCode = CreateTestCode(literal1, literal2, isClass);
+			var testCode = CreateTestCode(literal1, literal2, isClass);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			const int Start = 100;
 
 			StringBuilder sb = new($"namespace DuplicateStringsTest {{ public class {className} {{ public void MethodA() {{");
-			for (int i = Start; i < Start + Count; i++)
+			for (var i = Start; i < Start + Count; i++)
 			{
 				_ = sb.AppendLine($"string str{i} = \"{i}\";");
 			}
@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = GetLargeFileContents("Test1").ToString();
+			var code = GetLargeFileContents("Test1").ToString();
 			return base.GetAdditionalSourceCode().Add(("Test1.cs", code));
 		}
 
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringLoadTest()
 		{
-			string code = GetLargeFileContents(nameof(AvoidDuplicateStringLoadTest)).ToString();
+			var code = GetLargeFileContents(nameof(AvoidDuplicateStringLoadTest)).ToString();
 			await VerifyDiagnostic(code, Count).ConfigureAwait(false);
 		}
 
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringDefaultConsoleAppTest()
 		{
-			string code = @"
+			var code = @"
 namespace ConsoleApp2
 {
 	internal class Program
@@ -83,7 +83,7 @@ namespace ConsoleApp2
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringNestedClassesTest()
 		{
-			string code = @"
+			var code = @"
 namespace DuplicateStringsTest {{
     public class Foo {{
         public void MethodA() {{  string str1 = ""Violation""; }}
@@ -100,7 +100,7 @@ namespace DuplicateStringsTest {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringFieldDeclarationTest()
 		{
-			string code = @"
+			var code = @"
 namespace DuplicateStringsTest {{
     public class Foo {{
 		private const string Meow = ""NotAViolation"";
@@ -117,14 +117,14 @@ namespace DuplicateStringsTest {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateStringErrorAsync(string literal, bool isClass)
 		{
-			string testCode = CreateTestCode(literal, literal, isClass);
+			var testCode = CreateTestCode(literal, literal, isClass);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
 		private string CreateTestCode(string literal1, string literal2, bool isClass)
 		{
-			string typeKind = isClass ? "class" : "struct";
-			string template = @"
+			var typeKind = isClass ? "class" : "struct";
+			var template = @"
 namespace DuplicateStringsTest {{
     public {0} Foo {{
         public void MethodA() {{

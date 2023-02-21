@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		private string CreateFunction(string content)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -37,7 +37,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidMsFakesTestAsync()
 		{
-			string file = CreateFunction("using (ShimsContext.Create()) {}");
+			var file = CreateFunction("using (ShimsContext.Create()) {}");
 			await VerifyDiagnostic(file).ConfigureAwait(false);
 		}
 
@@ -45,7 +45,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidMsFakesNotRelevantTestAsync()
 		{
-			string file = CreateFunction("using (new MemoryStream()) {}");
+			var file = CreateFunction("using (new MemoryStream()) {}");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 	}

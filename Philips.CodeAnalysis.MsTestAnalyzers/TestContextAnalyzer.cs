@@ -51,8 +51,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			string varName = string.Empty;
-			string propName = property.Identifier.ToString();
+			var varName = string.Empty;
+			var propName = property.Identifier.ToString();
 			IEnumerable<SyntaxNode> propNodes = context.Node.DescendantNodes();
 			IEnumerable<ReturnStatementSyntax> returnNodes = propNodes.OfType<ReturnStatementSyntax>();
 			if (returnNodes.Any())

@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return true;
 			}
 
-			int index = blockOperation.Operations.IndexOf(expressionOperation);
+			var index = blockOperation.Operations.IndexOf(expressionOperation);
 
 			if (index != blockOperation.Operations.Length - 1)
 			{

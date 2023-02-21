@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestHasCategoryAttributeTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -33,7 +33,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -54,7 +54,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestHasCategoryAttributeTest2Async(string category, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -75,7 +75,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestHasCategoryAttributeIndirectionTestAsync(string category, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class TestDefinitions
@@ -101,7 +101,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestHasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -118,7 +118,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FixAddsCategoryAttributeTest()
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class TestDefinitions {
     public const string UnitTests = ""UnitTests"";
@@ -131,7 +131,7 @@ class Foo
     }
 }
 ";
-			string fixedText = @"
+			var fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class TestDefinitions {
     public const string UnitTests = ""UnitTests"";
@@ -150,7 +150,7 @@ class Foo
 
 		private async Task VerifyErrorAsync(string baseline, string given, bool isError)
 		{
-			string givenText = string.Format(baseline, given);
+			var givenText = string.Format(baseline, given);
 			if (isError)
 			{
 				var results =
@@ -186,8 +186,8 @@ class Foo
 		}
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			string key = $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories";
-			string value = @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests";
+			var key = $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories";
+			var value = @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests";
 			return base.GetAdditionalAnalyzerConfigOptions().Add(key, value);
 		}
 	}

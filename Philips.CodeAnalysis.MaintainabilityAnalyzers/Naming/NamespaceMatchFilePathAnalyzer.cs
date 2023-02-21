@@ -36,8 +36,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		public override void Analyze()
 		{
-			string myNamespace = Node.Name.ToString();
-			string myFilePath = Context.Node.SyntaxTree.FilePath;
+			var myNamespace = Node.Name.ToString();
+			var myFilePath = Context.Node.SyntaxTree.FilePath;
 
 			InitializeConfiguration();
 
@@ -68,8 +68,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		}
 		private bool IsNamespacePartOfPath(string ns, string path)
 		{
-			string[] nodes = path.Split(Path.DirectorySeparatorChar);
-			for (int i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
+			var nodes = path.Split(Path.DirectorySeparatorChar);
+			for (var i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
 			{
 				if (string.Equals(nodes[i], ns, StringComparison.OrdinalIgnoreCase))
 				{
@@ -81,8 +81,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private bool DoesFilePathEndWithNamespace(string ns, string path)
 		{
-			string folder = Path.GetDirectoryName(path);
-			string allowedNamespace = folder.Replace(Path.DirectorySeparatorChar, '.');
+			var folder = Path.GetDirectoryName(path);
+			var allowedNamespace = folder.Replace(Path.DirectorySeparatorChar, '.');
 			return allowedNamespace.EndsWith(ns, StringComparison.OrdinalIgnoreCase);
 		}
 
@@ -92,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				AdditionalFilesHelper additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
 				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
-				string folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
+				var folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
 				_ = bool.TryParse(folderInNamespace, out _isFolderInNamespace);
 				_isConfigInitialized = true;
 			}

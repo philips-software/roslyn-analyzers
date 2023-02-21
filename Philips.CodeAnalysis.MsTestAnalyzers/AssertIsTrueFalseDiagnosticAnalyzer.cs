@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
 			bool isIsTrue;
-			string memberName = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Name.ToString();
 			switch (memberName)
 			{
 				case StringConstants.IsTrue:

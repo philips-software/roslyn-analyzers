@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Get the text value of the string literal expression.
-			string pathValue = stringLiteralExpressionNode.Token.ValueText;
+			var pathValue = stringLiteralExpressionNode.Token.ValueText;
 
 			if (pathValue.Length < 2)
 			{

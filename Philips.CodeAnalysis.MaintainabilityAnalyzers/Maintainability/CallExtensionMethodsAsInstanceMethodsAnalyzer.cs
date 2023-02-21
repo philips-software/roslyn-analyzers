@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			HashSet<ISymbol> didCheck = new();
 			Queue<ISymbol> toCheck = new(statics);
 
-			int count = 0;
+			var count = 0;
 			while (toCheck.Count != 0)
 			{
 				ISymbol symbol = toCheck.Dequeue();

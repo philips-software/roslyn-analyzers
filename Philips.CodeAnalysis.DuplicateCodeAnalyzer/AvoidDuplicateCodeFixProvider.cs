@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			await ProcessGuiltyMethods(context.Document, context.Diagnostics, (name, registeredName, diagnostic) =>
 			{
-				string title = $@"Exempt {name} as duplicate";
+				var title = $@"Exempt {name} as duplicate";
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: title,
@@ -61,10 +61,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public static SourceText MakeNewSourceText(SourceText original, string appending)
 		{
-			string newText = appending;
+			var newText = appending;
 
 			// Add a Newline if necessary
-			int rangeStart = original.Length;
+			var rangeStart = original.Length;
 			if (!original.ToString().EndsWith(Environment.NewLine))
 			{
 				newText = Environment.NewLine + newText;
@@ -92,8 +92,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					MethodDeclarationSyntax methodDeclarationSyntax = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 					if (methodDeclarationSyntax != null)
 					{
-						string methodName = methodDeclarationSyntax.Identifier.ValueText;
-						string registeredName = methodName;
+						var methodName = methodDeclarationSyntax.Identifier.ValueText;
+						var registeredName = methodName;
 						ISymbol symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax, cancellationToken);
 						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
 						{
@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public override async Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
 		{
 			var diagnosticsToFix = new List<KeyValuePair<Project, ImmutableArray<Diagnostic>>>();
-			string titleFormat = "Add all duplications in {0} {1} to the exceptions list";
+			var titleFormat = "Add all duplications in {0} {1} to the exceptions list";
 			string title = null;
 			switch (fixAllContext.Scope)
 			{
@@ -197,7 +197,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 
 				StringBuilder appending = new();
-				foreach (string methodName in newMethodNames)
+				foreach (var methodName in newMethodNames)
 				{
 					_ = appending.Append(methodName);
 					_ = appending.Append(Environment.NewLine);

@@ -53,8 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public IEnumerable<string> UnhandledExceptionsFromSymbol(ISymbol symbol)
 		{
-			string fullTypeName = GetFullName(symbol.ContainingType);
-			string assemblyPath = Type.GetType(fullTypeName)?.Assembly.Location;
+			var fullTypeName = GetFullName(symbol.ContainingType);
+			var assemblyPath = Type.GetType(fullTypeName)?.Assembly.Location;
 			if (string.IsNullOrEmpty(assemblyPath) || !File.Exists(assemblyPath))
 			{
 				return Array.Empty<string>();
@@ -129,7 +129,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (calleeChild != null)
 				{
 					var newExceptions = calleeChild.Tag as IEnumerable<string>;
-					foreach (string newException in newExceptions)
+					foreach (var newException in newExceptions)
 					{
 						if (!IsThrownExceptionFiltered(newException, filteredExceptions))
 						{
@@ -229,8 +229,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			TypeDefinition typeDef = null;
 			if (instruction.OpCode.Op2 == LoadLocalOpCode + localIndex)
 			{
-				int index = instructions.IndexOf(instruction);
-				for (int i = index - 1; i >= 0; i--)
+				var index = instructions.IndexOf(instruction);
+				for (var i = index - 1; i >= 0; i--)
 				{
 					if (instructions[i].OpCode.Op2 == StoreLocalOpCode + localIndex)
 					{

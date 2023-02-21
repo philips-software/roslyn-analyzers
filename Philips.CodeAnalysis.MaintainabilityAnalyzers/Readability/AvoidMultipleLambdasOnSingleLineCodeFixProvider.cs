@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
 		{
-			int lineNumber = node.GetLocation().GetLineSpan().StartLinePosition.Line;
+			var lineNumber = node.GetLocation().GetLineSpan().StartLinePosition.Line;
 			return node
 				.Ancestors()
 				.FirstOrDefault(l => l.GetLocation().GetLineSpan().StartLinePosition.Line < lineNumber);
@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private LambdaExpressionSyntax GetOtherLambdaOnSameLine(SyntaxNode parent, LambdaExpressionSyntax second)
 		{
-			int lineNumber = second.GetLocation().GetLineSpan().StartLinePosition.Line;
+			var lineNumber = second.GetLocation().GetLineSpan().StartLinePosition.Line;
 			return parent
 				.DescendantNodes()
 				.OfType<LambdaExpressionSyntax>()

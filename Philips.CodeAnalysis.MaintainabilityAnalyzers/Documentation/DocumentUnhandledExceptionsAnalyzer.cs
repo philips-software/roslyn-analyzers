@@ -59,8 +59,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (remainingExceptions.Any())
 			{
 				Location loc = Node.Identifier.GetLocation();
-				string methodName = Node.Identifier.Text;
-				string remainingExceptionsString = string.Join(",", remainingExceptions);
+				var methodName = Node.Identifier.Text;
+				var remainingExceptionsString = string.Join(",", remainingExceptions);
 				ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
 				var diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
 				Context.ReportDiagnostic(diagnostic);

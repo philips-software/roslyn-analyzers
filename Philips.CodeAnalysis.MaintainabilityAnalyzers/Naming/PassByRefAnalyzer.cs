@@ -121,7 +121,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return true;
 			}
 
-			bool isWrittenInside = flow.WrittenInside.Contains(targetSymbol);
+			var isWrittenInside = flow.WrittenInside.Contains(targetSymbol);
 
 			return isWrittenInside;
 		}

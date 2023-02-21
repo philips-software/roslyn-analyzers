@@ -39,10 +39,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			Version expectedVersion = new(@"1.0.0.0");
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+			var value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))
 			{
-				bool isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
+				var isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
 
 				if (!isParseSuccessful)
 				{

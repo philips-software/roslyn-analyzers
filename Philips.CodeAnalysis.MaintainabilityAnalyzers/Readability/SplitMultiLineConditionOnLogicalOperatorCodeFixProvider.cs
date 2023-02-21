@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			// First remove the EOL from the violating token.
 			SyntaxTriviaList oldTrivia = node.GetTrailingTrivia();
-			int index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
 			if (index >= 0)
 			{
 				SyntaxTriviaList newTrivia = oldTrivia.RemoveAt(index);

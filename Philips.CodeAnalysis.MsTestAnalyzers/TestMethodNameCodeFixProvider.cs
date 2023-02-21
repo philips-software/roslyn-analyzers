@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private async Task<Solution> DoNotBeginWithTest(Document document, MethodDeclarationSyntax methodDeclaration, CancellationToken cancellationToken)
 		{
 			// Compute new name.
-			string name = methodDeclaration.Identifier.Text;
+			var name = methodDeclaration.Identifier.Text;
 
 			while (name.Contains(StringConstants.TestAttributeName))
 			{

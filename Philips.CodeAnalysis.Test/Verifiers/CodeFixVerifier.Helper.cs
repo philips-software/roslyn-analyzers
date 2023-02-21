@@ -43,8 +43,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			Diagnostic[] oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 			Diagnostic[] newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 
-			int oldIndex = 0;
-			int newIndex = 0;
+			var oldIndex = 0;
+			var newIndex = 0;
 
 			while (newIndex < newArray.Length)
 			{
@@ -80,7 +80,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			Document simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
 			SyntaxNode root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
-			string v = root.GetText().ToString();
+			var v = root.GetText().ToString();
 			return v;
 		}
 	}

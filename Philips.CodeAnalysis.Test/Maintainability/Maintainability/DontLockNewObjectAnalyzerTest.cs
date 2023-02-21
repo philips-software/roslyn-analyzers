@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreventLockOnUncapturedVariableAsync(string lockText, bool isExpectedError)
 		{
-			string text = @$"
+			var text = @$"
 public class Foo
 {{
 	public void TestMethod()

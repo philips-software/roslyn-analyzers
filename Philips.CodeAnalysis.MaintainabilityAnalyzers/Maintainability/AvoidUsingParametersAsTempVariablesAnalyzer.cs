@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			string assignedVariableName = assigned.Identifier.Text;
+			var assignedVariableName = assigned.Identifier.Text;
 			// Check: Avoid using parameters as temporary variables.
 			ParameterListSyntax parameters = assignment.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault()?.ParameterList;
 			if (parameters != null && parameters.Parameters.Any(para => !para.Modifiers.Any(SyntaxKind.OutKeyword) && !para.Modifiers.Any(SyntaxKind.RefKeyword) && para.Identifier.Text == assignedVariableName))

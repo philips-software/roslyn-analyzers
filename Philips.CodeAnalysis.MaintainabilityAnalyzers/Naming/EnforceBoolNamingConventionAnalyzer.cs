@@ -218,7 +218,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private bool IsNameValid(Regex validator, SyntaxToken identifier)
 		{
-			string name = identifier.ValueText;
+			var name = identifier.ValueText;
 
 			return validator.IsMatch(name);
 		}

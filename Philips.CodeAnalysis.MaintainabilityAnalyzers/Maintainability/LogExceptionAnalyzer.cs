@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 						compilationContext.Options,
 						compilationContext.Compilation);
 					System.Collections.Generic.IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
-					foreach (string methodName in methodNames)
+					foreach (var methodName in methodNames)
 					{
 						allowedSymbols.RegisterLine(methodName);
 					}
@@ -99,11 +99,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var catchNode = (CatchClauseSyntax)context.Node;
 				// Look for logging method calls underneath this node.
-				bool hasCallingLogNodes = catchNode.DescendantNodes()
+				var hasCallingLogNodes = catchNode.DescendantNodes()
 					.OfType<InvocationExpressionSyntax>()
 					.Any(invocation => IsCallingLogMethod(context, invocation));
 				// If another exception is thrown, logging is not required.
-				bool hasThrowNodes = catchNode.DescendantNodes()
+				var hasThrowNodes = catchNode.DescendantNodes()
 					.OfType<ThrowStatementSyntax>()
 					.Any();
 				if (!hasCallingLogNodes && !hasThrowNodes)
@@ -122,7 +122,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
-				bool isLoggingMethod = false;
+				var isLoggingMethod = false;
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{

@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -67,7 +67,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
-			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
+			var input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
@@ -86,7 +86,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsFlaggedAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -112,7 +112,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -140,7 +140,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -163,7 +163,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)

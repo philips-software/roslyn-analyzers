@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			const string template = @"""
 class Foo {{ {0} string _foo; }}
 """;
-			string code = string.Format(template, modifiers);
+			var code = string.Format(template, modifiers);
 			if (isError)
 			{
 				await VerifyDiagnostic(code).ConfigureAwait(false);

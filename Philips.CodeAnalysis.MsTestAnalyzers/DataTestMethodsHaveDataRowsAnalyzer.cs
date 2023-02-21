@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				CollectSupportingData(context, methodDeclaration, out int dynamicDataCount, out int dataRowCount, out bool hasTestSource);
+				CollectSupportingData(context, methodDeclaration, out var dynamicDataCount, out var dataRowCount, out var hasTestSource);
 
 				if (isDataTestMethod)
 				{

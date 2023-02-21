@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			aliases = _helper.GetUsingAliases(throwStatement);
-			if (aliases.TryGetValue(thrownExceptionName, out string aliasedName))
+			if (aliases.TryGetValue(thrownExceptionName, out var aliasedName))
 			{
 				thrownExceptionName = aliasedName;
 			}

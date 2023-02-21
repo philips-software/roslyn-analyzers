@@ -242,9 +242,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			foreach (IMethodSymbol constructor in bestFitConstructors)
 			{
-				bool hasFoundAll = true;
+				var hasFoundAll = true;
 
-				for (int i = 0; i < arguments.Length; i++)
+				for (var i = 0; i < arguments.Length; i++)
 				{
 					ArgumentSyntax passedArgument = arguments[i];
 					IParameterSymbol expectedArgumentSymbol = constructor.Parameters[i];
