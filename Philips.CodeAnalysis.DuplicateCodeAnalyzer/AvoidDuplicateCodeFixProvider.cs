@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					{
 						string methodName = methodDeclarationSyntax.Identifier.ValueText;
 						string registeredName = methodName;
-						var symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax, cancellationToken);
+						ISymbol symbol = semanticModel.GetDeclaredSymbol(methodDeclarationSyntax, cancellationToken);
 						if (symbol is IMethodSymbol methodSymbol && methodSymbol.ContainingNamespace != null && methodSymbol.ContainingType != null)
 						{
 							registeredName = '~' + methodSymbol.GetDocumentationCommentId();

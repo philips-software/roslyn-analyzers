@@ -66,8 +66,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					var additionalFiles = new AdditionalFilesHelper(
 						compilationContext.Options,
 						compilationContext.Compilation);
-					var methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
-					foreach (var methodName in methodNames)
+					System.Collections.Generic.IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					foreach (string methodName in methodNames)
 					{
 						allowedSymbols.RegisterLine(methodName);
 					}
@@ -99,30 +99,30 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var catchNode = (CatchClauseSyntax)context.Node;
 				// Look for logging method calls underneath this node.
-				var hasCallingLogNodes = catchNode.DescendantNodes()
+				bool hasCallingLogNodes = catchNode.DescendantNodes()
 					.OfType<InvocationExpressionSyntax>()
 					.Any(invocation => IsCallingLogMethod(context, invocation));
 				// If another exception is thrown, logging is not required.
-				var hasThrowNodes = catchNode.DescendantNodes()
+				bool hasThrowNodes = catchNode.DescendantNodes()
 					.OfType<ThrowStatementSyntax>()
 					.Any();
 				if (!hasCallingLogNodes && !hasThrowNodes)
 				{
-					var location = catchNode.CatchKeyword.GetLocation();
+					Location location = catchNode.CatchKeyword.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 				}
 			}
 
 			public void ReportParsingError(CompilationAnalysisContext context)
 			{
-				var syntaxTree = context.Compilation.SyntaxTrees.First();
+				SyntaxTree syntaxTree = context.Compilation.SyntaxTrees.First();
 				var loc = Location.Create(syntaxTree, TextSpan.FromBounds(0, 0));
 				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames, AllowedFileName));
 			}
 
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
-				var isLoggingMethod = false;
+				bool isLoggingMethod = false;
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{

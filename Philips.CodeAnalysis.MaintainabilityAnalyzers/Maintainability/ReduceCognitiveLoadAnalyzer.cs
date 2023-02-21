@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			InitializeMaxCognitiveLoad();
 			if (cognitiveLoad > MaxCognitiveLoad)
 			{
-				var location = Node.Identifier.GetLocation();
+				Location location = Node.Identifier.GetLocation();
 				ReportDiagnostic(location, cognitiveLoad, MaxCognitiveLoad);
 			}
 		}

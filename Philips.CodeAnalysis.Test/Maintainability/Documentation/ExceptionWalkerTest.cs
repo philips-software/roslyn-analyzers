@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromListWithExpectedNumberOfNodes(string methodName, params string[] expectedExceptions)
 		{
-			var type = typeof(System.Collections.Generic.List<>);
+			Type type = typeof(System.Collections.Generic.List<>);
 			AssertCorrectUnhandledExceptions(type, methodName, expectedExceptions);
 		}
 
@@ -50,16 +50,16 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, params string[] expectedExceptions)
 		{
-			var type = typeof(System.IO.Directory);
+			Type type = typeof(System.IO.Directory);
 			AssertCorrectUnhandledExceptions(type, methodName, expectedExceptions);
 		}
 
 		private void AssertCorrectUnhandledExceptions(Type type, string methodName, string[] expectedExceptions)
 		{
-			var assembly = type.Assembly;
-			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
-			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
+			System.Reflection.Assembly assembly = type.Assembly;
+			var module = ModuleDefinition.ReadModule(assembly.Location);
+			TypeDefinition typeDef = module.GetType(type.FullName);
+			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			ExceptionWalker walker = new();
 			// Act

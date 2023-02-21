@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>An IEnumerable of Diagnostics that surfaced in the source code, sorted by Location</returns>
 		private async Task<IEnumerable<Diagnostic>> GetSortedDiagnostics(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer)
 		{
-			var documents = GetDocuments(sources, filenamePrefix, assemblyName);
+			IEnumerable<Document> documents = GetDocuments(sources, filenamePrefix, assemblyName);
 			return await GetSortedDiagnosticsFromDocuments(analyzer, documents).ConfigureAwait(false);
 		}
 
@@ -119,19 +119,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected async Task<IEnumerable<Diagnostic>> GetSortedDiagnosticsFromDocuments(DiagnosticAnalyzer analyzer, IEnumerable<Document> documents)
 		{
 			var projects = new HashSet<Project>();
-			foreach (var document in documents)
+			foreach (Document document in documents)
 			{
 				_ = projects.Add(document.Project);
 			}
 
 			var diagnostics = new List<Diagnostic>();
-			foreach (var project in projects)
+			foreach (Project project in projects)
 			{
-				var compilation = await project.GetCompilationAsync().ConfigureAwait(false);
+				Compilation compilation = await project.GetCompilationAsync().ConfigureAwait(false);
 
-				var specificOptions = compilation.Options.SpecificDiagnosticOptions;
+				ImmutableDictionary<string, ReportDiagnostic> specificOptions = compilation.Options.SpecificDiagnosticOptions;
 
-				foreach (var diagnostic in analyzer.SupportedDiagnostics)
+				foreach (DiagnosticDescriptor diagnostic in analyzer.SupportedDiagnostics)
 				{
 					if (!diagnostic.IsEnabledByDefault)
 					{
@@ -139,8 +139,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					}
 				}
 
-				var options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
-				var modified = compilation.WithOptions(options);
+				CompilationOptions options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
+				Compilation modified = compilation.WithOptions(options);
 
 				List<AdditionalText> additionalTextsBuilder = new();
 				foreach (TextDocument textDocument in project.AdditionalDocuments)
@@ -149,18 +149,18 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 					additionalTextsBuilder.Add(new TestAdditionalText(textDocument.Name, contents));
 				}
 
-				var analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
+				ImmutableDictionary<string, string> analyzerConfigOptions = GetAdditionalAnalyzerConfigOptions();
 				var analyzerConfigOptionsProvider = new TestAnalyzerConfigOptionsProvider(analyzerConfigOptions);
 				AnalyzerOptions analyzerOptions = new(ImmutableArray.ToImmutableArray(additionalTextsBuilder), analyzerConfigOptionsProvider);
 
-				var compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
+				CompilationWithAnalyzers compilationWithAnalyzers = modified.WithAnalyzers(ImmutableArray.Create(analyzer), options: analyzerOptions);
 
-				var diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
-				var ourDiagnostics = await CollectOurDiagnostics(diags, documents).ConfigureAwait(false);
+				ImmutableArray<Diagnostic> diags = await compilationWithAnalyzers.GetAnalyzerDiagnosticsAsync().ConfigureAwait(false);
+				IReadOnlyList<Diagnostic> ourDiagnostics = await CollectOurDiagnostics(diags, documents).ConfigureAwait(false);
 				diagnostics.AddRange(ourDiagnostics);
 			}
 
-			var results = SortDiagnostics(diagnostics);
+			IEnumerable<Diagnostic> results = SortDiagnostics(diagnostics);
 			diagnostics.Clear();
 			return results;
 		}
@@ -168,7 +168,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		private async Task<IReadOnlyList<Diagnostic>> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
 		{
 			List<Diagnostic> diagnostics = new();
-			foreach (var diag in diags)
+			foreach (Diagnostic diag in diags)
 			{
 				if (diag.Location == Location.None || diag.Location.IsInMetadata)
 				{
@@ -176,9 +176,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				}
 				else
 				{
-					foreach (var document in documents)
+					foreach (Document document in documents)
 					{
-						var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
+						SyntaxTree tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
 						if (tree == diag.Location.SourceTree)
 						{
 							diagnostics.Add(diag);
@@ -211,8 +211,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
 		private IEnumerable<Document> GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
 		{
-			var project = CreateProject(sources, filenamePrefix, assemblyName);
-			var documents = project.Documents.ToArray();
+			Project project = CreateProject(sources, filenamePrefix, assemblyName);
+			Document[] documents = project.Documents.ToArray();
 
 			return documents;
 		}
@@ -246,7 +246,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected virtual ImmutableArray<DocumentInfo> GetAdditionalDocumentInfos(ProjectId projectId)
 		{
 			List<DocumentInfo> list = new();
-			var details = GetAdditionalTexts();
+			ImmutableArray<(string name, string content)> details = GetAdditionalTexts();
 			TestTextLoader textLoader = new();
 			foreach ((string name, string content) in details)
 			{
@@ -283,9 +283,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			string projectName = assemblyName ?? TestProjectName;
 
 			var projectId = ProjectId.CreateNewId(debugName: TestProjectName);
-			var documentInfos = GetAdditionalDocumentInfos(projectId);
+			ImmutableArray<DocumentInfo> documentInfos = GetAdditionalDocumentInfos(projectId);
 			var adhocWorkspace = new AdhocWorkspace();
-			var solution = adhocWorkspace
+			Solution solution = adhocWorkspace
 				.CurrentSolution
 				.AddProject(projectId, TestProjectName, projectName, LanguageNames.CSharp)
 				.AddAdditionalDocuments(documentInfos)
@@ -297,21 +297,21 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				.AddMetadataReference(projectId, GeneratedCodeReference)
 				.AddMetadataReference(projectId, ThreadingReference);
 
-			var parseOptions = GetParseOptions();
+			ParseOptions parseOptions = GetParseOptions();
 			solution = solution.WithProjectParseOptions(projectId, parseOptions);
 
-			foreach (var testReferences in GetMetadataReferences())
+			foreach (MetadataReference testReferences in GetMetadataReferences())
 			{
 				solution = solution.AddMetadataReference(projectId, testReferences);
 			}
 
-			var trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
-			var neededAssemblies = new[]
+			string[] trustedAssembliesPaths = ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator);
+			string[] neededAssemblies = new[]
 			{
 				"System.Runtime",
 				"mscorlib",
 			};
-			foreach (var references in trustedAssembliesPaths.Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
+			foreach (PortableExecutableReference references in trustedAssembliesPaths.Where(p => neededAssemblies.Contains(Path.GetFileNameWithoutExtension(p)))
 				.Select(p => MetadataReference.CreateFromFile(p)))
 			{
 				solution = solution.AddMetadataReference(projectId, references);
@@ -322,19 +322,19 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				.WithChangedOption(new OptionKey(FormattingOptions.TabSize, LanguageNames.CSharp), 2)
 				.WithChangedOption(new OptionKey(FormattingOptions.UseTabs, LanguageNames.CSharp), false);
 			Workspace workspace = solution.Workspace;
-			var newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
+			Solution newSolution = workspace.CurrentSolution.WithOptions(newOptionSet);
 			_ = workspace.TryApplyChanges(newSolution);
 
-			foreach (var m in solution.GetProject(projectId).MetadataReferences)
+			foreach (MetadataReference m in solution.GetProject(projectId).MetadataReferences)
 			{
 				Trace.WriteLine($"{m.Display}: {m.Properties}");
 			}
 
 			int count = 0;
-			var additionalSourceCode = GetAdditionalSourceCode();
+			ImmutableArray<(string name, string content)> additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
-				var newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
+				string newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
 
 				count++;
 

@@ -27,9 +27,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out string missingExceptionTypeName))
 			{
 				return;
@@ -37,8 +37,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (root != null)
 			{
-				var diagnsticNode = root.FindNode(diagnosticSpan);
-				var node = DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnsticNode);
+				SyntaxNode diagnsticNode = root.FindNode(diagnosticSpan);
+				SyntaxNode node = DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnsticNode);
 
 				context.RegisterCodeFix(
 					CodeAction.Create(
@@ -51,16 +51,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private async Task<Document> AddExceptionComment(Document document, SyntaxNode node, string exceptionTypeName, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken);
-			var newRoot = root;
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
+			SyntaxNode newRoot = root;
 
 			DocumentationHelper docHelper = new(node);
-			var parts = exceptionTypeName.Split(',');
-			foreach (var part in parts)
+			string[] parts = exceptionTypeName.Split(',');
+			foreach (string part in parts)
 			{
 				docHelper.AddException(part);
 			}
-			var newComment = docHelper.CreateDocumentation();
+			Microsoft.CodeAnalysis.CSharp.Syntax.DocumentationCommentTriviaSyntax newComment = docHelper.CreateDocumentation();
 
 			if (docHelper.ExistingDocumentation != null)
 			{

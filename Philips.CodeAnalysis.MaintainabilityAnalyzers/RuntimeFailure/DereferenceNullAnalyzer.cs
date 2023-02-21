@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	{
 		private void Report(IdentifierNameSyntax identifier)
 		{
-			var location = identifier.GetLocation();
+			Location location = identifier.GetLocation();
 			ReportDiagnostic(location, identifier.Identifier.ValueText);
 		}
 
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// </summary>
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
-			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
+			var binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
 			return
 				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
 				binaryExpressionSyntax != null &&
@@ -84,12 +84,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (blockOfInterest.Statements.Contains(ourStatement))
 			{
 				statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
-				var statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
+				StatementSyntax statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
 				return (statementOfInterest, statementOfInterestIndex);
 			}
 
 			// the statement of interest is nested within another statement
-			List<StatementSyntax> childNodes = blockOfInterest.DescendantNodes().OfType<StatementSyntax>().ToList();
+			var childNodes = blockOfInterest.DescendantNodes().OfType<StatementSyntax>().ToList();
 
 			statementOfInterestIndex = childNodes.IndexOf(ourStatement) + offset;
 
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// </summary>
 		private IdentifierNameSyntax GetFirstMemberAccess(ISymbol ourSymbol, SemanticModel model, BlockSyntax blockOfInterest)
 		{
-			var memberAccesses = blockOfInterest.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>();
+			IEnumerable<MemberAccessExpressionSyntax> memberAccesses = blockOfInterest.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>();
 			foreach (MemberAccessExpressionSyntax memberAccessExpressionSyntax in memberAccesses)
 			{
 				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax)
@@ -150,7 +150,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			BlockSyntax blockOfInterest = variableDeclarationSyntax.Ancestors().OfType<BlockSyntax>().First();
-			var model = Context.SemanticModel;
+			SemanticModel model = Context.SemanticModel;
 			ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclarationSyntax);
 
 			//  Identify where y is first used (ie., MemberAccessExpression)

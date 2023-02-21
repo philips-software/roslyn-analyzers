@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyError(string methodBody, string expectedDiagnosticId)
 		{
-			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
+			string test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
 			var expected =
 				new DiagnosticResult()
@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyNoError(string methodBody)
 		{
-			var test = _helper.GetText(methodBody, string.Empty, string.Empty);
+			string test = _helper.GetText(methodBody, string.Empty, string.Empty);
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}

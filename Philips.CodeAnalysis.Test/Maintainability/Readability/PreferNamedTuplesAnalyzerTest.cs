@@ -38,7 +38,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrorsAsync(string argument)
 		{
-			var source = CreateFunction(argument);
+			string source = CreateFunction(argument);
 			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
@@ -47,7 +47,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementsDoNotHaveNamesAsync(string argument)
 		{
-			var source = CreateFunction(argument);
+			string source = CreateFunction(argument);
 			await VerifyDiagnostic(source, 2).ConfigureAwait(false);
 		}
 
@@ -56,7 +56,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementDoesNotHaveNameAsync(string argument)
 		{
-			var source = CreateFunction(argument);
+			string source = CreateFunction(argument);
 			await VerifyDiagnostic(source).ConfigureAwait(false);
 		}
 	}

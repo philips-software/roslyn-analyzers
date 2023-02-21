@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 				}
 
-				var allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
+				IReadOnlyList<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
 
 				lock (_lock1)
 				{
@@ -82,14 +82,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
-					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out var allowed) && allowed.Any())
+					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && allowed.Any())
 					{
-						var firstAllowedTimeout = allowed.First();
+						string firstAllowedTimeout = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
 					}
 
-					var location = methodDeclaration.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location, additionalData, string.Empty);
+					Location location = methodDeclaration.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location, additionalData, string.Empty);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}
@@ -113,13 +113,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
-					if (TryGetAllowedTimeouts(category, out var allowed) && allowed.Any())
+					if (TryGetAllowedTimeouts(category, out ImmutableList<string> allowed) && allowed.Any())
 					{
-						var firstAllowed = allowed.First();
+						string firstAllowed = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowed);
 					}
 
-					Diagnostic diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
+					var diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
@@ -128,7 +128,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				argumentString = argumentSyntax.Expression.ToString();
 
-				var data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
+				SymbolInfo data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
 
 				if (data.Symbol == null)
 				{

@@ -27,12 +27,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(CompilationAnalysisContext context)
 		{
-			var attributes = context.Compilation.Assembly.GetAttributes();
+			System.Collections.Immutable.ImmutableArray<AttributeData> attributes = context.Compilation.Assembly.GetAttributes();
 
 			Version fileVersion = null;
 			Version informationalVersion = null;
 
-			foreach (var attr in attributes)
+			foreach (AttributeData attr in attributes)
 			{
 				if (attr.AttributeClass != null && attr.AttributeClass.Name == nameof(AssemblyFileVersionAttribute) && !attr.ConstructorArguments.IsEmpty)
 				{
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (!fileVersion.Equals(informationalVersion))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, null, fileVersion, informationalVersion);
+				var diagnostic = Diagnostic.Create(Rule, null, fileVersion, informationalVersion);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

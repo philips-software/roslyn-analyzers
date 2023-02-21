@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var comparer = new NamespaceIgnoringComparer();
-			var expected = input.GetHashCode();
+			int expected = input.GetHashCode();
 			// Act
 			int actual = comparer.GetHashCode(input);
 			// Assert

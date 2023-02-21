@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 				if (!isParseSuccessful)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(InvalidExpectedVersionRule, null, value);
+					var diagnostic = Diagnostic.Create(InvalidExpectedVersionRule, null, value);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			Version actualVersion = GetCompilationAssemblyVersion(context.Compilation);
 			if (actualVersion.CompareTo(expectedVersion) != 0)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, null, actualVersion.ToString(), expectedVersion.ToString());
+				var diagnostic = Diagnostic.Create(Rule, null, actualVersion.ToString(), expectedVersion.ToString());
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

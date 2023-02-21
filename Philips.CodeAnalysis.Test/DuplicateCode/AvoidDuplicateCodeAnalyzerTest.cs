@@ -295,7 +295,7 @@ Foo.WhitelistedFunction";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateCodeNoErrorAsync(string method1, string method2)
 		{
-			var file = CreateFunctions(method1, method2);
+			string file = CreateFunctions(method1, method2);
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
@@ -306,7 +306,7 @@ Foo.WhitelistedFunction";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateCodeError(string method1, string method2)
 		{
-			var file = CreateFunctions(method1, method2);
+			string file = CreateFunctions(method1, method2);
 			await VerifyFix(file, file).ConfigureAwait(false);
 			await VerifyFixAll(file, file).ConfigureAwait(false);
 		}

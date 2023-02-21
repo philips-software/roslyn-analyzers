@@ -63,12 +63,12 @@ namespace Philips.CodeAnalysis.Test.Common
 		public void IsCallableFromOutsideClassTest(string modifiers, bool isExpectedCallable)
 		{
 			// Arrange
-			var testCode = $"{modifiers} int I;";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
+			string testCode = $"{modifiers} int I;";
+			Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
 			Helper helper = new();
-			var isActualCallable = helper.IsCallableFromOutsideClass(memberDeclaration);
+			bool isActualCallable = helper.IsCallableFromOutsideClass(memberDeclaration);
 
 			// Assert
 			Assert.AreEqual(isExpectedCallable, isActualCallable);

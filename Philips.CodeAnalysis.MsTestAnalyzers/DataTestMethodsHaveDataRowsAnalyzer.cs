@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						return;
 					}
 
-					var location = methodDeclaration.Identifier.GetLocation();
+					Location location = methodDeclaration.Identifier.GetLocation();
 					if (dataRowCount != 0 && dynamicDataCount != 0)
 					{
 
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						return;
 					}
 
-					var location = methodDeclaration.Identifier.GetLocation();
+					Location location = methodDeclaration.Identifier.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, location));
 				}
 			}

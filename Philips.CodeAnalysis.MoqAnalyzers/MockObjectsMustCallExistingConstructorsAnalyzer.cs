@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private void AnalyzeInstanceCall(SyntaxNodeAnalysisContext context)
 		{
-			InvocationExpressionSyntax invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
+			var invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
 
 			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
@@ -99,7 +99,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private void AnalyzeNewObject(SyntaxNodeAnalysisContext context)
 		{
-			ObjectCreationExpressionSyntax objectCreationExpressionSyntax = (ObjectCreationExpressionSyntax)context.Node;
+			var objectCreationExpressionSyntax = (ObjectCreationExpressionSyntax)context.Node;
 
 			if (objectCreationExpressionSyntax.Type is not GenericNameSyntax genericNameSyntax)
 			{
@@ -210,7 +210,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			IMethodSymbol[] constructors = mockedClass.GetMembers().OfType<IMethodSymbol>().Where(x => x.MethodKind == MethodKind.Constructor && !x.IsStatic).ToArray();
 
-			ImmutableArray<IMethodSymbol> bestFitConstructors = constructors.Where(x => x.Parameters.Length == arguments.Length).ToImmutableArray();
+			var bestFitConstructors = constructors.Where(x => x.Parameters.Length == arguments.Length).ToImmutableArray();
 
 			if (BestFitConstructorsEmpty(bestFitConstructors, argumentList, context, out Location location))
 			{

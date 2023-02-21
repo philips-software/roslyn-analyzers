@@ -40,28 +40,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
 		{
-			VariableDeclarationSyntax node = (VariableDeclarationSyntax)context.Node;
+			var node = (VariableDeclarationSyntax)context.Node;
 
 			if (_testHelper.IsInTestClass(context))
 			{
 				return;
 			}
 
-			var variables = node.Variables;
+			SeparatedSyntaxList<VariableDeclaratorSyntax> variables = node.Variables;
 			if (!variables.Any())
 			{
 				return;
 			}
-			foreach (var variable in variables.Where(v => !IsPositiveName(v.Identifier.Text)))
+			foreach (VariableDeclaratorSyntax variable in variables.Where(v => !IsPositiveName(v.Identifier.Text)))
 			{
-				var loc = variable.GetLocation();
+				Location loc = variable.GetLocation();
 				CreateDiagnostic(context, loc);
 			}
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			PropertyDeclarationSyntax node = (PropertyDeclarationSyntax)context.Node;
+			var node = (PropertyDeclarationSyntax)context.Node;
 
 			if (_testHelper.IsInTestClass(context))
 			{
@@ -70,20 +70,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 			if (!IsPositiveName(node.Identifier.Text))
 			{
-				var location = node.GetLocation();
+				Location location = node.GetLocation();
 				CreateDiagnostic(context, location);
 			}
 		}
 
 		private void CreateDiagnostic(SyntaxNodeAnalysisContext context, Location location)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			var diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
 		private bool IsPositiveName(string name)
 		{
-			var lower = name.ToLowerInvariant();
+			string lower = name.ToLowerInvariant();
 			return !negativeWords.Any(lower.Contains);
 		}
 	}

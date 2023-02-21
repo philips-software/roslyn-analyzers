@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private void AnalyzeInstanceCall(SyntaxNodeAnalysisContext context)
 		{
-			InvocationExpressionSyntax invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
+			var invocationExpressionSyntax = (InvocationExpressionSyntax)context.Node;
 
 			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
@@ -96,7 +96,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			var symbolInfo = context.SemanticModel.GetSymbolInfo(accessExpressionSyntax);
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(accessExpressionSyntax);
 
 			if (symbolInfo.Symbol == null)
 			{
@@ -133,7 +133,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != argumentsToCheck)
 				{
-					var location = invocationExpressionSyntax.GetLocation();
+					Location location = invocationExpressionSyntax.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
@@ -143,14 +143,14 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				//it has a single eventargs argument.  Compiler has made sure that the types are the same, make sure the delegate takes object sender, event args
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters.Length != 2)
 				{
-					var location = invocationExpressionSyntax.GetLocation();
+					Location location = invocationExpressionSyntax.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
 
 				if (namedTypeSymbol.DelegateInvokeMethod.Parameters[0].Type.Name != "Object")
 				{
-					var location = invocationExpressionSyntax.GetLocation();
+					Location location = invocationExpressionSyntax.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(ArgumentCountRule, location));
 					return;
 				}
@@ -172,7 +172,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 				if (!conversion.IsImplicit)
 				{
-					var location = argument.GetLocation();
+					Location location = argument.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(TypeMismatchRule, location, argument.Expression, typeSymbol.Symbol?.Name, expectedType.Name));
 				}
 			}

@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (arg0.Expression.Kind() == SyntaxKind.ParenthesizedExpression)
 			{
-				var location = arg0.GetLocation();
+				Location location = arg0.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

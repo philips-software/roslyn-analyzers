@@ -70,7 +70,7 @@ public {2} class Tests : {3}
 
 			await VerifySuccessfulCompilation(string.Format(template, "[TestClass]", testType, classQualifier, baseClass)).ConfigureAwait(false);
 
-			var code = string.Format(template, "", testType, classQualifier, baseClass);
+			string code = string.Format(template, "", testType, classQualifier, baseClass);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.TestMethodsMustBeInTestClass).ConfigureAwait(false);

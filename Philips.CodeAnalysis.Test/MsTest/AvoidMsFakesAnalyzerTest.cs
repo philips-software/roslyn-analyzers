@@ -37,7 +37,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidMsFakesTestAsync()
 		{
-			var file = CreateFunction("using (ShimsContext.Create()) {}");
+			string file = CreateFunction("using (ShimsContext.Create()) {}");
 			await VerifyDiagnostic(file).ConfigureAwait(false);
 		}
 
@@ -45,7 +45,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidMsFakesNotRelevantTestAsync()
 		{
-			var file = CreateFunction("using (new MemoryStream()) {}");
+			string file = CreateFunction("using (new MemoryStream()) {}");
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 	}

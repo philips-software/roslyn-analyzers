@@ -52,19 +52,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If in a field, the magic number should be defined in a static field.
-			var field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
+			FieldDeclarationSyntax field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
 			if (field != null && IsStaticOrConst(field))
 			{
 				return;
 			}
 
-			var local = Node.Ancestors().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
+			LocalDeclarationStatementSyntax local = Node.Ancestors().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
 			if (local != null && local.Modifiers.Any(SyntaxKind.ConstKeyword))
 			{
 				return;
 			}
 
-			var location = Node.GetLocation();
+			Location location = Node.GetLocation();
 			ReportDiagnostic(location);
 		}
 

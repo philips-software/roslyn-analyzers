@@ -42,9 +42,9 @@ namespace TestMethodNameAnalyzerTest
 }}
 ";
 			string givenText = string.Format(baseline, name);
-			var prefix = GetPrefix(name);
+			string prefix = GetPrefix(name);
 			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
-			var fixedName = FixName(name);
+			string fixedName = FixName(name);
 			string fixedText = string.Format(baseline, fixedName);
 
 			if (isError)

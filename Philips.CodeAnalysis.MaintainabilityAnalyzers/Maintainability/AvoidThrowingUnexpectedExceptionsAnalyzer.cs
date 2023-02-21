@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Check overriden methods of Object.
 			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out string specialMethodKind))
 			{
-				var loc = Node.ThrowKeyword.GetLocation();
+				Location loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, specialMethodKind);
 			}
 		}
@@ -72,12 +72,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					(node.Parent as TypeDeclarationSyntax)?.Identifier.Text.EndsWith(StringConstants.Exception);
 				if (withinExceptionClass.HasValue && (bool)withinExceptionClass)
 				{
-					var loc = Node.ThrowKeyword.GetLocation();
+					Location loc = Node.ThrowKeyword.GetLocation();
 					ReportDiagnostic(loc, "constructor of an Exception derived type");
 				}
 				if (constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
-					var loc = Node.ThrowKeyword.GetLocation();
+					Location loc = Node.ThrowKeyword.GetLocation();
 					ReportDiagnostic(loc, "static constructor");
 				}
 			}
@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (node is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
-				var loc = Node.ThrowKeyword.GetLocation();
+				Location loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, "finalizer");
 			}
 		}
@@ -98,7 +98,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (node is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
 			{
 				// Check == and != operators.
-				var loc = Node.ThrowKeyword.GetLocation();
+				Location loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, "equality comparison operator");
 			}
 		}
@@ -108,7 +108,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
 			{
 				// Check implicit cast operators.
-				var loc = Node.ThrowKeyword.GetLocation();
+				Location loc = Node.ThrowKeyword.GetLocation();
 				ReportDiagnostic(loc, "implicit cast operator");
 			}
 		}

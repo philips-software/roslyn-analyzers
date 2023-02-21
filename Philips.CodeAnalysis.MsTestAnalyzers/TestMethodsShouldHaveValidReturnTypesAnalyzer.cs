@@ -44,13 +44,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				var location = methodDeclaration.ReturnType.GetLocation();
-				var returnTypeString =
+				Location location = methodDeclaration.ReturnType.GetLocation();
+				string returnTypeString =
 					methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 				if (!methodSymbol.IsAsync)
 				{
 					// error.  Not async, doesn't return void.
-					var voidString = context.Compilation.GetSpecialType(SpecialType.System_Void)
+					string voidString = context.Compilation.GetSpecialType(SpecialType.System_Void)
 						.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location, voidString, returnTypeString));
 					return;
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				var taskString = _taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+				string taskString = _taskSymbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, taskString, returnTypeString));
 			}
 		}

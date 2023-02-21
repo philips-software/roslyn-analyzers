@@ -27,12 +27,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
 			string expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
-			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
+			var namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			string myNamespace = namespaceDeclaration.Name.ToString();
-			var location = namespaceDeclaration.Name.GetLocation();
+			Location location = namespaceDeclaration.Name.GetLocation();
 			if (string.IsNullOrEmpty(expectedPrefix))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(RuleForEmptyPrefix, location);
+				var diagnostic = Diagnostic.Create(RuleForEmptyPrefix, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
+				var diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -138,14 +138,14 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			{
 				try
 				{
-					MethodDeclarationSyntax methodDeclarationSyntax = (MethodDeclarationSyntax)obj.Node;
+					var methodDeclarationSyntax = (MethodDeclarationSyntax)obj.Node;
 					SyntaxNode body = methodDeclarationSyntax.Body;
 					if (body == null)
 					{
 						return;
 					}
 
-					var methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
+					IMethodSymbol methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
 					if (_allowedSymbols.IsAllowed(methodSymbol))
 					{
 						return;
@@ -187,7 +187,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
 				{
 					string shapeDetails = GetShapeDetails(token);
-					var existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
+					FileLinePositionSpan existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
 					string reference = ToPrettyReference(existingEvidenceLineSpan);
 
 					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
@@ -207,7 +207,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				{
 					if (line.StartsWith("line") && line.Length >= 8)
 					{
-						var exception = line.Substring(0, 8);
+						string exception = line.Substring(0, 8);
 						_ = builder.Append(exception);
 						_ = builder.Append(' ');
 					}
@@ -219,7 +219,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
 				}
 
-				var location = syntaxNodeAnalysisContext.Node.GetLocation();
+				Location location = syntaxNodeAnalysisContext.Node.GetLocation();
 				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
 			}
 
@@ -427,7 +427,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				if (_library.TryGetValue(key, out List<Evidence> existingValues))
 				{
 					// We found a potential duplicate.  Is it actually?
-					var e = existingValues.FirstOrDefault(e => e.IsDuplicate(value));
+					Evidence e = existingValues.FirstOrDefault(e => e.IsDuplicate(value));
 					if (e != null)
 					{
 						// Yes, just return the duplicate information
@@ -504,7 +504,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public virtual LocationEnvelope GetLocationEnvelope()
 		{
-			var location = _syntaxToken.GetLocation();
+			Location location = _syntaxToken.GetLocation();
 			return new LocationEnvelope(location);
 		}
 
@@ -642,9 +642,9 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 				int start = firstToken.GetLocationEnvelope().Contents().SourceSpan.Start;
 				int end = lastToken.GetLocationEnvelope().Contents().SourceSpan.End;
-				TextSpan textSpan = TextSpan.FromBounds(start, end);
-				var firstTokenSyntax = firstToken.GetSyntaxTree();
-				Location location = Location.Create(firstTokenSyntax, textSpan);
+				var textSpan = TextSpan.FromBounds(start, end);
+				SyntaxTree firstTokenSyntax = firstToken.GetSyntaxTree();
+				var location = Location.Create(firstTokenSyntax, textSpan);
 
 				cache = new LocationEnvelope(location);
 
@@ -656,7 +656,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 
-			(var components, var hash) = _hashCalculator.ToComponentHashes();
+			(List<int> components, int hash) = _hashCalculator.ToComponentHashes();
 
 			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
 			Evidence e = new(locationEnvelope, components, hash);

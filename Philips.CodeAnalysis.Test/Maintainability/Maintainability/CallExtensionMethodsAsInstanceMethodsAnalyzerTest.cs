@@ -97,7 +97,7 @@ public static class Foo
   }}
 }}
 ";
-			var text = string.Format(Template, "Bar(obj, null)");
+			string text = string.Format(Template, "Bar(obj, null)");
 			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "obj.Bar(null)");
@@ -128,7 +128,7 @@ public static class Foo
   }}
 }}
 ";
-			var text = string.Format(Template, "RemoveByKeys(dict, items)");
+			string text = string.Format(Template, "RemoveByKeys(dict, items)");
 			await VerifyDiagnostic(text, DiagnosticId.ExtensionMethodsCalledLikeInstanceMethods).ConfigureAwait(false);
 
 			string newText = string.Format(Template, "dict.RemoveByKeys(items)");

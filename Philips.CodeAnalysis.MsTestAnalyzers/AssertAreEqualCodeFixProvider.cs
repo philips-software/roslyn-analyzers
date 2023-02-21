@@ -130,7 +130,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			NameSyntax identifier;
-			MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
+			var memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
 			string memberName = memberAccess.Name.ToString();
 			if (memberName == StringConstants.AreEqualMethodName)
 			{

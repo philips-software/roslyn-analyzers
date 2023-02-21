@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				bool isPresent = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
 				if (!isPresent)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, Location.None);
+					var diagnostic = Diagnostic.Create(Rule, Location.None);
 					compilationContext.ReportDiagnostic(diagnostic);
 				}
 			});

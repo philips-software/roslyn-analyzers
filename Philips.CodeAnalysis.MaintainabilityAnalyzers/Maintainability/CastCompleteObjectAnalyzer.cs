@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
-			var container = Node.ParameterList.Parameters.FirstOrDefault()?.Type;
+			TypeSyntax container = Node.ParameterList.Parameters.FirstOrDefault()?.Type;
 			if (
 				container == null ||
 				Context.SemanticModel.GetSymbolInfo(Node.Type).Symbol is not INamedTypeSymbol convertTo ||
@@ -33,11 +33,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return;
 			}
-			var itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
+			System.Collections.Generic.IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
 
 			if (itsFields is not null && itsFields.Count() > 1 && itsFields.Any(f => f.Type.Name == convertTo.Name))
 			{
-				var loc = Node.Type.GetLocation();
+				Location loc = Node.Type.GetLocation();
 				ReportDiagnostic(loc);
 			}
 		}

@@ -58,7 +58,7 @@ namespace RegexNeedsTimeoutTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WithoutTimeoutShouldTriggerDiagnosticAsync(string content)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content);
 			await VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout).ConfigureAwait(false);
 		}
@@ -73,7 +73,7 @@ namespace RegexNeedsTimeoutTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WithTimeoutShouldNotTriggerDiagnosticAsync(string content)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}

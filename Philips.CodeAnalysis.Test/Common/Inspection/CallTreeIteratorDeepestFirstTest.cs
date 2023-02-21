@@ -21,18 +21,18 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		{
 			// Arrange
 			var root = new CallTreeNode(null, null);
-			var firstChild = root.AddChild(null);
-			var secondChild = root.AddChild(null);
+			CallTreeNode firstChild = root.AddChild(null);
+			CallTreeNode secondChild = root.AddChild(null);
 			var iterator = new CallTreeIteratorDeepestFirst(root);
 
 			// Act
-			var firstMoveResult = iterator.MoveNext();
-			var firstNode = iterator.Current;
-			var secondMoveResult = iterator.MoveNext();
-			var secondNode = iterator.Current;
-			var thirdMoveResult = iterator.MoveNext();
-			var thirdNode = iterator.Current;
-			var fourthMoveResult = iterator.MoveNext();
+			bool firstMoveResult = iterator.MoveNext();
+			CallTreeNode firstNode = iterator.Current;
+			bool secondMoveResult = iterator.MoveNext();
+			CallTreeNode secondNode = iterator.Current;
+			bool thirdMoveResult = iterator.MoveNext();
+			CallTreeNode thirdNode = iterator.Current;
+			bool fourthMoveResult = iterator.MoveNext();
 
 			// Assert
 			Assert.IsTrue(firstMoveResult);
@@ -54,16 +54,16 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName)
 		{
-			var type = typeof(System.IO.Directory);
-			var assembly = type.Assembly;
-			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
-			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
+			System.Type type = typeof(System.IO.Directory);
+			System.Reflection.Assembly assembly = type.Assembly;
+			var module = ModuleDefinition.ReadModule(assembly.Location);
+			TypeDefinition typeDef = module.GetType(type.FullName);
+			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
-			var expectedNodeCount = GetNodeCount(tree);
+			int expectedNodeCount = GetNodeCount(tree);
 			var iterator = new CallTreeIteratorDeepestFirst(tree);
 			// Act
-			var actualCount = iterator.Count();
+			int actualCount = iterator.Count();
 			// Assert
 			Assert.AreEqual(expectedNodeCount, actualCount);
 		}
@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		private int GetNodeCount(CallTreeNode node)
 		{
 			int sum = 1;
-			foreach (var child in node.Children)
+			foreach (CallTreeNode child in node.Children)
 			{
 				sum += GetNodeCount(child);
 			}

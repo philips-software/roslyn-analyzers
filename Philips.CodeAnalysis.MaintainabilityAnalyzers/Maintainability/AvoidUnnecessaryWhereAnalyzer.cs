@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			string strWhereSymbol = whereSymbol?.ToString();
 			if (strWhereSymbol != null && strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
 			{
-				var location = whereExpression.Name.Identifier.GetLocation();
+				Location location = whereExpression.Name.Identifier.GetLocation();
 				ReportDiagnostic(location, expressionOfInterest.Name.Identifier.Text);
 			}
 		}

@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (!TryGetExpectedParameters(methodDeclaration, context, out expectedNumberOfParameters))
 					{
-						var location = methodDeclaration.Identifier.GetLocation();
+						Location location = methodDeclaration.Identifier.GetLocation();
 						context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 						return;
 					}
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (expectedNumberOfParameters != null && expectedNumberOfParameters != methodDeclaration.ParameterList.Parameters.Count)
 				{
-					var location = methodDeclaration.Identifier.GetLocation();
+					Location location = methodDeclaration.Identifier.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 				}
 			}
@@ -91,7 +91,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						continue;
 					}
 
-					var symbol = context.SemanticModel.GetSymbolInfo(attribute);
+					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(attribute);
 					if (symbol.Symbol is IMethodSymbol method)
 					{
 						if (method.ContainingType.AllInterfaces.Contains(Definitions.ITestSourceSymbol))

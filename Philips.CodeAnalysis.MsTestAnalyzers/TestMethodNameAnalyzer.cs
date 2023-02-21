@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
-						var location = token.GetLocation();
+						Location location = token.GetLocation();
 						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}

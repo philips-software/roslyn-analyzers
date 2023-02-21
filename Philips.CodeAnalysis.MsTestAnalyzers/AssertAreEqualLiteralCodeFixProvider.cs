@@ -79,8 +79,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			InvocationExpressionSyntax newInvocation = ConvertToInvocation(((MemberAccessExpressionSyntax)invocationExpression.Expression).Name, literalExpected.Expression, actual.Expression, message?.Expression);
-			var trivia = invocationExpression.GetLeadingTrivia();
-			var newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
+			SyntaxTriviaList trivia = invocationExpression.GetLeadingTrivia();
+			InvocationExpressionSyntax newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
 			root = root.ReplaceNode(invocationExpression, newInvocationWithTrivia);
 
 			return document.WithSyntaxRoot(root);

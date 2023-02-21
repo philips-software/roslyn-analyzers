@@ -327,7 +327,7 @@ public class Foo
 		public async Task MissingOrWrongDocumentationShouldTriggerDiagnostic(string testCode, string fixedCode, string fixedCodeOnLinux)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
-			var expectedFixedCode = fixedCode;
+			string expectedFixedCode = fixedCode;
 			if (fixedCodeOnLinux != null && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				expectedFixedCode = fixedCodeOnLinux;

@@ -70,8 +70,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			InvocationExpressionSyntax newInvocation = SyntaxFactory.InvocationExpression(newExpression, newArguments);
 
-			var trivia = invocation.GetLeadingTrivia();
-			var newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
+			SyntaxTriviaList trivia = invocation.GetLeadingTrivia();
+			InvocationExpressionSyntax newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
 			root = root.ReplaceNode(invocation, newInvocationWithLeadingTrivia);
 
 			return document.WithSyntaxRoot(root);

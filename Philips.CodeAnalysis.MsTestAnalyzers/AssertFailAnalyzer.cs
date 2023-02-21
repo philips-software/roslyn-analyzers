@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void OnMethodCall(AssertMetadata metadata, OperationAnalysisContext obj)
 		{
-			IInvocationOperation invocation = (IInvocationOperation)obj.Operation;
+			var invocation = (IInvocationOperation)obj.Operation;
 
 			if (!metadata.FailMethods.Contains(invocation.TargetMethod))
 			{
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// { Assert.Fail() }
 			if (expressionOperation.Parent is IBlockOperation blockOperation && CheckBlock(blockOperation, expressionOperation))
 			{
-				var location = invocation.Syntax.GetLocation();
+				Location location = invocation.Syntax.GetLocation();
 				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 				return;
 			}
@@ -76,14 +76,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// bare if/else (IE, no block)
 			if (expressionOperation.Parent is IConditionalOperation)
 			{
-				var location = invocation.Syntax.GetLocation();
+				Location location = invocation.Syntax.GetLocation();
 				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 
 			// bare foreach loop
 			if (expressionOperation.Parent is IForEachLoopOperation)
 			{
-				var location = invocation.Syntax.GetLocation();
+				Location location = invocation.Syntax.GetLocation();
 				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}

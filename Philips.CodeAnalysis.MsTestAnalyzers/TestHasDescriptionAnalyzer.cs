@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				string value = context.SemanticModel.GetConstantValue(argument.Expression).Value.ToString();
 				if (descriptionName.Contains("\"") || value.Length > MaxDescriptionLength)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+					var diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

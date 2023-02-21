@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			ForEachStatementSyntax foreachStatement = (ForEachStatementSyntax)context.Node;
+			var foreachStatement = (ForEachStatementSyntax)context.Node;
 
 			Regex validator = _localRegex;
 
@@ -60,8 +60,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			CSharpSyntaxNode violation = foreachStatement;
-			var location = violation.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
+			Location location = violation.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -73,9 +73,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
+			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			foreach (var identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
+			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
 			{
 				bool shouldCheck;
 				Regex validator;
@@ -94,7 +94,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 						}
 					case SyntaxKind.FieldDeclaration:
 						{
-							FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
+							var fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
 
 							if (fieldDeclaration.Modifiers.Any(x => x.Kind() == SyntaxKind.PublicKeyword))
 							{
@@ -128,8 +128,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 
 				CSharpSyntaxNode violation = variableDeclaration;
-				var location = violation.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
+				Location location = violation.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -60,11 +60,11 @@ public static class Bar
 			{
 				arguments = $", {args}";
 			}
-			var code = string.Format(template, arguments);
+			string code = string.Format(template, arguments);
 
 			if (isError)
 			{
-				var expectedErrors = new[]
+				DiagnosticResult[] expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -113,7 +113,7 @@ public static class Bar
 			{
 				arguments = $", {args}";
 			}
-			var code = string.Format(template, arguments);
+			string code = string.Format(template, arguments);
 
 			if (isError)
 			{
@@ -220,7 +220,7 @@ public static class Bar
 				});
 			}
 
-			var expectedErrors = diagnosticResults.ToArray();
+			DiagnosticResult[] expectedErrors = diagnosticResults.ToArray();
 
 			string arguments = string.Empty;
 			if (args.Length > 0)

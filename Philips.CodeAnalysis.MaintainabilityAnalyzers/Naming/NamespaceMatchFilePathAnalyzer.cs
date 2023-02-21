@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var location = Node.Name.GetLocation();
+			Location location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
 		private bool IsNamespacePartOfPath(string ns, string path)
@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			if (!_isConfigInitialized)
 			{
-				var additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
+				AdditionalFilesHelper additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
 				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
 				string folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
 				_ = bool.TryParse(folderInNamespace, out _isFolderInNamespace);

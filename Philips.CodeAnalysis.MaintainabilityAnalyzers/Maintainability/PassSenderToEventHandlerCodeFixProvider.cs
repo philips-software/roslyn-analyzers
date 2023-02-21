@@ -51,17 +51,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (argument.Parent is ArgumentListSyntax argumentList)
 			{
-				var index = argumentList.Arguments.IndexOf(argument);
+				int index = argumentList.Arguments.IndexOf(argument);
 				if (index == 0)
 				{
-					var thisArgument = SyntaxFactory.Argument(SyntaxFactory.ThisExpression()).WithTriviaFrom(argument);
+					ArgumentSyntax thisArgument = SyntaxFactory.Argument(SyntaxFactory.ThisExpression()).WithTriviaFrom(argument);
 					rootNode = rootNode.ReplaceNode(argument, thisArgument);
 				}
 				else if (index == 1)
 				{
-					var semanticModel = await document.GetSemanticModelAsync(c);
-					var typeName = semanticModel?.GetTypeInfo(argument, c).Type?.Name ?? "EventArgs";
-					var emptyArgument = SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeName), SyntaxFactory.IdentifierName("Empty"))).WithTriviaFrom(argument);
+					SemanticModel semanticModel = await document.GetSemanticModelAsync(c);
+					string typeName = semanticModel?.GetTypeInfo(argument, c).Type?.Name ?? "EventArgs";
+					ArgumentSyntax emptyArgument = SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeName), SyntaxFactory.IdentifierName("Empty"))).WithTriviaFrom(argument);
 					rootNode = rootNode.ReplaceNode(argument, emptyArgument);
 				}
 			}

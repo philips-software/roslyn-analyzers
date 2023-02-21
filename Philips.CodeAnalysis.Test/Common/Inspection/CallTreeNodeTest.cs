@@ -27,16 +27,16 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName, int nodeCount)
 		{
 			// Hack: Linux has one method call more for Exists.
-			var expectedNodeCount = nodeCount;
+			int expectedNodeCount = nodeCount;
 			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && methodName == @"Exists")
 			{
 				expectedNodeCount++;
 			}
-			var type = typeof(System.IO.Directory);
-			var assembly = type.Assembly;
-			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
-			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
+			System.Type type = typeof(System.IO.Directory);
+			System.Reflection.Assembly assembly = type.Assembly;
+			var module = ModuleDefinition.ReadModule(assembly.Location);
+			TypeDefinition typeDef = module.GetType(type.FullName);
+			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			Assert.AreEqual(expectedNodeCount, tree.Children.Count);
 		}

@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+				var definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
 
 				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 			});
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
 		{
-			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
+			var methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
 			if (!methodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
 			{
@@ -93,8 +93,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (!isAllowedToBePublic)
 			{
-				var location = methodDeclaration.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				Location location = methodDeclaration.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

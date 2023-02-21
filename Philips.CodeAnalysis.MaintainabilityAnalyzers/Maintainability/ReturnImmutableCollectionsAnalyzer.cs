@@ -53,18 +53,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var typeName = GetTypeName(type);
+			string typeName = GetTypeName(type);
 
 			NamespaceIgnoringComparer comparer = new();
 			if (type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
 			{
 				// Double check the type's namespace.
-				var symbolType = context.SemanticModel.GetTypeInfo(type).Type;
+				ITypeSymbol symbolType = context.SemanticModel.GetTypeInfo(type).Type;
 				bool isArray = symbolType is IArrayTypeSymbol;
-				var ns = symbolType?.ContainingNamespace?.ToString();
+				string ns = symbolType?.ContainingNamespace?.ToString();
 				if (symbolType != null && (isArray || ns is "System.Collections.Generic" or "<global namespace>"))
 				{
-					var loc = type.GetLocation();
+					Location loc = type.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, typeName));
 				}
 			}
@@ -72,11 +72,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		internal static string GetTypeName(TypeSyntax type)
 		{
-			var aliases = _helper.GetUsingAliases(type);
-			var typeName = type.GetFullName(aliases);
+			IReadOnlyDictionary<string, string> aliases = _helper.GetUsingAliases(type);
+			string typeName = type.GetFullName(aliases);
 			if (type is GenericNameSyntax genericName)
 			{
-				var baseName = genericName.Identifier.Text;
+				string baseName = genericName.Identifier.Text;
 				if (!aliases.TryGetValue(baseName, out typeName))
 				{
 					typeName = baseName;

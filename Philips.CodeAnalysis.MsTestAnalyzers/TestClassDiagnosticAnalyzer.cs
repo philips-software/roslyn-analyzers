@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
 			if (!TestHelper.IsTestClass(classDeclaration, context))
 			{

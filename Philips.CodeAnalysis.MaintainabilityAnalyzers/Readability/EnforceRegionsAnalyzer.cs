@@ -65,28 +65,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
 			RegionVisitor visitor = new();
 
 			visitor.Visit(classDeclaration);
 
-			var regions = visitor.Regions;
+			IReadOnlyList<DirectiveTriviaSyntax> regions = visitor.Regions;
 
-			var regionLocations = PopulateRegionLocations(regions, context);
+			IReadOnlyDictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
 
 			if (regionLocations.Count == 0)
 			{
 				return;
 			}
 
-			var members = classDeclaration.Members;
+			SyntaxList<MemberDeclarationSyntax> members = classDeclaration.Members;
 
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
-				if (RegionChecks.TryGetValue(pair.Key, out var functionToCall))
+				if (RegionChecks.TryGetValue(pair.Key, out Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool> functionToCall))
 				{
-					var membersOfRegion = GetMembersOfRegion(members, pair.Value);
+					IReadOnlyList<MemberDeclarationSyntax> membersOfRegion = GetMembersOfRegion(members, pair.Value);
 					_ = functionToCall(membersOfRegion, context);
 				}
 			}
@@ -97,7 +97,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			string regionName = string.Empty;
 
-			var lines = region.GetText().Lines;
+			Microsoft.CodeAnalysis.Text.TextLineCollection lines = region.GetText().Lines;
 
 			if (lines.Count > 0)
 			{
@@ -126,12 +126,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				{
 					if (regionLocations.Remove(regionName))
 					{
-						var memberLocation = region.DirectiveNameToken.GetLocation();
+						Location memberLocation = region.DirectiveNameToken.GetLocation();
 						CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
 					}
 					else
 					{
-						var location = region.GetLocation();
+						Location location = region.GetLocation();
 						int lineNumber = GetMemberLineNumber(location);
 
 						regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
@@ -143,7 +143,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				if (regionLocations.TryGetValue(regionStartName, out LocationRangeModel value))
 				{
-					var location = region.GetLocation();
+					Location location = region.GetLocation();
 					value.EndLine = GetMemberLineNumber(location);
 					regionStartName = string.Empty;
 				}
@@ -193,7 +193,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <returns>true if member is inside the given region, else false</returns>
 		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
 		{
-			var location = member.GetLocation();
+			Location location = member.GetLocation();
 			int memberLocation = GetMemberLineNumber(location);
 			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
 		}
@@ -231,7 +231,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			if (TryGetModifiers(member, true, out SyntaxTokenList modifiers))
 			{
-				var memberLocation = member.GetLocation();
+				Location memberLocation = member.GetLocation();
 				if (!HasAccessModifier(modifiers))
 				{
 					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
@@ -245,7 +245,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			if (member.Kind() != SyntaxKind.StructDeclaration)
 			{
-				var memberLocation = member.GetLocation();
+				Location memberLocation = member.GetLocation();
 				CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, NonCheckedMember);
 			}
 		}
@@ -317,7 +317,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// </summary>
 		private static void CreateDiagnostic(Location memberLocation, SyntaxNodeAnalysisContext context, string regionName, DiagnosticDescriptor rule)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(rule, memberLocation, regionName);
+			var diagnostic = Diagnostic.Create(rule, memberLocation, regionName);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -343,7 +343,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="context"></param>
 		private static void VerifyMemberForNonPublicPropertiesAndMethods(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
-			var memberLocation = member.GetLocation();
+			Location memberLocation = member.GetLocation();
 			if (TryGetModifiers(member, false, out SyntaxTokenList modifiers))
 			{
 				if (!HasAccessModifier(modifiers))
@@ -415,7 +415,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					break;
 			}
 
-			var memberLocation = member.GetLocation();
+			Location memberLocation = member.GetLocation();
 			if (shouldProcess)
 			{
 				if (!HasAccessModifier(modifiers))

@@ -44,12 +44,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (memberName == @"Thread" && name == @"Sleep")
 			{
-				ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)Context.Node.Parent.Parent.Parent.Parent;
+				var classDeclaration = (ClassDeclarationSyntax)Context.Node.Parent.Parent.Parent.Parent;
 				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
 				if (_attributeHelper.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
-					var location = Node.GetLocation();
+					Location location = Node.GetLocation();
 					ReportDiagnostic(location);
 				}
 			}

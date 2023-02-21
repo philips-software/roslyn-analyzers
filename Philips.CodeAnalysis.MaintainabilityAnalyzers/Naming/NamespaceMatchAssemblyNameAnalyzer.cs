@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void ReportDiagnostic()
 		{
-			var location = Node.Name.GetLocation();
+			Location location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
 	}

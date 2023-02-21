@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				yield break;
 			}
 
-			var argumentList = invocationExpressionSyntax.ArgumentList;
+			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
 			if (argumentList.Arguments.Count < 2)
 			{
@@ -42,8 +42,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
 			foreach (ArgumentSyntax syntax in arguments.Where(InConditionalAccess))
 			{
-				var location = syntax.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				Location location = syntax.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				yield return diagnostic;
 			}
 		}

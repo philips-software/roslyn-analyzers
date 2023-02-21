@@ -42,7 +42,7 @@ class Foo
 		public async Task CheckPasswordTestAsync(string content0, string content1)
 		{
 			// These would normally fail, but by default we're in the context of a MS Test environment, which short-circuits the analyzer.
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
@@ -85,7 +85,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckPasswordTestAsync(string content0, string content1)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
 			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField).ConfigureAwait(false);
 		}
@@ -99,7 +99,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNoPasswordTestAsync(string content0, string content1)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content0, content1);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}

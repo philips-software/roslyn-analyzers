@@ -41,9 +41,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var location = GetSquiggleLocation(Node.SyntaxTree);
-			var nodeOrToken = FindFirstWithLeadingTrivia(Node);
-			var leadingTrivia = nodeOrToken.GetLeadingTrivia();
+			Location location = GetSquiggleLocation(Node.SyntaxTree);
+			SyntaxNodeOrToken nodeOrToken = FindFirstWithLeadingTrivia(Node);
+			SyntaxTriviaList leadingTrivia = nodeOrToken.GetLeadingTrivia();
 
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
@@ -75,14 +75,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n =>
 			{
-				var trivia = n.GetLeadingTrivia();
+				SyntaxTriviaList trivia = n.GetLeadingTrivia();
 				return trivia.Any(SyntaxKind.SingleLineCommentTrivia) || trivia.Any(SyntaxKind.RegionDirectiveTrivia);
 			});
 		}
 
 		private bool CheckCopyrightStatement(SyntaxTrivia trivia)
 		{
-			var comment = trivia.ToFullString();
+			string comment = trivia.ToFullString();
 			// Check the copyright mark itself
 			bool hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
 
@@ -91,8 +91,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// Check the company name, only if it is configured.
 			var additionalFilesHelper = new AdditionalFilesHelper(Context.Options, Context.Compilation);
-			var companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
-			var hasCompanyName = string.IsNullOrEmpty(companyName) || comment.Contains(companyName);
+			string companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
+			bool hasCompanyName = string.IsNullOrEmpty(companyName) || comment.Contains(companyName);
 
 			return hasCopyright && hasYear && hasCompanyName;
 		}

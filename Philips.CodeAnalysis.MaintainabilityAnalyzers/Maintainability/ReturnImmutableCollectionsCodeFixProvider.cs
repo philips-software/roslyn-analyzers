@@ -69,12 +69,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			string newTypeName;
 			if (type is ArrayTypeSyntax arrayType)
 			{
-				var elementTypeName = arrayType.ElementType.ToString();
+				string elementTypeName = arrayType.ElementType.ToString();
 				newTypeName = $"IReadOnlyList<{elementTypeName}>";
 			}
 			else if (CollectionsMap.TryGetValue(origTypeName, out string newCollectionType))
 			{
-				var genericTypeNames = GetGenericTypeNames(type);
+				string genericTypeNames = GetGenericTypeNames(type);
 				newTypeName = $"{newCollectionType}{genericTypeNames}";
 
 			}
@@ -82,7 +82,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return document;
 			}
-			var newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(type);
+			TypeSyntax newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(type);
 			rootNode = rootNode.ReplaceNode(type, newType);
 			return document.WithSyntaxRoot(rootNode);
 		}

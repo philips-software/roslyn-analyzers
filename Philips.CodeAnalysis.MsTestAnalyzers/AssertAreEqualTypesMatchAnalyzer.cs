@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
 			if (!Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString());
 			}
 		}

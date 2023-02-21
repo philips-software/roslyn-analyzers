@@ -184,7 +184,7 @@ using System.Reflection;
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DogFoodMaintainability(string folder, string analyzerName)
 		{
-			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
+			string path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
 			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 
@@ -193,7 +193,7 @@ using System.Reflection;
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DogFoodMsTest(string analyzerName)
 		{
-			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
+			string path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
 			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 	}

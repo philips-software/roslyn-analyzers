@@ -47,8 +47,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var typeSymbol = Context.SemanticModel.GetSymbolInfo(Node.Type).Symbol as INamedTypeSymbol;
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
-				var variableName = Node.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
-				var location = typeName.GetLocation();
+				string variableName = Node.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
+				Location location = typeName.GetLocation();
 				ReportDiagnostic(location, variableName);
 			}
 		}

@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -71,7 +70,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			//the following should match AssertIsTrueAnalyzer::CheckForEquals
 
-			var kind = arg.Kind();
+			SyntaxKind kind = arg.Kind();
 			switch (kind)
 			{
 				case SyntaxKind.LogicalAndExpression:
@@ -99,15 +98,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax arguments = invocationExpression.ArgumentList;
 
-			BinaryExpressionSyntax expr = (BinaryExpressionSyntax)arguments.Arguments[0].Expression;
+			var expr = (BinaryExpressionSyntax)arguments.Arguments[0].Expression;
 
-			var left = expr.Left;
-			var right = expr.Right;
+			ExpressionSyntax left = expr.Left;
+			ExpressionSyntax right = expr.Right;
 
 			ArgumentSyntax[] additionalArguments = arguments.Arguments.Skip(1).ToArray();
 
-			var leftAssert = CreateAssert(left, isIsTrue, additionalArguments);
-			var rightAssert = CreateAssert(right, isIsTrue, additionalArguments);
+			StatementSyntax leftAssert = CreateAssert(left, isIsTrue, additionalArguments);
+			StatementSyntax rightAssert = CreateAssert(right, isIsTrue, additionalArguments);
 
 			SyntaxNode node = invocationExpression;
 			BlockSyntax parentBlock = null;
@@ -127,16 +126,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			StatementSyntax statement = parentBlock.Statements[statementIndex];
 
-			var leadingTrivia = statement.GetLeadingTrivia();
-			var trailingTrivia = statement.GetTrailingTrivia();
+			SyntaxTriviaList leadingTrivia = statement.GetLeadingTrivia();
+			SyntaxTriviaList trailingTrivia = statement.GetTrailingTrivia();
 
-			var rightAssertWithTrivia = rightAssert.WithLeadingTrivia().WithTrailingTrivia(trailingTrivia);
-			var statements = parentBlock.Statements.Insert(statementIndex, rightAssertWithTrivia);
-			var leftAssertWithTrivia = leftAssert.WithLeadingTrivia(leadingTrivia);
+			StatementSyntax rightAssertWithTrivia = rightAssert.WithLeadingTrivia().WithTrailingTrivia(trailingTrivia);
+			SyntaxList<StatementSyntax> statements = parentBlock.Statements.Insert(statementIndex, rightAssertWithTrivia);
+			StatementSyntax leftAssertWithTrivia = leftAssert.WithLeadingTrivia(leadingTrivia);
 			statements = statements.Insert(statementIndex, leftAssertWithTrivia);
 			statements = statements.RemoveAt(statementIndex + 2);
 
-			var newBlock = parentBlock.WithStatements(statements);
+			BlockSyntax newBlock = parentBlock.WithStatements(statements);
 
 			root = root.ReplaceNode(parentBlock, newBlock);
 
@@ -151,10 +150,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			newArguments = newArguments.AddRange(additionalArguments);
 
-			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			MemberAccessExpressionSyntax memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(isIsTrue ? StringConstants.IsTrue : StringConstants.IsFalse)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
-			var invocationExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(SyntaxFactory.ArgumentList(arguments: newArguments));
+			InvocationExpressionSyntax invocationExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(SyntaxFactory.ArgumentList(arguments: newArguments));
 			return SyntaxFactory.ExpressionStatement(invocationExpression);
 		}
 
@@ -164,8 +163,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsFunction(invocationExpression.ArgumentList, out bool isNotEquals);
 
-			var functionName = DetermineFunction(isIsTrue, isNotEquals, false);
-			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			string functionName = DetermineFunction(isIsTrue, isNotEquals, false);
+			MemberAccessExpressionSyntax memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
 			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
@@ -181,15 +180,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			ArgumentListSyntax newArguments = DecomposeEqualsEquals(kind, invocationExpression.ArgumentList, out bool isNotEquals, out bool isNullArgument);
 
-			var functionName = DetermineFunction(isIsTrue, isNotEquals, isNullArgument);
-			var memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
+			string functionName = DetermineFunction(isIsTrue, isNotEquals, isNullArgument);
+			MemberAccessExpressionSyntax memberAccessExpression = SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression,
 					SyntaxFactory.IdentifierName(StringConstants.Assert), SyntaxFactory.IdentifierName(functionName)
 					).WithOperatorToken(SyntaxFactory.Token(SyntaxKind.DotToken));
 			SyntaxNode newExpression = SyntaxFactory.InvocationExpression(memberAccessExpression).WithArgumentList(newArguments);
 
-			var leading = invocationExpression.GetLeadingTrivia();
+			SyntaxTriviaList leading = invocationExpression.GetLeadingTrivia();
 
-			var newNode = newExpression.WithLeadingTrivia(leading);
+			SyntaxNode newNode = newExpression.WithLeadingTrivia(leading);
 			SyntaxNode newRoot = root.ReplaceNode(invocationExpression, newNode);
 			return document.WithSyntaxRoot(newRoot);
 		}
@@ -224,7 +223,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ArgumentSyntax first = argumentList.Arguments[0];
 
-			List<ArgumentSyntax> rest = argumentList.Arguments.Skip(1).ToList();
+			var rest = argumentList.Arguments.Skip(1).ToList();
 
 			ExtractEqualsFunction(first, out ArgumentSyntax areEqualsExpected, out ArgumentSyntax areEqualsActual, out isNotEquals);
 
@@ -241,7 +240,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ArgumentSyntax first = argumentList.Arguments[0];
 
-			List<ArgumentSyntax> rest = argumentList.Arguments.Skip(1).ToList();
+			var rest = argumentList.Arguments.Skip(1).ToList();
 
 			isNotEquals = kind switch
 			{
@@ -289,11 +288,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			//something of the form x.Equals(y) pull out x and y.
 			isNotEquals = false;
 
-			InvocationExpressionSyntax invocation = (InvocationExpressionSyntax)first.Expression;
+			var invocation = (InvocationExpressionSyntax)first.Expression;
 
 			areEqualsActual = SyntaxFactory.Argument(invocation.ArgumentList.Arguments[0].Expression);
 
-			MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
+			var memberAccess = (MemberAccessExpressionSyntax)invocation.Expression;
 
 			areEqualsExpected = SyntaxFactory.Argument(memberAccess.Expression);
 		}

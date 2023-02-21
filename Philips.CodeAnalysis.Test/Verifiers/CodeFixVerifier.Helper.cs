@@ -25,8 +25,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>A Document with the changes from the CodeAction</returns>
 		private async Task<Document> ApplyFix(Document document, CodeAction codeAction)
 		{
-			var operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
-			var solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
+			System.Collections.Immutable.ImmutableArray<CodeActionOperation> operations = await codeAction.GetOperationsAsync(CancellationToken.None).ConfigureAwait(false);
+			Solution solution = operations.OfType<ApplyChangesOperation>().Single().ChangedSolution;
 			return solution.GetDocument(document.Id);
 		}
 
@@ -40,8 +40,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>A list of Diagnostics that only surfaced in the code after the CodeFix was applied</returns>
 		private IEnumerable<Diagnostic> GetNewDiagnostics(IEnumerable<Diagnostic> diagnostics, IEnumerable<Diagnostic> newDiagnostics)
 		{
-			var oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
-			var newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+			Diagnostic[] oldArray = diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
+			Diagnostic[] newArray = newDiagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 
 			int oldIndex = 0;
 			int newIndex = 0;
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>The compiler diagnostics that were found in the code</returns>
 		private async Task<IEnumerable<Diagnostic>> GetCompilerDiagnostics(Document document)
 		{
-			var model = await document.GetSemanticModelAsync().ConfigureAwait(false);
+			SemanticModel model = await document.GetSemanticModelAsync().ConfigureAwait(false);
 			return model.GetDiagnostics();
 		}
 
@@ -78,9 +78,9 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <returns>A string containing the syntax of the Document after formatting</returns>
 		private async Task<string> GetStringFromDocument(Document document)
 		{
-			var simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
-			var root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
-			var v = root.GetText().ToString();
+			Document simplifiedDoc = await Simplifier.ReduceAsync(document, Simplifier.Annotation).ConfigureAwait(false);
+			SyntaxNode root = await simplifiedDoc.GetSyntaxRootAsync().ConfigureAwait(false);
+			string v = root.GetText().ToString();
 			return v;
 		}
 	}

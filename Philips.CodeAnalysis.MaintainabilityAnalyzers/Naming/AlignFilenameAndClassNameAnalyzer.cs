@@ -30,8 +30,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void Analyze(SyntaxTreeAnalysisContext context)
 		{
-			var tree = context.Tree;
-			var firstType = tree.GetRoot().DescendantNodes()
+			SyntaxTree tree = context.Tree;
+			SyntaxNode firstType = tree.GetRoot().DescendantNodes()
 				.FirstOrDefault(node => node is TypeDeclarationSyntax or EnumDeclarationSyntax);
 			string typeKind = null;
 			SyntaxToken identifier = default;
@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var filename = Path.GetFileNameWithoutExtension(tree.FilePath);
+			string filename = Path.GetFileNameWithoutExtension(tree.FilePath);
 			int indexOfDot = filename.IndexOf('.');
 			if (indexOfDot != -1)
 			{
@@ -74,8 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 			if (StringComparer.OrdinalIgnoreCase.Compare(identifier.Text, filename) != 0)
 			{
-				var location = identifier.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.Text, typeKind);
+				Location location = identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, identifier.Text, typeKind);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

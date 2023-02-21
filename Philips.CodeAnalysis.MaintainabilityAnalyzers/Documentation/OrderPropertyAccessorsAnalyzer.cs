@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			for (int i = 0; i < accessors.Accessors.Count; i++)
 			{
-				var accessor = accessors.Accessors[i];
+				AccessorDeclarationSyntax accessor = accessors.Accessors[i];
 
 				if (accessor.Keyword.IsKind(SyntaxKind.GetKeyword))
 				{
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (setIndex < getIndex)
 			{
-				var location = accessors.GetLocation();
+				Location location = accessors.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

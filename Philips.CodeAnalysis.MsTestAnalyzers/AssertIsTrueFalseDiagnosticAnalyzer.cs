@@ -32,9 +32,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		}
 		protected virtual Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ArgumentListSyntax arguments, bool isIsTrue)
 		{
-			var allArguments = arguments.Arguments;
+			SeparatedSyntaxList<ArgumentSyntax> allArguments = arguments.Arguments;
 
-			var test = allArguments.FirstOrDefault()?.Expression;
+			ExpressionSyntax test = allArguments.FirstOrDefault()?.Expression;
 
 			return test != null ? Check(context, node, test, isIsTrue) : null;
 		}

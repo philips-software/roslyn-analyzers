@@ -26,15 +26,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			var variable = Node.Declaration.Variables.FirstOrDefault();
+			VariableDeclaratorSyntax variable = Node.Declaration.Variables.FirstOrDefault();
 			if (variable == null)
 			{
 				return;
 			}
 
-			var eventName = variable.Identifier.Text;
+			string eventName = variable.Identifier.Text;
 
-			var parent = Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+			TypeDeclarationSyntax parent = Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
 			if (parent == null)
 			{
 				// Should never happen, field must be declared inside a type declaration.
@@ -47,23 +47,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void AnalyzeArguments(TypeDeclarationSyntax parent, string eventName)
 		{
 			// EventHandlers must have 2 arguments as checked by CA1003, assume this rule is obeyed here.
-			var invocations = parent.DescendantNodes()
+			System.Collections.Generic.IEnumerable<InvocationExpressionSyntax> invocations = parent.DescendantNodes()
 				.OfType<InvocationExpressionSyntax>()
 				.Where(invocation => IsOurEvent(invocation, eventName))
 				.Where(i => i.ArgumentList.Arguments.Count == 2);
 
-			foreach (var invocation in invocations)
+			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
-				var arguments = invocation.ArgumentList.Arguments;
+				SeparatedSyntaxList<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments;
 				if (_helper.IsLiteralNull(arguments[0].Expression))
 				{
-					var loc = arguments[0].GetLocation();
+					Location loc = arguments[0].GetLocation();
 					ReportDiagnostic(loc, eventName);
 				}
 
 				if (_helper.IsLiteralNull(arguments[1].Expression))
 				{
-					var loc = arguments[1].GetLocation();
+					Location loc = arguments[1].GetLocation();
 					ReportDiagnostic(loc, eventName);
 				}
 			}

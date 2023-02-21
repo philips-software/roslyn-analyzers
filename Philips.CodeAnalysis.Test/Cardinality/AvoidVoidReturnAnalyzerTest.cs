@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForEmptyFiles()
 		{
-			var test = "";
+			string test = "";
 
 			await VerifySuccessfulCompilation(test);
 		}
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForNonVoidPredefinedReturnTypes()
 		{
-			var test = @"
+			string test = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForNonVoidMethods()
 		{
-			var test = @"
+			string test = @"
     namespace ConsoleApplication1
     {
         public class Foo
@@ -71,7 +71,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FireForVoidReturn()
 		{
-			var test = @"
+			string test = @"
     namespace ConsoleApplication1
     {
         class MyClass
@@ -89,7 +89,7 @@ namespace Philips.CodeAnalysis.Test.Cardinality
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotFireForOverriddenVoidReturn()
 		{
-			var test = @"
+			string test = @"
     namespace ConsoleApplication1
     {
         public abstract class AbstractBase

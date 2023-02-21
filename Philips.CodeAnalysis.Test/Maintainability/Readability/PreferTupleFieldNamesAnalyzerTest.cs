@@ -51,7 +51,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrorsAsync(string argument, bool isError)
 		{
-			var source = CreateFunction(argument);
+			string source = CreateFunction(argument);
 			if (isError)
 			{
 				await VerifyDiagnostic(source, DiagnosticId.PreferUsingNamedTupleField).ConfigureAwait(false);

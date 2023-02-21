@@ -57,7 +57,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AllowedSymbolShouldBeReportDiagnosticsAsync(string nsName, string typeName, string methodName)
 		{
-			var file = GenerateCodeFile(nsName, typeName, methodName);
+			string file = GenerateCodeFile(nsName, typeName, methodName);
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
@@ -67,7 +67,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NotAllowedSymbolShouldNotReportDiagnosticsAsync(string nsName, string typeName, string methodName)
 		{
-			var file = GenerateCodeFile(nsName, typeName, methodName);
+			string file = GenerateCodeFile(nsName, typeName, methodName);
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 

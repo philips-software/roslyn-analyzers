@@ -32,19 +32,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			LambdaExpressionSyntax node = (LambdaExpressionSyntax)context.Node;
+			var node = (LambdaExpressionSyntax)context.Node;
 			MethodDeclarationSyntax parent =
 				node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 
 			// We need at least 2 lambdas in the same method to have even the possibility of a violation.
-			var lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
+			IEnumerable<LambdaExpressionSyntax> lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
 			if (lambdas == null || lambdas.Count() < 2)
 			{
 				return;
 			}
 
 			// Get a list of the lambdas that start on the same line, excluding our lambda.
-			var lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
+			IEnumerable<LambdaExpressionSyntax> lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
 			if (lambdasOnSameLine == null || !lambdasOnSameLine.Any())
 			{
 				return;

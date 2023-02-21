@@ -473,7 +473,7 @@ class Foo
 	}}
 }}
 ";
-			var code = string.Format(template, format, args);
+			string code = string.Format(template, format, args);
 			if (isError)
 			{
 				await VerifyNoUnnecessaryAsync(code).ConfigureAwait(false);

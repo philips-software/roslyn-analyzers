@@ -33,15 +33,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
 
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{
-				var node = root.FindNode(diagnosticSpan);
+				SyntaxNode node = root.FindNode(diagnosticSpan);
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
@@ -53,31 +53,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private async Task<Document> ApplyCodeFix(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			if (root == null)
 			{
 				return document;
 			}
 
 			// First remove the EOL from the violating token.
-			var oldTrivia = node.GetTrailingTrivia();
-			var index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
+			SyntaxTriviaList oldTrivia = node.GetTrailingTrivia();
+			int index = oldTrivia.IndexOf(SyntaxKind.EndOfLineTrivia);
 			if (index >= 0)
 			{
 				SyntaxTriviaList newTrivia = oldTrivia.RemoveAt(index);
-				var replacementNode = node.WithTrailingTrivia(newTrivia)
+				SyntaxNode replacementNode = node.WithTrailingTrivia(newTrivia)
 					.WithAdditionalAnnotations(Formatter.Annotation, annotation);
 				root = root.ReplaceNode(node, replacementNode);
 			}
 
 			// Next add EOL to the || or && token immediately following.
-			var newNode = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
-			var logicalToken = newNode.GetLastToken().GetNextToken();
+			SyntaxNode newNode = root.GetAnnotatedNodes(annotation).FirstOrDefault() ?? node;
+			SyntaxToken logicalToken = newNode.GetLastToken().GetNextToken();
 			if (logicalToken.Text is "||" or "&&")
 			{
-				var newLineTrivia = SyntaxFactory.CarriageReturnLineFeed;
+				SyntaxTrivia newLineTrivia = SyntaxFactory.CarriageReturnLineFeed;
 
-				var newToken = logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
+				SyntaxToken newToken = logicalToken.WithLeadingTrivia().WithTrailingTrivia(newLineTrivia)
 						.WithAdditionalAnnotations(Formatter.Annotation);
 				root = root.ReplaceToken(logicalToken, newToken);
 			}

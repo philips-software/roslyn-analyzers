@@ -83,7 +83,7 @@ Instruction i = method.Body.Instructions[0];
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionFindingTestAsync(string content1, string content2)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
@@ -103,7 +103,7 @@ Instruction i = method.Body.Instructions[0];
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionNoFindingTestAsync(string content1, string content2)
 		{
-			var format = GetTemplate();
+			string format = GetTemplate();
 			string testCode = string.Format(format, content1, content2);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}

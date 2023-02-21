@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			if (!classDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				Location location = classDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
 				return;
 			}
@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (hasAttributeThatMustBeStatic != isClassStatic)
 			{
-				var location = classDeclaration.Identifier.GetLocation();
+				Location location = classDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
 			}
 		}

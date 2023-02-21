@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If the caller is Assert, let it go. (This is debatable, and ideally warrants a configuration option.)
-			MemberAccessExpressionSyntax caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
+			var caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
 			if (caller?.Expression is IdentifierNameSyntax identifier && identifier.Identifier.ValueText.Contains(@"Assert"))
 			{
 				return;
@@ -74,13 +74,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			var location = Node.GetLocation();
+			Location location = Node.GetLocation();
 			ReportDiagnostic(location, Node.ToString());
 		}
 
 		private bool IsStaticMethod(SyntaxNode node)
 		{
-			var symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
+			ISymbol symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 			return symbol is { IsStatic: true };
 		}
 	}

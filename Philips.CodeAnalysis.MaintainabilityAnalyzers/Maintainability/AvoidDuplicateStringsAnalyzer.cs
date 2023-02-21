@@ -45,21 +45,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var literal = Node.Token;
-			var literalText = literal.Text.Trim('\\', '\"');
+			SyntaxToken literal = Node.Token;
+			string literalText = literal.Text.Trim('\\', '\"');
 			if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 			{
 				return;
 			}
 
-			var location = literal.GetLocation();
-			var usedLiterals = ((AvoidDuplicateStringsAnalyzer)Analyzer).UsedLiterals;
+			Location location = literal.GetLocation();
+			ConcurrentDictionary<string, Location> usedLiterals = ((AvoidDuplicateStringsAnalyzer)Analyzer).UsedLiterals;
 
 			if (!usedLiterals.TryAdd(literalText, location))
 			{
 				_ = usedLiterals.TryGetValue(literalText, out Location firstLocation);
-				var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
-				var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
+				string firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
+				int firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
 				ReportDiagnostic(location, firstFilename, firstLineNumber, literalText);
 			}
 		}

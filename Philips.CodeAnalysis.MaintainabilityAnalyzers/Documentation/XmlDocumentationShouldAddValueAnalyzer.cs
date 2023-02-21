@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.RegisterCompilationStartAction(ctx =>
 			{
 				var additionalFilesHelper = new AdditionalFilesHelper(ctx.Options, ctx.Compilation);
-				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
+				string line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
 				additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
 				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
@@ -58,56 +58,56 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
-			ClassDeclarationSyntax cls = context.Node as ClassDeclarationSyntax;
+			var cls = context.Node as ClassDeclarationSyntax;
 			string name = cls?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeConstructor(SyntaxNodeAnalysisContext context)
 		{
-			ConstructorDeclarationSyntax constructor = context.Node as ConstructorDeclarationSyntax;
+			var constructor = context.Node as ConstructorDeclarationSyntax;
 			string name = constructor?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
-			MethodDeclarationSyntax method = context.Node as MethodDeclarationSyntax;
+			var method = context.Node as MethodDeclarationSyntax;
 			string name = method?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			PropertyDeclarationSyntax prop = context.Node as PropertyDeclarationSyntax;
+			var prop = context.Node as PropertyDeclarationSyntax;
 			string name = prop?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeField(SyntaxNodeAnalysisContext context)
 		{
-			FieldDeclarationSyntax field = context.Node as FieldDeclarationSyntax;
+			var field = context.Node as FieldDeclarationSyntax;
 			string name = field?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeEvent(SyntaxNodeAnalysisContext context)
 		{
-			EventFieldDeclarationSyntax evt = context.Node as EventFieldDeclarationSyntax;
+			var evt = context.Node as EventFieldDeclarationSyntax;
 			string name = evt?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeEnum(SyntaxNodeAnalysisContext context)
 		{
-			EnumDeclarationSyntax cls = context.Node as EnumDeclarationSyntax;
+			var cls = context.Node as EnumDeclarationSyntax;
 			string name = cls?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
 
 		private void AnalyzeEnumMember(SyntaxNodeAnalysisContext context)
 		{
-			EnumMemberDeclarationSyntax member = context.Node as EnumMemberDeclarationSyntax;
+			var member = context.Node as EnumMemberDeclarationSyntax;
 			string name = member?.Identifier.Text;
 			AnalyzeNamedNode(context, name);
 		}
@@ -120,11 +120,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			string lowercaseName = name.ToLowerInvariant();
-			var xmlElements = context.Node.GetLeadingTrivia()
+			IEnumerable<XmlElementSyntax> xmlElements = context.Node.GetLeadingTrivia()
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
-			foreach (var xmlElement in xmlElements)
+			foreach (XmlElementSyntax xmlElement in xmlElements)
 			{
 				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
 				{
@@ -135,8 +135,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				if (string.IsNullOrWhiteSpace(content))
 				{
-					var location = xmlElement.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(EmptyRule, location);
+					Location location = xmlElement.GetLocation();
+					var diagnostic = Diagnostic.Create(EmptyRule, location);
 					context.ReportDiagnostic(diagnostic);
 					continue;
 				}
@@ -154,8 +154,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				// We assume here that every remaining word adds value to the documentation text.
 				if (!words.Any())
 				{
-					Location loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
-					Diagnostic diagnostic = Diagnostic.Create(ValueRule, loc);
+					var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
+					var diagnostic = Diagnostic.Create(ValueRule, loc);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
@@ -179,7 +179,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static IEnumerable<string> SplitInWords(string input)
 		{
-			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
+			string pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
 			return pruned.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
 		}
 	}

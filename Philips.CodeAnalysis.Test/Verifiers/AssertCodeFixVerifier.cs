@@ -24,11 +24,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyNoChange(string methodBody, string methodAttributes)
 		{
-			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
+			string test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 
-			var fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
+			string fixtest = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
 
 			await VerifyFix(test, fixtest).ConfigureAwait(false);
 		}
@@ -40,20 +40,20 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
-			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
-			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
+			string test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
+			DiagnosticResult expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 
-			var fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
+			string fixtest = _helper.GetText(expectedBody, OtherClassSyntax, expectedAttributes);
 
 			await VerifyFix(test, fixtest, null, shouldAllowNewCompilerDiagnostics).ConfigureAwait(false);
 		}
 
 		protected async Task VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
 		{
-			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
-			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
+			string test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
+			DiagnosticResult expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
 			if (error != null)
 			{
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyNoError(string methodBody)
 		{
-			var test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
+			string test = _helper.GetText(methodBody, OtherClassSyntax, string.Empty);
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}

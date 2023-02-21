@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	{
 		public override void Analyze()
 		{
-			var typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			BaseTypeDeclarationSyntax typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (typeDeclaration is StructDeclarationSyntax)
 			{
 				return;
@@ -37,15 +37,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 			if (IsUnmanaged(Node.Declaration.Type) && !TypeImplementsIDisposable())
 			{
-				var variableName = Node.Declaration.Variables[0].Identifier.Text;
-				var loc = Node.Declaration.Variables[0].Identifier.GetLocation();
+				string variableName = Node.Declaration.Variables[0].Identifier.Text;
+				Location loc = Node.Declaration.Variables[0].Identifier.GetLocation();
 				ReportDiagnostic(loc, variableName);
 			}
 		}
 
 		private bool IsUnmanaged(TypeSyntax type)
 		{
-			var typeStr = type.ToString();
+			string typeStr = type.ToString();
 			bool isIntPtr = typeStr.Contains("IntPtr");
 			bool isPointer = typeStr.Contains('*');
 			bool isHandle = typeStr.ToLowerInvariant().Contains("handle");
@@ -55,12 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool TypeImplementsIDisposable()
 		{
 			const string IDisposableLiteral = "IDisposable";
-			var type = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			BaseTypeDeclarationSyntax type = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
 				return false;
 			}
-			var typeSymbol = Context.SemanticModel.GetDeclaredSymbol(type);
+			INamedTypeSymbol typeSymbol = Context.SemanticModel.GetDeclaredSymbol(type);
 			if (typeSymbol == null)
 			{
 				return false;
