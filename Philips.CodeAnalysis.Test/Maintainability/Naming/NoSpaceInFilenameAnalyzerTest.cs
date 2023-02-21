@@ -5,11 +5,11 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
-using Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
+namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	/// <summary>
 	/// Test class for <see cref="NoSpaceInFilenameAnalyzer"/>.
