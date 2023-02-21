@@ -19,11 +19,11 @@ namespace Philips.CodeAnalysis.Common
 			{
 				return 1;
 			}
-			var dotX = Math.Max(x.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
-			var comparableX = x.Substring(dotX);
+			int dotX = Math.Max(x.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
+			string comparableX = x.Substring(dotX);
 
-			var dotY = Math.Max(y.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
-			var comparableY = y.Substring(dotY);
+			int dotY = Math.Max(y.LastIndexOf(Dot, StringComparison.Ordinal) + 1, 0);
+			string comparableY = y.Substring(dotY);
 
 			return StringComparer.Ordinal.Compare(comparableX, comparableY);
 		}

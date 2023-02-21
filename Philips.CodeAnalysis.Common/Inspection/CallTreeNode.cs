@@ -33,17 +33,17 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		private static void CreateCallTree(CallTreeNode node)
 		{
-			var methodDef = node.Method;
+			MethodDefinition methodDef = node.Method;
 			if (methodDef is { HasBody: true })
 			{
-				var body = methodDef.Body;
-				if (Cache.TryGetValue(methodDef.FullName, out var cached))
+				MethodBody body = methodDef.Body;
+				if (Cache.TryGetValue(methodDef.FullName, out CallTreeNode cached))
 				{
 					node.CopyChildrenFrom(cached);
 					return;
 				}
 
-				foreach (var instruction in body.Instructions.Where(IsCallInstruction))
+				foreach (Instruction instruction in body.Instructions.Where(IsCallInstruction))
 				{
 					if (instruction.Operand is not MethodDefinition called)
 					{
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 					// Check for recursive call patterns.
 					if (!node.HasAncestor(called) && node.Children.All(n => n.Method != called))
 					{
-						var child = node.AddChild(called);
+						CallTreeNode child = node.AddChild(called);
 						CreateCallTree(child);
 					}
 				}
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		public static bool IsCallInstruction(Instruction instruction)
 		{
-			var opCode = instruction.OpCode.Op2;
+			byte opCode = instruction.OpCode.Op2;
 			return opCode is CallOpcode or VirtualCallOpcode or NewObjectCallOpcode;
 		}
 
@@ -90,8 +90,8 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			{
 				return null;
 			}
-			var siblings = Parent._children;
-			var index = siblings.IndexOf(this);
+			List<CallTreeNode> siblings = Parent._children;
+			int index = siblings.IndexOf(this);
 			if (index < siblings.Count - 1)
 			{
 				return siblings[index + 1];
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 		/// </summary>
 		public bool HasAncestor(MethodDefinition method)
 		{
-			var current = Parent;
+			CallTreeNode current = Parent;
 			while (current != null)
 			{
 				if (current.Method == method)
@@ -123,7 +123,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		private void CopyChildrenFrom(CallTreeNode source)
 		{
-			foreach (var child in source._children)
+			foreach (CallTreeNode child in source._children)
 			{
 				var newChild = new CallTreeNode(child.Method, this);
 				_children.Add(newChild);

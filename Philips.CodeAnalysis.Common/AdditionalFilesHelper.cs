@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Common
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 				if (comparer.Equals(fileName, exceptionsFile))
 				{
-					var text = additionalFile.GetText();
+					SourceText text = additionalFile.GetText();
 					return Convert(text);
 				}
 			}
@@ -82,8 +82,8 @@ namespace Philips.CodeAnalysis.Common
 
 		private string GetRawValue(string settingKey)
 		{
-			var tree = _compilation.SyntaxTrees.First();
-			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
+			SyntaxTree tree = _compilation.SyntaxTrees.First();
+			AnalyzerConfigOptions analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
 
 #nullable enable
 			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			DiagnosticId = id;
 			Id = Helper.ToDiagnosticId(id);
-			var helpLink = helpUri ?? Helper.ToHelpLinkUrl(Id);
+			string helpLink = helpUri ?? Helper.ToHelpLinkUrl(Id);
 			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpLink);
 		}
 

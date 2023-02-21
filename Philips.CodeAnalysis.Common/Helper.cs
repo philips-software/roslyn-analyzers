@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
 		{
-			var values = diagnostics.Select(diagnostic => diagnostic.Id);
+			IEnumerable<string> values = diagnostics.Select(diagnostic => diagnostic.Id);
 			return string.Join(", ", values);
 		}
 
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Common
 				return false;
 			}
 
-			var first = node.GetLeadingTrivia();
+			SyntaxTriviaList first = node.GetLeadingTrivia();
 
 			if (first.Count == 0)
 			{
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.Common
 				return literalValue.HasValue;
 			}
 
-			var constant = semanticModel.GetConstantValue(expression);
+			Optional<object> constant = semanticModel.GetConstantValue(expression);
 			return constant.HasValue || IsConstantExpression(expression, semanticModel);
 		}
 
@@ -148,7 +148,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsLiteralTrueFalse(ExpressionSyntax expressionSyntax)
 		{
-			var kind = expressionSyntax.Kind();
+			SyntaxKind kind = expressionSyntax.Kind();
 			return kind switch
 			{
 				SyntaxKind.LogicalNotExpression => IsLiteralTrueFalse(((PrefixUnaryExpressionSyntax)expressionSyntax).Operand),//recurse.
@@ -161,13 +161,13 @@ namespace Philips.CodeAnalysis.Common
 		public IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)
 		{
 			var list = new Dictionary<string, string>();
-			var root = node.SyntaxTree.GetRoot();
-			foreach (var child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
+			SyntaxNode root = node.SyntaxTree.GetRoot();
+			foreach (UsingDirectiveSyntax child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
 			{
 				if (child.Alias != null)
 				{
-					var alias = child.Alias.Name.GetFullName(list);
-					var name = child.Name.GetFullName(list);
+					string alias = child.Alias.Name.GetFullName(list);
+					string name = child.Name.GetFullName(list);
 					list.Add(alias, name);
 				}
 			}

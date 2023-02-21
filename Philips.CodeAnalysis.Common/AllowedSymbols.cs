@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Common
 				string fileName = Path.GetFileName(additionalFile.Path);
 				if (StringComparer.OrdinalIgnoreCase.Equals(fileName, filenameToInitialize))
 				{
-					var allowedMethods = additionalFile.GetText();
+					SourceText allowedMethods = additionalFile.GetText();
 					LoadAllowedMethods(allowedMethods);
 				}
 			}
@@ -60,11 +60,11 @@ namespace Philips.CodeAnalysis.Common
 		{
 			if (line.StartsWith("~"))
 			{
-				var id = line.Substring(1);
-				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
+				string id = line.Substring(1);
+				ImmutableArray<ISymbol> symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
 				if (!symbols.IsDefaultOrEmpty)
 				{
-					foreach (var symbol in symbols)
+					foreach (ISymbol symbol in symbols)
 					{
 						RegisterSymbol(symbol);
 					}
@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.Common
 		/// </summary>
 		private void LoadAllowedMethods(SourceText text)
 		{
-			foreach (var textLine in text.Lines)
+			foreach (TextLine textLine in text.Lines)
 			{
 				string line = StripComments(textLine.ToString());
 				if (!string.IsNullOrWhiteSpace(line))
@@ -93,8 +93,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsAllowed(IMethodSymbol requested)
 		{
-			var requestedType = requested.ContainingType;
-			var requestedNamespace = requestedType.ContainingNamespace;
+			INamedTypeSymbol requestedType = requested.ContainingType;
+			INamespaceSymbol requestedNamespace = requestedType.ContainingNamespace;
 			return
 				_allowedMethods.Contains(requested) ||
 				_allowedTypes.Contains(requestedType) ||
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsAllowed(INamedTypeSymbol requested)
 		{
-			var requestedNamespace = requested.ContainingNamespace;
+			INamespaceSymbol requestedNamespace = requested.ContainingNamespace;
 			return
 				_allowedLines.Contains(requested.Name) ||
 				_allowedTypes.Contains(requested) ||
@@ -139,11 +139,11 @@ namespace Philips.CodeAnalysis.Common
 
 		private bool MatchesAnyLine(INamespaceSymbol ns, INamedTypeSymbol type, IMethodSymbol method)
 		{
-			var nsName = ns.ToString();
-			var typeName = type.Name;
+			string nsName = ns.ToString();
+			string typeName = type.Name;
 			return _allowedLines.Any(line =>
 			{
-				var parts = line.Split('.');
+				string[] parts = line.Split('.');
 				if (parts.Length == 1)
 				{
 					return (method == null) ? line == typeName : line == method.Name;
@@ -175,7 +175,7 @@ namespace Philips.CodeAnalysis.Common
 
 			if (parts[nsIndex] != Wildcard)
 			{
-				var fullNs = string.Join(".", parts, 0, nsIndex + 1);
+				string fullNs = string.Join(".", parts, 0, nsIndex + 1);
 				isMatch &= fullNs == nsName;
 			}
 
@@ -197,10 +197,10 @@ namespace Philips.CodeAnalysis.Common
 		{
 			string stripped = input;
 			// Remove Banned API style messages
-			var semiColonIndex = input.IndexOf(';');
-			var hashIndex = input.IndexOf('#');
-			var singleLineCommentIndex = input.IndexOf("//");
-			var index = (semiColonIndex >= 0) ? semiColonIndex : input.Length;
+			int semiColonIndex = input.IndexOf(';');
+			int hashIndex = input.IndexOf('#');
+			int singleLineCommentIndex = input.IndexOf("//");
+			int index = (semiColonIndex >= 0) ? semiColonIndex : input.Length;
 			index = (hashIndex >= 0) ? Math.Min(index, hashIndex) : index;
 			index = (singleLineCommentIndex >= 0) ? Math.Min(index, singleLineCommentIndex) : index;
 			if (index < input.Length)
