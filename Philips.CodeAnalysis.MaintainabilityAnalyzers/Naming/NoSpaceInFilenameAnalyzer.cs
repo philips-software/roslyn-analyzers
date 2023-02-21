@@ -5,10 +5,9 @@ using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Text;
-
 using Philips.CodeAnalysis.Common;
 
-namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
+namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	/// <summary>
 	/// Report on file names with spaces, as these tend to cause scripting issues.
@@ -22,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Title = "Do not use spaces in file names.";
 		private const string Message = "File '{0}' has spaces in its path.";
 		private const string Description = "Space in filename/ path.";
-		private const string Category = Categories.RuntimeFailure;
+		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
