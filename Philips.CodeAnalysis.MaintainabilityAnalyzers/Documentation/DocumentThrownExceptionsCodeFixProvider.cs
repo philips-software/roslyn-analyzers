@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -29,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
-			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out var missingExceptionTypeName))
 			{
 				return;
@@ -60,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				docHelper.AddException(part);
 			}
-			Microsoft.CodeAnalysis.CSharp.Syntax.DocumentationCommentTriviaSyntax newComment = docHelper.CreateDocumentation();
+			DocumentationCommentTriviaSyntax newComment = docHelper.CreateDocumentation();
 
 			if (docHelper.ExistingDocumentation != null)
 			{

@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
 			_records.Sort();
-			foreach (var record in _records)
+			foreach (AnalyzerPerfRecord record in _records)
 			{
 				var package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + Ellipsis : record.Package;
 				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + Ellipsis : record.Analyzer;

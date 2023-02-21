@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -30,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
-			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{

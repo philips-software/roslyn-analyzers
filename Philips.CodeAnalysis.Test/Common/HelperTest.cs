@@ -3,6 +3,7 @@
 using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Philips.CodeAnalysis.Common;
@@ -64,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = $"{modifiers} int I;";
-			Microsoft.CodeAnalysis.CSharp.Syntax.MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
+			MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
 			Helper helper = new();

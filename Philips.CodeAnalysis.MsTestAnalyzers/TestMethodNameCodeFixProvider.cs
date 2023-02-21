@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
 using Philips.CodeAnalysis.Common;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
@@ -33,7 +34,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
-			Microsoft.CodeAnalysis.Text.TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
 			if (root != null)
