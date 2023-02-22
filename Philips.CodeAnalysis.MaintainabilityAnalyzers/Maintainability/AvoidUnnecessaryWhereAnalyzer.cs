@@ -17,9 +17,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Avoid unnecessary 'Where'";
 		public const string MessageFormat = @"Move predicate from 'Where' to '{0}'";
 		private const string Description = @"Invoking Where is unnecessary";
-		private const string HelpUri = @"https://learn.microsoft.com/en-us/visualstudio/ide/reference/simplify-linq-expression?view=vs-2022";
+
 		public AvoidUnnecessaryWhereAnalyzer()
-			: base(DiagnosticId.AvoidUnnecessaryWhere, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
+			: base(DiagnosticId.AvoidUnnecessaryWhere, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 	}
 	public class AvoidUnnecessaryWhereSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>

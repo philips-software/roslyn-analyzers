@@ -16,9 +16,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = @"Methods may not call Result on a Task.";
 		private const string Description = @"To avoid deadlocks, methods may not call Result on a Task.";
 		private const string Category = Categories.Maintainability;
-		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
