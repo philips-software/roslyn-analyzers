@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = @"
+			var code = @"
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -89,7 +89,7 @@ public class Tests
 	[DataTestMethod]
 	public void Foo() {{ }}
 }}";
-			string code = string.Format(template, arg);
+			var code = string.Format(template, arg);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows).ConfigureAwait(false);
@@ -117,7 +117,7 @@ public class Tests
 	[TestMethod]
 	public void Foo() {{ }}
 }}";
-			string code = string.Format(template, arg);
+			var code = string.Format(template, arg);
 			if (isError)
 			{
 				await VerifyDiagnostic(code, DiagnosticId.DataTestMethodsHaveDataRows).ConfigureAwait(false);

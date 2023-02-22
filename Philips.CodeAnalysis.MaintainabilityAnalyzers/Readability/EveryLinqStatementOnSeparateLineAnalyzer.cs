@@ -27,15 +27,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			FromClauseSyntax from = Node.FromClause;
 			if (!EndsWithNewline(from))
 			{
-				var fromLocation = from.GetLocation();
+				Location fromLocation = from.GetLocation();
 				ReportDiagnostic(fromLocation);
 			}
 
-			foreach (var clause in Node.Body.Clauses)
+			foreach (QueryClauseSyntax clause in Node.Body.Clauses)
 			{
 				if (!EndsWithNewline(clause))
 				{
-					var clauseLocation = clause.GetLocation();
+					Location clauseLocation = clause.GetLocation();
 					ReportDiagnostic(clauseLocation);
 				}
 			}

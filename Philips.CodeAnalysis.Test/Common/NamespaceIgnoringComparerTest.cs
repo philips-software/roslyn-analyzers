@@ -22,8 +22,8 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Arrange
 			var comparer = new NamespaceIgnoringComparer();
 			// Act
-			int compareResult = comparer.Compare(left, right);
-			bool isEqual = comparer.Equals(left, right);
+			var compareResult = comparer.Compare(left, right);
+			var isEqual = comparer.Equals(left, right);
 			// Assert
 			Assert.AreEqual(0, compareResult);
 			Assert.IsTrue(isEqual);
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Arrange
 			var comparer = new NamespaceIgnoringComparer();
 			// Act
-			bool isEqual = comparer.Equals(left, right);
+			var isEqual = comparer.Equals(left, right);
 			// Assert
 			Assert.IsFalse(isEqual);
 		}
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			var comparer = new NamespaceIgnoringComparer();
 			var expected = input.GetHashCode();
 			// Act
-			int actual = comparer.GetHashCode(input);
+			var actual = comparer.GetHashCode(input);
 			// Assert
 			Assert.AreEqual(expected, actual);
 		}

@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereTestAsync(string line)
 		{
-			string template = @"
+			var template = @"
 using System.Linq;
 class Foo
 {{
@@ -41,7 +41,7 @@ class Foo
   }}
 }}
 ";
-			string testCode = string.Format(template, line);
+			var testCode = string.Format(template, line);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
@@ -64,7 +64,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereNoFindingTestAsync(string line)
 		{
-			string template = @"
+			var template = @"
 using System.Linq;
 class Foo
 {{
@@ -75,7 +75,7 @@ class Foo
   }}
 }}
 ";
-			string testCode = string.Format(template, line);
+			var testCode = string.Format(template, line);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}

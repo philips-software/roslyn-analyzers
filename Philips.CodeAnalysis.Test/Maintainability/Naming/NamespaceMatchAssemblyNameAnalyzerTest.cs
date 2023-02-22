@@ -35,7 +35,7 @@ namespace {0} {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ReportIncorrectNamespaceMatchAsync(string ns, string assemblyName)
 		{
-			string code = string.Format(Template, ns);
+			var code = string.Format(Template, ns);
 			await VerifyDiagnostic(code, assemblyName: assemblyName).ConfigureAwait(false);
 		}
 
@@ -47,7 +47,7 @@ namespace {0} {{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespaceSupersetMatchAsync(string ns, string assemblyName)
 		{
-			string code = string.Format(Template, ns);
+			var code = string.Format(Template, ns);
 			await VerifySuccessfulCompilation(code, null, assemblyName).ConfigureAwait(false);
 		}
 	}

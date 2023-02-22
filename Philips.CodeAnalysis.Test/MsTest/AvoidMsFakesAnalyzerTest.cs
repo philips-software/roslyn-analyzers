@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		private string CreateFunction(string content)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()

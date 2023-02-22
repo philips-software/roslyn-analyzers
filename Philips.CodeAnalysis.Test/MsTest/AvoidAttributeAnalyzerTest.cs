@@ -32,7 +32,7 @@ Foo.WhitelistedFunction
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidIgnoreAttributeTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -42,7 +42,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -66,7 +66,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidOwnerAttributeTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -76,7 +76,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -97,7 +97,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestInitializeMethodTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -107,7 +107,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -129,7 +129,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestCleanupMethodTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -139,7 +139,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -161,7 +161,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassInitializeMethodTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -171,7 +171,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -193,7 +193,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassCleanupMethodTestAsync(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -203,7 +203,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{
@@ -227,7 +227,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhitelistIsAppliedAsync(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -237,7 +237,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -250,7 +250,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhitelistIsAppliedUnresolvableAsync(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 class Foo 
@@ -261,7 +261,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}

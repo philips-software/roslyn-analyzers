@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(OperationAnalysisContext context)
 		{
-			IPropertyReferenceOperation propertyReference = (IPropertyReferenceOperation)context.Operation;
+			var propertyReference = (IPropertyReferenceOperation)context.Operation;
 
 
 			if (propertyReference.Syntax is not MemberAccessExpressionSyntax propertySyntax)
@@ -56,8 +56,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
 					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
-					var location = propertySyntax.Name.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+					Location location = propertySyntax.Name.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

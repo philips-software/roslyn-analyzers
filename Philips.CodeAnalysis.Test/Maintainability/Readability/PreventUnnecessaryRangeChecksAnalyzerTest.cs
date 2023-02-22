@@ -66,7 +66,7 @@ class Foo
 }}
 ";
 
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
@@ -100,7 +100,7 @@ class Foo
   }}
 }}
 ";
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
 
@@ -158,7 +158,7 @@ class Foo
 }}
 ";
 
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
@@ -196,7 +196,7 @@ class Foo
   }}
 }}
 ";
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
@@ -272,7 +272,7 @@ class Foo
   }}
 }}
 ";
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifySuccessfulCompilation(errorCode).ConfigureAwait(false);
 		}
@@ -316,7 +316,7 @@ class Foo
 }}
 ";
 
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);
@@ -359,7 +359,7 @@ class Foo
 }}
 ";
 
-			string errorCode = string.Format(template, declaration, countLengthMethod);
+			var errorCode = string.Format(template, declaration, countLengthMethod);
 
 			await VerifyDiagnostic(errorCode).ConfigureAwait(false);
 			await VerifyFix(errorCode, string.Format(fixedTemplate, declaration)).ConfigureAwait(false);

@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var onlyInterpolation = interpolation.Parts[0];
+			IInterpolatedStringContentOperation onlyInterpolation = interpolation.Parts[0];
 
 			if (
 				onlyInterpolation is not IInterpolatedStringTextOperation and
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				var resultType = interpolationOperation.Expression.Type;
+				ITypeSymbol resultType = interpolationOperation.Expression.Type;
 
 				if (resultType is null)
 				{
@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return;
 				}
 
-				var location = interpolation.Syntax.GetLocation();
+				Location location = interpolation.Syntax.GetLocation();
 				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 			}
 		}
@@ -85,12 +85,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var invocation = (IInvocationOperation)operationContext.Operation;
 
-			if (!IsStringFormatMethod(invocation.TargetMethod, out ITypeSymbol returnType, out int formatStringParameterIndex))
+			if (!IsStringFormatMethod(invocation.TargetMethod, out ITypeSymbol returnType, out var formatStringParameterIndex))
 			{
 				return;
 			}
 
-			var argument = invocation.Arguments[formatStringParameterIndex].Value;
+			IOperation argument = invocation.Arguments[formatStringParameterIndex].Value;
 
 			switch (argument.Kind)
 			{
@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					}
 					break;
 				case OperationKind.InterpolatedString:
-					var location = argument.Syntax.GetLocation();
+					Location location = argument.Syntax.GetLocation();
 					var displayString = invocation.TargetMethod.ToDisplayString();
 					operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, "an interpolated string", displayString));
 					break;
@@ -116,14 +116,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private void CheckParameters(OperationAnalysisContext operationContext, IInvocationOperation invocation,
 			int formatStringParameterIndex, ITypeSymbol returnType, IOperation argument)
 		{
-			var paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
+			IOperation paramsArguments = invocation.Arguments[formatStringParameterIndex + 1].Value;
 
 			if (paramsArguments is IArrayCreationOperation arrayCreation)
 			{
 				if (arrayCreation.Initializer.ElementValues.IsEmpty && returnType.SpecialType == SpecialType.System_String)
 				{
 					//string format with no arguments
-					var location = argument.Syntax.GetLocation();
+					Location location = argument.Syntax.GetLocation();
 					operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 					return;
 				}
@@ -137,7 +137,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				((string)argument.ConstantValue.Value) == "{0}" &&
 				conversion.Operand.Type.SpecialType == SpecialType.System_String)
 			{
-				var location = argument.Syntax.GetLocation();
+				Location location = argument.Syntax.GetLocation();
 				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 			}
 		}
@@ -147,14 +147,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (argument.Kind == OperationKind.Literal && argument.Type.SpecialType == SpecialType.System_String)
 			{
-				string formatValue = (string)argument.ConstantValue.Value;
+				var formatValue = (string)argument.ConstantValue.Value;
 
 				if (_formatRegex.IsMatch(formatValue))
 				{
 					if (arrayCreation.Initializer.ElementValues.Length == 0)
 					{
 						//string format ala string.format("{0}")
-						var location = argument.Syntax.GetLocation();
+						Location location = argument.Syntax.GetLocation();
 						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 						return;
 					}
@@ -162,7 +162,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					if (ArrayContainsString(0, arrayCreation))
 					{
 						//string format ala string.format("{0}", 3)
-						var location = argument.Syntax.GetLocation();
+						Location location = argument.Syntax.GetLocation();
 						operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 					}
 				}
@@ -226,14 +226,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool CheckForNestedStringFormat(OperationAnalysisContext operationContext, IInvocationOperation target, IInvocationOperation argument)
 		{
-			var targetMethod = argument.TargetMethod;
+			IMethodSymbol targetMethod = argument.TargetMethod;
 
 			if (!IsStringFormatMethod(targetMethod, out _, out _))
 			{
 				return false;
 			}
 
-			var location = argument.Syntax.GetLocation();
+			Location location = argument.Syntax.GetLocation();
 			var displayString = targetMethod.ToDisplayString();
 			var targetDisplayString = target.TargetMethod.ToDisplayString();
 			operationContext.ReportDiagnostic(Diagnostic.Create(NestedRule, location, displayString, targetDisplayString));
@@ -261,10 +261,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return false;
 			}
 
-			var possibleArgsParameter = targetMethod.Parameters[targetMethod.Parameters.Length - 1];
+			IParameterSymbol possibleArgsParameter = targetMethod.Parameters[targetMethod.Parameters.Length - 1];
 
 			formatStringParameterIndex = targetMethod.Parameters.Length - 2;
-			var possibleFormatStringParameter = targetMethod.Parameters[formatStringParameterIndex];
+			IParameterSymbol possibleFormatStringParameter = targetMethod.Parameters[formatStringParameterIndex];
 
 			if (possibleFormatStringParameter.Type.SpecialType != SpecialType.System_String)
 			{
@@ -276,19 +276,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return false;
 			}
 
-			var arrayType = ((IArrayTypeSymbol)possibleArgsParameter.Type).ElementType;
+			ITypeSymbol arrayType = ((IArrayTypeSymbol)possibleArgsParameter.Type).ElementType;
 
 			return arrayType.SpecialType == SpecialType.System_Object;
 		}
 
 		private static bool IsFormattableStringMethodArgument(IInterpolationOperation interpolationOperation)
 		{
-			var parent = interpolationOperation.Parent;
+			IOperation parent = interpolationOperation.Parent;
 			while (parent != null)
 			{
 				if (parent is IInvocationOperation invocation)
 				{
-					var method = invocation.TargetMethod;
+					IMethodSymbol method = invocation.TargetMethod;
 					return method.Parameters.Any(p => p.Type.Name == "FormattableString");
 				}
 

@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Find the nested method call identified by the diagnostic.
 			SyntaxNode node = root.FindNode(diagnosticSpan, false, true);
-			ExpressionSyntax expressionNode = node as ExpressionSyntax;
+			var expressionNode = node as ExpressionSyntax;
 			if (expressionNode == null && node is ArgumentSyntax argumentNode)
 			{
 				expressionNode = argumentNode.Expression;
@@ -68,11 +68,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
-			var semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
 
 			string newName;
 			SyntaxToken identifier;
-			var operation = semanticModel.GetOperation(argumentSyntax, c);
+			IOperation operation = semanticModel.GetOperation(argumentSyntax, c);
 			if (operation?.Parent is IArgumentOperation argumentOperation)
 			{
 				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
@@ -91,8 +91,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Build "var renameMe = [blah]"
-			var variableDeclarator = SyntaxFactory.VariableDeclarator(identifier).WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax));
-			var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var")).AddVariables(variableDeclarator);
+			VariableDeclaratorSyntax variableDeclarator = SyntaxFactory.VariableDeclarator(identifier).WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax));
+			VariableDeclarationSyntax variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var")).AddVariables(variableDeclarator);
 			LocalDeclarationStatementSyntax localDeclarationStatementSyntax = SyntaxFactory.LocalDeclarationStatement(variableDeclaration);
 
 
@@ -105,11 +105,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Replace the violation with "renameMe"
 			IdentifierNameSyntax identifierSyntax = SyntaxFactory.IdentifierName(newName);
-			var newFullExistingExpressionSyntax = fullExistingExpressionSyntax.ReplaceNode(argumentSyntax, identifierSyntax);
+			StatementSyntax newFullExistingExpressionSyntax = fullExistingExpressionSyntax.ReplaceNode(argumentSyntax, identifierSyntax);
 
 			// Move all the leading trivia from the existing statement to our new statement
 			SyntaxTriviaList existingLeadingTrivia = fullExistingExpressionSyntax.GetLeadingTrivia();
-			var formattedLocalDeclarationSyntax = localDeclarationStatementSyntax.WithLeadingTrivia(existingLeadingTrivia);
+			LocalDeclarationStatementSyntax formattedLocalDeclarationSyntax = localDeclarationStatementSyntax.WithLeadingTrivia(existingLeadingTrivia);
 
 			// Put just the leading whitespace back into the original statement (ie, remove comments on the previous line - we put them on our new first statement instead)
 			newFullExistingExpressionSyntax = newFullExistingExpressionSyntax.WithoutLeadingTrivia();
@@ -136,11 +136,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static string NiceVariableName(ExpressionSyntax argumentSyntax)
 		{
-			string niceName = @"renameMe";
+			var niceName = @"renameMe";
 			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
 			{
-				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
-				int indexOfDot = newNameSuffix.LastIndexOf('.');
+				var newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+				var indexOfDot = newNameSuffix.LastIndexOf('.');
 				if (indexOfDot != -1)
 				{
 					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);

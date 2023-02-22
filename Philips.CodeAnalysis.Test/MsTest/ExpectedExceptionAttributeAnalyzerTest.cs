@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ExpectedExceptionAttributeTestAsync()
 		{
-			string givenText = @"
+			var givenText = @"
 namespace ExpectedAnalyzerAttributeTest
 {
   public class TestClass

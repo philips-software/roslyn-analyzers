@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	{
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = @"
+			var code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class DerivedTestMethod : TestMethodAttribute
@@ -40,7 +40,7 @@ public class DerivedTestMethod : TestMethodAttribute
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MethodAccessModifierTestAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 class Foo 
@@ -62,7 +62,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ClassTypeTestAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 {0}
 class Foo
@@ -90,7 +90,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MethodTypeTestAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 class Foo 
@@ -107,7 +107,7 @@ class Foo
 
 		private async Task VerifyErrorAsync(string baseline, string given, bool isError)
 		{
-			string givenText = string.Format(baseline, given);
+			var givenText = string.Format(baseline, given);
 			if (isError)
 			{
 				var result = new DiagnosticResult()

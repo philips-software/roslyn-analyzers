@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			PropertyDeclarationSyntax property = (PropertyDeclarationSyntax)context.Node;
+			var property = (PropertyDeclarationSyntax)context.Node;
 			if (property.Type.ToString() != @"TestContext")
 			{
 				return;
@@ -51,8 +51,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			string varName = string.Empty;
-			string propName = property.Identifier.ToString();
+			var varName = string.Empty;
+			var propName = property.Identifier.ToString();
 			IEnumerable<SyntaxNode> propNodes = context.Node.DescendantNodes();
 			IEnumerable<ReturnStatementSyntax> returnNodes = propNodes.OfType<ReturnStatementSyntax>();
 			if (returnNodes.Any())
@@ -86,8 +86,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// if not, report a diagnostic error
-			var location = context.Node.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			Location location = context.Node.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 			return;
 		}

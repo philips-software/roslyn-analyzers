@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public override Task<TextAndVersion> LoadTextAndVersionAsync(Workspace workspace, DocumentId documentId, CancellationToken cancellationToken)
 		{
-			SourceText text = SourceText.From(_textDocuments[documentId]);
+			var text = SourceText.From(_textDocuments[documentId]);
 			var textAndVersion = TextAndVersion.Create(text, VersionStamp.Default);
 			return Task.FromResult(textAndVersion);
 		}
