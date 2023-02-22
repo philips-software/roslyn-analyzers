@@ -48,12 +48,12 @@ AllowedEnumeration";
 
 		protected string CreateFunction(string staticModifier, string nameSpace = "Sweet", string className = "Caroline", bool isExtension = false, bool hasNonExtensionMethods = true)
 		{
-			string extensionMethod = isExtension ? $@"public {staticModifier} IServiceCollection BaBaBummmm(this IServiceCollection services)
+			var extensionMethod = isExtension ? $@"public {staticModifier} IServiceCollection BaBaBummmm(this IServiceCollection services)
 					{{
 						return services;
 					}}" : string.Empty;
 
-			string method = hasNonExtensionMethods ? $@"public {staticModifier} IServiceCollection BaBaBa(IServiceCollection services)
+			var method = hasNonExtensionMethods ? $@"public {staticModifier} IServiceCollection BaBaBa(IServiceCollection services)
 					{{
 						return services;
 					}}" : string.Empty;
@@ -77,7 +77,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesOnlyConstFieldTestAsync()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -90,7 +90,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesViolatingFieldTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -104,7 +104,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesMixFieldTestAsync()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -121,7 +121,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesMixViolationTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -138,7 +138,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesRogueMethodTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}

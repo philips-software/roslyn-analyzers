@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}}
 			    }}";
 
-			string testCode = string.Format(testCodeTemplate, test);
+			var testCode = string.Format(testCodeTemplate, test);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
@@ -68,8 +68,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 
-			string testCode = string.Format(testCodeTemplate, test);
-			string fixedCode = string.Format(testCodeTemplate, fixedTest);
+			var testCode = string.Format(testCodeTemplate, test);
+			var fixedCode = string.Format(testCodeTemplate, fixedTest);
 
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);

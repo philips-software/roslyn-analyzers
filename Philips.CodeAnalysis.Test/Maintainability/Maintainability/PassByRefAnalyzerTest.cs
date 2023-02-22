@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToAsync(bool isWrittenTo)
 		{
-			string content = $@"public class TestClass
+			var content = $@"public class TestClass
 {{
 	static bool Foo(ref int i)
 	{{
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToStructAsync(bool isWrittenTo)
 		{
-			string content = $@"
+			var content = $@"
 public struct FooStruct
 {{
 public int i = 0;
@@ -77,7 +77,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToButRequiredForInterfaceAsync(bool isExplicit)
 		{
-			string content = $@"
+			var content = $@"
 public interface IData
 {{
 	bool Foo(ref int i);
@@ -99,7 +99,7 @@ public class TestClass : IData
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToButRequiredForBaseClassAsync()
 		{
-			string content = $@"
+			var content = $@"
 public abstract class Data
 {{
 	public abstract void Foo(ref int i);
@@ -123,7 +123,7 @@ public class TestClass : Data
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToExpressionMethodAsync(bool isWrittenTo)
 		{
-			string content = $@"public class TestClass
+			var content = $@"public class TestClass
 {{
 	static bool Foo(ref int i) => {(isWrittenTo ? "i = 5" : "i == 5")};
 
@@ -144,7 +144,7 @@ public class TestClass : Data
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToNestedMethodAsync()
 		{
-			string content = $@"public class TestClass
+			var content = $@"public class TestClass
 {{
 	static bool Foo(ref int i)
 	{{
@@ -170,7 +170,7 @@ public class TestClass : Data
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyStatementMethodBodyAsync(string baseClass, bool isError)
 		{
-			string content = $@"
+			var content = $@"
 public interface Foo {{ void Bar(ref int i); }}
 public class TestClass {baseClass}
 {{
@@ -197,7 +197,7 @@ public class TestClass {baseClass}
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SingleStatementMethodBodyAsync(string baseClass, string statement, bool isError)
 		{
-			string content = $@"
+			var content = $@"
 public interface Foo {{ void Bar(ref int i); }}
 public class TestClass {baseClass}
 {{

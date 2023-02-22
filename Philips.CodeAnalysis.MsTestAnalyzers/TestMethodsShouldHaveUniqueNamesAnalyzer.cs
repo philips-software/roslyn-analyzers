@@ -38,11 +38,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			HashSet<string> seenNames = new();
-			foreach (var methodIdentifier in testMethods
+			foreach (SyntaxToken methodIdentifier in testMethods
 						 .Select(method => method.Identifier)
 						 .Where(id => !seenNames.Add(id.ToString())))
 			{
-				var location = methodIdentifier.GetLocation();
+				Location location = methodIdentifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodIdentifier));
 			}
 		}

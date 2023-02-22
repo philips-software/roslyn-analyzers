@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			string invalidPrefix = string.Empty;
+			var invalidPrefix = string.Empty;
 			foreach (SyntaxToken token in methodNode.ChildTokens())
 			{
 				if (token.Kind() == SyntaxKind.IdentifierToken)
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (!string.IsNullOrEmpty(invalidPrefix))
 					{
-						var location = token.GetLocation();
+						Location location = token.GetLocation();
 						ReportDiagnostic(location, invalidPrefix);
 						return;
 					}

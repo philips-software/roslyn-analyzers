@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (tryParseOverloads.Any(m => m is IMethodSymbol method && HasCultureParameter(method)))
 			{
 				// There is an overload that can accept culture as a parameter. Display an error.
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

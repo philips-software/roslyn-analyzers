@@ -43,10 +43,10 @@ namespace Philips.CodeAnalysis.Common
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
-				string fileName = Path.GetFileName(additionalFile.Path);
+				var fileName = Path.GetFileName(additionalFile.Path);
 				if (StringComparer.OrdinalIgnoreCase.Equals(fileName, filenameToInitialize))
 				{
-					var allowedMethods = additionalFile.GetText();
+					SourceText allowedMethods = additionalFile.GetText();
 					LoadAllowedMethods(allowedMethods);
 				}
 			}
@@ -61,10 +61,10 @@ namespace Philips.CodeAnalysis.Common
 			if (line.StartsWith("~"))
 			{
 				var id = line.Substring(1);
-				var symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
+				ImmutableArray<ISymbol> symbols = DocumentationCommentId.GetSymbolsForDeclarationId(id, _compilation);
 				if (!symbols.IsDefaultOrEmpty)
 				{
-					foreach (var symbol in symbols)
+					foreach (ISymbol symbol in symbols)
 					{
 						RegisterSymbol(symbol);
 					}
@@ -81,9 +81,9 @@ namespace Philips.CodeAnalysis.Common
 		/// </summary>
 		private void LoadAllowedMethods(SourceText text)
 		{
-			foreach (var textLine in text.Lines)
+			foreach (TextLine textLine in text.Lines)
 			{
-				string line = StripComments(textLine.ToString());
+				var line = StripComments(textLine.ToString());
 				if (!string.IsNullOrWhiteSpace(line))
 				{
 					RegisterLine(line);
@@ -93,8 +93,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsAllowed(IMethodSymbol requested)
 		{
-			var requestedType = requested.ContainingType;
-			var requestedNamespace = requestedType.ContainingNamespace;
+			INamedTypeSymbol requestedType = requested.ContainingType;
+			INamespaceSymbol requestedNamespace = requestedType.ContainingNamespace;
 			return
 				_allowedMethods.Contains(requested) ||
 				_allowedTypes.Contains(requestedType) ||
@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsAllowed(INamedTypeSymbol requested)
 		{
-			var requestedNamespace = requested.ContainingNamespace;
+			INamespaceSymbol requestedNamespace = requested.ContainingNamespace;
 			return
 				_allowedLines.Contains(requested.Name) ||
 				_allowedTypes.Contains(requested) ||
@@ -161,12 +161,12 @@ namespace Philips.CodeAnalysis.Common
 
 		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
 		{
-			string methodName = method?.Name;
-			bool isMatch = true;
-			int length = parts.Length;
-			int nsIndex = length - NamespaceIndexDelta;
-			int typeIndex = length - TypeIndexDelta;
-			int methodIndex = length - MethodIndexDelta;
+			var methodName = method?.Name;
+			var isMatch = true;
+			var length = parts.Length;
+			var nsIndex = length - NamespaceIndexDelta;
+			var typeIndex = length - TypeIndexDelta;
+			var methodIndex = length - MethodIndexDelta;
 			if (method == null)
 			{
 				nsIndex = length - TypeIndexDelta;
@@ -195,7 +195,7 @@ namespace Philips.CodeAnalysis.Common
 
 		private string StripComments(string input)
 		{
-			string stripped = input;
+			var stripped = input;
 			// Remove Banned API style messages
 			var semiColonIndex = input.IndexOf(';');
 			var hashIndex = input.IndexOf('#');

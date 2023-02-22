@@ -50,33 +50,33 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsGeneratedCode(OperationAnalysisContext context)
 		{
-			string myFilePath = context.Operation.Syntax.SyntaxTree.FilePath;
+			var myFilePath = context.Operation.Syntax.SyntaxTree.FilePath;
 			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Operation.Syntax, () => { return context.Operation.SemanticModel; });
 		}
 
 
 		public bool IsGeneratedCode(SyntaxNodeAnalysisContext context)
 		{
-			string myFilePath = context.Node.SyntaxTree.FilePath;
+			var myFilePath = context.Node.SyntaxTree.FilePath;
 			return IsGeneratedCode(myFilePath) || HasGeneratedCodeAttribute(context.Node, () => { return context.SemanticModel; });
 		}
 
 		public bool IsGeneratedCode(SyntaxTreeAnalysisContext context)
 		{
-			string myFilePath = context.Tree.FilePath;
+			var myFilePath = context.Tree.FilePath;
 			return IsGeneratedCode(myFilePath);
 		}
 
 		public bool IsGeneratedCode(string filePath)
 		{
 			Helper helper = new();
-			string fileName = helper.GetFileName(filePath);
+			var fileName = helper.GetFileName(filePath);
 			// Various Microsoft tools generate files with this postfix.
-			bool isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
+			var isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
 			// WinForms generate files with this postfix.
-			bool isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
+			var isGeneratedFile = fileName.EndsWith(@".g.cs", StringComparison.OrdinalIgnoreCase);
 			// Visual Studio generates SuppressMessage attributes in this file.
-			bool isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
+			var isSuppressionsFile = fileName.EndsWith(@"GlobalSuppressions.cs", StringComparison.OrdinalIgnoreCase);
 			return isDesignerFile || isGeneratedFile || isSuppressionsFile;
 		}
 

@@ -26,11 +26,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 		public override void Analyze()
 		{
-			foreach (var element in Node.Elements)
+			foreach (TupleElementSyntax element in Node.Elements)
 			{
 				if (element.Identifier.Kind() == SyntaxKind.None)
 				{
-					var location = element.GetLocation();
+					Location location = element.GetLocation();
 					ReportDiagnostic(location);
 				}
 			}

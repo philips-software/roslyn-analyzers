@@ -32,11 +32,11 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 			{
 				expectedNodeCount++;
 			}
-			var type = typeof(System.IO.Directory);
-			var assembly = type.Assembly;
-			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
-			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
+			System.Type type = typeof(System.IO.Directory);
+			System.Reflection.Assembly assembly = type.Assembly;
+			var module = ModuleDefinition.ReadModule(assembly.Location);
+			TypeDefinition typeDef = module.GetType(type.FullName);
+			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			Assert.AreEqual(expectedNodeCount, tree.Children.Count);
 		}

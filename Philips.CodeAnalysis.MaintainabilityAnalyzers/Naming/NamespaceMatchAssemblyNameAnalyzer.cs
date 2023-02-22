@@ -24,8 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		public override void Analyze()
 		{
-			string myNamespace = Node.Name.ToString();
-			string myAssemblyName = Context.Compilation?.AssemblyName;
+			var myNamespace = Node.Name.ToString();
+			var myAssemblyName = Context.Compilation?.AssemblyName;
 
 			if (string.IsNullOrEmpty(myAssemblyName))
 			{
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void ReportDiagnostic()
 		{
-			var location = Node.Name.GetLocation();
+			Location location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
 	}

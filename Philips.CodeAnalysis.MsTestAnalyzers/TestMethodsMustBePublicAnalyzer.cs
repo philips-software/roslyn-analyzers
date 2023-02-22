@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				var location = methodDeclaration.Identifier.GetLocation();
+				Location location = methodDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 			}
 		}

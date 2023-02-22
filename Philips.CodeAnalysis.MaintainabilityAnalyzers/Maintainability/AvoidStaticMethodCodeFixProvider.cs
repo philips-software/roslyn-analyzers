@@ -59,8 +59,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> RemoveModifier(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
-			var modifierToRemove = method.Modifiers.First(m => m.ValueText == @"static");
-			var newModifiers = method.Modifiers.Remove(modifierToRemove);
+			SyntaxToken modifierToRemove = method.Modifiers.First(m => m.ValueText == @"static");
+			SyntaxTokenList newModifiers = method.Modifiers.Remove(modifierToRemove);
 
 			MethodDeclarationSyntax newMethod = method.WithModifiers(newModifiers);
 			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);

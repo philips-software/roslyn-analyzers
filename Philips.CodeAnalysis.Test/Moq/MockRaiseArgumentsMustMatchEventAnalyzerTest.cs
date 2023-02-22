@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string mockReference = typeof(Mock<>).Assembly.Location;
+			var mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 
 			return base.GetMetadataReferences().Add(reference);
@@ -55,7 +55,7 @@ public static class Bar
 ";
 
 
-			string arguments = string.Empty;
+			var arguments = string.Empty;
 			if (args.Length > 0)
 			{
 				arguments = $", {args}";
@@ -64,7 +64,7 @@ public static class Bar
 
 			if (isError)
 			{
-				var expectedErrors = new[]
+				DiagnosticResult[] expectedErrors = new[]
 				{
 					new DiagnosticResult()
 					{
@@ -108,7 +108,7 @@ public static class Bar
 }}
 ";
 
-			string arguments = string.Empty;
+			var arguments = string.Empty;
 			if (args.Length > 0)
 			{
 				arguments = $", {args}";
@@ -169,7 +169,7 @@ public static class Bar
 					Severity = DiagnosticSeverity.Error,
 				};
 
-			string arguments = string.Empty;
+			var arguments = string.Empty;
 			if (args.Length > 0)
 			{
 				arguments = $", {args}";
@@ -210,7 +210,7 @@ public static class Bar
 
 			List<DiagnosticResult> diagnosticResults = new();
 
-			for (int i = 0; i < errorCount; i++)
+			for (var i = 0; i < errorCount; i++)
 			{
 				diagnosticResults.Add(new DiagnosticResult()
 				{
@@ -220,14 +220,14 @@ public static class Bar
 				});
 			}
 
-			var expectedErrors = diagnosticResults.ToArray();
+			DiagnosticResult[] expectedErrors = diagnosticResults.ToArray();
 
-			string arguments = string.Empty;
+			var arguments = string.Empty;
 			if (args.Length > 0)
 			{
 				arguments = $", {args}";
 			}
-			string code = string.Format(template, arguments);
+			var code = string.Format(template, arguments);
 
 			if (errorCount == 1)
 			{
@@ -275,7 +275,7 @@ public static class Bar
 				Severity = DiagnosticSeverity.Error,
 			};
 
-			string arguments = string.Empty;
+			var arguments = string.Empty;
 			if (args.Length > 0)
 			{
 				arguments = $", {args}";

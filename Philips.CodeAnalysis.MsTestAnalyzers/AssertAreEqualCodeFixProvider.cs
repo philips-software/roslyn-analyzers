@@ -71,8 +71,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			Document newDocument = document;
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
-			bool isFirstArgumentNull = false;
-			bool isFirstArgumentConstant = false;
+			var isFirstArgumentNull = false;
+			var isFirstArgumentConstant = false;
 			ArgumentListSyntax argumentList = invocationExpression.ArgumentList;
 			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
@@ -85,8 +85,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				isFirstArgumentConstant = _helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
-			bool isSecondArgumentNull = false;
-			bool isSecondArgumentConstant = false;
+			var isSecondArgumentNull = false;
+			var isSecondArgumentConstant = false;
 			if (argumentList.Arguments[1].Expression is LiteralExpressionSyntax arg1Literal)
 			{
 				Optional<object> literalValue = semanticModel.GetConstantValue(arg1Literal, cancellationToken);
@@ -130,8 +130,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			NameSyntax identifier;
-			MemberAccessExpressionSyntax memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
-			string memberName = memberAccess.Name.ToString();
+			var memberAccess = (MemberAccessExpressionSyntax)invocationExpressionSyntax.Expression;
+			var memberName = memberAccess.Name.ToString();
 			if (memberName == StringConstants.AreEqualMethodName)
 			{
 				identifier = SyntaxFactory.ParseName(StringConstants.IsNullMethodName);

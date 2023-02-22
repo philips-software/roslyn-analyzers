@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task StaticFunctionCallDoesntThrow()
 		{
-			string givenText = @"
+			var givenText = @"
 class Foo 
 {
   private static bool Test()
@@ -115,12 +115,12 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CommentsAreNotRemoved()
 		{
-			string given = @"
+			var given = @"
 int i = 50;
       //test comment
       Assert.IsTrue(true && true)";
 
-			string expected = @"
+			var expected = @"
 int i = 50;
       //test comment
       Assert.IsTrue(true);
@@ -133,7 +133,7 @@ int i = 50;
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TrailingWhitespacePreserved()
 		{
-			string given = @"
+			var given = @"
 int i = 50;
       //test comment
       Assert.IsTrue(true && true);
@@ -141,7 +141,7 @@ int i = 50;
       i.ToString();
       int k = 4";
 
-			string expected = @"
+			var expected = @"
 int i = 50;
       //test comment
       Assert.IsTrue(true);

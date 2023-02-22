@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PragmaWarningNotAvoidedTestAsync(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -26,7 +26,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
@@ -34,7 +34,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PragmaAllowedDisableSelfAsync()
 		{
-			string text = @"
+			var text = @"
 class Foo 
 {{
   #pragma warning disable PH2029
@@ -52,7 +52,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PragmaAllowedGeneratedCodeAsync(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -61,7 +61,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 			await VerifySuccessfulCompilation(givenText, "Test.Designer").ConfigureAwait(false);
 		}
 
