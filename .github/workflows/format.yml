@@ -1,0 +1,21 @@
+name: Format
+
+on:
+  push:
+    branches: [ master, release/** ]
+  pull_request:
+    branches: [ master, release/** ]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
+
+    - name: Format
+      run: dotnet format --verify-no-changes
+      
