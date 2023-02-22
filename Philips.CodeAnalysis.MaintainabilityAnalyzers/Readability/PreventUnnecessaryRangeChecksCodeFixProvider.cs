@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	{
 		private const string Title = "Don't check a collections' Length or Count before iterating over it";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.PreventUncessaryRangeChecks));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.PreventUnnecessaryRangeChecks));
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
 			return WellKnownFixAllProviders.BatchFixer;
