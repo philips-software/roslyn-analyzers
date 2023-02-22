@@ -41,14 +41,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				var symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+				ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
 				if (symbol != null && symbol.ContainingType.IsAbstract)
 				{
 					return;
 				}
 
-				var location = methodDeclaration.Identifier.GetLocation();
+				Location location = methodDeclaration.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 			}
 		}

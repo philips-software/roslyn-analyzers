@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			InvocationExpressionSyntax invocationExpression = (InvocationExpressionSyntax)context.Node;
+			var invocationExpression = (InvocationExpressionSyntax)context.Node;
 			if (invocationExpression?.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
 			{
 				return;

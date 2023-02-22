@@ -35,16 +35,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases, SemanticModel semanticModel)
 		{
 			IEnumerable<string> unhandledExceptions = Array.Empty<string>();
-			var invokedSymbol = semanticModel.GetSymbolInfo(invocation).Symbol;
+			ISymbol invokedSymbol = semanticModel.GetSymbolInfo(invocation).Symbol;
 			if (invokedSymbol is IMethodSymbol or IPropertySymbol)
 			{
 				unhandledExceptions = UnhandledExceptionsFromSymbol(invokedSymbol);
 			}
 
-			var tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
-			foreach (var tryStatement in tryStatements)
+			IEnumerable<TryStatementSyntax> tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
+			foreach (TryStatementSyntax tryStatement in tryStatements)
 			{
-				var handledExceptionTypes = tryStatement.Catches.Select(cat => cat.Declaration?.Type.GetFullName(aliases));
+				IEnumerable<string> handledExceptionTypes = tryStatement.Catches.Select(cat => cat.Declaration?.Type.GetFullName(aliases));
 				unhandledExceptions = handledExceptionTypes.Any(ex => ex == StringConstants.SystemException) ? Array.Empty<string>() : unhandledExceptions.Except(handledExceptionTypes);
 			}
 
@@ -59,10 +59,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				return Array.Empty<string>();
 			}
-			ModuleDefinition module = ModuleDefinition.ReadModule(assemblyPath);
-			var type = module.GetType(fullTypeName);
-			var methodDef = type.GetMethods().FirstOrDefault(m => m.Name == symbol.Name);
-			CallTreeNode root = CallTreeNode.CreateCallTree(methodDef);
+			var module = ModuleDefinition.ReadModule(assemblyPath);
+			TypeDefinition type = module.GetType(fullTypeName);
+			MethodDefinition methodDef = type.GetMethods().FirstOrDefault(m => m.Name == symbol.Name);
+			var root = CallTreeNode.CreateCallTree(methodDef);
 			return UnhandledExceptionsFromCallTree(root);
 		}
 
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			foreach (CallTreeNode node in iterator)
 			{
 				HashSet<string> openExceptions = new();
-				if (TrySkipMethod(node, out var body) || TryGetFromCache(node, ref lastOpenExceptions))
+				if (TrySkipMethod(node, out MethodBody body) || TryGetFromCache(node, ref lastOpenExceptions))
 				{
 					continue;
 				}
@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var catchHandlers =
 					body.ExceptionHandlers.Where(handler => handler.HandlerType == ExceptionHandlerType.Catch).ToList();
 				var filteredExceptions = new Stack<string>();
-				foreach (var instruction in body.Instructions)
+				foreach (Instruction instruction in body.Instructions)
 				{
 					AdjustExceptionFilter(catchHandlers, instruction, filteredExceptions);
 					HandleCallInstruction(instruction, node, filteredExceptions, openExceptions);
@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			if (instruction.OpCode.Op2 == ThrowOpCode)
 			{
-				var exType = GetResultingTypeName(instruction.Previous, body.Instructions);
+				TypeDefinition exType = GetResultingTypeName(instruction.Previous, body.Instructions);
 				if (exType != null && !IsThrownExceptionFiltered(exType.FullName, filteredExceptions))
 				{
 					_ = openExceptions.Add(exType.FullName);
@@ -125,7 +125,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (CallTreeNode.IsCallInstruction(instruction))
 			{
 				var callee = instruction.Operand as MethodDefinition;
-				var calleeChild = node.Children.FirstOrDefault(child => child.Method == callee);
+				CallTreeNode calleeChild = node.Children.FirstOrDefault(child => child.Method == callee);
 				if (calleeChild != null)
 				{
 					var newExceptions = calleeChild.Tag as IEnumerable<string>;
@@ -142,7 +142,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static void AdjustExceptionFilter(List<ExceptionHandler> catchHandlers, Instruction instruction, Stack<string> filteredExceptions)
 		{
-			foreach (var filter in catchHandlers)
+			foreach (ExceptionHandler filter in catchHandlers)
 			{
 				if (instruction.Offset == filter.TryStart.Offset)
 				{
@@ -158,7 +158,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private static bool TryGetFromCache(CallTreeNode node, ref IEnumerable<string> lastOpenExceptions)
 		{
-			if (WellKnownMethods.TryGetValue(node.Method.FullName, out var cached))
+			if (WellKnownMethods.TryGetValue(node.Method.FullName, out IEnumerable<string> cached))
 			{
 				node.Tag = cached;
 				lastOpenExceptions = cached;
@@ -171,7 +171,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private string GetFullName(ISymbol symbol)
 		{
 			List<string> namespaces = new();
-			var ns = symbol.ContainingNamespace;
+			INamespaceSymbol ns = symbol.ContainingNamespace;
 			while (ns != null && !string.IsNullOrEmpty(ns.Name))
 			{
 				namespaces.Add(ns.Name);
@@ -230,7 +230,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (instruction.OpCode.Op2 == LoadLocalOpCode + localIndex)
 			{
 				var index = instructions.IndexOf(instruction);
-				for (int i = index - 1; i >= 0; i--)
+				for (var i = index - 1; i >= 0; i--)
 				{
 					if (instructions[i].OpCode.Op2 == StoreLocalOpCode + localIndex)
 					{

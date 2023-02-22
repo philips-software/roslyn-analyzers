@@ -27,10 +27,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationAction(compilationContext =>
 			{
-				bool isPresent = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
+				var isPresent = IsLocalEditorConfigPresent(compilationContext.Options.AdditionalFiles);
 				if (!isPresent)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, Location.None);
+					var diagnostic = Diagnostic.Create(Rule, Location.None);
 					compilationContext.ReportDiagnostic(diagnostic);
 				}
 			});
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
-				string fileName = Path.GetFileName(additionalFile.Path);
+				var fileName = Path.GetFileName(additionalFile.Path);
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 				if (comparer.Equals(fileName, @".editorconfig") && additionalFile.GetText() != null)
 				{

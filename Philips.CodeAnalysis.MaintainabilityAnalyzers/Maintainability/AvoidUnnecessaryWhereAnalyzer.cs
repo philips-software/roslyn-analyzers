@@ -64,10 +64,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// It's practicially guaranteed we found something, but let's confirm it's System.Linq.Where
 			var whereSymbol = Context.SemanticModel.GetSymbolInfo(whereExpression.Name).Symbol as IMethodSymbol;
-			string strWhereSymbol = whereSymbol?.ToString();
+			var strWhereSymbol = whereSymbol?.ToString();
 			if (strWhereSymbol != null && strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
 			{
-				var location = whereExpression.Name.Identifier.GetLocation();
+				Location location = whereExpression.Name.Identifier.GetLocation();
 				ReportDiagnostic(location, expressionOfInterest.Name.Identifier.Text);
 			}
 		}

@@ -74,9 +74,9 @@ Foo.WhitelistedFunction";
 		public void RollingTokenSetCountTest(int duplicateTokenThreshold)
 		{
 			var rollingTokenSet = new RollingTokenSet(new SumHashCalculator(duplicateTokenThreshold));
-			int hash = 0;
+			var hash = 0;
 
-			for (int i = 1; i < duplicateTokenThreshold * 2; i++)
+			for (var i = 1; i < duplicateTokenThreshold * 2; i++)
 			{
 				Mock<TokenInfo> mockToken = new(i);
 				_ = mockToken.Setup(x => x.GetLocationEnvelope()).Returns(new LocationEnvelope());
@@ -93,13 +93,13 @@ Foo.WhitelistedFunction";
 				{
 					Assert.IsTrue(rollingTokenSet.IsFull());
 					// E.g., Threshold = 3, i = 7, then expectedValue = 7+6+5+4+3+2+1 - (4+3+2+1) =  7+6+5
-					int expectedValue = Fib(i) - Fib(i - duplicateTokenThreshold);
+					var expectedValue = Fib(i) - Fib(i - duplicateTokenThreshold);
 					Assert.AreEqual(expectedValue, hash);
 				}
 				else
 				{
 					Assert.IsFalse(rollingTokenSet.IsFull());
-					int expectedValue = Fib(i);
+					var expectedValue = Fib(i);
 					Assert.AreEqual(expectedValue, hash);
 				}
 			}
@@ -316,7 +316,7 @@ Foo.WhitelistedFunction";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateCodeErrorInSameMethodAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -336,7 +336,7 @@ class Foo
 		public async Task AvoidDuplicateCodeNoErrorWhenOverlappingAsync()
 		{
 			// The first two initializations are identical to the second two initializations, but "int b = 0" is overlapping.
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -355,7 +355,7 @@ class Foo
 
 		private string CreateFunctions(string content1, string content2)
 		{
-			string baseline = @"
+			var baseline = @"
 namespace MyNamespace
 {{
   class FooClass

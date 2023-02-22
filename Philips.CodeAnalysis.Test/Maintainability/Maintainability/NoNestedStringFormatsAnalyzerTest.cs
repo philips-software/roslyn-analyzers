@@ -137,7 +137,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontStringFormatUselessly2aAsync(string arg)
 		{
-			string template = $@"
+			var template = $@"
 using System;
 
 class Log
@@ -603,7 +603,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorsOnPropertyLikeStringsAsync(string argument)
 		{
-			string template = @$"
+			var template = @$"
 using System;
 class Foo
 {{
@@ -626,7 +626,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoresFormatStringsWithAdditionalTextAsync(string argument)
 		{
-			string template = @$"
+			var template = @$"
 using System;
 class Foo
 {{

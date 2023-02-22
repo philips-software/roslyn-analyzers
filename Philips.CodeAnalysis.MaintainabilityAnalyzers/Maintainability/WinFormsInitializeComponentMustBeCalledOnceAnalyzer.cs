@@ -32,19 +32,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (constructors.Length == 0)
 			{
-				var identifierLocation = Node.Identifier.GetLocation();
+				Location identifierLocation = Node.Identifier.GetLocation();
 				ReportDiagnostic(identifierLocation, Node.Identifier.ToString(), 0);
 				return;
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			var mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
+			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
-				var chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
+				IReadOnlyList<ConstructorDeclarationSyntax> chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
 
-				if (!IsInitializeComponentInConstructorChainOnce(chain, out int count))
+				if (!IsInitializeComponentInConstructorChainOnce(chain, out var count))
 				{
 					Location location;
 					if (ctor.Initializer == null)
@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private bool IsInitializeComponentInConstructorChainOnce(IReadOnlyList<ConstructorDeclarationSyntax> chain, out int count)
 		{
 			count = 0;
-			foreach (var ctor in chain)
+			foreach (ConstructorDeclarationSyntax ctor in chain)
 			{
 				count += IsInitializeComponentInConstructor(ctor);
 			}
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private int IsInitializeComponentInConstructor(ConstructorDeclarationSyntax constructor)
 		{
-			int count = 0;
+			var count = 0;
 			foreach (InvocationExpressionSyntax invocation in constructor.DescendantNodes().OfType<InvocationExpressionSyntax>())
 			{
 				if (invocation.Expression is not IdentifierNameSyntax name)

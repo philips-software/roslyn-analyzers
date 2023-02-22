@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (expression.ToString().Contains(@"ShimsContext.Create"))
 			{
 				CSharpSyntaxNode violation = expression;
-				var location = violation.GetLocation();
+				Location location = violation.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

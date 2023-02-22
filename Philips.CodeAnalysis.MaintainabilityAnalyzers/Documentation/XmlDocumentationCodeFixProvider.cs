@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -28,13 +29,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{
-				var node = root.FindNode(diagnosticSpan);
+				SyntaxNode node = root.FindNode(diagnosticSpan);
 
 				context.RegisterCodeFix(
 					CodeAction.Create(
@@ -47,8 +48,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private async Task<Document> RemoveXmlComment(Document document, SyntaxNode node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken);
-			var newRoot = root;
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
+			SyntaxNode newRoot = root;
 			foreach (SyntaxTrivia trivia in node.GetLeadingTrivia())
 			{
 				if (trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
@@ -59,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
 				}
 			}
-			var newDocument = document.WithSyntaxRoot(newRoot);
+			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}
 	}

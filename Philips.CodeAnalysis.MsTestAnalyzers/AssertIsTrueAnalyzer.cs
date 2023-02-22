@@ -24,8 +24,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ExpressionSyntax test, bool isIsTrue)
 		{
-			var kind = test.Kind();
-			var location = node.GetLocation();
+			SyntaxKind kind = test.Kind();
+			Location location = node.GetLocation();
 			switch (kind)
 			{
 				case SyntaxKind.LogicalNotExpression:
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return false;
 			}
 
-			IMethodSymbol sym = (IMethodSymbol)context.SemanticModel.GetSymbolInfo(member).Symbol;
+			var sym = (IMethodSymbol)context.SemanticModel.GetSymbolInfo(member).Symbol;
 
 			if (sym == null)
 			{

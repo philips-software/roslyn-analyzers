@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FileVersionMustBeSameAsPackageVersionAsync(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
-			string code = $@"
+			var code = $@"
 using System;
 using System.Reflection;
 
@@ -62,7 +62,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoDiagnosticWhenNoPackageVersionAsync()
 		{
-			string code = $@"
+			var code = $@"
 using System;
 using System.Reflection;
 
@@ -85,7 +85,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoDiagnosticWhenNoFileVersionOrPackageVersionAsync()
 		{
-			string code = $@"
+			var code = $@"
 using System;
 using System.Reflection;
 

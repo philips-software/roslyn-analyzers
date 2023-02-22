@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderValidTestsAsync(string property)
 		{
-			string text = $@"
+			var text = $@"
 public class TestClass
 {{
 	public string Foo {property}
@@ -42,7 +42,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderInvalidTestsAsync(string property)
 		{
-			string text = $@"
+			var text = $@"
 public class TestClass
 {{
 	public string Foo {property}

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectInvalidCreationTestAsync(bool isAsync, string returnType)
 		{
-			string code = $@"using System;
+			var code = $@"using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -36,7 +36,7 @@ public class Tests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectCreationValidTestAsync(bool isAsync, string returnType)
 		{
-			string code = $@"using System;
+			var code = $@"using System;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,7 +52,7 @@ public class Tests
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectCreationCorrectTestAsync()
 		{
-			string correctTemplate = $@"
+			var correctTemplate = $@"
 using System.Threading.Tasks;
 using System;
 class FooClass
@@ -81,7 +81,7 @@ public class MyEventArgs : EventArgs
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectCreationInCorrectTestForCustomEventArgsAsync()
 		{
-			string correctTemplate = $@"
+			var correctTemplate = $@"
 using System.Threading.Tasks;
 using System;
 class FooClass
@@ -100,7 +100,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectCreationInCorrectTestForEventArgsAsync()
 		{
-			string correctTemplate = $@"
+			var correctTemplate = $@"
 using System.Threading.Tasks;
 using System;
 class FooClass
@@ -129,7 +129,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidAsyncVoidDelegateAsync(bool isError, string code)
 		{
-			string correctTemplate = $@"
+			var correctTemplate = $@"
 using System.Threading.Tasks;
 using System;
 class FooClass

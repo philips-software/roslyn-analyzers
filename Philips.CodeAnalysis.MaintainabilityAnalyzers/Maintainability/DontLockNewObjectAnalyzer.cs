@@ -31,17 +31,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(OperationAnalysisContext context)
 		{
-			ILockOperation lockOperation = (ILockOperation)context.Operation;
+			var lockOperation = (ILockOperation)context.Operation;
 
 			if (lockOperation.LockedValue is IObjectCreationOperation || lockOperation is IDynamicObjectCreationOperation)
 			{
-				var location = lockOperation.LockedValue.Syntax.GetLocation();
+				Location location = lockOperation.LockedValue.Syntax.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lockOperation.LockedValue.Syntax));
 			}
 
 			if (lockOperation.LockedValue is IInvocationOperation invocationOperation && invocationOperation.Instance is IObjectCreationOperation)
 			{
-				var location = lockOperation.LockedValue.Syntax.GetLocation();
+				Location location = lockOperation.LockedValue.Syntax.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lockOperation.LockedValue.Syntax));
 			}
 		}

@@ -34,12 +34,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private int {0} = 0;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -63,12 +63,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIgnoresPublicFieldsAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     public int {0} = 0;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -84,12 +84,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromArrayAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private static readonly char BigAsterisk = char.ConvertFromUtf32(0x2731)[0];
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
@@ -97,12 +97,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromConstantAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private const uint ProcessorArchitectureValid = 0x001;
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -111,12 +111,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromCastConstantAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private readonly System.IntPtr InvalidHandle = (System.IntPtr)(-1);
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -125,12 +125,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromCharArrayAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private readonly char[] KeyPathDelimiters = new char[] { '\\' };
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -139,12 +139,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromImplicitArrayAsync()
 		{
-			string baseline = @"public static class Foo 
+			var baseline = @"public static class Foo 
 {{
     private static readonly string[] AntiVirusBasePaths = new[] { @""SOFTWARE"", @""SOFTWARE\Wow6432Node"" };
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -153,12 +153,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromImplicitArrayInitializerAsync()
 		{
-			string baseline = @"public static class Foo 
+			var baseline = @"public static class Foo 
 {{
     private static readonly string[] AntiVirusBasePaths = { @""SOFTWARE"", @""SOFTWARE\Wow6432Node"" };
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -167,7 +167,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromArrayWrittenToAsync()
 		{
-			string baseline = @"public static class Foo 
+			var baseline = @"public static class Foo 
 {{
     private static readonly bool[] _starIdentifiers = new bool[128];
 
@@ -177,7 +177,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -187,13 +187,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromFunctionAsync()
 		{
-			string baseline = @"public static class Foo 
+			var baseline = @"public static class Foo 
 {{
     private static readonly Icon DeviceLocationOutOfBounds = Get<Icon>(""DeviceLocationOutOfBounds"");
 }
 	}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -202,12 +202,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromDateTimeAsync()
 		{
-			string baseline = @"public static class Foo 
+			var baseline = @"public static class Foo 
 {{
     private static readonly System.DateTime UnixTimeZero = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -216,12 +216,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromConstantValueAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private static readonly System.IntPtr CurrentServerHandle = System.IntPtr.Zero;
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
@@ -237,12 +237,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     public event EventHandler {0} = null;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
@@ -264,7 +264,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private void Bar()
     {{
@@ -272,7 +272,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -294,7 +294,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AttributedLocalVariableNameIsCorrectAsync(string content, string attribute, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private void Bar()
     {{
@@ -302,7 +302,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }}
 }}
 ";
-			string givenText = string.Format(baseline, content, attribute);
+			var givenText = string.Format(baseline, content, attribute);
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
@@ -323,7 +323,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForLoopAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private void Bar()
     {{
@@ -331,7 +331,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
@@ -349,7 +349,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectUsingAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private void Bar()
     {{
@@ -357,7 +357,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
@@ -375,7 +375,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
     private void Bar()
     {{
@@ -383,7 +383,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
     }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 			if (isGood)
 			{
 				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);

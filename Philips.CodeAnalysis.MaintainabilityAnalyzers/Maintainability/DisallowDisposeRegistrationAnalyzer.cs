@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(parentMethod);
 					if ((methodSymbol != null) && methodSymbol.ToString().Contains(".Dispose("))
 					{
-						var location = context.Node.GetLocation();
+						Location location = context.Node.GetLocation();
 						context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 					}
 				}
