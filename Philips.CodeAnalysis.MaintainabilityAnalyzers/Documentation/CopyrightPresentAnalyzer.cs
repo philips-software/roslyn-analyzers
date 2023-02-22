@@ -41,9 +41,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var location = GetSquiggleLocation(Node.SyntaxTree);
-			var nodeOrToken = FindFirstWithLeadingTrivia(Node);
-			var leadingTrivia = nodeOrToken.GetLeadingTrivia();
+			Location location = GetSquiggleLocation(Node.SyntaxTree);
+			SyntaxNodeOrToken nodeOrToken = FindFirstWithLeadingTrivia(Node);
+			SyntaxTriviaList leadingTrivia = nodeOrToken.GetLeadingTrivia();
 
 			if (!leadingTrivia.Any(SyntaxKind.SingleLineCommentTrivia) && !leadingTrivia.Any(SyntaxKind.RegionDirectiveTrivia))
 			{
@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			return root.DescendantNodesAndTokensAndSelf().FirstOrDefault(n =>
 			{
-				var trivia = n.GetLeadingTrivia();
+				SyntaxTriviaList trivia = n.GetLeadingTrivia();
 				return trivia.Any(SyntaxKind.SingleLineCommentTrivia) || trivia.Any(SyntaxKind.RegionDirectiveTrivia);
 			});
 		}
@@ -84,10 +84,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		{
 			var comment = trivia.ToFullString();
 			// Check the copyright mark itself
-			bool hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
+			var hasCopyright = comment.Contains('©') || comment.Contains("\uFFFD") || comment.Contains("Copyright");
 
 			// Check the year
-			bool hasYear = yearRegex.IsMatch(comment);
+			var hasYear = yearRegex.IsMatch(comment);
 
 			// Check the company name, only if it is configured.
 			var additionalFilesHelper = new AdditionalFilesHelper(Context.Options, Context.Compilation);

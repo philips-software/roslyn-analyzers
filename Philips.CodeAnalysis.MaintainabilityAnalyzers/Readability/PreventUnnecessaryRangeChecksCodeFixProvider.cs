@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -30,11 +31,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
 
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{
@@ -54,10 +55,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private async Task<Document> RemoveIfStatement(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			var leadingTrivia = node.GetLeadingTrivia();
-			var trailingTrivia = node.GetTrailingTrivia();
+			SyntaxTriviaList leadingTrivia = node.GetLeadingTrivia();
+			SyntaxTriviaList trailingTrivia = node.GetTrailingTrivia();
 
 			SyntaxNode replaceNode = node.Statement;
 			SyntaxNode ifBlock = node.Statement;
@@ -74,9 +75,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				replaceNode = replaceNode.WithLeadingTrivia(leadingTrivia);
 			}
-			var newLine = SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, Environment.NewLine);
+			SyntaxTrivia newLine = SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, Environment.NewLine);
 
-			var trivia = trailingTrivia.Insert(0, newLine);
+			SyntaxTriviaList trivia = trailingTrivia.Insert(0, newLine);
 			replaceNode = replaceNode.WithTrailingTrivia(trivia);
 
 			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);

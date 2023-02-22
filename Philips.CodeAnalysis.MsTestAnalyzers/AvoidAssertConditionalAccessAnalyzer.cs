@@ -26,13 +26,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			string memberName = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Name.ToString();
 			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				yield break;
 			}
 
-			var argumentList = invocationExpressionSyntax.ArgumentList;
+			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
 			if (argumentList.Arguments.Count < 2)
 			{
@@ -42,8 +42,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
 			foreach (ArgumentSyntax syntax in arguments.Where(InConditionalAccess))
 			{
-				var location = syntax.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				Location location = syntax.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				yield return diagnostic;
 			}
 		}

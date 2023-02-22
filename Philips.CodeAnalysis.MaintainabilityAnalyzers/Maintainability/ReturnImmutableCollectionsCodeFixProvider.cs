@@ -65,14 +65,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private async Task<Document> ReplaceType(Document document, TypeSyntax type, CancellationToken c)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
-			string origTypeName = ReturnImmutableCollectionsAnalyzer.GetTypeName(type);
+			var origTypeName = ReturnImmutableCollectionsAnalyzer.GetTypeName(type);
 			string newTypeName;
 			if (type is ArrayTypeSyntax arrayType)
 			{
 				var elementTypeName = arrayType.ElementType.ToString();
 				newTypeName = $"IReadOnlyList<{elementTypeName}>";
 			}
-			else if (CollectionsMap.TryGetValue(origTypeName, out string newCollectionType))
+			else if (CollectionsMap.TryGetValue(origTypeName, out var newCollectionType))
 			{
 				var genericTypeNames = GetGenericTypeNames(type);
 				newTypeName = $"{newCollectionType}{genericTypeNames}";
@@ -82,7 +82,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return document;
 			}
-			var newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(type);
+			TypeSyntax newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(type);
 			rootNode = rootNode.ReplaceNode(type, newType);
 			return document.WithSyntaxRoot(rootNode);
 		}

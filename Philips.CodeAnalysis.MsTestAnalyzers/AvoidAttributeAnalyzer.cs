@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				ImmutableHashSet<string> whitelist = null;
 
-				foreach (var kvp in attributes)
+				foreach (System.Collections.Generic.KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in attributes)
 				{
 					if (startContext.Compilation.GetTypeByMetadataName(kvp.Key) == null)
 					{
@@ -58,21 +58,21 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
 		{
-			foreach (var file in options.AdditionalFiles)
+			foreach (AdditionalText file in options.AdditionalFiles)
 			{
 				if (Path.GetFileName(file.Path) != AttributesWhitelist)
 				{
 					continue;
 				}
 
-				var text = file.GetText();
+				Microsoft.CodeAnalysis.Text.SourceText text = file.GetText();
 
-				var builder = ImmutableHashSet.CreateBuilder<string>();
+				ImmutableHashSet<string>.Builder builder = ImmutableHashSet.CreateBuilder<string>();
 				if (text != null)
 				{
-					foreach (var textLine in text.Lines)
+					foreach (Microsoft.CodeAnalysis.Text.TextLine textLine in text.Lines)
 					{
-						string line = textLine.ToString();
+						var line = textLine.ToString();
 						_ = builder.Add(line);
 					}
 				}
@@ -91,11 +91,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
+			var attributesNode = (AttributeListSyntax)context.Node;
 
 			foreach (AttributeModel attribute in attributes)
 			{
-				if (!_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation))
+				if (!_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation))
 				{
 					continue;
 				}
@@ -106,14 +106,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
+				var diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
 		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
 		{
-			var symbol = semanticModel.GetDeclaredSymbol(node);
+			ISymbol symbol = semanticModel.GetDeclaredSymbol(node);
 
 			if (symbol == null)
 			{
@@ -128,9 +128,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static ImmutableArray<DiagnosticDescriptor> GetRules(ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes)
 		{
-			var builder = ImmutableArray.CreateBuilder<DiagnosticDescriptor>();
+			ImmutableArray<DiagnosticDescriptor>.Builder builder = ImmutableArray.CreateBuilder<DiagnosticDescriptor>();
 
-			var items = attributes.SelectMany(x => x.Value)
+			System.Collections.Generic.IEnumerable<DiagnosticDescriptor> items = attributes.SelectMany(x => x.Value)
 									.Select(x => x.Rule);
 			builder.AddRange(items);
 
@@ -189,7 +189,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				isSuppressible: true,
 				isEnabledByDefault: true);
 
-			var builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
+			ImmutableDictionary<string, ImmutableArray<AttributeModel>>.Builder builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
 			builder[StringConstants.AssertFullyQualifiedName] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
 

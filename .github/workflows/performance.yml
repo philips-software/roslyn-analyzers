@@ -47,7 +47,6 @@ jobs:
           dotnet_diagnostic.CA1845.severity = none
           dotnet_diagnostic.CA1847.severity = none
           dotnet_diagnostic.CA1852.severity = none
-          dotnet_diagnostic.IDE0008.severity = none
           dotnet_diagnostic.IDE0010.severity = none
           dotnet_diagnostic.IDE0025.severity = none
           dotnet_diagnostic.IDE0045.severity = none

@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AreEqualTypesMatchTest(string name, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 namespace TestMethodNameAnalyzerTest
 {{
   public class TestClass
@@ -41,11 +41,11 @@ namespace TestMethodNameAnalyzerTest
   }}
 }}
 ";
-			string givenText = string.Format(baseline, name);
+			var givenText = string.Format(baseline, name);
 			var prefix = GetPrefix(name);
-			string expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
+			var expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
 			var fixedName = FixName(name);
-			string fixedText = string.Format(baseline, fixedName);
+			var fixedText = string.Format(baseline, fixedName);
 
 			if (isError)
 			{
@@ -81,7 +81,7 @@ namespace TestMethodNameAnalyzerTest
 
 		private string GetPrefix(string name)
 		{
-			string prefix = "";
+			var prefix = "";
 			if (name.StartsWith("Test", StringComparison.OrdinalIgnoreCase))
 			{
 				prefix = "Test";
@@ -100,7 +100,7 @@ namespace TestMethodNameAnalyzerTest
 
 		private string FixName(string name)
 		{
-			string prefix = GetPrefix(name);
+			var prefix = GetPrefix(name);
 			return string.IsNullOrEmpty(prefix) ? name : name.Replace(prefix, "") + "Test";
 		}
 	}

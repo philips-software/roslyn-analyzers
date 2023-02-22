@@ -45,15 +45,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var literal = Node.Token;
+			SyntaxToken literal = Node.Token;
 			var literalText = literal.Text.Trim('\\', '\"');
 			if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 			{
 				return;
 			}
 
-			var location = literal.GetLocation();
-			var usedLiterals = ((AvoidDuplicateStringsAnalyzer)Analyzer).UsedLiterals;
+			Location location = literal.GetLocation();
+			ConcurrentDictionary<string, Location> usedLiterals = ((AvoidDuplicateStringsAnalyzer)Analyzer).UsedLiterals;
 
 			if (!usedLiterals.TryAdd(literalText, location))
 			{

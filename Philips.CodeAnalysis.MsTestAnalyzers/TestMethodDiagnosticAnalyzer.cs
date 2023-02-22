@@ -48,8 +48,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			public sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				bool isTestMethod = false;
-				bool isDataTestMethod = false;
+				var isTestMethod = false;
+				var isDataTestMethod = false;
 
 				foreach (INamedTypeSymbol attribute in presentAttributes)
 				{

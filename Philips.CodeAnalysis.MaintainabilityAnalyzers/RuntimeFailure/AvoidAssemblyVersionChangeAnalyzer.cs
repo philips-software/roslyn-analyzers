@@ -39,14 +39,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			Version expectedVersion = new(@"1.0.0.0");
 			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			string value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+			var value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))
 			{
-				bool isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
+				var isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
 
 				if (!isParseSuccessful)
 				{
-					Diagnostic diagnostic = Diagnostic.Create(InvalidExpectedVersionRule, null, value);
+					var diagnostic = Diagnostic.Create(InvalidExpectedVersionRule, null, value);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			Version actualVersion = GetCompilationAssemblyVersion(context.Compilation);
 			if (actualVersion.CompareTo(expectedVersion) != 0)
 			{
-				Diagnostic diagnostic = Diagnostic.Create(Rule, null, actualVersion.ToString(), expectedVersion.ToString());
+				var diagnostic = Diagnostic.Create(Rule, null, actualVersion.ToString(), expectedVersion.ToString());
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

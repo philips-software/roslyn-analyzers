@@ -50,15 +50,15 @@ namespace Philips.CodeAnalysis.Common
 
 		public void AddException(string exceptionTypeName)
 		{
-			var exceptionType = SyntaxFactory.ParseTypeName(exceptionTypeName);
-			var cref = SyntaxFactory.TypeCref(exceptionType);
-			var crefAttribute = SyntaxFactory.XmlCrefAttribute(cref);
+			TypeSyntax exceptionType = SyntaxFactory.ParseTypeName(exceptionTypeName);
+			TypeCrefSyntax cref = SyntaxFactory.TypeCref(exceptionType);
+			XmlCrefAttributeSyntax crefAttribute = SyntaxFactory.XmlCrefAttribute(cref);
 			var attributesList = new SyntaxList<XmlAttributeSyntax>();
 			attributesList = attributesList.Add(crefAttribute);
-			var exceptionXmlName = SyntaxFactory.XmlName(ExceptionElementName);
-			var exceptionStart = SyntaxFactory.XmlElementStartTag(exceptionXmlName, attributesList);
-			var exceptionEnd = SyntaxFactory.XmlElementEndTag(exceptionXmlName);
-			var xmlException = SyntaxFactory.XmlElement(exceptionStart, exceptionEnd);
+			XmlNameSyntax exceptionXmlName = SyntaxFactory.XmlName(ExceptionElementName);
+			XmlElementStartTagSyntax exceptionStart = SyntaxFactory.XmlElementStartTag(exceptionXmlName, attributesList);
+			XmlElementEndTagSyntax exceptionEnd = SyntaxFactory.XmlElementEndTag(exceptionXmlName);
+			XmlElementSyntax xmlException = SyntaxFactory.XmlElement(exceptionStart, exceptionEnd);
 			xmlElements.Add(xmlException);
 		}
 
@@ -70,11 +70,11 @@ namespace Philips.CodeAnalysis.Common
 		public DocumentationCommentTriviaSyntax CreateDocumentation()
 		{
 			ExistingDocumentation ??= SyntaxFactory.DocumentationComment();
-			var startOfLine = SyntaxFactory.XmlText("/// ");
-			var endOfLine = SyntaxFactory.XmlText("\r\n");
-			var comment = ExistingDocumentation;
+			XmlTextSyntax startOfLine = SyntaxFactory.XmlText("/// ");
+			XmlTextSyntax endOfLine = SyntaxFactory.XmlText("\r\n");
+			DocumentationCommentTriviaSyntax comment = ExistingDocumentation;
 			var content = new List<XmlNodeSyntax>();
-			foreach (var xmlElement in xmlElements)
+			foreach (XmlElementSyntax xmlElement in xmlElements)
 			{
 				content.Add(startOfLine);
 				content.Add(xmlElement);

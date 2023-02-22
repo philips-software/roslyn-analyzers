@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DisallowDisposeRegistrationTest()
 		{
-			string givenText = @"
+			var givenText = @"
 class Foo 
 {{
   public event EventHandler MyEvent;
@@ -31,7 +31,7 @@ class Foo
 ";
 			await VerifyDiagnostic(givenText, DiagnosticId.DisallowDisposeRegistration, regex: DisallowDisposeRegistrationAnalyzer.MessageFormat, line: 7, column: 5).ConfigureAwait(false);
 
-			string expectedText = givenText.Replace(@"+=", @"-=");
+			var expectedText = givenText.Replace(@"+=", @"-=");
 
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}

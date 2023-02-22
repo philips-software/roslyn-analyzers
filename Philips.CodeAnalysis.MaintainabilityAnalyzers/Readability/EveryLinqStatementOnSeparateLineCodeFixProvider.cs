@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 
 using Philips.CodeAnalysis.Common;
 
@@ -30,11 +31,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
 
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{
@@ -54,12 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private async Task<Document> AddNewLineAfter(Document document, QueryClauseSyntax clause, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			SyntaxToken lastToken = clause.GetLastToken();
 			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
-			var clauseWithTrivia = clause.WithTrailingTrivia(newTrivia);
+			QueryClauseSyntax clauseWithTrivia = clause.WithTrailingTrivia(newTrivia);
 			root = root.ReplaceNode(clause, clauseWithTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 
 			return document.WithSyntaxRoot(root);

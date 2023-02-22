@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType, System.StringComparison.Ordinal))
 			{
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

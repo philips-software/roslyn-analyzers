@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ThreadSleepNotAvoidedTest(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 [TestClass]
@@ -32,7 +32,7 @@ class Foo
 }}
 ";
 
-			string fixedText = @"
+			var fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 [TestClass]
@@ -43,7 +43,7 @@ class Foo
   }
 }
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}

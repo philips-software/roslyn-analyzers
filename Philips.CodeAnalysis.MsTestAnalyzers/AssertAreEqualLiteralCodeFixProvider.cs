@@ -79,8 +79,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			InvocationExpressionSyntax newInvocation = ConvertToInvocation(((MemberAccessExpressionSyntax)invocationExpression.Expression).Name, literalExpected.Expression, actual.Expression, message?.Expression);
-			var trivia = invocationExpression.GetLeadingTrivia();
-			var newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
+			SyntaxTriviaList trivia = invocationExpression.GetLeadingTrivia();
+			InvocationExpressionSyntax newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
 			root = root.ReplaceNode(invocationExpression, newInvocationWithTrivia);
 
 			return document.WithSyntaxRoot(root);
@@ -88,14 +88,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private InvocationExpressionSyntax ConvertToInvocation(SimpleNameSyntax calledMethod, ExpressionSyntax literalExpected, ExpressionSyntax actual, ExpressionSyntax message)
 		{
-			bool isLiteralTrue = GetMethod(literalExpected);
+			var isLiteralTrue = GetMethod(literalExpected);
 
 			if (calledMethod.ToString() == StringConstants.AreNotEqualMethodName)
 			{
 				isLiteralTrue = !isLiteralTrue;
 			}
 
-			string method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
+			var method = isLiteralTrue ? StringConstants.IsTrue : StringConstants.IsFalse;
 
 			ArgumentListSyntax argumentListSyntax = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[] { SyntaxFactory.Argument(actual) }));
 

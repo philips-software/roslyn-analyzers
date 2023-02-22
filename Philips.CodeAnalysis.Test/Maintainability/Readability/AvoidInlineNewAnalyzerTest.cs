@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string content)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()

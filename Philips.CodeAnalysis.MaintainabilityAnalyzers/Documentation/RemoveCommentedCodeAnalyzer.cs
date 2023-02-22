@@ -28,14 +28,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override void Analyze()
 		{
-			var comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
+			System.Collections.Generic.IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia().Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia));
 			if (!comments.Any())
 			{
 				return;
 			}
 
-			int previousViolationLine = InitialCodeLine;
-			foreach (var location in comments.Where(comment => comment.ToString().EndsWith(";"))
+			var previousViolationLine = InitialCodeLine;
+			foreach (Location location in comments.Where(comment => comment.ToString().EndsWith(";"))
 											 .Select(node => node.GetLocation()))
 			{
 				var lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;

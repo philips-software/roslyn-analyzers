@@ -62,11 +62,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var newAttributes = new SyntaxList<AttributeListSyntax>();
 			foreach (AttributeListSyntax attributelist in method.AttributeLists)
 			{
-				var nodesToRemove = attributelist.Attributes.Where(att => (att.Name as IdentifierNameSyntax).Identifier.Text.StartsWith("Description")).ToArray();
+				AttributeSyntax[] nodesToRemove = attributelist.Attributes.Where(att => (att.Name as IdentifierNameSyntax).Identifier.Text.StartsWith("Description")).ToArray();
 
 				if (nodesToRemove.Length != attributelist.Attributes.Count)
 				{
-					var newAttribute = attributelist.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
+					AttributeListSyntax newAttribute = attributelist.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
 					newAttributes = newAttributes.Add(newAttribute);
 				}
 			}

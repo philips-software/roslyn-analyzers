@@ -66,9 +66,9 @@ namespace Philips.CodeAnalysis.Benchmark
 							continue;
 						}
 
-						var tree = CSharpSyntaxTree.ParseText(File.ReadAllText(file), new CSharpParseOptions(LanguageVersion.Latest));
+						SyntaxTree tree = CSharpSyntaxTree.ParseText(File.ReadAllText(file), new CSharpParseOptions(LanguageVersion.Latest));
 
-						foreach (var method in tree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
+						foreach (MethodDeclarationSyntax method in tree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>())
 						{
 							if (method.Body is null)
 							{
@@ -89,9 +89,9 @@ namespace Philips.CodeAnalysis.Benchmark
 			{
 				var rollingTokenSet = new RollingTokenSet(new RollingHashCalculator<TokenInfo>(100, baseModulus, modulus));
 
-				foreach (var list in kvp.Value)
+				foreach (SyntaxToken list in kvp.Value)
 				{
-					(int hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(list));
+					(var hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(list));
 
 					if (rollingTokenSet.IsFull())
 					{

@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
 
-			ParenthesizedExpressionSyntax expression = (ParenthesizedExpressionSyntax)arg.Expression;
+			var expression = (ParenthesizedExpressionSyntax)arg.Expression;
 
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 

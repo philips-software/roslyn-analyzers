@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			ForEachStatementSyntax foreachStatement = (ForEachStatementSyntax)context.Node;
+			var foreachStatement = (ForEachStatementSyntax)context.Node;
 			if (!IsTypeBool(foreachStatement.Type, context.SemanticModel))
 			{
 				return;
@@ -66,8 +66,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var location = foreachStatement.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
+			Location location = foreachStatement.Identifier.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			VariableDeclarationSyntax variableDeclaration = (VariableDeclarationSyntax)context.Node;
+			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
 			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(syntax => syntax.Identifier))
 			{
@@ -93,8 +93,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				var location = identifier.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
+				Location location = identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				case SyntaxKind.LocalDeclarationStatement:
 					{
-						LocalDeclarationStatementSyntax localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
+						var localDeclaration = (LocalDeclarationStatementSyntax)variableDeclaration.Parent;
 						if (!IsTypeBool(localDeclaration.Declaration.Type, context.SemanticModel))
 						{
 							return false;
@@ -119,7 +119,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					}
 				case SyntaxKind.FieldDeclaration:
 					{
-						FieldDeclarationSyntax fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
+						var fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
 
 						if (!IsTypeBool(fieldDeclaration.Declaration.Type, context.SemanticModel))
 						{
@@ -155,13 +155,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			ParameterSyntax parameter = (ParameterSyntax)context.Node;
+			var parameter = (ParameterSyntax)context.Node;
 			if (!IsTypeBool(parameter.Type, context.SemanticModel))
 			{
 				return;
 			}
 
-			IMethodSymbol method = (IMethodSymbol)context.ContainingSymbol;
+			var method = (IMethodSymbol)context.ContainingSymbol;
 			if (method.IsOverride)
 			{
 				return;
@@ -174,8 +174,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var location = parameter.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, parameter.Identifier.ValueText);
+			Location location = parameter.Identifier.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location, parameter.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
@@ -187,7 +187,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			PropertyDeclarationSyntax property = (PropertyDeclarationSyntax)context.Node;
+			var property = (PropertyDeclarationSyntax)context.Node;
 			if (!IsTypeBool(property.Type, context.SemanticModel))
 			{
 				return;
@@ -198,7 +198,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var type = context.SemanticModel.GetDeclaredSymbol(property);
+			IPropertySymbol type = context.SemanticModel.GetDeclaredSymbol(property);
 			if (type is IPropertySymbol propertySymbol && propertySymbol.ContainingType.AllInterfaces.Any(x => x.GetMembers(propertySymbol.Name).Any()))
 			{
 				return;
@@ -211,14 +211,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			var location = property.Identifier.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, property.Identifier.ValueText);
+			Location location = property.Identifier.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location, property.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
 
 		private bool IsNameValid(Regex validator, SyntaxToken identifier)
 		{
-			string name = identifier.ValueText;
+			var name = identifier.ValueText;
 
 			return validator.IsMatch(name);
 		}

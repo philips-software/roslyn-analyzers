@@ -34,14 +34,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			var aliases = Helper.GetUsingAliases(Node);
+			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
 
-			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			ExceptionWalker walker = new();
 			List<string> unhandledExceptions = new();
-			foreach (var invocation in invocations)
+			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
-				var newExceptions = walker.UnhandledFromInvocation(invocation, aliases, Context.SemanticModel);
+				IEnumerable<string> newExceptions = walker.UnhandledFromInvocation(invocation, aliases, Context.SemanticModel);
 				if (newExceptions.Any())
 				{
 					unhandledExceptions.AddRange(newExceptions);
@@ -51,18 +51,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// List the documented exception types.
 			var docHelper = new DocumentationHelper(Node);
-			var documentedExceptions = docHelper.GetExceptionCrefs();
+			IEnumerable<string> documentedExceptions = docHelper.GetExceptionCrefs();
 			var comparer = new NamespaceIgnoringComparer();
-			var remainingExceptions =
+			IEnumerable<string> remainingExceptions =
 				unhandledExceptions.Where(ex =>
 					documentedExceptions.All(doc => comparer.Compare(ex, doc) != 0));
 			if (remainingExceptions.Any())
 			{
-				var loc = Node.Identifier.GetLocation();
+				Location loc = Node.Identifier.GetLocation();
 				var methodName = Node.Identifier.Text;
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
-				var properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
-				Diagnostic diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
+				ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
+				var diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
 				Context.ReportDiagnostic(diagnostic);
 			}
 		}

@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 			{
 				faces = ": IDisposable";
 			}
-			string baseline = @"
+			var baseline = @"
 namespace MyNamespace
 {{
   class FooClass{1}
@@ -56,7 +56,7 @@ namespace MyNamespace
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoDiagnosticIsTriggeredForStructsAsync()
 		{
-			string source = @"
+			var source = @"
 namespace MyNamespace
 {{
   struct FooStruct

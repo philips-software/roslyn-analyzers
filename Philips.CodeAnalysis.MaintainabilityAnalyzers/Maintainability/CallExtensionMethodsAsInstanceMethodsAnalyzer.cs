@@ -31,14 +31,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void OnInvoke(OperationAnalysisContext context)
 		{
-			IInvocationOperation invocationOperation = (IInvocationOperation)context.Operation;
+			var invocationOperation = (IInvocationOperation)context.Operation;
 
 			if (!invocationOperation.TargetMethod.IsExtensionMethod || invocationOperation.Arguments.Length < 1)
 			{
 				return;
 			}
 
-			var thisArgument = invocationOperation.Arguments.First();
+			IArgumentOperation thisArgument = invocationOperation.Arguments.First();
 
 			if (thisArgument.IsImplicit)
 			{
@@ -50,16 +50,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var semantic = context.Operation.SemanticModel;
+			SemanticModel semantic = context.Operation.SemanticModel;
 
-			var statics = semantic.LookupStaticMembers(context.Operation.Syntax.SpanStart);
+			ImmutableArray<ISymbol> statics = semantic.LookupStaticMembers(context.Operation.Syntax.SpanStart);
 
 			if (HasMultipleCallables(context.Operation.Syntax.SpanStart, semantic, statics, invocationOperation.TargetMethod))
 			{
 				return;
 			}
 
-			var location = invocationOperation.Syntax.GetLocation();
+			Location location = invocationOperation.Syntax.GetLocation();
 			context.ReportDiagnostic(Diagnostic.Create(Rule, location, invocationOperation.TargetMethod.Name));
 		}
 
@@ -68,10 +68,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			HashSet<ISymbol> didCheck = new();
 			Queue<ISymbol> toCheck = new(statics);
 
-			int count = 0;
+			var count = 0;
 			while (toCheck.Count != 0)
 			{
-				var symbol = toCheck.Dequeue();
+				ISymbol symbol = toCheck.Dequeue();
 				if (!didCheck.Add(symbol))
 				{
 					continue;
@@ -79,15 +79,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 				if (symbol is INamedTypeSymbol namedType && namedType.IsStatic)
 				{
-					var result = semanticModel.LookupStaticMembers(position, namedType, currentMethod.Name);
+					ImmutableArray<ISymbol> result = semanticModel.LookupStaticMembers(position, namedType, currentMethod.Name);
 
 					count += result.OfType<IMethodSymbol>().Count(x => x.IsExtensionMethod && x.Parameters.Length == currentMethod.Parameters.Length);
 				}
 				else if (symbol is INamespaceSymbol namespaceSymbol)
 				{
-					var result = semanticModel.LookupStaticMembers(position, namespaceSymbol);
+					ImmutableArray<ISymbol> result = semanticModel.LookupStaticMembers(position, namespaceSymbol);
 
-					foreach (var r in result.OfType<ITypeSymbol>())
+					foreach (ITypeSymbol r in result.OfType<ITypeSymbol>())
 					{
 						toCheck.Enqueue(r);
 					}
@@ -104,8 +104,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool HasMatchingMethod(IArgumentOperation thisArgument, IMethodSymbol targetMethod)
 		{
-			var value = thisArgument.Value;
-			var type = value.Type;
+			IOperation value = thisArgument.Value;
+			ITypeSymbol type = value.Type;
 
 			if (value is IConversionOperation conversion)
 			{
@@ -117,7 +117,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool HasMatchingMethod(ITypeSymbol type, IMethodSymbol targetMethod)
 		{
-			foreach (var member in type.GetMembers())
+			foreach (ISymbol member in type.GetMembers())
 			{
 				if (member.Kind != SymbolKind.Method)
 				{

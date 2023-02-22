@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			var methodSymbol = context.Symbol as IMethodSymbol;
 			if (_allowedSymbols.IsAllowed(methodSymbol))
 			{
-				var loc = methodSymbol.Locations[0];
+				Location loc = methodSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 			}
 		}
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			var typeSymbol = context.Symbol as INamedTypeSymbol;
 			if (_allowedSymbols.IsAllowed(typeSymbol))
 			{
-				var loc = typeSymbol.Locations[0];
+				Location loc = typeSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 			}
 		}
