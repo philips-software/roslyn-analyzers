@@ -2,12 +2,9 @@
 
 using System;
 using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -49,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 					}}
 			    }}";
 
-			string testCode = string.Format(testCodeTemplate, test);
+			var testCode = string.Format(testCodeTemplate, test);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
@@ -71,8 +68,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			    }}";
 
 
-			string testCode = string.Format(testCodeTemplate, test);
-			string fixedCode = string.Format(testCodeTemplate, fixedTest);
+			var testCode = string.Format(testCodeTemplate, test);
+			var fixedCode = string.Format(testCodeTemplate, fixedTest);
 
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);

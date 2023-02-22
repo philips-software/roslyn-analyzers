@@ -35,12 +35,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var method = (MethodDeclarationSyntax)context.Node;
 			if (IsDynamicType(context, method.ReturnType))
 			{
-				var returnLocation = method.ReturnType.GetLocation();
+				Location returnLocation = method.ReturnType.GetLocation();
 				ReportDiagnostic(context, returnLocation);
 			}
 			if (HasDynamicType(context, method.ParameterList))
 			{
-				var location = method.ParameterList.GetLocation();
+				Location location = method.ParameterList.GetLocation();
 				ReportDiagnostic(context, location);
 			}
 		}
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var prop = (PropertyDeclarationSyntax)context.Node;
 			if (IsDynamicType(context, prop.Type))
 			{
-				var returnLocation = prop.Type.GetLocation();
+				Location returnLocation = prop.Type.GetLocation();
 				ReportDiagnostic(context, returnLocation);
 			}
 		}
@@ -60,12 +60,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var variable = (VariableDeclarationSyntax)context.Node;
 			if (IsDynamicType(context, variable.Type))
 			{
-				var returnLocation = variable.Type.GetLocation();
+				Location returnLocation = variable.Type.GetLocation();
 				ReportDiagnostic(context, returnLocation);
 			}
 			if (variable.Variables.Any(v => HasDynamicType(context, v.Initializer)))
 			{
-				var returnLocation = variable.Type.GetLocation();
+				Location returnLocation = variable.Type.GetLocation();
 				ReportDiagnostic(context, returnLocation);
 			}
 		}

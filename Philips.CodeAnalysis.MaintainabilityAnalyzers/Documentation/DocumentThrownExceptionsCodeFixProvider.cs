@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
@@ -27,18 +29,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 			Diagnostic diagnostic = context.Diagnostics.First();
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out string missingExceptionTypeName))
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out var missingExceptionTypeName))
 			{
 				return;
 			}
 
 			if (root != null)
 			{
-				var diagnsticNode = root.FindNode(diagnosticSpan);
-				var node = DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnsticNode);
+				SyntaxNode diagnsticNode = root.FindNode(diagnosticSpan);
+				SyntaxNode node = DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnsticNode);
 
 				context.RegisterCodeFix(
 					CodeAction.Create(
@@ -51,8 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private async Task<Document> AddExceptionComment(Document document, SyntaxNode node, string exceptionTypeName, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken);
-			var newRoot = root;
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
+			SyntaxNode newRoot = root;
 
 			DocumentationHelper docHelper = new(node);
 			var parts = exceptionTypeName.Split(',');
@@ -60,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				docHelper.AddException(part);
 			}
-			var newComment = docHelper.CreateDocumentation();
+			DocumentationCommentTriviaSyntax newComment = docHelper.CreateDocumentation();
 
 			if (docHelper.ExistingDocumentation != null)
 			{

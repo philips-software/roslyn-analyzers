@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			ISwitchOperation operation = (ISwitchOperation)operationContext.Operation;
+			var operation = (ISwitchOperation)operationContext.Operation;
 			if (operation.Cases.Length != 1)
 			{
 				return;
@@ -56,7 +56,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Cases[0].Syntax.GetLocation()));
+			Location location = operation.Cases[0].Syntax.GetLocation();
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
@@ -66,7 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			ISwitchExpressionOperation operation = (ISwitchExpressionOperation)operationContext.Operation;
+			var operation = (ISwitchExpressionOperation)operationContext.Operation;
 			if (operation.Arms.Length != 1)
 			{
 				return;
@@ -79,7 +80,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, operation.Arms[0].Syntax.GetLocation()));
+			Location location = operation.Arms[0].Syntax.GetLocation();
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 	}
 }

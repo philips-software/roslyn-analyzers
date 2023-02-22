@@ -1,11 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -28,8 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		public override void Analyze()
 		{
-			string myNamespace = Node.Name.ToString();
-			string myAssemblyName = Context.Compilation?.AssemblyName;
+			var myNamespace = Node.Name.ToString();
+			var myAssemblyName = Context.Compilation?.AssemblyName;
 
 			if (string.IsNullOrEmpty(myAssemblyName))
 			{
@@ -55,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void ReportDiagnostic()
 		{
-			var location = Node.Name.GetLocation();
+			Location location = Node.Name.GetLocation();
 			ReportDiagnostic(location);
 		}
 	}

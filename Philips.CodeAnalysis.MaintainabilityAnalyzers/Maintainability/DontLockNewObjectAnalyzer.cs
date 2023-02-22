@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -32,16 +31,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(OperationAnalysisContext context)
 		{
-			ILockOperation lockOperation = (ILockOperation)context.Operation;
+			var lockOperation = (ILockOperation)context.Operation;
 
 			if (lockOperation.LockedValue is IObjectCreationOperation || lockOperation is IDynamicObjectCreationOperation)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, lockOperation.LockedValue.Syntax.GetLocation(), lockOperation.LockedValue.Syntax));
+				Location location = lockOperation.LockedValue.Syntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lockOperation.LockedValue.Syntax));
 			}
 
 			if (lockOperation.LockedValue is IInvocationOperation invocationOperation && invocationOperation.Instance is IObjectCreationOperation)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, lockOperation.LockedValue.Syntax.GetLocation(), lockOperation.LockedValue.Syntax));
+				Location location = lockOperation.LockedValue.Syntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, lockOperation.LockedValue.Syntax));
 			}
 		}
 	}

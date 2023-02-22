@@ -1,13 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using Microsoft.CodeAnalysis;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
-using System.CodeDom.Compiler;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
 using System.Threading.Tasks;
@@ -29,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -71,7 +67,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
 		{
-			string input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
+			var input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
@@ -90,7 +86,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsFlaggedAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -116,7 +112,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -144,7 +140,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlaggedAsync(string type)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)
@@ -167,7 +163,7 @@ public static class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithMultipleCasesIsIgnoredAsync(string type, string value)
 		{
-			string input = $@"
+			var input = $@"
 public static class Foo
 {{
   public static void Method({type} data)

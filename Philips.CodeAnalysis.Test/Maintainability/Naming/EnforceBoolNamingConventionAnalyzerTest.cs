@@ -1,10 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 
-using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -52,12 +49,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private bool {0} = 0;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -73,7 +70,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task VariableNameIsNotBoolAsync()
 		{
-			string givenText = @"class Foo 
+			var givenText = @"class Foo 
 {{
 	private int i = 5;
 	private void Foo() { int x = 10; }
@@ -116,12 +113,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrectPublicAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	public bool {0} = 0;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -137,12 +134,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromConstantAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private const bool IsFoo = true;
 }}
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
@@ -150,7 +147,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableFromConstantValueAsync()
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private static readonly bool _isFoo = true;
 	private static readonly bool _areFoo = true;
@@ -189,7 +186,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private void Bar()
 	{{
@@ -197,7 +194,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	}}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -240,7 +237,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private void Bar()
 	{{
@@ -248,7 +245,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	}}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -266,13 +263,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
-			string baseline = @"using System;
+			var baseline = @"using System;
 class Foo 
 {{
 	private Boolean {0} = true;
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -290,7 +287,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameOfTypeBooleanAsync(string content, bool isGood)
 		{
-			string baseline = @"using System;
+			var baseline = @"using System;
 class Foo 
 {{
 	private void Bar()
@@ -299,7 +296,7 @@ class Foo
 	}}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -317,7 +314,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameOfTypeVarAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private void Bar()
 	{{
@@ -325,7 +322,7 @@ class Foo
 	}}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -350,7 +347,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PropertyNameIsCorrectAsync(string content, bool isGood)
 		{
-			string baseline = @"class Foo 
+			var baseline = @"class Foo 
 {{
 	private bool _isFoo = true;
 	public bool {0}
@@ -360,7 +357,7 @@ class Foo
 	}}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -377,7 +374,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task BaseClassPropertiesAreNotErrorsAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
 class BaseClass 
 {
@@ -394,7 +391,7 @@ class Foo : BaseClass
 	}
 }
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
@@ -402,7 +399,7 @@ class Foo : BaseClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InterfacePropertiesAreNotErrorsAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
 interface BaseClass 
 {
@@ -419,7 +416,7 @@ abstract class Foo : BaseClass
 	}
 }
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
@@ -427,7 +424,7 @@ abstract class Foo : BaseClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task BaseClassMethodsAreNotErrorsAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 using System.Windows.Forms;
 
 abstract class Foo : ApplicationContext
@@ -438,7 +435,7 @@ abstract class Foo : ApplicationContext
 	}
 }
 ";
-			string givenText = baseline;
+			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 	}

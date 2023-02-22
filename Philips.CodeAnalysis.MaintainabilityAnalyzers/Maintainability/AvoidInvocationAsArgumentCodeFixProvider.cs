@@ -1,23 +1,17 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Rename;
 using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
@@ -43,15 +37,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the nested method call identified by the diagnostic.
-			ExpressionSyntax node = root.FindNode(diagnosticSpan, false, true) as ExpressionSyntax;
+			SyntaxNode node = root.FindNode(diagnosticSpan, false, true);
+			var expressionNode = node as ExpressionSyntax;
+			if (expressionNode == null && node is ArgumentSyntax argumentNode)
+			{
+				expressionNode = argumentNode.Expression;
+			}
 
 			// Make sure it's part of a statement that we know how to handle.
 			// For example, we do not currently handle method expressions (ie =>)
-			StatementSyntax fullExistingExpressionSyntax = node?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<ReturnStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<IfStatementSyntax>();
-			fullExistingExpressionSyntax ??= node.FirstAncestorOrSelf<WhileStatementSyntax>();
+			StatementSyntax fullExistingExpressionSyntax = expressionNode?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<ReturnStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			if (fullExistingExpressionSyntax != null)
 			{
@@ -59,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => ExtractLocalVariable(context.Document, node, c),
+						createChangedDocument: c => ExtractLocalVariable(context.Document, expressionNode, c),
 						equivalenceKey: Title),
 					diagnostic);
 			}
@@ -69,11 +68,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
-			var semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
 
 			string newName;
 			SyntaxToken identifier;
-			var operation = semanticModel.GetOperation(argumentSyntax, c);
+			IOperation operation = semanticModel.GetOperation(argumentSyntax, c);
 			if (operation?.Parent is IArgumentOperation argumentOperation)
 			{
 				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
@@ -92,8 +91,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Build "var renameMe = [blah]"
-			var variableDeclarator = SyntaxFactory.VariableDeclarator(identifier).WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax));
-			var variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var")).AddVariables(variableDeclarator);
+			VariableDeclaratorSyntax variableDeclarator = SyntaxFactory.VariableDeclarator(identifier).WithInitializer(SyntaxFactory.EqualsValueClause(argumentSyntax));
+			VariableDeclarationSyntax variableDeclaration = SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("var")).AddVariables(variableDeclarator);
 			LocalDeclarationStatementSyntax localDeclarationStatementSyntax = SyntaxFactory.LocalDeclarationStatement(variableDeclaration);
 
 
@@ -106,11 +105,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Replace the violation with "renameMe"
 			IdentifierNameSyntax identifierSyntax = SyntaxFactory.IdentifierName(newName);
-			var newFullExistingExpressionSyntax = fullExistingExpressionSyntax.ReplaceNode(argumentSyntax, identifierSyntax);
+			StatementSyntax newFullExistingExpressionSyntax = fullExistingExpressionSyntax.ReplaceNode(argumentSyntax, identifierSyntax);
 
 			// Move all the leading trivia from the existing statement to our new statement
 			SyntaxTriviaList existingLeadingTrivia = fullExistingExpressionSyntax.GetLeadingTrivia();
-			var formattedLocalDeclarationSyntax = localDeclarationStatementSyntax.WithLeadingTrivia(existingLeadingTrivia);
+			LocalDeclarationStatementSyntax formattedLocalDeclarationSyntax = localDeclarationStatementSyntax.WithLeadingTrivia(existingLeadingTrivia);
 
 			// Put just the leading whitespace back into the original statement (ie, remove comments on the previous line - we put them on our new first statement instead)
 			newFullExistingExpressionSyntax = newFullExistingExpressionSyntax.WithoutLeadingTrivia();
@@ -137,11 +136,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static string NiceVariableName(ExpressionSyntax argumentSyntax)
 		{
-			string niceName = @"renameMe";
+			var niceName = @"renameMe";
 			if (argumentSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
 			{
-				string newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
-				int indexOfDot = newNameSuffix.LastIndexOf('.');
+				var newNameSuffix = invocationExpressionSyntax.Expression.GetText().ToString();
+				var indexOfDot = newNameSuffix.LastIndexOf('.');
 				if (indexOfDot != -1)
 				{
 					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);

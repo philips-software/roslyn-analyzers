@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
@@ -50,9 +50,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (token.Parent?.Parent is VariableDeclarationSyntax variable)
 			{
-				var type = variable?.Type;
+				TypeSyntax type = variable?.Type;
 				root = ReplaceTypeWithList(root, type);
-				var replacedVariable = root.GetAnnotatedNodes(annotation).FirstOrDefault()?.Ancestors()
+				VariableDeclarationSyntax replacedVariable = root.GetAnnotatedNodes(annotation).FirstOrDefault()?.Ancestors()
 					.OfType<VariableDeclarationSyntax>().FirstOrDefault();
 				if (
 					replacedVariable != null &&
@@ -72,9 +72,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxNode newRoot = root;
 			if (root != null && existingType != null)
 			{
-				var parameterType = SyntaxFactory.ParseTypeName("int")
+				TypeSyntax parameterType = SyntaxFactory.ParseTypeName("int")
 					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
-				var list = CreateGenericTypeSyntax(StringConstants.List, parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
+				TypeSyntax list = CreateGenericTypeSyntax(StringConstants.List, parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
 
 				newRoot = root.ReplaceNode(existingType, list);
 			}
@@ -97,29 +97,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <returns>An instance of TypeSyntax from the Roslyn Model</returns>
 		private static TypeSyntax CreateGenericTypeSyntax(string identifier, params TypeSyntax[] arguments)
 		{
+			System.Collections.Generic.IEnumerable<TypeSyntax> args = arguments.Select(
+				x =>
+				{
+					if (x is GenericNameSyntax generic)
+					{
+						return
+							CreateGenericTypeSyntax(
+								generic.Identifier.ToString(),
+								generic.TypeArgumentList.Arguments.ToArray()
+							);
+					}
+					return x;
+				});
+
 			return
 				SyntaxFactory.GenericName(
 					SyntaxFactory.Identifier(identifier),
 					SyntaxFactory.TypeArgumentList(
-						SyntaxFactory.SeparatedList(
-							arguments.Select(
-								x =>
-								{
-									if (x is GenericNameSyntax generic)
-									{
-										return
-											CreateGenericTypeSyntax(
-												generic.Identifier.ToString(),
-												generic.TypeArgumentList.Arguments.ToArray()
-											);
-									}
-									else
-									{
-										return x;
-									}
-								}
-							)
-						)
+						SyntaxFactory.SeparatedList(args)
 					)
 				);
 		}

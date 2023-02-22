@@ -1,7 +1,5 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis;
@@ -115,7 +113,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
-			string input = @"
+			var input = @"
 public class Foo
 {
   public Foo()
@@ -133,7 +131,7 @@ public void Method(int i) { switch(i) { default: break;} }
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = true;
 
-			string input = @"
+			var input = @"
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public class Foo
 {
@@ -149,7 +147,7 @@ public class Foo
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = true;
 
-			string input = @"
+			var input = @"
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
 public struct Foo { }
 ";
@@ -163,7 +161,7 @@ public struct Foo { }
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = true;
 
-			string input = @"
+			var input = @"
 public class Foo
 {
   [global::System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
@@ -196,7 +194,7 @@ public class Foo
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
 
-			string input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
+			var input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
 			await VerifySuccessfulCompilation(input, fileNamePrefix).ConfigureAwait(false);
 		}
 
@@ -207,7 +205,7 @@ public class Foo
 		public async Task NonGeneratedFilesAreFlaggedAsync(string fileNamePrefix)
 		{
 			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
-			string input = @"public class Foo { }";
+			var input = @"public class Foo { }";
 			await VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix).ConfigureAwait(false);
 		}
 	}

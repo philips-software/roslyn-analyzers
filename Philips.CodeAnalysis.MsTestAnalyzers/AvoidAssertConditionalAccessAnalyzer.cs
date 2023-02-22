@@ -26,31 +26,31 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression)
 		{
-			string memberName = memberAccessExpression.Name.ToString();
+			var memberName = memberAccessExpression.Name.ToString();
 			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				yield break;
 			}
 
-			var argumentList = invocationExpressionSyntax.ArgumentList;
+			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			if (argumentList is null || argumentList.Arguments.Count < 2)
+			if (argumentList.Arguments.Count < 2)
 			{
 				yield break;
 			}
 
-			ArgumentSyntax expected = argumentList.Arguments[0];
-			ArgumentSyntax actual = argumentList.Arguments[1];
-
-			foreach (ArgumentSyntax syntax in new[] { expected, actual })
+			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
+			foreach (ArgumentSyntax syntax in arguments.Where(InConditionalAccess))
 			{
-				if (syntax.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression))
-				{
-					var location = syntax.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
-					yield return diagnostic;
-				}
+				Location location = syntax.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
+				yield return diagnostic;
 			}
+		}
+
+		private static bool InConditionalAccess(ArgumentSyntax argument)
+		{
+			return argument.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression);
 		}
 	}
 }

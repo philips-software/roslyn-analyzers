@@ -32,14 +32,14 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			if (Current is null)
 			{
 				Current = FindDeepest(_root);
-				_visited.Add(Current);
+				_ = _visited.Add(Current);
 				return true;
 			}
 
-			var nextSibling = Current.GetNextSibling();
-			var next = FindDeepest(nextSibling) ?? BackTrack();
+			CallTreeNode nextSibling = Current.GetNextSibling();
+			CallTreeNode next = FindDeepest(nextSibling) ?? BackTrack();
 			Current = next;
-			_visited.Add(Current);
+			_ = _visited.Add(Current);
 			return Current != null;
 		}
 
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 				return null;
 			}
 			CallTreeNode current;
-			var candidate = start;
+			CallTreeNode candidate = start;
 			do
 			{
 				current = candidate;
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		private CallTreeNode BackTrack()
 		{
-			var parent = Current.Parent;
+			CallTreeNode parent = Current.Parent;
 			return FindDeepest(parent);
 		}
 

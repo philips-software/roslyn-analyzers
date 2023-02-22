@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -21,7 +20,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext analysisContext)
 		{
-			analysisContext.ReportDiagnostic(Diagnostic.Create(Rule, analysisContext.Node.GetLocation()));
+			Location location = analysisContext.Node.GetLocation();
+			analysisContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 
 		public override void Initialize(AnalysisContext context)

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,15 +45,15 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="shouldAllowNewCompilerDiagnostics">A bool controlling whether or not the test will fail if the CodeFix introduces other warnings after being applied</param>
 		protected async Task VerifyFix(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
-			var analyzer = GetDiagnosticAnalyzer();
-			var codeFixProvider = GetCodeFixProvider();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
+			CodeFixProvider codeFixProvider = GetCodeFixProvider();
 			await VerifyFix(analyzer, codeFixProvider, oldSource, newSource, codeFixIndex, shouldAllowNewCompilerDiagnostics, FixAllScope.Custom).ConfigureAwait(false);
 		}
 
 		protected async Task VerifyFixAll(string oldSource, string newSource, int? codeFixIndex = null, bool shouldAllowNewCompilerDiagnostics = false)
 		{
-			var analyzer = GetDiagnosticAnalyzer();
-			var codeFixProvider = GetCodeFixProvider();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
+			CodeFixProvider codeFixProvider = GetCodeFixProvider();
 
 			foreach (FixAllScope scope in new FixAllScope[] { FixAllScope.Solution, FixAllScope.Project, FixAllScope.Document })
 			{
@@ -77,24 +76,24 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="scope">Scope for the FixAllProvider. </param>
 		private async Task VerifyFix(DiagnosticAnalyzer analyzer, CodeFixProvider codeFixProvider, string oldSource, string expectedSource, int? codeFixIndex, bool shouldAllowNewCompilerDiagnostics, FixAllScope scope)
 		{
-			var document = CreateDocument(oldSource);
-			var analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
-			var compilerDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
+			Microsoft.CodeAnalysis.Document document = CreateDocument(oldSource);
+			IEnumerable<Microsoft.CodeAnalysis.Diagnostic> analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
+			IEnumerable<Microsoft.CodeAnalysis.Diagnostic> compilerDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
 
 			// Check if the found analyzer diagnostics are to be fixed by the given CodeFixProvider.
-			var analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
+			IEnumerable<string> analyzerDiagnosticIds = analyzerDiagnostics.Select(d => d.Id);
 			if (analyzerDiagnostics.Any())
 			{
-				var notFixableDiagnostics = codeFixProvider.FixableDiagnosticIds.Intersect(analyzerDiagnosticIds);
+				IEnumerable<string> notFixableDiagnostics = codeFixProvider.FixableDiagnosticIds.Intersect(analyzerDiagnosticIds);
 				Assert.IsTrue(notFixableDiagnostics.Any(),
 					$"CodeFixProvider {codeFixProvider.GetType().Name} is not registered to fix the reported diagnostics: {string.Join(',', analyzerDiagnosticIds)}.");
 			}
 
 			var attempts = analyzerDiagnostics.Count();
-			for (int i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
+			for (var i = 0; i < attempts && analyzerDiagnostics.Any(); ++i)
 			{
 				var actions = new List<CodeAction>();
-				var firstDiagnostic = analyzerDiagnostics.First();
+				Microsoft.CodeAnalysis.Diagnostic firstDiagnostic = analyzerDiagnostics.First();
 				var context = new CodeFixContext(document, firstDiagnostic, (a, d) => actions.Add(a), CancellationToken.None);
 				codeFixProvider.RegisterCodeFixesAsync(context).Wait();
 
@@ -108,12 +107,12 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				{
 					if (codeFixIndex != null)
 					{
-						var codeAction1 = actions.ElementAt((int)codeFixIndex);
+						CodeAction codeAction1 = actions.ElementAt((int)codeFixIndex);
 						document = await ApplyFix(document, codeAction1).ConfigureAwait(false);
 						break;
 					}
 
-					var codeAction2 = actions.ElementAt(0);
+					CodeAction codeAction2 = actions.ElementAt(0);
 					document = await ApplyFix(document, codeAction2).ConfigureAwait(false);
 				}
 				else
@@ -127,22 +126,22 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 				analyzerDiagnostics = await GetSortedDiagnosticsFromDocuments(analyzer, new[] { document }).ConfigureAwait(false);
 
-				var newDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
-				var newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);
+				IEnumerable<Microsoft.CodeAnalysis.Diagnostic> newDiagnostics = await GetCompilerDiagnostics(document).ConfigureAwait(false);
+				IEnumerable<Microsoft.CodeAnalysis.Diagnostic> newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics);
 
 				//check if applying the code fix introduced any new compiler diagnostics
 				if (!shouldAllowNewCompilerDiagnostics && newCompilerDiagnostics.Any())
 				{
-					var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
+					Microsoft.CodeAnalysis.SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 					// Format and get the compiler diagnostics again so that the locations make sense in the output
 					document = document.WithSyntaxRoot(Formatter.Format(syntaxRoot, Formatter.Annotation, document.Project.Solution.Workspace));
-					var newDiagnostics2 = await GetCompilerDiagnostics(document).ConfigureAwait(false);
+					IEnumerable<Microsoft.CodeAnalysis.Diagnostic> newDiagnostics2 = await GetCompilerDiagnostics(document).ConfigureAwait(false);
 					newCompilerDiagnostics = GetNewDiagnostics(compilerDiagnostics, newDiagnostics2);
 
+					IEnumerable<string> newDiagnosticsString = newCompilerDiagnostics.Select(d => d.ToString());
+					var rootString = syntaxRoot?.ToFullString();
 					Assert.Fail(
-						string.Format("Fix introduced new compiler diagnostics:\r\n{0}\r\n\r\nNew document:\r\n{1}\r\n",
-							string.Join("\r\n", newCompilerDiagnostics.Select(d => d.ToString())),
-							syntaxRoot.ToFullString()));
+						$"Fix introduced new compiler diagnostics:\r\n{string.Join("\r\n", newDiagnosticsString)}\r\n\r\nNew document:\r\n{rootString}\r\n");
 				}
 			}
 
@@ -152,11 +151,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
 
 			//after applying all of the code fixes, compare the resulting string to the inputted one
-			string actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
-			string[] actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-			string[] expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
+			var actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+			var expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
-			for (int i = 0; i < actualSourceLines.Length; i++)
+			for (var i = 0; i < actualSourceLines.Length; i++)
 			{
 				// Trimming the lines, to ignore indentation differences.
 				Assert.AreEqual(expectedSourceLines[i].Trim(), actualSourceLines[i].Trim(), $"Source line {i}");
@@ -168,7 +167,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		public void CheckFixAllProvider()
 		{
 			// Arrange
-			var fixAllProvider = GetCodeFixProvider().GetFixAllProvider();
+			FixAllProvider fixAllProvider = GetCodeFixProvider().GetFixAllProvider();
 			// Assert
 			AssertFixAllProvider(fixAllProvider);
 		}

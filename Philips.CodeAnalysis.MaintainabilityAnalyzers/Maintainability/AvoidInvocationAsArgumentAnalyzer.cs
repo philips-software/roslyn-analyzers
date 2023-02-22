@@ -25,26 +25,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			// We are looking for method calls as arguments
-			if (Node.Expression is not InvocationExpressionSyntax argumentExpressionSyntax)
+			if (Node.Expression is not InvocationExpressionSyntax invocationExpressionSyntax)
 			{
 				return;
 			}
 
 			// If it's an embedded nameof() operation, let it go.
-			if ((argumentExpressionSyntax.Expression as IdentifierNameSyntax)?.Identifier.Text == "nameof")
+			if ((invocationExpressionSyntax.Expression as IdentifierNameSyntax)?.Identifier.Text == "nameof")
 			{
 				return;
 			}
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
-			string methodName = (argumentExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
+			var methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
 			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
 				return;
 			}
 
 			// If nested calls (e.g., Foo(Bar(Meow()))), only trigger the outer violation Bar(Meow())
-			if (Node.Ancestors().OfType<ArgumentSyntax>().Any())
+			if (Node.Ancestors().OfType<ArgumentSyntax>().Any(arg => !IsStaticMethod(arg.Expression)))
 			{
 				return;
 			}
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If the caller is Assert, let it go. (This is debatable, and ideally warrants a configuration option.)
-			MemberAccessExpressionSyntax caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
+			var caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
 			if (caller?.Expression is IdentifierNameSyntax identifier && identifier.Identifier.ValueText.Contains(@"Assert"))
 			{
 				return;
@@ -65,17 +65,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If the called method is static, let it go to reduce annoyances. E.g., "Times.Once", "Mock.Of<>", "Marshal.Sizeof", etc.
 			// This is debatable, and ideally warrants a configuration option.
-			if (argumentExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
+			if (invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
 			{
-				var symbol = Context.SemanticModel.GetSymbolInfo(callee).Symbol;
-				if (symbol.IsStatic)
+				var isStatic = IsStaticMethod(callee);
+				if (isStatic)
 				{
 					return;
 				}
 			}
 
-			var location = Node.GetLocation();
+			Location location = Node.GetLocation();
 			ReportDiagnostic(location, Node.ToString());
+		}
+
+		private bool IsStaticMethod(SyntaxNode node)
+		{
+			ISymbol symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
+			return symbol is { IsStatic: true };
 		}
 	}
 }

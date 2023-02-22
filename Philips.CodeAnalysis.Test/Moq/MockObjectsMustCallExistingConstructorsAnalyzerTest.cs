@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string mockReference = typeof(Mock<>).Assembly.Location;
+			var mockReference = typeof(Mock<>).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 			return base.GetMetadataReferences().Add(reference);
 		}

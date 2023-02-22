@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -28,11 +29,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
 		{
-			var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
 			Diagnostic diagnostic = context.Diagnostics.First();
 
-			var diagnosticSpan = diagnostic.Location.SourceSpan;
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			if (root != null)
 			{
@@ -52,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private async Task<Document> RemoveEmptyStatement(Document document, EmptyStatementSyntax node, CancellationToken cancellationToken)
 		{
-			var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			root = root.RemoveNode(node, SyntaxRemoveOptions.KeepExteriorTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 			return document.WithSyntaxRoot(root);
 		}

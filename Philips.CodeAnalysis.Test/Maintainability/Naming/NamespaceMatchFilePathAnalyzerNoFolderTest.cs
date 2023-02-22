@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
+			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
 			return new NamespaceMatchFilePathAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
@@ -35,8 +35,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ReportIncorrectNamespaceMatchAsync(string ns, string path)
 		{
-			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
+			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
+			var code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
 			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath),
@@ -59,8 +59,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespaceSupersetMatchAsync(string ns, string path)
 		{
-			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
+			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
+			var code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
 			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
 		}
 	}

@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	{
 		private void Report(IdentifierNameSyntax identifier)
 		{
-			var location = identifier.GetLocation();
+			Location location = identifier.GetLocation();
 			ReportDiagnostic(location, identifier.Identifier.ValueText);
 		}
 
@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// </summary>
 		private bool IsCaseWeUnderstand(SyntaxNode syntaxNode)
 		{
-			BinaryExpressionSyntax binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
+			var binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
 			return
 				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
 				binaryExpressionSyntax != null &&
@@ -84,12 +84,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (blockOfInterest.Statements.Contains(ourStatement))
 			{
 				statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
-				var statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
+				StatementSyntax statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
 				return (statementOfInterest, statementOfInterestIndex);
 			}
 
 			// the statement of interest is nested within another statement
-			List<StatementSyntax> childNodes = blockOfInterest.DescendantNodes().OfType<StatementSyntax>().ToList();
+			var childNodes = blockOfInterest.DescendantNodes().OfType<StatementSyntax>().ToList();
 
 			statementOfInterestIndex = childNodes.IndexOf(ourStatement) + offset;
 
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// </summary>
 		private IdentifierNameSyntax GetFirstMemberAccess(ISymbol ourSymbol, SemanticModel model, BlockSyntax blockOfInterest)
 		{
-			var memberAccesses = blockOfInterest.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>();
+			IEnumerable<MemberAccessExpressionSyntax> memberAccesses = blockOfInterest.DescendantNodesAndSelf().OfType<MemberAccessExpressionSyntax>();
 			foreach (MemberAccessExpressionSyntax memberAccessExpressionSyntax in memberAccesses)
 			{
 				if (memberAccessExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax)
@@ -126,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private bool HasNullCheck(ExpressionSyntax condition)
 		{
-			string conditionAsString = condition.ToString();
+			var conditionAsString = condition.ToString();
 			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
 			{
 				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
@@ -150,7 +150,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			BlockSyntax blockOfInterest = variableDeclarationSyntax.Ancestors().OfType<BlockSyntax>().First();
-			var model = Context.SemanticModel;
+			SemanticModel model = Context.SemanticModel;
 			ISymbol ourSymbol = model.GetDeclaredSymbol(variableDeclarationSyntax);
 
 			//  Identify where y is first used (ie., MemberAccessExpression)
@@ -165,15 +165,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
-			(StatementSyntax firstStatementOfAnalysis, int firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
-			(StatementSyntax lastStatementOfAnalysis, int lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
+			(StatementSyntax firstStatementOfAnalysis, var firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
+			(StatementSyntax lastStatementOfAnalysis, var lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
 			if (CheckStatements(lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
 			{
 				return;
 			}
 
-			bool isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
+			var isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
 			if (!isOurSymbolReadOrWritten)
 			{
 				Report(identifierNameSyntax);
@@ -183,28 +183,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
 			StatementSyntax lastStatementOfAnalysis, ISymbol ourSymbol)
 		{
-			bool isOurSymbolReadOrWritten = false;
+			var isOurSymbolReadOrWritten = false;
 			DataFlowAnalysis result = model.AnalyzeDataFlow(firstStatementOfAnalysis, lastStatementOfAnalysis);
 			if (result != null)
 			{
-				foreach (ISymbol assignedValue in result.ReadInside)
-				{
-					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-					{
-						// We shouldn't just be checking that we read our symbol; we should really see if it's checked for null
-						isOurSymbolReadOrWritten = true;
-						break;
-					}
-				}
-
-				foreach (ISymbol assignedValue in result.WrittenInside)
-				{
-					if (SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol))
-					{
-						isOurSymbolReadOrWritten = true;
-						break;
-					}
-				}
+				isOurSymbolReadOrWritten |= result.ReadInside.Any(assignedValue => SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol));
+				isOurSymbolReadOrWritten |= result.WrittenInside.Any(assignedValue => SymbolEqualityComparer.Default.Equals(assignedValue, ourSymbol));
 			}
 
 			return isOurSymbolReadOrWritten;

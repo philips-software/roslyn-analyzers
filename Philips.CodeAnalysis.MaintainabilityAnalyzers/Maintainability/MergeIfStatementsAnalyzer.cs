@@ -3,13 +3,10 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System.Collections.Immutable;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using Philips.CodeAnalysis.Common;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -36,7 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var parent = Node.Parent;
+			SyntaxNode parent = Node.Parent;
 
 			if (parent is BlockSyntax parentBlockSyntax)
 			{
@@ -73,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var location = Node.IfKeyword.GetLocation();
+			Location location = Node.IfKeyword.GetLocation();
 			ReportDiagnostic(location);
 		}
 

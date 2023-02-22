@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Security
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string regexReference = typeof(Regex).Assembly.Location;
+			var regexReference = typeof(Regex).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(regexReference);
 
 			return base.GetMetadataReferences().Add(reference);
@@ -59,7 +59,7 @@ namespace RegexNeedsTimeoutTest
 		public async Task WithoutTimeoutShouldTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content);
+			var testCode = string.Format(format, content);
 			await VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout).ConfigureAwait(false);
 		}
 
@@ -74,7 +74,7 @@ namespace RegexNeedsTimeoutTest
 		public async Task WithTimeoutShouldNotTriggerDiagnosticAsync(string content)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content);
+			var testCode = string.Format(format, content);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 

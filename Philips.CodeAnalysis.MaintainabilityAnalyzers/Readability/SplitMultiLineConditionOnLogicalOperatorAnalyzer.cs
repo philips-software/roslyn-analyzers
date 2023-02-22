@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -47,24 +46,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var logicalNode = FindHighestLogicalInHierarchy(context.Node);
+			SyntaxNode logicalNode = FindHighestLogicalInHierarchy(context.Node);
 			if (!ReferenceEquals(logicalNode, context.Node))
 			{
 				return;
 			}
 
-			var location = logicalNode.GetLocation();
+			Location location = logicalNode.GetLocation();
 			if (!IsMultiLine(location))
 			{
 				return;
 			}
 
-			var lastToken = logicalNode.GetLastToken();
-			var violations = logicalNode.DescendantTokens()
+			SyntaxToken lastToken = logicalNode.GetLastToken();
+			System.Collections.Generic.IEnumerable<SyntaxToken> violations = logicalNode.DescendantTokens()
 				.Where(ContainsEndOfLine)
 				.Where(IsIllegalLineBreakToken) // Check 2).
 				.Where(t => t != lastToken);
-			foreach (var violation in violations)
+			foreach (SyntaxToken violation in violations)
 			{
 				ReportDiagnostic(context, violation);
 			}
@@ -73,7 +72,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxToken violation)
 		{
 			// Report the location of the nearest SyntaxNode.
-			var loc = violation.Parent?.GetLocation();
+			Location loc = violation.Parent?.GetLocation();
 			var lineNumber = loc.GetLineSpan().StartLinePosition.Line + 1;
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc, lineNumber));
 		}
@@ -105,7 +104,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private bool IsMultiLine(Location loc)
 		{
-			var lineSpan = loc.GetLineSpan();
+			FileLinePositionSpan lineSpan = loc.GetLineSpan();
 			var startLine = lineSpan.StartLinePosition.Line;
 			var endLine = lineSpan.EndLinePosition.Line;
 			return startLine != endLine;

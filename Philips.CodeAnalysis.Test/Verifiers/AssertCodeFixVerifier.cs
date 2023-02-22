@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected async Task VerifyChange(string methodBody, string expectedBody, string methodAttributes, string expectedAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, bool shouldAllowNewCompilerDiagnostics = false)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
-			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
+			DiagnosticResult expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		protected async Task VerifyError(string methodBody, string methodAttributes, int expectedErrorLineOffset = 0, int expectedErrorColumnOffset = 0, string error = null)
 		{
 			var test = _helper.GetText(methodBody, OtherClassSyntax, methodAttributes);
-			var expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
+			DiagnosticResult expected = GetExpectedDiagnostic(expectedLineNumberErrorOffset: expectedErrorLineOffset, expectedColumnErrorOffset: expectedErrorColumnOffset);
 
 			if (error != null)
 			{

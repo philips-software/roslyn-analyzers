@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		public async Task ReportIncorrectNamespacePrefixAsync(string prefix)
 		{
 
-			string code = string.Format(ClassString, prefix);
+			var code = string.Format(ClassString, prefix);
 			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.NamespacePrefix),
@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespacePrefixErrorAsync(string ns)
 		{
-			string code = string.Format(ClassString, ns);
+			var code = string.Format(ClassString, ns);
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
@@ -86,8 +86,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespaceOnExemptListAsync(string ns)
 		{
-			string template = @"namespace {0} {{ class Foo {{ }} }}";
-			string code = string.Format(template, ns);
+			var template = @"namespace {0} {{ class Foo {{ }} }}";
+			var code = string.Format(template, ns);
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 	}

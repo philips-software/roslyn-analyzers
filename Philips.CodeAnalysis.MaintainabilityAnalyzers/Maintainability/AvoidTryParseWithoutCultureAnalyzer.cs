@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidTryParseWithoutCultureSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
 	{
 		private const string TryParseMethodName = @"TryParse";
-		private static readonly HashSet<string> _cultureParameterTypes = new()
+		private static readonly HashSet<string> CultureParameterTypes = new()
 		{
 			@"IFormatProvider",
 			@"CultureInfo"
@@ -57,22 +57,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (tryParseOverloads.Any(m => m is IMethodSymbol method && HasCultureParameter(method)))
 			{
 				// There is an overload that can accept culture as a parameter. Display an error.
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}
 
 		private static bool HasCultureParameter(IMethodSymbol method)
 		{
-			foreach (IParameterSymbol parameter in method.Parameters)
-			{
-				if (_cultureParameterTypes.Contains(parameter.Type.Name))
-				{
-					return true;
-				}
-			}
-
-			return false;
+			return method.Parameters.Any(parameter => CultureParameterTypes.Contains(parameter.Type.Name));
 		}
 	}
 }

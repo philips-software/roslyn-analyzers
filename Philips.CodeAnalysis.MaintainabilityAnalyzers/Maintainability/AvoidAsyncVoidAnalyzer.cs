@@ -45,14 +45,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeLambda(SyntaxNodeAnalysisContext context)
 		{
-			LambdaExpressionSyntax lambdaExpressionSyntax = (LambdaExpressionSyntax)context.Node;
+			var lambdaExpressionSyntax = (LambdaExpressionSyntax)context.Node;
 
 			if (lambdaExpressionSyntax.AsyncKeyword.Kind() != SyntaxKind.AsyncKeyword)
 			{
 				return;
 			}
 
-			var retValType = context.SemanticModel.GetSymbolInfo(lambdaExpressionSyntax);
+			SymbolInfo retValType = context.SemanticModel.GetSymbolInfo(lambdaExpressionSyntax);
 
 			if (retValType.Symbol is null)
 			{
@@ -61,13 +61,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (retValType.Symbol is IMethodSymbol method && method.ReturnType.SpecialType == SpecialType.System_Void)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, lambdaExpressionSyntax.GetLocation()));
+				Location location = lambdaExpressionSyntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 
 		private void Analyze(INamedTypeSymbol namedSymbol, SyntaxNodeAnalysisContext context)
 		{
-			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
+			var methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
 			if (!methodDeclaration.Modifiers.Any(SyntaxKind.AsyncKeyword))
 			{
@@ -93,7 +94,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.ReturnType.GetLocation(), methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat)));
+			Location location = methodDeclaration.ReturnType.GetLocation();
+			var displayString = methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
+			context.ReportDiagnostic(Diagnostic.Create(Rule, location, displayString));
 		}
 
 

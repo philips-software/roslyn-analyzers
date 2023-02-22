@@ -1,9 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,9 +13,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class AvoidStaticClassAnalyzerTest : CodeFixVerifier
 	{
@@ -53,12 +48,12 @@ AllowedEnumeration";
 
 		protected string CreateFunction(string staticModifier, string nameSpace = "Sweet", string className = "Caroline", bool isExtension = false, bool hasNonExtensionMethods = true)
 		{
-			string extensionMethod = isExtension ? $@"public {staticModifier} IServiceCollection BaBaBummmm(this IServiceCollection services)
+			var extensionMethod = isExtension ? $@"public {staticModifier} IServiceCollection BaBaBummmm(this IServiceCollection services)
 					{{
 						return services;
 					}}" : string.Empty;
 
-			string method = hasNonExtensionMethods ? $@"public {staticModifier} IServiceCollection BaBaBa(IServiceCollection services)
+			var method = hasNonExtensionMethods ? $@"public {staticModifier} IServiceCollection BaBaBa(IServiceCollection services)
 					{{
 						return services;
 					}}" : string.Empty;
@@ -82,7 +77,7 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesOnlyConstFieldTestAsync()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -93,23 +88,23 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesViolatingFieldTest()
+		public async Task AvoidStaticClassesViolatingFieldTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
 				{CreateField("", "ViolatingField")}
 			}}}}";
 
-			Verify(testClass);
+			await Verify(testClass);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesMixFieldTestAsync()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -124,9 +119,9 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesMixViolationTest()
+		public async Task AvoidStaticClassesMixViolationTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -136,14 +131,14 @@ AllowedEnumeration";
 				{CreateField("const", "F5")}
 			}}}}";
 
-			Verify(testClass);
+			await Verify(testClass);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesRogueMethodTest()
+		public async Task AvoidStaticClassesRogueMethodTest()
 		{
-			string testClass = $@"
+			var testClass = $@"
 			namespace MyNamespace {{
 			public static class TestClass {{
 				{CreateField("const", "F1")}
@@ -152,25 +147,25 @@ AllowedEnumeration";
 				public static void Foo();
 			}}}}";
 
-			Verify(testClass);
+			await Verify(testClass);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesTest()
+		public async Task AvoidStaticClassesTest()
 		{
 			var file = CreateFunction("static");
-			Verify(file);
+			await Verify(file);
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
+		public async Task AvoidStaticClassesShouldNotWhitelistWhenNamespaceUnmatchedTest()
 		{
 			var file = CreateFunction("static", "IAmSooooooNotWhitelisted", KnownWhitelistClassClassName);
-			Verify(file);
+			await Verify(file);
 		}
 
 		[TestMethod]
@@ -190,7 +185,7 @@ AllowedEnumeration";
 			var noDiagnostic = CreateFunction("static", isExtension: true, hasNonExtensionMethods: false);
 			await VerifySuccessfulCompilation(noDiagnostic).ConfigureAwait(false);
 			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
-			Verify(methodHavingDiagnostic);
+			await Verify(methodHavingDiagnostic);
 			await VerifyFix(methodHavingDiagnostic, methodHavingDiagnostic).ConfigureAwait(false);
 		}
 
@@ -203,9 +198,9 @@ AllowedEnumeration";
 		}
 
 
-		private void Verify(string file)
+		private async Task Verify(string file)
 		{
-			VerifyDiagnostic(file, AvoidStaticClassesAnalyzer.Rule.Id, line: 3, column: -1).ConfigureAwait(false);
+			await VerifyDiagnostic(file, DiagnosticId.AvoidStaticClasses, line: 3, column: -1).ConfigureAwait(false);
 		}
 	}
 
@@ -225,7 +220,7 @@ AllowedEnumeration";
 		{
 			AllowedSymbols allowedSymbols = new(null);
 			allowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
-			_mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
+			_ = _mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
 			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}

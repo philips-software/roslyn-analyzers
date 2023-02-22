@@ -3,7 +3,6 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -71,8 +70,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			InvocationExpressionSyntax newInvocation = SyntaxFactory.InvocationExpression(newExpression, newArguments);
 
-			var trivia = invocation.GetLeadingTrivia();
-			var newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
+			SyntaxTriviaList trivia = invocation.GetLeadingTrivia();
+			InvocationExpressionSyntax newInvocationWithLeadingTrivia = newInvocation.WithLeadingTrivia(trivia);
 			root = root.ReplaceNode(invocation, newInvocationWithLeadingTrivia);
 
 			return document.WithSyntaxRoot(root);

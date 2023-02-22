@@ -1,6 +1,4 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -8,7 +6,6 @@ using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
@@ -30,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreventLockOnUncapturedVariableAsync(string lockText, bool isExpectedError)
 		{
-			string text = @$"
+			var text = @$"
 public class Foo
 {{
 	public void TestMethod()

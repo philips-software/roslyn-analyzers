@@ -1,7 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -40,7 +39,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(parentMethod);
 					if ((methodSymbol != null) && methodSymbol.ToString().Contains(".Dispose("))
 					{
-						context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+						Location location = context.Node.GetLocation();
+						context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 					}
 				}
 			}

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private sealed class AssertMetadata
 		{
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void OnMethodCall(AssertMetadata metadata, OperationAnalysisContext obj)
 		{
-			IInvocationOperation invocation = (IInvocationOperation)obj.Operation;
+			var invocation = (IInvocationOperation)obj.Operation;
 
 			if (!metadata.FailMethods.Contains(invocation.TargetMethod))
 			{
@@ -68,20 +68,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// { Assert.Fail() }
 			if (expressionOperation.Parent is IBlockOperation blockOperation && CheckBlock(blockOperation, expressionOperation))
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				Location location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 				return;
 			}
 
 			// bare if/else (IE, no block)
 			if (expressionOperation.Parent is IConditionalOperation)
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				Location location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 
 			// bare foreach loop
 			if (expressionOperation.Parent is IForEachLoopOperation)
 			{
-				obj.ReportDiagnostic(Diagnostic.Create(Rule, invocation.Syntax.GetLocation()));
+				Location location = invocation.Syntax.GetLocation();
+				obj.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
 
@@ -97,7 +100,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return true;
 			}
 
-			int index = blockOperation.Operations.IndexOf(expressionOperation);
+			var index = blockOperation.Operations.IndexOf(expressionOperation);
 
 			if (index != blockOperation.Operations.Length - 1)
 			{

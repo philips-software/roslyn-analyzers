@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -21,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultTest(string taskType, string argument)
 		{
-			string template = $@"
+			var template = $@"
 using System.Threading.Tasks;
 class FooClass
 {{{{
@@ -32,8 +31,8 @@ class FooClass
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"task.Result");
-			string after = string.Format(template, @"await task");
+			var before = string.Format(template, @"task.Result");
+			var after = string.Format(template, @"await task");
 
 			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
@@ -43,7 +42,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectCreationTest()
 		{
-			string template = $@"
+			var template = $@"
 using System.Threading.Tasks;
 class FooClass
 {{{{
@@ -53,8 +52,8 @@ class FooClass
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"new Task<int>(() => 4).Result");
-			string after = string.Format(template, @"await new Task<int>(() => 4)");
+			var before = string.Format(template, @"new Task<int>(() => 4).Result");
+			var after = string.Format(template, @"await new Task<int>(() => 4)");
 
 			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
@@ -65,7 +64,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultCallMethodTest()
 		{
-			string template = $@"
+			var template = $@"
 using System.Threading.Tasks;
 class FooClass
 {{{{
@@ -79,8 +78,8 @@ class FooClass
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"Foo(1).Result");
-			string after = string.Format(template, @"await Foo(1)");
+			var before = string.Format(template, @"Foo(1).Result");
+			var after = string.Format(template, @"await Foo(1)");
 
 			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);
@@ -91,7 +90,7 @@ class FooClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultCallMethodThisTest()
 		{
-			string template = $@"
+			var template = $@"
 using System.Threading.Tasks;
 class FooClass
 {{{{
@@ -105,8 +104,8 @@ class FooClass
   }}}}
 }}}}
 ";
-			string before = string.Format(template, @"this.Foo(1       ).Result");
-			string after = string.Format(template, @"await this.Foo(1)");
+			var before = string.Format(template, @"this.Foo(1       ).Result");
+			var after = string.Format(template, @"await this.Foo(1)");
 
 			await VerifyDiagnostic(before, DiagnosticId.AvoidTaskResult).ConfigureAwait(false);
 			await VerifyFix(before, after).ConfigureAwait(false);

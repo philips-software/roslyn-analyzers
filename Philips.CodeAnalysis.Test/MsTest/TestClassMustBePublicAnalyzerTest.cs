@@ -40,9 +40,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public void Foo() {{ }}
 }}";
 
-			foreach (string testType in new[] { "[TestMethod]", "[DataTestMethod]" })
+			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]" })
 			{
-				string text = string.Format(code, testType, modifier);
+				var text = string.Format(code, testType, modifier);
 
 				if (isCorrect)
 				{
@@ -82,9 +82,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public static void Foo() {{ }}
 }}";
 
-			foreach (string testType in new[] { "[AssemblyInitialize]", "[AssemblyCleanup]" })
+			foreach (var testType in new[] { "[AssemblyInitialize]", "[AssemblyCleanup]" })
 			{
-				string text = string.Format(code, testType, modifier);
+				var text = string.Format(code, testType, modifier);
 
 				if (isCorrect)
 				{

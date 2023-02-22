@@ -1,7 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,9 +11,6 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class PreferTupleFieldNamesAnalyzerTest : DiagnosticVerifier
 	{
@@ -31,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string argument)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo((string, int num) data)

@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			return new DataTestMethodsHaveDataRowsImplementation(definitions);
 		}
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod);
 
 		public class DataTestMethodsHaveDataRowsImplementation : TestMethodImplementation
 		{
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				CollectSupportingData(context, methodDeclaration, out int dynamicDataCount, out int dataRowCount, out bool hasTestSource);
+				CollectSupportingData(context, methodDeclaration, out var dynamicDataCount, out var dataRowCount, out var hasTestSource);
 
 				if (isDataTestMethod)
 				{
@@ -84,14 +84,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						return;
 					}
 
+					Location location = methodDeclaration.Identifier.GetLocation();
 					if (dataRowCount != 0 && dynamicDataCount != 0)
 					{
 
-						context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
+						context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier.ToString(), dataRowCount, dynamicDataCount));
 					}
 					else if (!hasTestSource)
 					{
-						context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, methodDeclaration.Identifier.GetLocation()));
+						context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeTestMethod, location));
 					}
 				}
 				else
@@ -101,7 +102,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						return;
 					}
 
-					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, methodDeclaration.Identifier.GetLocation()));
+					Location location = methodDeclaration.Identifier.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(RuleShouldBeDataTestMethod, location));
 				}
 			}
 		}

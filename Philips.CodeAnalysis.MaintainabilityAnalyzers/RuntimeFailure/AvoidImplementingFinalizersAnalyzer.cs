@@ -25,13 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	{
 		public override void Analyze()
 		{
-			var body = Node.Body;
-			var children = body != null ? body.ChildNodes() : Array.Empty<SyntaxNode>();
+			BlockSyntax body = Node.Body;
+			System.Collections.Generic.IEnumerable<SyntaxNode> children = body != null ? body.ChildNodes() : Array.Empty<SyntaxNode>();
 			if (children.Any() && children.All(IsDisposeCall))
 			{
 				return;
 			}
-			var loc = Node.GetLocation();
+			Location loc = Node.GetLocation();
 			ReportDiagnostic(loc);
 		}
 

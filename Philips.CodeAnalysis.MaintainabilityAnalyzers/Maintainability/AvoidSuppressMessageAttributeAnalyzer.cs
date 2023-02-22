@@ -59,22 +59,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
 		{
-			foreach (var file in options.AdditionalFiles)
+			foreach (AdditionalText file in options.AdditionalFiles)
 			{
 				if (Path.GetFileName(file.Path) != AvoidSuppressMessageAttributeWhitelist)
 				{
 					continue;
 				}
 
-				var text = file.GetText();
+				Microsoft.CodeAnalysis.Text.SourceText text = file.GetText();
 
-				var builder = ImmutableHashSet.CreateBuilder<string>();
+				ImmutableHashSet<string>.Builder builder = ImmutableHashSet.CreateBuilder<string>();
 				if (text != null)
 				{
-					foreach (var textLine in text.Lines)
+					foreach (Microsoft.CodeAnalysis.Text.TextLine textLine in text.Lines)
 					{
 						var line = textLine.ToString();
-						builder.Add(line);
+						_ = builder.Add(line);
 					}
 				}
 
@@ -92,20 +92,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			AttributeListSyntax attributesNode = (AttributeListSyntax)context.Node;
+			var attributesNode = (AttributeListSyntax)context.Node;
 
 			if (
-				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out var descriptionLocation) &&
+				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation) &&
 				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
+				var diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
 		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
 		{
-			var symbol = semanticModel.GetDeclaredSymbol(node);
+			ISymbol symbol = semanticModel.GetDeclaredSymbol(node);
 
 			if (symbol == null)
 			{

@@ -1,10 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -67,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTryParseWithoutCultureForValueTypesAsync(string s)
 		{
-			string code = string.Format(ClassString, s);
+			var code = string.Format(ClassString, s);
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
@@ -78,7 +75,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotFlagTryParseWithCultureForValueTypesAsync(string s)
 		{
-			string code = string.Format(ClassString, s);
+			var code = string.Format(ClassString, s);
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
@@ -88,8 +85,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTryParseWithoutCultureForReferenceTypesAsync(string s)
 		{
-			string editorCode = string.Format(ClassString, s);
-			string code = string.Concat(editorCode, TestParserDefinition);
+			var editorCode = string.Format(ClassString, s);
+			var code = string.Concat(editorCode, TestParserDefinition);
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
@@ -99,8 +96,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotFlagTryParseWithCultureForReferenceTypesAsync(string s)
 		{
-			string editorCode = string.Format(ClassString, s);
-			string code = string.Concat(editorCode, TestParserDefinition);
+			var editorCode = string.Format(ClassString, s);
+			var code = string.Concat(editorCode, TestParserDefinition);
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 	}

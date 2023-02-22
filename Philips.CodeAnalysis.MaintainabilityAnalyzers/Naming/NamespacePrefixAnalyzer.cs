@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NamespacePrefixAnalyzer : DiagnosticAnalyzer
 	{
-		private const string TitleForIncorrectPrefix = @"Namespace must use  predefined prefixes";
+		private const string TitleForIncorrectPrefix = @"Namespace uses predefined prefix";
 		private const string MessageFormatForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
 		private const string DescriptionForIncorrectPrefix = MessageFormatForIncorrectPrefix;
 
@@ -25,14 +25,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
-			string expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
+			var expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
-			NamespaceDeclarationSyntax namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
-			string myNamespace = namespaceDeclaration.Name.ToString();
-			var location = namespaceDeclaration.Name.GetLocation();
+			var namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
+			var myNamespace = namespaceDeclaration.Name.ToString();
+			Location location = namespaceDeclaration.Name.GetLocation();
 			if (string.IsNullOrEmpty(expectedPrefix))
 			{
-				Diagnostic diagnostic = Diagnostic.Create(RuleForEmptyPrefix, location);
+				var diagnostic = Diagnostic.Create(RuleForEmptyPrefix, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return;
 				}
 
-				Diagnostic diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
+				var diagnostic = Diagnostic.Create(RuleForIncorrectNamespace, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

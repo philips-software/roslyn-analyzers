@@ -1,17 +1,8 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using Microsoft.CodeAnalysis;
-using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Serialization;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System.Collections.Generic;
-using System.Linq;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
 using System.Threading.Tasks;
@@ -39,7 +30,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereTestAsync(string line)
 		{
-			string template = @"
+			var template = @"
 using System.Linq;
 class Foo
 {{
@@ -50,7 +41,7 @@ class Foo
   }}
 }}
 ";
-			string testCode = string.Format(template, line);
+			var testCode = string.Format(template, line);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
@@ -73,7 +64,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereNoFindingTestAsync(string line)
 		{
-			string template = @"
+			var template = @"
 using System.Linq;
 class Foo
 {{
@@ -84,7 +75,7 @@ class Foo
   }}
 }}
 ";
-			string testCode = string.Format(template, line);
+			var testCode = string.Format(template, line);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}

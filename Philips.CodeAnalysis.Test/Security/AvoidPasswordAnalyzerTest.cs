@@ -1,13 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.SecurityAnalyzers;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -48,7 +43,7 @@ class Foo
 		{
 			// These would normally fail, but by default we're in the context of a MS Test environment, which short-circuits the analyzer.
 			var format = GetTemplate();
-			string testCode = string.Format(format, content0, content1);
+			var testCode = string.Format(format, content0, content1);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}
@@ -91,7 +86,7 @@ class Foo
 		public async Task CheckPasswordTestAsync(string content0, string content1)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content0, content1);
+			var testCode = string.Format(format, content0, content1);
 			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField).ConfigureAwait(false);
 		}
 
@@ -105,7 +100,7 @@ class Foo
 		public async Task CheckNoPasswordTestAsync(string content0, string content1)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content0, content1);
+			var testCode = string.Format(format, content0, content1);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 	}

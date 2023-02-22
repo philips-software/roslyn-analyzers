@@ -51,25 +51,33 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// The magic number should be defined in a static field.
-			var field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
-			if (field == null || !IsStaticOrConst(field))
+			// If in a field, the magic number should be defined in a static field.
+			FieldDeclarationSyntax field = Node.Ancestors().OfType<FieldDeclarationSyntax>().FirstOrDefault();
+			if (field != null && IsStaticOrConst(field))
 			{
-				var location = Node.GetLocation();
-				ReportDiagnostic(location);
+				return;
 			}
+
+			LocalDeclarationStatementSyntax local = Node.Ancestors().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
+			if (local != null && local.Modifiers.Any(SyntaxKind.ConstKeyword))
+			{
+				return;
+			}
+
+			Location location = Node.GetLocation();
+			ReportDiagnostic(location);
 		}
 
 		private static bool IsAllowedNumber(string text)
 		{
 			// Initialize with first number that is NOT allowed.
-			long parsed = FirstInvalidNumber;
-			string trimmed = text.ToLower(CultureInfo.InvariantCulture).TrimEnd('f', 'd', 'l', 'm', 'u');
-			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out long integer))
+			var parsed = FirstInvalidNumber;
+			var trimmed = text.ToLower(CultureInfo.InvariantCulture).TrimEnd('f', 'd', 'l', 'm', 'u');
+			if (long.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integer))
 			{
 				parsed = integer;
 			}
-			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out double value))
+			else if (double.TryParse(trimmed, NumberStyles.Any, CultureInfo.InvariantCulture, out var value))
 			{
 				double rounded = (long)value;
 				if (Math.Abs(rounded - value) < double.Epsilon)
@@ -86,7 +94,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsPowerOf(long nut, int bas)
 		{
-			long current = 1L;
+			var current = 1L;
 			while (nut > current)
 			{
 				current *= bas;
@@ -97,8 +105,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsStaticOrConst(FieldDeclarationSyntax field)
 		{
-			bool isStatic = field.Modifiers.Any(SyntaxKind.StaticKeyword);
-			bool isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
+			var isStatic = field.Modifiers.Any(SyntaxKind.StaticKeyword);
+			var isConst = field.Modifiers.Any(SyntaxKind.ConstKeyword);
 			return isStatic || isConst;
 		}
 	}

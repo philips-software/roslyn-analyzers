@@ -1,9 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -37,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				if (!_attributeHelper.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
 				{
-					var location = method.Identifier.GetLocation();
+					Location location = method.Identifier.GetLocation();
 					ReportDiagnostic(location, method.Identifier);
 				}
 			}

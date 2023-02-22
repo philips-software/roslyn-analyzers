@@ -34,15 +34,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				testMethods.Add(method);
+				_ = testMethods.Add(method);
 			}
 
 			HashSet<string> seenNames = new();
-			foreach (var methodIdentifier in testMethods
+			foreach (SyntaxToken methodIdentifier in testMethods
 						 .Select(method => method.Identifier)
 						 .Where(id => !seenNames.Add(id.ToString())))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodIdentifier.GetLocation(), methodIdentifier));
+				Location location = methodIdentifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodIdentifier));
 			}
 		}
 	}

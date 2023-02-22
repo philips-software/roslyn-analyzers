@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static void AnalyzeAccess(OperationAnalysisContext context)
 		{
-			IFieldReferenceOperation fieldReference = (IFieldReferenceOperation)context.Operation;
+			var fieldReference = (IFieldReferenceOperation)context.Operation;
 
 			if (fieldReference.Instance == null)
 			{
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 
 			// they are using Item1/Item2/ etc.  Detect if that field has a name they can use instead.
-			foreach (var element in namedTypeSymbol.TupleElements)
+			foreach (IFieldSymbol element in namedTypeSymbol.TupleElements)
 			{
 				if (!SymbolEqualityComparer.Default.Equals(element.CorrespondingTupleField, field))
 				{
@@ -74,7 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					continue;
 				}
 
-				context.ReportDiagnostic(Diagnostic.Create(Rule, fieldReference.Syntax.GetLocation(), element.Name, field.Name));
+				Location location = fieldReference.Syntax.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, element.Name, field.Name));
 			}
 		}
 	}

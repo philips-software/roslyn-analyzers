@@ -74,13 +74,13 @@ Foo.WhitelistedFunction";
 		public void RollingTokenSetCountTest(int duplicateTokenThreshold)
 		{
 			var rollingTokenSet = new RollingTokenSet(new SumHashCalculator(duplicateTokenThreshold));
-			int hash = 0;
+			var hash = 0;
 
-			for (int i = 1; i < duplicateTokenThreshold * 2; i++)
+			for (var i = 1; i < duplicateTokenThreshold * 2; i++)
 			{
 				Mock<TokenInfo> mockToken = new(i);
-				mockToken.Setup(x => x.GetLocationEnvelope()).Returns(new LocationEnvelope());
-				mockToken.Setup(x => x.GetHashCode()).Returns(i);
+				_ = mockToken.Setup(x => x.GetLocationEnvelope()).Returns(new LocationEnvelope());
+				_ = mockToken.Setup(x => x.GetHashCode()).Returns(i);
 
 				(hash, _) = rollingTokenSet.Add(mockToken.Object);
 
@@ -93,13 +93,13 @@ Foo.WhitelistedFunction";
 				{
 					Assert.IsTrue(rollingTokenSet.IsFull());
 					// E.g., Threshold = 3, i = 7, then expectedValue = 7+6+5+4+3+2+1 - (4+3+2+1) =  7+6+5
-					int expectedValue = Fib(i) - Fib(i - duplicateTokenThreshold);
+					var expectedValue = Fib(i) - Fib(i - duplicateTokenThreshold);
 					Assert.AreEqual(expectedValue, hash);
 				}
 				else
 				{
 					Assert.IsFalse(rollingTokenSet.IsFull());
-					int expectedValue = Fib(i);
+					var expectedValue = Fib(i);
 					Assert.AreEqual(expectedValue, hash);
 				}
 			}
@@ -111,10 +111,10 @@ Foo.WhitelistedFunction";
 		{
 			var r = new RollingHashCalculator<int>(1, 256, 101);
 
-			r.Add(7);
+			_ = r.Add(7);
 			Assert.AreEqual(7, r.HashCode);
 
-			r.Add(17);
+			_ = r.Add(17);
 			Assert.AreEqual(17, r.HashCode);
 		}
 
@@ -127,19 +127,19 @@ Foo.WhitelistedFunction";
 		{
 			var r = new RollingHashCalculator<int>(2, b, m);
 
-			r.Add(val1);
-			r.Add(val2);
+			_ = r.Add(val1);
+			_ = r.Add(val2);
 			Assert.AreEqual(result, r.HashCode);
 
 			// If we flush it other stuff, the hash should be something else
-			r.Add(5);
-			r.Add(120);
+			_ = r.Add(5);
+			_ = r.Add(120);
 			Assert.AreNotEqual(result, r.HashCode);
 
 
 			// If we flush "hi" back in, the hash should come back.
-			r.Add(val1);
-			r.Add(val2);
+			_ = r.Add(val1);
+			_ = r.Add(val2);
 			Assert.AreEqual(result, r.HashCode);
 		}
 
@@ -151,18 +151,18 @@ Foo.WhitelistedFunction";
 			var r = new RollingHashCalculator<int>(3, 256, 101);
 
 			//"abr"
-			r.Add(97);
-			r.Add(98);
-			r.Add(114);
+			_ = r.Add(97);
+			_ = r.Add(98);
+			_ = r.Add(114);
 			Assert.AreEqual(4, r.HashCode);
 
 			//"bra"
-			r.Add(97);
+			_ = r.Add(97);
 			Assert.AreEqual(30, r.HashCode);
 
 			// back to "abr"
-			r.Add(98);
-			r.Add(114);
+			_ = r.Add(98);
+			_ = r.Add(114);
 			Assert.AreEqual(4, r.HashCode);
 		}
 
@@ -172,17 +172,17 @@ Foo.WhitelistedFunction";
 		{
 			var r = new RollingHashCalculator<int>(4, 2048, 10007);
 
-			r.Add(8);
-			r.Add(316);
-			r.Add(76);
-			r.Add(130);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(76);
+			_ = r.Add(130);
 
 			var s = new RollingHashCalculator<int>(4, 2048, 10007);
 
-			s.Add(8);
-			s.Add(316);
-			s.Add(76);
-			s.Add(130);
+			_ = s.Add(8);
+			_ = s.Add(316);
+			_ = s.Add(76);
+			_ = s.Add(130);
 
 			Assert.IsTrue(r.IsDuplicate(s));
 			Assert.AreEqual(r.HashCode, s.HashCode);
@@ -195,69 +195,69 @@ Foo.WhitelistedFunction";
 		{
 			var r = new RollingHashCalculator<int>(30, 2048, 10007);
 
-			r.Add(8);
-			r.Add(316);
-			r.Add(76);
-			r.Add(130);
-			r.Add(9);
-			r.Add(150);
-			r.Add(162);
-			r.Add(316);
-			r.Add(8);
-			r.Add(316);
-			r.Add(8);
-			r.Add(316);
-			r.Add(9);
-			r.Add(9);
-			r.Add(20);
-			r.Add(133);
-			r.Add(8);
-			r.Add(124);
-			r.Add(26);
-			r.Add(316);
-			r.Add(8);
-			r.Add(316);
-			r.Add(9);
-			r.Add(9);
-			r.Add(150);
-			r.Add(162);
-			r.Add(316);
-			r.Add(8);
-			r.Add(316);
-			r.Add(8);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(76);
+			_ = r.Add(130);
+			_ = r.Add(9);
+			_ = r.Add(150);
+			_ = r.Add(162);
+			_ = r.Add(316);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(9);
+			_ = r.Add(9);
+			_ = r.Add(20);
+			_ = r.Add(133);
+			_ = r.Add(8);
+			_ = r.Add(124);
+			_ = r.Add(26);
+			_ = r.Add(316);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(9);
+			_ = r.Add(9);
+			_ = r.Add(150);
+			_ = r.Add(162);
+			_ = r.Add(316);
+			_ = r.Add(8);
+			_ = r.Add(316);
+			_ = r.Add(8);
 
 			var s = new RollingHashCalculator<int>(30, 2048, 10007);
 
-			s.Add(316);
-			s.Add(170);
-			s.Add(316);
-			s.Add(9);
-			s.Add(13);
-			s.Add(133);
-			s.Add(8);
-			s.Add(316);
-			s.Add(26);
-			s.Add(316);
-			s.Add(8);
-			s.Add(316);
-			s.Add(26);
-			s.Add(316);
-			s.Add(24);
-			s.Add(169);
-			s.Add(316);
-			s.Add(316);
-			s.Add(9);
-			s.Add(9);
-			s.Add(13);
-			s.Add(133);
-			s.Add(8);
-			s.Add(2);
-			s.Add(316);
-			s.Add(26);
-			s.Add(316);
-			s.Add(8);
-			s.Add(316);
-			s.Add(26);
+			_ = s.Add(316);
+			_ = s.Add(170);
+			_ = s.Add(316);
+			_ = s.Add(9);
+			_ = s.Add(13);
+			_ = s.Add(133);
+			_ = s.Add(8);
+			_ = s.Add(316);
+			_ = s.Add(26);
+			_ = s.Add(316);
+			_ = s.Add(8);
+			_ = s.Add(316);
+			_ = s.Add(26);
+			_ = s.Add(316);
+			_ = s.Add(24);
+			_ = s.Add(169);
+			_ = s.Add(316);
+			_ = s.Add(316);
+			_ = s.Add(9);
+			_ = s.Add(9);
+			_ = s.Add(13);
+			_ = s.Add(133);
+			_ = s.Add(8);
+			_ = s.Add(2);
+			_ = s.Add(316);
+			_ = s.Add(26);
+			_ = s.Add(316);
+			_ = s.Add(8);
+			_ = s.Add(316);
+			_ = s.Add(26);
 
 			Assert.IsFalse(r.IsDuplicate(s));
 			Assert.AreEqual(r.HashCode, s.HashCode);
@@ -316,7 +316,7 @@ Foo.WhitelistedFunction";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateCodeErrorInSameMethodAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -336,7 +336,7 @@ class Foo
 		public async Task AvoidDuplicateCodeNoErrorWhenOverlappingAsync()
 		{
 			// The first two initializations are identical to the second two initializations, but "int b = 0" is overlapping.
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo()
@@ -355,7 +355,7 @@ class Foo
 
 		private string CreateFunctions(string content1, string content2)
 		{
-			string baseline = @"
+			var baseline = @"
 namespace MyNamespace
 {{
   class FooClass

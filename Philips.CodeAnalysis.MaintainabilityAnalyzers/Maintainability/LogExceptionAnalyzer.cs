@@ -1,6 +1,5 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -67,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					var additionalFiles = new AdditionalFilesHelper(
 						compilationContext.Options,
 						compilationContext.Compilation);
-					var methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					System.Collections.Generic.IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
 					foreach (var methodName in methodNames)
 					{
 						allowedSymbols.RegisterLine(methodName);
@@ -109,14 +108,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					.Any();
 				if (!hasCallingLogNodes && !hasThrowNodes)
 				{
-					var location = catchNode.CatchKeyword.GetLocation();
+					Location location = catchNode.CatchKeyword.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 				}
 			}
 
 			public void ReportParsingError(CompilationAnalysisContext context)
 			{
-				var syntaxTree = context.Compilation.SyntaxTrees.First();
+				SyntaxTree syntaxTree = context.Compilation.SyntaxTrees.First();
 				var loc = Location.Create(syntaxTree, TextSpan.FromBounds(0, 0));
 				context.ReportDiagnostic(Diagnostic.Create(InvalidSetupRule, loc, Rule.Id, LogMethodNames, AllowedFileName));
 			}
@@ -127,7 +126,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{
-					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(method => _logMethodNames.IsAllowed(method));
+					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(_logMethodNames.IsAllowed);
 				}
 
 				return isLoggingMethod;

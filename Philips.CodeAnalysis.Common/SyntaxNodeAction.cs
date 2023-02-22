@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -19,7 +18,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public void ReportDiagnostic(Location location = null, params object[] messageArgs)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, messageArgs);
+			var diagnostic = Diagnostic.Create(Rule, location, messageArgs);
 			Context.ReportDiagnostic(diagnostic);
 		}
 	}

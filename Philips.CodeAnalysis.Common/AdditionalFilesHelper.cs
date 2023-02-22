@@ -45,11 +45,11 @@ namespace Philips.CodeAnalysis.Common
 		{
 			foreach (AdditionalText additionalFile in _additionalFiles)
 			{
-				string fileName = Path.GetFileName(additionalFile.Path);
+				var fileName = Path.GetFileName(additionalFile.Path);
 				StringComparer comparer = StringComparer.OrdinalIgnoreCase;
 				if (comparer.Equals(fileName, exceptionsFile))
 				{
-					var text = additionalFile.GetText();
+					SourceText text = additionalFile.GetText();
 					return Convert(text);
 				}
 			}
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Common
 			HashSet<string> result = new();
 			foreach (TextLine line in text.Lines)
 			{
-				result.Add(line.ToString());
+				_ = result.Add(line.ToString());
 			}
 
 			return result;
@@ -72,21 +72,21 @@ namespace Philips.CodeAnalysis.Common
 		{
 			ExceptionsOptions options = new();
 
-			string valueFromEditorConfig = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
+			var valueFromEditorConfig = GetValueFromEditorConfig(diagnosticId, @"ignore_exceptions_file");
 			options.ShouldUseExceptionsFile = string.IsNullOrWhiteSpace(valueFromEditorConfig);
 
-			string generateExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"generate_exceptions_file");
+			var generateExceptionsFile = GetValueFromEditorConfig(diagnosticId, @"generate_exceptions_file");
 			options.ShouldGenerateExceptionsFile = !string.IsNullOrWhiteSpace(generateExceptionsFile);
 			return options;
 		}
 
 		private string GetRawValue(string settingKey)
 		{
-			var tree = _compilation.SyntaxTrees.First();
-			var analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
+			SyntaxTree tree = _compilation.SyntaxTrees.First();
+			AnalyzerConfigOptions analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
 
 #nullable enable
-			if (analyzerConfigOptions.TryGetValue(settingKey, out string? value))
+			if (analyzerConfigOptions.TryGetValue(settingKey, out var value))
 			{
 				return value == null ? string.Empty : value.ToString();
 			}
@@ -107,9 +107,9 @@ namespace Philips.CodeAnalysis.Common
 		public virtual IReadOnlyList<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
 			List<string> values = new();
-			string value = GetValueFromEditorConfig(diagnosticId, settingKey);
+			var value = GetValueFromEditorConfig(diagnosticId, settingKey);
 
-			foreach (string v in value.Split(','))
+			foreach (var v in value.Split(','))
 			{
 				if (!string.IsNullOrWhiteSpace(v))
 				{

@@ -27,17 +27,19 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			if (!classDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword))
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier));
+				Location location = classDeclaration.Identifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
 				return;
 			}
 
 			//this is an error, unless the class contains an "AssemblyInitialize" within it.  If it does, it _must_ be static.
-			bool hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
-			bool isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
+			var hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
+			var isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
 
 			if (hasAttributeThatMustBeStatic != isClassStatic)
 			{
-				context.ReportDiagnostic(Diagnostic.Create(Rule, classDeclaration.Identifier.GetLocation(), classDeclaration.Identifier));
+				Location location = classDeclaration.Identifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
 			}
 		}
 

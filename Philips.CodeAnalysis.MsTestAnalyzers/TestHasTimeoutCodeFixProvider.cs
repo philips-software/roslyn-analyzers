@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			defaultTimeout ??= "1000";
 
 			ExpressionSyntax expression;
-			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integerTimeout))
+			if (int.TryParse(defaultTimeout, NumberStyles.Integer, CultureInfo.InvariantCulture, out var integerTimeout))
 			{
 				expression = SyntaxFactory.LiteralExpression(SyntaxKind.NumericLiteralExpression, SyntaxFactory.Literal(integerTimeout));
 			}
@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 
 			NameSyntax name = SyntaxFactory.ParseName("Timeout");
-			var newAttribute = SyntaxFactory.Attribute(name,
+			AttributeSyntax newAttribute = SyntaxFactory.Attribute(name,
 				SyntaxFactory.AttributeArgumentList(
 					SyntaxFactory.SingletonSeparatedList(
 						SyntaxFactory.AttributeArgument(expression))));
@@ -97,10 +97,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(newAttribute));
 
-			var newAttributeLists = method.AttributeLists.Add(attributeList);
+			SyntaxList<AttributeListSyntax> newAttributeLists = method.AttributeLists.Add(attributeList);
 			MethodDeclarationSyntax newMethod = method.WithAttributeLists(newAttributeLists);
 
-			var root = rootNode.ReplaceNode(method, newMethod);
+			SyntaxNode root = rootNode.ReplaceNode(method, newMethod);
 			Document newDocument = document.WithSyntaxRoot(root);
 			return newDocument;
 		}

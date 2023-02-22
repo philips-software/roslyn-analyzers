@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
@@ -42,7 +42,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				context.ReportDiagnostic(Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodDeclaration.Identifier));
+				Location location = methodDeclaration.Identifier.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
 			}
 		}
 	}
