@@ -16,8 +16,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
       with:
-        dotnet-version: 7.0.x
-        dotnet-quality: 'ga'
+        dotnet-version: 7.0.103
     
     - name: Format
       run: dotnet format --verify-no-changes
