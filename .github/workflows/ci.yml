@@ -48,6 +48,6 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: ${{ env.GITHUB_REF }}
+        pre_release_branches: ${{ env.GITHUB_REF_NAME }}
         tag_prefix: ''
         append_to_pre_release_tag: -alpha
