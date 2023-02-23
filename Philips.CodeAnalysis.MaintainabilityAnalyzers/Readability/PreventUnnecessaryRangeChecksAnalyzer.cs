@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = MessageFormat;
 
 		public PreventUnnecessaryRangeChecksAnalyzer()
-			: base(DiagnosticId.PreventUncessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
+			: base(DiagnosticId.PreventUnnecessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
 		{ }
 	}
 
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var location = Node.IfKeyword.GetLocation();
+			Location location = Node.IfKeyword.GetLocation();
 			ReportDiagnostic(location);
 		}
 
@@ -147,17 +147,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			static bool AreEqual(SyntaxNode left, SyntaxNode right, SemanticModel model)
 			{
-				var leftSymbol = model.GetSymbolInfo(left);
+				SymbolInfo leftSymbol = model.GetSymbolInfo(left);
 				if (leftSymbol.Symbol is null)
 				{
 					return false;
 				}
 
-				var rightSymbol = model.GetSymbolInfo(right);
+				SymbolInfo rightSymbol = model.GetSymbolInfo(right);
 				return rightSymbol.Symbol is not null && SymbolEqualityComparer.Default.Equals(leftSymbol.Symbol, rightSymbol.Symbol);
 			}
 
-			for (int i = 0; i < foreachMemberAccessNodes.Count; i++)
+			for (var i = 0; i < foreachMemberAccessNodes.Count; i++)
 			{
 				if (!AreEqual(foreachMemberAccessNodes[i], ifMemberAccessNodes[i], semanticModel))
 				{

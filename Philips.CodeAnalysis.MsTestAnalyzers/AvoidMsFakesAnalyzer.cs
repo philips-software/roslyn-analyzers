@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,7 +32,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			if (expression.ToString().Contains(@"ShimsContext.Create"))
 			{
 				CSharpSyntaxNode violation = expression;
-				var location = violation.GetLocation();
+				Location location = violation.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

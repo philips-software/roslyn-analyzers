@@ -28,13 +28,13 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public override Task<IEnumerable<Diagnostic>> GetDocumentDiagnosticsAsync(Document document, CancellationToken cancellationToken)
 		{
-			var result = _diagnostics.Where(i => i.Location.GetLineSpan().Path == document.Name);
+			IEnumerable<Diagnostic> result = _diagnostics.Where(i => i.Location.GetLineSpan().Path == document.Name);
 			return Task.FromResult(result);
 		}
 
 		public override Task<IEnumerable<Diagnostic>> GetProjectDiagnosticsAsync(Project project, CancellationToken cancellationToken)
 		{
-			var result = _diagnostics.Where(i => !i.Location.IsInSource);
+			IEnumerable<Diagnostic> result = _diagnostics.Where(i => !i.Location.IsInSource);
 			return Task.FromResult(result);
 		}
 	}

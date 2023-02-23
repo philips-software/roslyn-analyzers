@@ -9,9 +9,7 @@
 // Date:        February 2019
 #endregion
 
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -21,32 +19,19 @@ using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
-	/// <summary>
-	/// InitializeComponentMustBeCalledOnceAnalyzerTest
-	/// </summary>
 	[TestClass]
 	public class WinFormsInitializeComponentMustBeCalledOnceAnalyzerTest : DiagnosticVerifier
 	{
 		#region Non-Public Properties/Methods
 
-		/// <summary>
-		/// GetDiagnosticAnalyzer
-		/// </summary>
-		/// <returns></returns>
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new WinFormsInitializeComponentMustBeCalledOnceAnalyzer();
 		}
 
-		/// <summary>
-		/// CreateCode
-		/// </summary>
-		/// <param name="param1"></param>
-		/// <param name="param2"></param>
-		/// <returns></returns>
 		private string CreateCode(string param1, string param2)
 		{
-			string code = @"
+			var code = @"
 namespace System.Windows.Forms
 {{
 class ContainerControl {{ }}
@@ -76,10 +61,6 @@ class ContainerControl
 			return string.Format(code, param1, param2);
 		}
 
-		/// <summary>
-		/// CreateCodeWithOutConstructors
-		/// </summary>
-		/// <returns></returns>
 		private string CreateCodeWithOutConstructors()
 		{
 			return @"
@@ -103,10 +84,6 @@ class ContainerControl
 ";
 		}
 
-		/// <summary>
-		/// CreateCodeWithOutConstructors
-		/// </summary>
-		/// <returns></returns>
 		private string CreateCodeWithDisjointConstructors()
 		{
 			return @"
@@ -141,10 +118,6 @@ class ContainerControl
 ";
 		}
 
-		/// <summary>
-		/// CreateCodeWithStaticConstructor
-		/// </summary>
-		/// <returns></returns>
 		private string CreateCodeWithStaticConstructor()
 		{
 			return @"
@@ -172,37 +145,21 @@ class ContainerControl
 ";
 		}
 
-		/// <summary>
-		/// VerifyDiagnosticOnFirst
-		/// </summary>
-		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnFirstAsync(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 11, column: 16).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// VerifyDiagnosticOnSecond
-		/// </summary>
-		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnSecondAsync(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 15, column: 3).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// VerifyDiagnosticeOnFirstAndSecond
-		/// </summary>
-		/// <param name="file"></param>
 		private async Task VerifyDiagnosticeOnFirstAndSecondAsync(string file)
 		{
 			await VerifyDiagnostic(file, 2).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// VerifyDoubleDiagnostic
-		/// </summary>
-		/// <param name="file"></param>
 		private async Task VerifyDiagnosticOnClassAsync(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 9, column: 22).ConfigureAwait(false);
@@ -212,9 +169,6 @@ class ContainerControl
 
 		#region Public Interface
 
-		/// <summary>
-		/// WinFormsInitialComponentMustBeCalledOnceAnalyzers
-		/// </summary>
 		[DataTestMethod]
 		[DataRow(@"InitializeComponent();", @"InitializeComponent();", true, false)]
 		[DataRow(@"", @"", true, true)]
@@ -223,7 +177,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzersAsync(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
 		{
-			string code = CreateCode(param1, param2);
+			var code = CreateCode(param1, param2);
 
 			if (shouldGenerateDiagnosticOnFirst && !shouldGenerateDiagnosticOnSecond)
 			{
@@ -243,47 +197,35 @@ class ContainerControl
 			}
 		}
 
-		/// <summary>
-		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructors
-		/// </summary>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructorsAsync()
 		{
-			string code = CreateCodeWithOutConstructors();
+			var code = CreateCodeWithOutConstructors();
 			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors
-		/// </summary>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructorsAsync()
 		{
-			string code = CreateCodeWithDisjointConstructors();
+			var code = CreateCodeWithDisjointConstructors();
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClass
-		/// </summary>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClassAsync()
 		{
-			string code = CreateCodeWithStaticConstructor();
+			var code = CreateCodeWithStaticConstructor();
 			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile
-		/// </summary>
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFileAsync()
 		{
-			string code = CreateCode(@"", @"");
+			var code = CreateCode(@"", @"");
 			await VerifySuccessfulCompilation(code, @"Test.Designer").ConfigureAwait(false);
 		}
 

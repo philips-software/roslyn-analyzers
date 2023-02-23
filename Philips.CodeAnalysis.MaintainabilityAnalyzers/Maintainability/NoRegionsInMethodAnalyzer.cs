@@ -26,16 +26,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			// Specifying Span instead of FullSpan correctly excludes trivia before or after the method
-			var descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>();
+			System.Collections.Generic.IEnumerable<DirectiveTriviaSyntax> descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>();
 			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
 			{
-				var location = regionDirective.GetLocation();
+				Location location = regionDirective.GetLocation();
 				ReportDiagnostic(location);
 			}
 
 			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
 			{
-				var location = endRegionDirective.GetLocation();
+				Location location = endRegionDirective.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

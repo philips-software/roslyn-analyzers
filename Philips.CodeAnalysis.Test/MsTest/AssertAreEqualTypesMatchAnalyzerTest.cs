@@ -1,6 +1,5 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -28,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AreEqualTypesMatchTestAsync(string arg1, string arg2, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 namespace AssertAreEqualTypesMatchAnalyzerTest
 {{
   public class TestClass
@@ -48,10 +47,10 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 }}
 ";
 
-			string givenText = string.Format(baseline, arg1, arg2);
+			var givenText = string.Format(baseline, arg1, arg2);
 			var arg1Type = GetWellKnownTypeName(arg1);
 			var arg2Type = GetWellKnownTypeName(arg2);
-			string expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
+			var expectedMessage = string.Format(AssertAreEqualTypesMatchAnalyzer.MessageFormat, arg1Type, arg2Type);
 
 			if (isError)
 			{
@@ -80,7 +79,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 
 		private string GetWellKnownTypeName(string variableName)
 		{
-			string typeName = variableName switch
+			var typeName = variableName switch
 			{
 				"i" or "j" => "int",
 				"str1" or "str2" => "string",

@@ -17,9 +17,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Avoid unnecessary 'Where'";
 		public const string MessageFormat = @"Move predicate from 'Where' to '{0}'";
 		private const string Description = @"Invoking Where is unnecessary";
-		private const string HelpUri = @"https://learn.microsoft.com/en-us/visualstudio/ide/reference/simplify-linq-expression?view=vs-2022";
+
 		public AvoidUnnecessaryWhereAnalyzer()
-			: base(DiagnosticId.AvoidUnnecessaryWhere, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
+			: base(DiagnosticId.AvoidUnnecessaryWhere, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 	}
 	public class AvoidUnnecessaryWhereSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
@@ -64,10 +64,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// It's practicially guaranteed we found something, but let's confirm it's System.Linq.Where
 			var whereSymbol = Context.SemanticModel.GetSymbolInfo(whereExpression.Name).Symbol as IMethodSymbol;
-			string strWhereSymbol = whereSymbol?.ToString();
+			var strWhereSymbol = whereSymbol?.ToString();
 			if (strWhereSymbol != null && strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
 			{
-				var location = whereExpression.Name.Identifier.GetLocation();
+				Location location = whereExpression.Name.Identifier.GetLocation();
 				ReportDiagnostic(location, expressionOfInterest.Name.Identifier.Text);
 			}
 		}

@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
 			OperatorsVisitor visitor = new();
 			visitor.Visit(classDeclaration);
@@ -99,7 +99,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			StructDeclarationSyntax structDeclaration = (StructDeclarationSyntax)context.Node;
+			var structDeclaration = (StructDeclarationSyntax)context.Node;
 
 			OperatorsVisitor visitor = new();
 			visitor.Visit(structDeclaration);
@@ -111,43 +111,43 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (visitor.IncrementCount != visitor.DecrementCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(IncrementAndDecrementRule, location));
 			}
 
 			if (visitor.PlusCount != visitor.MinusCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(PlusMinusRule, location));
 			}
 
 			if (visitor.MultiplyCount != visitor.DivideCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(MultiplyDivideRule, location));
 			}
 
 			if (visitor.LessThanCount != visitor.GreaterThanCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanRule, location));
 			}
 
 			if (visitor.LessThanOrEqualCount != visitor.GreaterThanOrEqualCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(GreaterLessThanOrEqualRule, location));
 			}
 
 			if (visitor.ShiftLeftCount != visitor.ShiftRightCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(ShiftRightAndLeftRule, location));
 			}
 
 			if ((visitor.PlusCount > 0 || visitor.MinusCount > 0) && visitor.PlusCount != visitor.EqualCount)
 			{
-				var location = identifier.GetLocation();
+				Location location = identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(PlusAndEqualRule, location));
 			}
 		}

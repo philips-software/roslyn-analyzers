@@ -1,18 +1,11 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
-using System.Data;
-using System;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Collections.Generic;
-using Philips.CodeAnalysis.Test;
-using System.Text.RegularExpressions;
 using Moq;
-using Castle.Core.Internal;
 using System.Collections.Immutable;
 using Philips.CodeAnalysis.Test.Verifiers;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -31,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
+			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
 			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 
@@ -85,7 +78,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(2);
+			var regex = MakeRegex(2);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -115,7 +108,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -132,7 +125,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(2);
+			var regex = MakeRegex(2);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -149,7 +142,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -166,7 +159,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -183,7 +176,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -200,7 +193,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -221,7 +214,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(4);
+			var regex = MakeRegex(4);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -244,7 +237,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(6);
+			var regex = MakeRegex(6);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -269,7 +262,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(8);
+			var regex = MakeRegex(8);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -293,7 +286,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(5);
+			var regex = MakeRegex(5);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -360,7 +353,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(34);
+			var regex = MakeRegex(34);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -424,7 +417,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(26);
+			var regex = MakeRegex(26);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -474,7 +467,7 @@ class Foo
 		return document;
 	}
 }";
-			string regex = MakeRegex(40);
+			var regex = MakeRegex(40);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 	}
@@ -486,7 +479,7 @@ class Foo
 		{
 			const string InvalidMaxLoad = @"1000";
 			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
+			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
 			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
 		}
 

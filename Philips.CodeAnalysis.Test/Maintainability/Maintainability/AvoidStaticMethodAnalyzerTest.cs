@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -39,20 +38,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 				externKeyword += @" ";
 			}
 
-			string localMethod = $@"public {localMethodModifier} string BaBaBummmm(string services)
+			var localMethod = $@"public {localMethodModifier} string BaBaBummmm(string services)
 					{{
 						return services;
 					}}";
 
-			string foreignMethod = $@"public {foreignMethodModifier} string BaBaBa(string services)
+			var foreignMethod = $@"public {foreignMethodModifier} string BaBaBa(string services)
 					{{
 						return services;
 					}}";
 
-			string useLocalMethod = (localMethodModifier == "static") ? $@"BaBaBummmm(""testing"")" : string.Empty;
-			string useForeignMethod = (foreignMethodModifier == "static") ? $@"BaBaBa(""testing"")" : string.Empty;
+			var useLocalMethod = (localMethodModifier == "static") ? $@"BaBaBummmm(""testing"")" : string.Empty;
+			var useForeignMethod = (foreignMethodModifier == "static") ? $@"BaBaBa(""testing"")" : string.Empty;
 
-			string objectDeclaration = isFactoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
+			var objectDeclaration = isFactoryMethod ? $@"Caroline caroline = new Caroline();" : string.Empty;
 
 			return $@"
 			namespace Sweet {{
@@ -79,7 +78,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AllowExternalCodeAsync()
 		{
-			string template = CreateFunction("static", externKeyword: "extern");
+			var template = CreateFunction("static", externKeyword: "extern");
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -87,7 +86,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreIfInStaticClassAsync()
 		{
-			string template = CreateFunction("static", classStaticModifier: "static");
+			var template = CreateFunction("static", classStaticModifier: "static");
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -95,7 +94,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OnlyCatchStaticMethodsAsync()
 		{
-			string template = CreateFunction("");
+			var template = CreateFunction("");
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -103,7 +102,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AllowStaticMainMethodAsync()
 		{
-			string template = CreateFunction("static", methodName: "Main");
+			var template = CreateFunction("static", methodName: "Main");
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -111,7 +110,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreIfCallsLocalStaticMethodAsync()
 		{
-			string template = CreateFunction("static", localMethodModifier: "static");
+			var template = CreateFunction("static", localMethodModifier: "static");
 			// should still catch the local static method being used
 			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
@@ -120,7 +119,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CatchIfUsesForeignStaticMethodAsync()
 		{
-			string template = CreateFunction("static", foreignMethodModifier: "static");
+			var template = CreateFunction("static", foreignMethodModifier: "static");
 			await VerifyDiagnostic(template).ConfigureAwait(false);
 		}
 
@@ -128,7 +127,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AllowStaticFactoryMethodAsync()
 		{
-			string template = CreateFunction("static", isFactoryMethod: true);
+			var template = CreateFunction("static", isFactoryMethod: true);
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -136,7 +135,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AllowStaticDynamicDataMethodAsync()
 		{
-			string template = CreateFunction("static", returnType: "IEnumerable<object[]>");
+			var template = CreateFunction("static", returnType: "IEnumerable<object[]>");
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
@@ -144,10 +143,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CatchPlainStaticMethod()
 		{
-			string template = CreateFunction("static");
+			var template = CreateFunction("static");
 			await VerifyDiagnostic(template).ConfigureAwait(false);
 
-			string fixedCode = CreateFunction(@"");
+			var fixedCode = CreateFunction(@"");
 			await VerifyFix(template, fixedCode).ConfigureAwait(false);
 		}
 	}

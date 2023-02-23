@@ -1,9 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -62,7 +59,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		public async Task EnforcePublicInterfaceRegionAsync(string given, bool isError)
 		{
 
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo
 {{
@@ -78,7 +75,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task UnnamedRegionTestAsync()
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo
 {{
 	#region
@@ -134,7 +131,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EnforeNonPublicPropertiesMethodsRegionAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo
 {{
@@ -187,7 +184,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EnforeNonPublicDataMembersRegionAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo
 {{
@@ -209,7 +206,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionNameTestAsync(string given, bool isError)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo
 {{
@@ -227,7 +224,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DupliateRegionTestAsync(string given)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo
 {{
@@ -243,13 +240,13 @@ class Foo
 	#region {0}
 
 }}";
-			string givenText = string.Format(baseline, given);
+			var givenText = string.Format(baseline, given);
 			await VerifyDiagnostic(givenText, DiagnosticId.EnforceNonDuplicateRegion, regex: EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat, line: 8, column: 3).ConfigureAwait(false);
 		}
 
 		private async Task VerifyErrorAsync(string baseline, string given, bool isError, int line = 6, int column = 2)
 		{
-			string givenText = string.Format(baseline, given);
+			var givenText = string.Format(baseline, given);
 			if (isError)
 			{
 				await VerifyDiagnostic(givenText, DiagnosticId.EnforceRegions, regex: EnforceRegionsAnalyzer.EnforceRegionMessageFormat, line: line, column: column).ConfigureAwait(false);

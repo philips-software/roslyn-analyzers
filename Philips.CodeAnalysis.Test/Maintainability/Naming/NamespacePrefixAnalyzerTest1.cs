@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		public async Task ReportEmptyNamespacePrefixAsync()
 		{
 
-			string code = string.Format(ClassString, "");
+			var code = string.Format(ClassString, "");
 			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.NamespacePrefix),

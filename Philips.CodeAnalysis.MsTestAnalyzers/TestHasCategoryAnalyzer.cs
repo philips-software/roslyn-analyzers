@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
 			AdditionalFilesHelper helper = new(options, compilation);
-			var allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
+			IReadOnlyList<string> allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
 			AllowedSymbols allowedSymbols = new(compilation);
 			allowedSymbols.Initialize(options.AdditionalFiles, FileName);
 
@@ -57,8 +57,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (!AttributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
-					var location = methodDeclaration.Identifier.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+					Location location = methodDeclaration.Identifier.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 					return;
 				}
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (!_allowedCategories.Contains(value))
 				{
-					Diagnostic diagnostic = Diagnostic.Create(Rule, categoryLocation);
+					var diagnostic = Diagnostic.Create(Rule, categoryLocation);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

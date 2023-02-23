@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class RegexNeedsTimeoutAnalyzer : DiagnosticAnalyzer
 	{
-		private const string Title = @"RegEx needs a timeout";
+		private const string Title = @"Regex needs a timeout";
 		public const string MessageFormat = @"When constructing a new Regex instance, provide a timeout.";
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			var typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
 			if (typeSymbol == null)
 			{
 				return;
@@ -73,8 +73,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			var location = creation.ArgumentList.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			Location location = creation.ArgumentList.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

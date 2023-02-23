@@ -39,8 +39,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			allowedSymbols.RegisterLine(@"*.AssemblyInitialize");
 
 			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
-			var exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
-			var compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile);
+			ExceptionsOptions exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
+			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -89,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+			INamedTypeSymbol declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
 			if (_allowedSymbols.IsAllowed(declaredSymbol))
@@ -105,7 +105,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (_shouldGenerateExceptionsFile)
 			{
-				var exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
+				INamedTypeSymbol exceptionSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 				if (exceptionSymbol != null)
 				{
 					var docId = exceptionSymbol.GetDocumentationCommentId();
@@ -113,14 +113,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			var location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
+			Location location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
+			var diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 
 		private static bool IsConstant(FieldDeclarationSyntax field)
 		{
-			var modifiers = field.Modifiers;
+			SyntaxTokenList modifiers = field.Modifiers;
 			return modifiers.Any(SyntaxKind.ConstKeyword) ||
 				   (modifiers.Any(SyntaxKind.StaticKeyword) && modifiers.Any(SyntaxKind.ReadOnlyKeyword));
 		}

@@ -4,16 +4,12 @@
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
-	/// <summary>
-	/// 
-	/// </summary>
 	[TestClass]
 	public class PreferNamedTuplesAnalyzerTest : DiagnosticVerifier
 	{
@@ -24,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		private string CreateFunction(string argument)
 		{
-			string baseline = @"
+			var baseline = @"
 class Foo 
 {{
   public void Foo({0} data)

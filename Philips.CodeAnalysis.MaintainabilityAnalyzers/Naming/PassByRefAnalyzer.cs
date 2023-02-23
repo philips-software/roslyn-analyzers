@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -53,16 +52,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return;
 				}
 
-				var location = parameterSyntax.GetLocation();
+				Location location = parameterSyntax.GetLocation();
 				ReportDiagnostic(location, parameterSyntax.Identifier);
 			}
 		}
 
 		private bool IsInterfaceOrBaseClassMethod()
 		{
-			var semanticModel = Context.SemanticModel;
+			SemanticModel semanticModel = Context.SemanticModel;
 
-			var method = semanticModel.GetDeclaredSymbol(Node);
+			IMethodSymbol method = semanticModel.GetDeclaredSymbol(Node);
 
 			if (method.IsOverride)
 			{
@@ -74,11 +73,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return true;
 			}
 
-			foreach (var iface in method.ContainingType.AllInterfaces)
+			foreach (INamedTypeSymbol iface in method.ContainingType.AllInterfaces)
 			{
-				foreach (var candidateInterfaceMethod in iface.GetMembers(method.Name))
+				foreach (ISymbol candidateInterfaceMethod in iface.GetMembers(method.Name))
 				{
-					var result = method.ContainingType.FindImplementationForInterfaceMember(candidateInterfaceMethod);
+					ISymbol result = method.ContainingType.FindImplementationForInterfaceMember(candidateInterfaceMethod);
 
 					if (result != null && SymbolEqualityComparer.Default.Equals(result, method))
 					{
@@ -92,9 +91,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private bool IsWrittenTo(ParameterSyntax parameterSyntax)
 		{
-			var semanticModel = Context.SemanticModel;
+			SemanticModel semanticModel = Context.SemanticModel;
 
-			var targetSymbol = semanticModel.GetDeclaredSymbol(parameterSyntax);
+			IParameterSymbol targetSymbol = semanticModel.GetDeclaredSymbol(parameterSyntax);
 
 			if (targetSymbol is null)
 			{
@@ -109,8 +108,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					return false;
 				}
 
-				var firstStatement = Node.Body.Statements.First();
-				var lastStatement = Node.Body.Statements.Last();
+				StatementSyntax firstStatement = Node.Body.Statements.First();
+				StatementSyntax lastStatement = Node.Body.Statements.Last();
 				flow = semanticModel.AnalyzeDataFlow(firstStatement, lastStatement);
 			}
 			else if (Node.ExpressionBody != null)
@@ -122,7 +121,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return true;
 			}
 
-			bool isWrittenInside = flow.WrittenInside.Contains(targetSymbol);
+			var isWrittenInside = flow.WrittenInside.Contains(targetSymbol);
 
 			return isWrittenInside;
 		}

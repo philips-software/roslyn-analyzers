@@ -1,9 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -27,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderValidTestsAsync(string property)
 		{
-			string text = $@"
+			var text = $@"
 public class TestClass
 {{
 	public string Foo {property}
@@ -44,7 +42,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderInvalidTestsAsync(string property)
 		{
-			string text = $@"
+			var text = $@"
 public class TestClass
 {{
 	public string Foo {property}

@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -30,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	{
 		public override void Analyze()
 		{
-			var typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			BaseTypeDeclarationSyntax typeDeclaration = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (typeDeclaration is StructDeclarationSyntax)
 			{
 				return;
@@ -39,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (IsUnmanaged(Node.Declaration.Type) && !TypeImplementsIDisposable())
 			{
 				var variableName = Node.Declaration.Variables[0].Identifier.Text;
-				var loc = Node.Declaration.Variables[0].Identifier.GetLocation();
+				Location loc = Node.Declaration.Variables[0].Identifier.GetLocation();
 				ReportDiagnostic(loc, variableName);
 			}
 		}
@@ -47,21 +46,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool IsUnmanaged(TypeSyntax type)
 		{
 			var typeStr = type.ToString();
-			bool isIntPtr = typeStr.Contains("IntPtr");
-			bool isPointer = typeStr.Contains('*');
-			bool isHandle = typeStr.ToLowerInvariant().Contains("handle");
+			var isIntPtr = typeStr.Contains("IntPtr");
+			var isPointer = typeStr.Contains('*');
+			var isHandle = typeStr.ToLowerInvariant().Contains("handle");
 			return isIntPtr || isPointer || isHandle;
 		}
 
 		private bool TypeImplementsIDisposable()
 		{
 			const string IDisposableLiteral = "IDisposable";
-			var type = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			BaseTypeDeclarationSyntax type = Node.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
 				return false;
 			}
-			var typeSymbol = Context.SemanticModel.GetDeclaredSymbol(type);
+			INamedTypeSymbol typeSymbol = Context.SemanticModel.GetDeclaredSymbol(type);
 			if (typeSymbol == null)
 			{
 				return false;

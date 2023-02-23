@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
 				var variableName = Node.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
-				var location = typeName.GetLocation();
+				Location location = typeName.GetLocation();
 				ReportDiagnostic(location, variableName);
 			}
 		}

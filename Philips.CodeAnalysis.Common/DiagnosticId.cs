@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidPublicMemberVariables = 2047,
 		MockArgumentsMustMatchConstructor = 2048,
 		TestMethodsMustNotBeEmpty = 2050,
-		PreventUncessaryRangeChecks = 2051,
+		PreventUnnecessaryRangeChecks = 2051,
 		MockRaiseArgumentsMustMatchEvent = 2053,
 		MockRaiseArgumentCountMismatch = 2054,
 		AssertIsTrueLiteral = 2055,

@@ -3,8 +3,6 @@
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -173,20 +171,20 @@ public class FooException
 		}
 
 		[DataTestMethod]
-		[DataRow(WrongStaticConstructor, DisplayName = nameof(WrongStaticConstructor)),
-		 DataRow(WrongFinalizer, DisplayName = nameof(WrongFinalizer)),
-		 DataRow(WrongDispose, DisplayName = nameof(WrongDispose)),
-		 DataRow(WrongToString, DisplayName = nameof(WrongToString)),
-		 DataRow(WrongEquals, DisplayName = nameof(WrongEquals)),
-		 DataRow(WrongGetHashCode, DisplayName = nameof(WrongGetHashCode)),
-		 DataRow(WrongOperatorEquals, DisplayName = nameof(WrongOperatorEquals)),
-		 DataRow(WrongOperatorNotEquals, DisplayName = nameof(WrongOperatorNotEquals)),
-		 DataRow(WrongImplicitCast, DisplayName = nameof(WrongImplicitCast)),
-		 DataRow(WrongExceptionConstructor, DisplayName = nameof(WrongExceptionConstructor))]
+		[DataRow(WrongStaticConstructor, ".*static constructor.*", DisplayName = nameof(WrongStaticConstructor)),
+		 DataRow(WrongFinalizer, ".*finalizer.*", DisplayName = nameof(WrongFinalizer)),
+		 DataRow(WrongDispose, ".*Dispose.*", DisplayName = nameof(WrongDispose)),
+		 DataRow(WrongToString, ".*ToString.*", DisplayName = nameof(WrongToString)),
+		 DataRow(WrongEquals, ".*Equals.*", DisplayName = nameof(WrongEquals)),
+		 DataRow(WrongGetHashCode, ".*GetHashCode.*", DisplayName = nameof(WrongGetHashCode)),
+		 DataRow(WrongOperatorEquals, ".*equality comparison operator.*", DisplayName = nameof(WrongOperatorEquals)),
+		 DataRow(WrongOperatorNotEquals, ".*equality comparison operator.*", DisplayName = nameof(WrongOperatorNotEquals)),
+		 DataRow(WrongImplicitCast, ".*implicit cast.*", DisplayName = nameof(WrongImplicitCast)),
+		 DataRow(WrongExceptionConstructor, ".*constructor of an Exception derived type.*", DisplayName = nameof(WrongExceptionConstructor))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task MissingOrWrongDocumentationShouldTriggerDiagnosticAsync(string testCode)
+		public async Task MissingOrWrongDocumentationShouldTriggerDiagnosticAsync(string testCode, string regex)
 		{
-			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+			await VerifyDiagnostic(testCode, regex: regex).ConfigureAwait(false);
 		}
 	}
 }

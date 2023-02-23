@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	{
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string testContextReference = typeof(TestContext).Assembly.Location;
+			var testContextReference = typeof(TestContext).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(testContextReference);
 			return base.GetMetadataReferences().Add(reference);
 		}
@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task HasTestContextPropertyButNoUsageTest()
 		{
-			string givenText = @"
+			var givenText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestContextAnalyzerTest
 {
@@ -44,7 +44,7 @@ namespace TestContextAnalyzerTest
 }
 ";
 
-			string fixedText = @"
+			var fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestContextAnalyzerTest
 {

@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -138,7 +137,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontStringFormatUselessly2aAsync(string arg)
 		{
-			string template = $@"
+			var template = $@"
 using System;
 
 class Log
@@ -490,7 +489,7 @@ class Foo
 		[DataRow("$\"{errorMessage}\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DontStringFormatUselesslyIssue134(string format)
+		public async Task DontStringFormatUselesslyIssue134(string format)
 		{
 			const string template = @"
 using System;
@@ -508,7 +507,7 @@ class Foo
 	}}
 }}
 ";
-			VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(string.Format(template, format)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -604,7 +603,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorsOnPropertyLikeStringsAsync(string argument)
 		{
-			string template = @$"
+			var template = @$"
 using System;
 class Foo
 {{
@@ -627,7 +626,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoresFormatStringsWithAdditionalTextAsync(string argument)
 		{
-			string template = @$"
+			var template = @$"
 using System;
 class Foo
 {{

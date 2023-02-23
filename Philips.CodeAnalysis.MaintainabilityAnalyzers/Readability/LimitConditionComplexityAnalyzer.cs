@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 						startContext.Options,
 						startContext.Compilation);
 					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
-					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out int parsedMax))
+					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedMax))
 					{
 						_maxOperators = parsedMax;
 					}
@@ -74,13 +74,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
 		{
-			var ifStatement = ((IfStatementSyntax)context.Node).Condition;
+			ExpressionSyntax ifStatement = ((IfStatementSyntax)context.Node).Condition;
 			AnalyzeCondition(context, ifStatement);
 		}
 
 		private void AnalyzeTernary(SyntaxNodeAnalysisContext context)
 		{
-			var condition = ((ConditionalExpressionSyntax)context.Node).Condition;
+			ExpressionSyntax condition = ((ConditionalExpressionSyntax)context.Node).Condition;
 			AnalyzeCondition(context, condition);
 		}
 
@@ -95,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var numOperators = conditionNode.DescendantTokens().Count(IsLogicalOperator);
 			if (numOperators >= _maxOperators)
 			{
-				var newLineLocation = conditionNode.GetLocation();
+				Location newLineLocation = conditionNode.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, newLineLocation, numOperators, _maxOperators));
 			}
 		}

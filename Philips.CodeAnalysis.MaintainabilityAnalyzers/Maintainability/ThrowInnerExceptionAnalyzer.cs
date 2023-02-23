@@ -1,6 +1,5 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -36,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				.OfType<ThrowStatementSyntax>().Any(node => !IsCorrectThrow(node));
 			if (hasBadThrowNodes)
 			{
-				var location = Node.CatchKeyword.GetLocation();
+				Location location = Node.CatchKeyword.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}
@@ -46,18 +45,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		// Alternatively, also allow the HttpResponseException method using in ASP .NET Core.
 		private bool IsCorrectThrow(ThrowStatementSyntax node)
 		{
-			bool isOk = true;
-			var newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
+			var isOk = true;
+			System.Collections.Generic.IEnumerable<ObjectCreationExpressionSyntax> newNodes = node.ChildNodes().OfType<ObjectCreationExpressionSyntax>();
 			if (newNodes.Any())
 			{
-				foreach (var creation in newNodes)
+				foreach (ObjectCreationExpressionSyntax creation in newNodes)
 				{
 					// Constructor needs to have at least two arguments.
 					isOk = creation.ArgumentList != null && creation.ArgumentList.Arguments.Count > 1;
 					if (!isOk)
 					{
 						// The HttpResponseException has only a single argument.
-						var typeSymbol = Context.SemanticModel.GetTypeInfo(creation).Type;
+						ITypeSymbol typeSymbol = Context.SemanticModel.GetTypeInfo(creation).Type;
 						if (typeSymbol.Name == "HttpResponseException")
 						{
 							isOk = true;

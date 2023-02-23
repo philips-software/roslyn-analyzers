@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				MsTestAttributeDefinitions definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+				var definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
 
 				Implementation implementation = OnInitializeAnalyzer(startContext.Options, startContext.Compilation, definitions);
 
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context, Implementation implementation)
 		{
-			MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)context.Node;
+			var methodDeclaration = (MethodDeclarationSyntax)context.Node;
 
 			ISymbol symbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
 
@@ -63,12 +63,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				if (definitions.NonTestMethods.Contains(attribute))
 				{
-					presentAttributes.Add(attribute);
+					_ = presentAttributes.Add(attribute);
 				}
 
 				if (attribute.IsDerivedFrom(definitions.TestMethodSymbol))
 				{
-					presentAttributes.Add(attribute);
+					_ = presentAttributes.Add(attribute);
 				}
 			}
 

@@ -1,12 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -22,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ThreadSleepNotAvoidedTest(string test)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 [TestClass]
@@ -35,7 +32,7 @@ class Foo
 }}
 ";
 
-			string fixedText = @"
+			var fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
 [TestClass]
@@ -46,7 +43,7 @@ class Foo
   }
 }
 ";
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 			await VerifyFix(givenText, fixedText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}

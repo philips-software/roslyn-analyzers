@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -51,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
 			};
-			var analyzer = GetDiagnosticAnalyzer();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
 			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { diagnosticResult }).ConfigureAwait(false);
 		}
 
@@ -61,8 +60,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only for Analyzers that support a single DiagnosticId");
 
-			DiagnosticResult[] diagnosticResults = new DiagnosticResult[count];
-			for (int i = 0; i < count; i++)
+			var diagnosticResults = new DiagnosticResult[count];
+			for (var i = 0; i < count; i++)
 			{
 				var diagnosticResult = new DiagnosticResult()
 				{
@@ -86,7 +85,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected async Task VerifyDiagnostic(string source, DiagnosticResult expected, string filenamePrefix = null, string assemblyName = null)
 		{
-			var analyzer = GetDiagnosticAnalyzer();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
 			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, new[] { expected }).ConfigureAwait(false);
 		}
 
@@ -103,7 +102,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
 			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
-			var analyzer = GetDiagnosticAnalyzer();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
 			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected).ConfigureAwait(false);
 		}
 
@@ -116,7 +115,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected async Task VerifySuccessfulCompilation(string source, string filenamePrefix = null, string assemblyName = null)
 		{
-			var analyzer = GetDiagnosticAnalyzer();
+			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
 			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, Array.Empty<DiagnosticResult>()).ConfigureAwait(false);
 		}
 
@@ -142,7 +141,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expected">DiagnosticResults that should appear after the analyzer is run on the sources</param>
 		private async Task VerifyDiagnosticsInternal(string[] sources, string filenamePrefix, string assemblyName, DiagnosticAnalyzer analyzer, DiagnosticResult[] expected)
 		{
-			var diagnostics = await GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer).ConfigureAwait(false);
+			IEnumerable<Diagnostic> diagnostics = await GetSortedDiagnostics(sources, filenamePrefix, assemblyName, analyzer).ConfigureAwait(false);
 			VerifyDiagnosticResults(diagnostics, analyzer, expected);
 		}
 
@@ -158,15 +157,15 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="expectedResults">Diagnostic Results that should have appeared in the code</param>
 		private void VerifyDiagnosticResults(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, DiagnosticResult[] expectedResults)
 		{
-			int expectedCount = expectedResults.Length;
-			int actualCount = actualResults.Count();
+			var expectedCount = expectedResults.Length;
+			var actualCount = actualResults.Count();
 
 			Assert.AreEqual(expectedCount, actualCount, FormatWrongDiagnosticCount(actualResults, analyzer, expectedCount, actualCount));
 
-			for (int i = 0; i < expectedResults.Length; i++)
+			for (var i = 0; i < expectedResults.Length; i++)
 			{
-				var actual = actualResults.ElementAt(i);
-				var expected = expectedResults[i];
+				Diagnostic actual = actualResults.ElementAt(i);
+				DiagnosticResult expected = expectedResults[i];
 				var diagnosticString = FormatDiagnostics(analyzer, actual);
 
 				if (expected.Line == -1 && expected.Column == -1)
@@ -176,16 +175,16 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				}
 				else
 				{
-					var first = expected.Locations.First();
+					DiagnosticResultLocation first = expected.Locations.First();
 					VerifyDiagnosticLocation(analyzer, actual, actual.Location, first);
-					var additionalLocations = actual.AdditionalLocations.ToArray();
+					Location[] additionalLocations = actual.AdditionalLocations.ToArray();
 
 					Assert.AreEqual(expected.Locations.Count - 1, additionalLocations.Length,
 						$"Expected {expected.Locations.Count - 1} additional locations but got {additionalLocations.Length} for Diagnostic:\r\n    {diagnosticString}\r\n");
 
-					for (int j = 0; j < additionalLocations.Length; ++j)
+					for (var j = 0; j < additionalLocations.Length; ++j)
 					{
-						var expectedLocation = expected.Locations.ElementAt(j + 1);
+						DiagnosticResultLocation expectedLocation = expected.Locations.ElementAt(j + 1);
 						VerifyDiagnosticLocation(analyzer, actual, additionalLocations[j], expectedLocation);
 					}
 				}
@@ -255,7 +254,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private FileLinePositionSpan CheckPath(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, Location actual, DiagnosticResultLocation expected)
 		{
-			var actualSpan = actual.GetLineSpan();
+			FileLinePositionSpan actualSpan = actual.GetLineSpan();
 
 			if (expected.Path != null)
 			{
@@ -272,7 +271,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private string FormatWrongDiagnosticCount(IEnumerable<Diagnostic> actualResults, DiagnosticAnalyzer analyzer, int expectedCount, int actualCount)
 		{
-			string diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
+			var diagnosticsOutput = actualResults.Any() ? FormatDiagnostics(analyzer, actualResults.ToArray()) : "    NONE.";
 			return
 				$"Mismatch between number of diagnostics returned, expected \"{expectedCount}\" actual \"{actualCount}\"\r\n\r\nDiagnostics:\r\n{diagnosticsOutput}\r\n";
 		}
@@ -286,7 +285,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		private string FormatDiagnostics(DiagnosticAnalyzer analyzer, params Diagnostic[] diagnostics)
 		{
 			var builder = new StringBuilder();
-			for (int i = 0; i < diagnostics.Length; ++i)
+			for (var i = 0; i < diagnostics.Length; ++i)
 			{
 				FormatDiagnostic(analyzer, diagnostics[i], builder, i == diagnostics.Length - 1);
 			}
@@ -295,29 +294,29 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private void FormatDiagnostic(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, StringBuilder builder, bool isLast)
 		{
-			builder.AppendLine("// " + diagnostic.ToString());
+			_ = builder.AppendLine("// " + diagnostic.ToString());
 
-			var analyzerType = analyzer.GetType();
-			var rules = analyzer.SupportedDiagnostics;
+			Type analyzerType = analyzer.GetType();
+			System.Collections.Immutable.ImmutableArray<DiagnosticDescriptor> rules = analyzer.SupportedDiagnostics;
 
-			foreach (var rule in rules)
+			foreach (DiagnosticDescriptor rule in rules)
 			{
 				if (rule != null && rule.Id == diagnostic.Id)
 				{
-					var location = diagnostic.Location;
+					Location location = diagnostic.Location;
 					if (location == Location.None)
 					{
-						builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
+						_ = builder.AppendFormat("GetGlobalResult({0}.{1})", analyzerType.Name, rule.Id);
 					}
 					else
 					{
 						Assert.IsTrue(location.IsInSource,
 							$"Test base does not currently handle diagnostics in metadata locations. Diagnostic in metadata: {diagnostic}\r\n");
 
-						string resultMethodName = "GetCSharpResultAt";
-						var linePosition = diagnostic.Location.GetLineSpan().StartLinePosition;
+						var resultMethodName = "GetCSharpResultAt";
+						Microsoft.CodeAnalysis.Text.LinePosition linePosition = diagnostic.Location.GetLineSpan().StartLinePosition;
 
-						builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
+						_ = builder.AppendFormat("{0}({1}, {2}, {3}.{4})",
 							resultMethodName,
 							linePosition.Line + 1,
 							linePosition.Character + 1,
@@ -327,10 +326,10 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 					if (!isLast)
 					{
-						builder.Append(',');
+						_ = builder.Append(',');
 					}
 
-					builder.AppendLine();
+					_ = builder.AppendLine();
 					break;
 				}
 			}

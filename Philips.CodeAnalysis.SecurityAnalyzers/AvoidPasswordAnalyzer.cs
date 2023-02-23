@@ -1,7 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -47,7 +46,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is PropertyDeclarationSyntax propertyDeclarationSyntax)
 			{
-				var location = propertyDeclarationSyntax.GetLocation();
+				Location location = propertyDeclarationSyntax.GetLocation();
 				Diagnose(propertyDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
@@ -56,7 +55,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is MethodDeclarationSyntax methodDeclarationSyntax)
 			{
-				var location = methodDeclarationSyntax.GetLocation();
+				Location location = methodDeclarationSyntax.GetLocation();
 				Diagnose(methodDeclarationSyntax.Identifier.ValueText, location, context.ReportDiagnostic);
 			}
 		}
@@ -65,9 +64,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			if (context.Node is FieldDeclarationSyntax fieldDeclarationSyntax)
 			{
-				foreach (var variable in fieldDeclarationSyntax.Declaration.Variables)
+				foreach (VariableDeclaratorSyntax variable in fieldDeclarationSyntax.Declaration.Variables)
 				{
-					var location = fieldDeclarationSyntax.GetLocation();
+					Location location = fieldDeclarationSyntax.GetLocation();
 					Diagnose(variable.Identifier.ValueText, location, context.ReportDiagnostic);
 				}
 			}
@@ -77,10 +76,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void AnalyzeComments(SyntaxTreeAnalysisContext context)
 		{
 			SyntaxNode root = context.Tree.GetCompilationUnitRoot(context.CancellationToken);
-			var comments = root.DescendantTrivia().Where((t) => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia));
+			System.Collections.Generic.IEnumerable<SyntaxTrivia> comments = root.DescendantTrivia().Where((t) => t.IsKind(SyntaxKind.SingleLineCommentTrivia) || t.IsKind(SyntaxKind.MultiLineCommentTrivia));
 			foreach (SyntaxTrivia comment in comments)
 			{
-				var location = comment.GetLocation();
+				Location location = comment.GetLocation();
 				Diagnose(comment.ToString(), location, context.ReportDiagnostic);
 			}
 		}

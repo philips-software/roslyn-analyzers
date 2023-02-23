@@ -16,9 +16,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = @"Methods may not call Result on a Task.";
 		private const string Description = @"To avoid deadlocks, methods may not call Result on a Task.";
 		private const string Category = Categories.Maintainability;
-		private const string HelpUri = @"https://docs.microsoft.com/en-us/archive/msdn-magazine/2013/march/async-await-best-practices-in-asynchronous-programming#async-all-the-way";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: HelpUri);
+		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -42,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(OperationAnalysisContext context)
 		{
-			IPropertyReferenceOperation propertyReference = (IPropertyReferenceOperation)context.Operation;
+			var propertyReference = (IPropertyReferenceOperation)context.Operation;
 
 
 			if (propertyReference.Syntax is not MemberAccessExpressionSyntax propertySyntax)
@@ -56,8 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (propertySymbol.ContainingNamespace.Name == ContainingNamespace &&
 					propertySymbol.ContainingType.Name.Contains(ContainingType))
 				{
-					var location = propertySyntax.Name.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+					Location location = propertySyntax.Name.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}

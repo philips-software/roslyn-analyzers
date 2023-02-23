@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
-			string methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
+			var methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
 			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
 				return;
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If the caller is Assert, let it go. (This is debatable, and ideally warrants a configuration option.)
-			MemberAccessExpressionSyntax caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
+			var caller = (Node.Parent.Parent as InvocationExpressionSyntax)?.Expression as MemberAccessExpressionSyntax;
 			if (caller?.Expression is IdentifierNameSyntax identifier && identifier.Identifier.ValueText.Contains(@"Assert"))
 			{
 				return;
@@ -67,20 +67,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// This is debatable, and ideally warrants a configuration option.
 			if (invocationExpressionSyntax.Expression is MemberAccessExpressionSyntax callee)
 			{
-				bool isStatic = IsStaticMethod(callee);
+				var isStatic = IsStaticMethod(callee);
 				if (isStatic)
 				{
 					return;
 				}
 			}
 
-			var location = Node.GetLocation();
+			Location location = Node.GetLocation();
 			ReportDiagnostic(location, Node.ToString());
 		}
 
 		private bool IsStaticMethod(SyntaxNode node)
 		{
-			var symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
+			ISymbol symbol = Context.SemanticModel.GetSymbolInfo(node).Symbol;
 			return symbol is { IsStatic: true };
 		}
 	}

@@ -1,6 +1,4 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
@@ -17,13 +15,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 	[TestClass]
 	public class XmlDocumentationShouldAddValueAnalyzerTest : CodeFixVerifier
 	{
-		#region Non-Public Data Members
-
 		private const string configuredAdditionalUselessWords = "dummy,roms";
-
-		#endregion
-
-		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
@@ -40,14 +32,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue)}.additional_useless_words", configuredAdditionalUselessWords);
 		}
 
-		#endregion
-
-		#region Public Interface
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DefaultWhiteSpaceTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>
 /// 
 /// </summary>
@@ -56,28 +45,41 @@ public class Foo
 }}
 ";
 
-			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EmptyClassTestAsync()
-		{
-			string content = $@"
-/// <summary></summary>
+			var newContent = $@"
 public class Foo
 {{
 }}
 ";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyClassTestAsync()
+		{
+			var content = $@"
+/// <summary></summary>
+public class Foo
+{{
+}}
+";
+			var newContent = $@"
+public class Foo
+{{
+}}
+";
+
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyMethodTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
@@ -86,45 +88,68 @@ public class TestClass
 	}}
 }}
 ";
+			var newContent = $@"
+public class TestClass
+{{
+	public void Foo()
+	{{
+	}}
+}}
+";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyPropertyTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
 	public int Foo {{ get; }}
 }}
 ";
+			var newContent = $@"
+public class TestClass
+{{
+	public int Foo {{ get; }}
+}}
+";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyFieldTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
 	public int Foo;
 }}
 ";
+			var newContent = $@"
+public class TestClass
+{{
+	public int Foo;
+}}
+";
 
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyEventTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
@@ -139,7 +164,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyEnumTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary></summary>
@@ -159,14 +184,20 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
+public class Foo
+{{
+}}
+";
+			var newContent = $@"
 public class Foo
 {{
 }}
 ";
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
@@ -174,7 +205,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public class Foo
 {{
@@ -196,7 +227,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -214,7 +245,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -238,7 +269,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -257,7 +288,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -282,7 +313,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -298,7 +329,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -319,7 +350,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -335,7 +366,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -351,7 +382,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public enum Foo
 {{
@@ -367,7 +398,7 @@ public enum Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public enum Foo
 {{
@@ -384,7 +415,7 @@ public enum Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary>{text}</summary>
@@ -399,7 +430,7 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary>{text}</summary>
@@ -418,7 +449,7 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixEmptyTests(string text)
 		{
-			string errorContent = $@"
+			var errorContent = $@"
 public class TestClass
 {{
 	/// <summary>
@@ -428,7 +459,7 @@ public class TestClass
 }}
 ";
 
-			string fixedContent = $@"
+			var fixedContent = $@"
 public class TestClass
 {{
   public {text}
@@ -447,7 +478,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixValueTests(string text)
 		{
-			string errorContent = $@"
+			var errorContent = $@"
 public class TestClass
 {{
 	/// <summary>raise the.</summary>
@@ -455,7 +486,7 @@ public class TestClass
 }}
 ";
 
-			string fixedContent = $@"
+			var fixedContent = $@"
 public class TestClass
 {{
   public {text}
@@ -470,7 +501,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InheritDocTestsAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <inheritdoc />
@@ -488,7 +519,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RemarksOnlyTestsAsync()
 		{
-			string content = $@"
+			var content = $@"
 using System;
 
 public class TestClass
@@ -508,7 +539,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class Foo
 {{
 	/// <summary>
@@ -522,6 +553,5 @@ public class Foo
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
-		#endregion
 	}
 }

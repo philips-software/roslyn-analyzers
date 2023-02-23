@@ -1,6 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,7 +30,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			string memberName = maes.Name.ToString();
+			var memberName = maes.Name.ToString();
 			if (memberName is not StringConstants.AreEqualMethodName and not StringConstants.AreNotEqualMethodName)
 			{
 				return;
@@ -58,7 +57,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
 			if (!Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
 			{
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString());
 			}
 		}

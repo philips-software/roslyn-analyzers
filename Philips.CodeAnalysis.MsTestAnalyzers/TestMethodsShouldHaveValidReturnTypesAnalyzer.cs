@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				var location = methodDeclaration.ReturnType.GetLocation();
+				Location location = methodDeclaration.ReturnType.GetLocation();
 				var returnTypeString =
 					methodSymbol.ReturnType.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
 				if (!methodSymbol.IsAsync)

@@ -2,9 +2,7 @@
 
 using System.Collections.Immutable;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -90,7 +88,7 @@ namespace Philips.CodeAnalysis.Common
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task HeaderIsDetectedAsync(string content, bool isGood, int errorStartLine)
 		{
-			string baseline = @"{0}
+			var baseline = @"{0}
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
@@ -99,7 +97,7 @@ class Foo
   }}
 }}
 ";
-			string givenText = string.Format(baseline, content);
+			var givenText = string.Format(baseline, content);
 
 			if (isGood)
 			{
@@ -115,7 +113,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task HeaderIsDetected2Async()
 		{
-			string baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
+			var baseline = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 class Foo 
 {{
   public void Foo()
@@ -184,19 +182,19 @@ using System.Reflection;
 		[DataTestMethod]
 		[DataRow("RuntimeFailure", "DereferenceNullAnalyzer")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DogFoodMaintainability(string folder, string analyzerName)
+		public async Task DogFoodMaintainability(string folder, string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MaintainabilityAnalyzers", folder, $"{analyzerName}.cs");
-			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow("MsTestAttributeDefinitions")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void DogFoodMsTest(string analyzerName)
+		public async Task DogFoodMsTest(string analyzerName)
 		{
 			var path = Path.Combine("..", "..", "..", "..", "Philips.CodeAnalysis.MsTestAnalyzers", $"{analyzerName}.cs");
-			VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
+			await VerifySuccessfulCompilationFromFile(path).ConfigureAwait(false);
 		}
 	}
 }
