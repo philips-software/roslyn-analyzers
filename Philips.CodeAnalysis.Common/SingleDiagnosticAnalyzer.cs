@@ -13,11 +13,11 @@ namespace Philips.CodeAnalysis.Common
 		protected DiagnosticDescriptor Rule { get; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true, string helpUri = null)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
 			Id = Helper.ToDiagnosticId(id);
-			var helpLink = helpUri ?? Helper.ToHelpLinkUrl(Id);
+			var helpLink = Helper.ToHelpLinkUrl(Id);
 			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpLink);
 		}
 

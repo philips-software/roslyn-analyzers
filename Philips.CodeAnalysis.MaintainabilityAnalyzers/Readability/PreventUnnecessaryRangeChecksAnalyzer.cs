@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = MessageFormat;
 
 		public PreventUnnecessaryRangeChecksAnalyzer()
-			: base(DiagnosticId.PreventUncessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
+			: base(DiagnosticId.PreventUnnecessaryRangeChecks, Title, MessageFormat, Description, Categories.Readability)
 		{ }
 	}
 
