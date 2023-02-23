@@ -1,13 +1,13 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis;
-using Philips.CodeAnalysis.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Test.Verifiers;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
-using System.Threading.Tasks;
+using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Common
 {
