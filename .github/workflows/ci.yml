@@ -53,6 +53,10 @@ jobs:
         release_branches: ""
         append_to_pre_release_tag: "beta"
 #        custom_tag: TODO for first release
+    - name: Results
+      run: |
+        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
+        echo New Version:  ${{ steps.tag_version.outputs.new_version }}
 
   outputstuff:
     runs-on: ubuntu-latest
@@ -60,8 +64,8 @@ jobs:
     steps:
     - name: Results
       run: |
-        echo New Tag:  ${{ steps.tagversion.outputs.new_tag }}
-        echo New Version:  ${{ steps.tagversion.outputs.new_version }}
+        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
+        echo New Version:  ${{ steps.tag_version.outputs.new_version }}
 
 
         
