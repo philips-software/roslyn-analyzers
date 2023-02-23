@@ -51,3 +51,5 @@ jobs:
         pre_release_branches: ${{ env.GITHUB_REF_NAME }}
         tag_prefix: ''
         append_to_pre_release_tag: -alpha
+#        custom_tag: TODO for first release
+        
