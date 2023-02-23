@@ -17,7 +17,7 @@ jobs:
         dotnet-version: 7.0.*
 
     - name: Format
-      run: dotnet format style --verify-no-changes --no-restore
+      run: dotnet format style --verify-no-changes --no-restore --verbosity normal
       
     - name: Step To run on failure
       if: ${{ failure() }}
