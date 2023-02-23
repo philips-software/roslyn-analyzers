@@ -22,5 +22,5 @@ jobs:
       run: dotnet tool update -g dotnet-format --version "7.0.*" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
 
     - name: Format
-      run: dotnet-format --verify-no-changes
+      run: dotnet-format --verify-no-changes --no-restore
       
