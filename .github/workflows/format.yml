@@ -1,11 +1,7 @@
 name: Format
 
 on:
-  push:
-    branches: [ master, release/** ]
-  pull_request:
-    branches: [ master, release/** ]
-
+  workflow_call:
 jobs:
   format:
     runs-on: ubuntu-latest
@@ -23,5 +19,5 @@ jobs:
       
     - name: Step To run on failure
       if: ${{ failure() }}
-      run: echo 'Run Code Cleanup in VS on these files. Configure Code Cleanup to run on save in Tools -> Options.'  >> $GITHUB_STEP_SUMMARY
+      run: echo 'Run Code Cleanup in VS on files reporting problems. Configure Code Cleanup to run on save in Tools -> Options to avoid future problems'  >> $GITHUB_STEP_SUMMARY
         
