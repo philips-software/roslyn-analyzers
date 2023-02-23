@@ -2,9 +2,13 @@ name: TagVersion
 
 on:
   workflow_call:
-      
+    outputs:
+      new_tag:
+        value: ${{ jobs.tagversion.outputs.new_tag }}
+      new_version:
+        value: ${{ jobs.tagversion.outputs.new_version }}      
 jobs:
-  build:
+  tagversion:
     runs-on: ubuntu-latest
     name: Tag Version
     steps:
