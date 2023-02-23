@@ -16,8 +16,11 @@ jobs:
       with:
         dotnet-version: 7.0.*
 
+    - name: Restore
+      run: dotnet restore
+      
     - name: Format
-      run: dotnet format style --verify-no-changes --no-restore --verbosity normal
+      run: dotnet format style --verify-no-changes --no-restore --verbosity detailed
       
     - name: Step To run on failure
       if: ${{ failure() }}
