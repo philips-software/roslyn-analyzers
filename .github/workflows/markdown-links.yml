@@ -12,6 +12,5 @@ jobs:
       - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e
       - name: Check Markdown Links
         uses: gaurav-nelson/github-action-markdown-link-check@9710f0fec812ce0a3b98bef4c9d842fc1f39d976 # ratchet:gaurav-nelson/github-action-markdown-link-check@1.0.13
-#      with:
-
-#        config-file: .github/linters/markdown-link-check.json
+        with:
+          config-file: .github/linters/markdown-link-check.json
