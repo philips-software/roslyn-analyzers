@@ -25,5 +25,5 @@ jobs:
       run: dotnet restore
       
     - name: Format
-      run: dotnet-format --verify-no-changes --no-restore
+      run: dotnet format --verify-no-changes --no-restore
       
