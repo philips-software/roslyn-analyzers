@@ -37,30 +37,8 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
 
   tagversion:
-#    if: ${{ github.event_name == 'push' }}
-# paths:
-    runs-on: ubuntu-latest
-#    needs: build
-    steps:
-    - name: Bump version
-      id: tag_version
-      uses: mathieudutour/github-tag-action@v6.0
-      with:
-        dry_run: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
-        tag_prefix: ""
-        release_branches: ""
-        append_to_pre_release_tag: prerelease
-#        custom_tag: TODO for first release
-    - name: Results
-      run: |
-        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
-        echo New Version:  ${{ steps.tag_version.outputs.new_version }}
-    outputs:
-      new_tag: ${{ steps.tag_version.outputs.new_tag }}
-      new_version: ${{ steps.tag_version.outputs.new_version }}
-
+    uses: philips-software/roslyn-analyzers/.github/workflows/tagversion.yml@bcollamore-semver
+  
   outputstuff:
     runs-on: ubuntu-latest
     needs: tagversion
