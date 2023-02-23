@@ -47,5 +47,7 @@ jobs:
       uses: mathieudutour/github-tag-action@v6.1
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: 'master,bcollamore-semver'
+        pre_release_branches: 'bcollamore-semver'
+        tag_prefix: ''
+        append_to_pre_release_tag: '-alpha'
         dry_run: true
