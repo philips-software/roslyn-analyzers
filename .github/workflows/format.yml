@@ -2,6 +2,8 @@ name: Format
 
 on:
   workflow_call:
+  pull_request:
+    branches: [master]
 jobs:
   format:
     runs-on: ubuntu-latest
