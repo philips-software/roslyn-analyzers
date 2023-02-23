@@ -1,0 +1,18 @@
+name: Markdown Links
+
+on:
+  workflow_call:
+  pull_request:
+    branches: [master]
+jobs:
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e
+
+    - name: Check Markdown Links
+      uses: gaurav-nelson/github-action-markdown-link-check@1.0.13
+#      with:
+#        config-file: .github/linters/markdown-link-check.json
+          
