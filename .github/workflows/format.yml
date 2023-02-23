@@ -21,3 +21,7 @@ jobs:
     - name: Format
       run: dotnet format style --verify-no-changes --no-restore
       
+    - name: Step To run on failure
+      if: ${{ failure() }}
+      run: echo 'Run Code Cleanup in VS on these files. Configure Code Cleanup to run on save in Tools -> Options.'  >> $GITHUB_STEP_SUMMARY
+        
