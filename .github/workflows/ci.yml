@@ -48,7 +48,7 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "*"
+        pre_release_branches: "**"
         tag_prefix: ""
         release_branches: ""
         append_to_pre_release_tag: "beta"
