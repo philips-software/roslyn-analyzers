@@ -6,7 +6,12 @@ on:
     branches: [master]
 jobs:
   codeql:
+    if: ${{ github.event_name == 'pull_request' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
+
+#  format:
+#    if: ${{ github.event_name == 'pull_request' }}
+#    uses: philips-software/roslyn-analyzers/.github/workflows/format.yml@master
 
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' }}
@@ -25,6 +30,7 @@ jobs:
     uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
 
   dogfood:
+    if: ${{ github.event_name == 'pull_request' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
 
   performance:
