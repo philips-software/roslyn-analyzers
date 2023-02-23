@@ -48,10 +48,10 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "**"
+        pre_release_branches: "${{ github.head_ref || github.ref_name }}"
         tag_prefix: ""
         release_branches: ""
-        append_to_pre_release_tag: "beta"
+        append_to_pre_release_tag: "-beta"
 #        custom_tag: TODO for first release
     - name: Results
       run: |
