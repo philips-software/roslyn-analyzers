@@ -14,10 +14,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Do not use PrivateKey property on X509Certificate2 class";
 		private const string MessageFormat = @"Do not use PrivateKey property on X509Certificate2 class to access the Private Key. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey().";
 		private const string Description = @"Do not use PrivateKey property on X509Certificate2 class as it might cause the Application to crash. Use a Getter instead. Eg: GetRSAPrivateKey(), GetDSAPrivateKey(), GetECDsaPrivateKey()";
-		private const string HelpUri = @"https://www.pkisolutions.com/accessing-and-using-certificate-private-keys-in-net-framework-net-core/";
 
 		public AvoidPrivateKeyPropertyAnalyzer()
-			: base(DiagnosticId.AvoidPrivateKeyProperty, Title, MessageFormat, Description, Categories.Maintainability, helpUri: HelpUri)
+			: base(DiagnosticId.AvoidPrivateKeyProperty, Title, MessageFormat, Description, Categories.Maintainability)
 		{
 			FullyQualifiedMetaDataName = "System.Security.Cryptography.X509Certificates.X509Certificate2";
 		}
