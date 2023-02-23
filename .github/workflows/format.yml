@@ -21,6 +21,9 @@ jobs:
     - name: Avoid dotnet format SDK version (https://github.com/dotnet/sdk/issues/30742)
       run: dotnet tool update -g dotnet-format --version "7.0.*" --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json
 
+    - name: Restore
+      run: dotnet restore
+      
     - name: Format
       run: dotnet-format --verify-no-changes --no-restore
       
