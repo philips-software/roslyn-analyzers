@@ -61,8 +61,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
 				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
-					var loc = exceptionCreation.GetLocation();
-					Diagnostic diagnostic = Diagnostic.Create(InformationalRule, loc, thrownExceptionName);
+					Location loc = exceptionCreation.GetLocation();
+					var diagnostic = Diagnostic.Create(InformationalRule, loc, thrownExceptionName);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
@@ -81,22 +81,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			aliases = _helper.GetUsingAliases(throwStatement);
-			if (aliases.TryGetValue(thrownExceptionName, out string aliasedName))
+			if (aliases.TryGetValue(thrownExceptionName, out var aliasedName))
 			{
 				thrownExceptionName = aliasedName;
 			}
 
 			// Determine our parent.
-			var nodeWithDoc = DocumentationHelper.FindAncestorThatCanHaveDocumentation(throwStatement);
+			SyntaxNode nodeWithDoc = DocumentationHelper.FindAncestorThatCanHaveDocumentation(throwStatement);
 
 			// Check if our parent has proper documentation.
 			var docHelper = new DocumentationHelper(nodeWithDoc);
-			var mentionedExceptions = docHelper.GetExceptionCrefs();
+			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCrefs();
 			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
-				var loc = throwStatement.ThrowKeyword.GetLocation();
-				var properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, thrownExceptionName);
-				Diagnostic diagnostic = Diagnostic.Create(DocumentRule, loc, properties, thrownExceptionName);
+				Location loc = throwStatement.ThrowKeyword.GetLocation();
+				ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, thrownExceptionName);
+				var diagnostic = Diagnostic.Create(DocumentRule, loc, properties, thrownExceptionName);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

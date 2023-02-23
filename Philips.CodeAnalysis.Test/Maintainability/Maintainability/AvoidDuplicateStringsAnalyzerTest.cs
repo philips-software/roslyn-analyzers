@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			const int Start = 100;
 
 			StringBuilder sb = new($"namespace DuplicateStringsTest {{ public class {className} {{ public void MethodA() {{");
-			for (int i = Start; i < Start + Count; i++)
+			for (var i = Start; i < Start + Count; i++)
 			{
 				_ = sb.AppendLine($"string str{i} = \"{i}\";");
 			}

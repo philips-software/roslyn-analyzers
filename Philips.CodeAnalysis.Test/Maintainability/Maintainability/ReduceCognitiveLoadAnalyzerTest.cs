@@ -78,7 +78,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(2);
+			var regex = MakeRegex(2);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -108,7 +108,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -125,7 +125,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(2);
+			var regex = MakeRegex(2);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -142,7 +142,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -159,7 +159,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -176,7 +176,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -193,7 +193,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(3);
+			var regex = MakeRegex(3);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -214,7 +214,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(4);
+			var regex = MakeRegex(4);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -237,7 +237,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(6);
+			var regex = MakeRegex(6);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -262,7 +262,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(8);
+			var regex = MakeRegex(8);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -286,7 +286,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(5);
+			var regex = MakeRegex(5);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -353,7 +353,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(34);
+			var regex = MakeRegex(34);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -417,7 +417,7 @@ class Foo
 	}
 }
 ";
-			string regex = MakeRegex(26);
+			var regex = MakeRegex(26);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 
@@ -467,7 +467,7 @@ class Foo
 		return document;
 	}
 }";
-			string regex = MakeRegex(40);
+			var regex = MakeRegex(40);
 			await VerifyDiagnostic(template, regex: regex).ConfigureAwait(false);
 		}
 	}

@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentTest()
 		{
-			string template = @"
+			var template = @"
 class Foo
 {{
   public Foo() : base(Do()) {}
@@ -50,7 +50,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentReturnTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {{
   public string Do() {{ return ""hi"";}}
@@ -63,7 +63,7 @@ class Foo
 }}
 ";
 
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {{
   public string Do() {{ return ""hi"";}}
@@ -84,7 +84,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsUnknownSymbolArgumentReturnTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {{
   public string Moo(string s) {{ return ""hi"";}}
@@ -96,7 +96,7 @@ class Foo
 }}
 ";
 
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {{
   public string Moo(string s) {{ return ""hi"";}}
@@ -116,7 +116,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -127,7 +127,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -148,7 +148,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationInIfStatementTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -160,7 +160,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -182,7 +182,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationInWhileStatementTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -194,7 +194,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -216,7 +216,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsMemberAccessArgumentFixTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -227,7 +227,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -248,7 +248,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsStaticMemberAccessArgumentFixTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public static string Do() { return ""hi"";}
@@ -259,7 +259,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public static string Do() { return ""hi"";}
@@ -280,7 +280,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsMixedStaticAndInstanceMemberAccessArgumentFixTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -292,7 +292,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -314,7 +314,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentLocalAssignmentTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -325,7 +325,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -346,7 +346,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentAssignmentTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -358,7 +358,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -381,7 +381,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixReturnTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -393,7 +393,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -415,7 +415,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixIfTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -427,7 +427,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Foo
 {
   public string Do() { return ""hi"";}
@@ -450,7 +450,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixNewTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -461,7 +461,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -481,7 +481,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixSwitchTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -497,7 +497,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -521,7 +521,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixNamedArgumentsTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -537,7 +537,7 @@ class Foo
   }
 }
 ";
-			string fixedContent = @"
+			var fixedContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {
@@ -561,7 +561,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentFixExpressionTest()
 		{
-			string errorContent = @"
+			var errorContent = @"
 class Meow { public Meow(string x) {} }
 class Foo
 {

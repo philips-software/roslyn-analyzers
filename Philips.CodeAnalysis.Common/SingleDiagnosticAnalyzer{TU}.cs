@@ -13,8 +13,8 @@ namespace Philips.CodeAnalysis.Common
 		public string FullyQualifiedMetaDataName { get; protected set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true, string helpUri = null)
-			: base(id, title, messageFormat, description, category, severity, isEnabled, helpUri)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
 		/// <summary>

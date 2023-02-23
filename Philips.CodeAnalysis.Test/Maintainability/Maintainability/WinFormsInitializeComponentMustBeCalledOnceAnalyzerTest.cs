@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		private string CreateCode(string param1, string param2)
 		{
-			string code = @"
+			var code = @"
 namespace System.Windows.Forms
 {{
 class ContainerControl {{ }}
@@ -177,7 +177,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzersAsync(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
 		{
-			string code = CreateCode(param1, param2);
+			var code = CreateCode(param1, param2);
 
 			if (shouldGenerateDiagnosticOnFirst && !shouldGenerateDiagnosticOnSecond)
 			{
@@ -201,7 +201,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructorsAsync()
 		{
-			string code = CreateCodeWithOutConstructors();
+			var code = CreateCodeWithOutConstructors();
 			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
@@ -209,7 +209,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructorsAsync()
 		{
-			string code = CreateCodeWithDisjointConstructors();
+			var code = CreateCodeWithDisjointConstructors();
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
@@ -217,7 +217,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClassAsync()
 		{
-			string code = CreateCodeWithStaticConstructor();
+			var code = CreateCodeWithStaticConstructor();
 			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
 		}
 
@@ -225,7 +225,7 @@ class ContainerControl
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFileAsync()
 		{
-			string code = CreateCode(@"", @"");
+			var code = CreateCode(@"", @"");
 			await VerifySuccessfulCompilation(code, @"Test.Designer").ConfigureAwait(false);
 		}
 

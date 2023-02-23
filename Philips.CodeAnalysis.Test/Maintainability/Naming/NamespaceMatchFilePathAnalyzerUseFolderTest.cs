@@ -47,8 +47,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ReportIncorrectNamespaceFolderMatchAsync(string ns, string path)
 		{
-			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(ClassString, ns);
+			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
+			var code = string.Format(ClassString, ns);
 			DiagnosticResult expected = new()
 			{
 				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath),
@@ -70,8 +70,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespaceSupersetFolderMatchAsync(string ns, string path)
 		{
-			string sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
-			string code = string.Format(ClassString, ns);
+			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
+			var code = string.Format(ClassString, ns);
 			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
 		}
 	}

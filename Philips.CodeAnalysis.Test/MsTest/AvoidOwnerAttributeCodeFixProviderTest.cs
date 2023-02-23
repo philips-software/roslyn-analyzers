@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidOwnerAttributeTest(string test, int expectedColumn)
 		{
-			string baseline = @"
+			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 class Foo 
@@ -33,7 +33,7 @@ class Foo
 }}
 ";
 
-			string fixedText = @"
+			var fixedText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 class Foo 
@@ -44,7 +44,7 @@ class Foo
 }
 ";
 
-			string givenText = string.Format(baseline, test);
+			var givenText = string.Format(baseline, test);
 
 			DiagnosticResult expected = new()
 			{

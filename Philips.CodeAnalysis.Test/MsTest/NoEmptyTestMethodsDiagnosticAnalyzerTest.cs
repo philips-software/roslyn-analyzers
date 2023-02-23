@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
-			string code = @"
+			var code = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 public class DerivedTestMethod : TestMethodAttribute

@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Diagnostic diagnostic = context.Diagnostics.First();
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
-			IfStatementSyntax ifStatement = root.FindNode(diagnosticSpan) as IfStatementSyntax;
+			var ifStatement = root.FindNode(diagnosticSpan) as IfStatementSyntax;
 
 			// Register a code action that will invoke the fix.
 			context.RegisterCodeFix(
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
-			var parent = ifStatementSyntax.Parent;
+			SyntaxNode parent = ifStatementSyntax.Parent;
 			if (parent is BlockSyntax)
 			{
 				parent = parent.Parent;

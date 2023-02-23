@@ -57,10 +57,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
 			_records.Sort();
-			foreach (var record in _records)
+			foreach (AnalyzerPerfRecord record in _records)
 			{
-				string package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + Ellipsis : record.Package;
-				string analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + Ellipsis : record.Analyzer;
+				var package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + Ellipsis : record.Package;
+				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + Ellipsis : record.Analyzer;
 				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
@@ -71,13 +71,13 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				if (analyzerMessage is Item item)
 				{
-					string[] analyzerAndId = item.Name.Split(" ");
-					string id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
+					var analyzerAndId = item.Name.Split(" ");
+					var id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
 
-					string[] analyzerParts = analyzerAndId[0].Split(".");
+					var analyzerParts = analyzerAndId[0].Split(".");
 
-					string[] timeParts = item.Text.Split(" ");
-					double time = double.Parse(timeParts[0]);
+					var timeParts = item.Text.Split(" ");
+					var time = double.Parse(timeParts[0]);
 					if (timeParts[1] == "s")
 					{
 						time *= 1000;

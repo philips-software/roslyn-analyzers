@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			LiteralExpressionSyntax stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
+			var stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
 
 			if (_helper.IsInTestClass(context))
 			{
@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Get the text value of the string literal expression.
-			string pathValue = stringLiteralExpressionNode.Token.ValueText;
+			var pathValue = stringLiteralExpressionNode.Token.ValueText;
 
 			if (pathValue.Length < 2)
 			{
@@ -55,8 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// If the pattern matches the text value, report the diagnostic.
 			if (WindowsPattern.IsMatch(pathValue))
 			{
-				var location = stringLiteralExpressionNode.GetLocation();
-				Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+				Location location = stringLiteralExpressionNode.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}

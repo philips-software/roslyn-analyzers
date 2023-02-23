@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TypeInfo actualType = context.SemanticModel.GetTypeInfo(actual.Expression);
 
 			Conversion conversion = context.SemanticModel.Compilation.ClassifyConversion(actualType.Type, expectedType.Type);
-			var location = invocationExpressionSyntax.GetLocation();
+			Location location = invocationExpressionSyntax.GetLocation();
 			return conversion.IsNullable ? Array.Empty<Diagnostic>() : (IEnumerable<Diagnostic>)(new[] { Diagnostic.Create(Rule, location) });
 		}
 

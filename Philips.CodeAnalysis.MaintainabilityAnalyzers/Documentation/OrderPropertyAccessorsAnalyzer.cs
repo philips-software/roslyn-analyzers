@@ -30,12 +30,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			int getIndex = -1;
-			int setIndex = int.MaxValue;
+			var getIndex = -1;
+			var setIndex = int.MaxValue;
 
-			for (int i = 0; i < accessors.Accessors.Count; i++)
+			for (var i = 0; i < accessors.Accessors.Count; i++)
 			{
-				var accessor = accessors.Accessors[i];
+				AccessorDeclarationSyntax accessor = accessors.Accessors[i];
 
 				if (accessor.Keyword.IsKind(SyntaxKind.GetKeyword))
 				{
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			if (setIndex < getIndex)
 			{
-				var location = accessors.GetLocation();
+				Location location = accessors.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

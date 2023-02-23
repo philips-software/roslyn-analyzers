@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
 
 			// Find the method declaration identified by the diagnostic.
-			ConstructorDeclarationSyntax token = (ConstructorDeclarationSyntax)root.FindNode(diagnosticSpan);
+			var token = (ConstructorDeclarationSyntax)root.FindNode(diagnosticSpan);
 
 			// Register a code action that will invoke the fix.
 			context.RegisterCodeFix(
@@ -51,8 +51,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
 
-			var leadingTrivia = ctor.GetLeadingTrivia().Where(x => !(x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || x.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))).ToArray();
-			var newCtor = ctor.WithLeadingTrivia(leadingTrivia);
+			SyntaxTrivia[] leadingTrivia = ctor.GetLeadingTrivia().Where(x => !(x.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia) || x.IsKind(SyntaxKind.MultiLineDocumentationCommentTrivia))).ToArray();
+			ConstructorDeclarationSyntax newCtor = ctor.WithLeadingTrivia(leadingTrivia);
 
 			rootNode = rootNode.ReplaceNode(ctor, newCtor);
 
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			var newConstructor = (ConstructorDeclarationSyntax)cls.Members.First(x => x.IsKind(SyntaxKind.ConstructorDeclaration) && ((ConstructorDeclarationSyntax)x).Modifiers.Any(SyntaxKind.StaticKeyword));
 
-			var newRoot = rootNode.RemoveNode(newConstructor, SyntaxRemoveOptions.KeepDirectives | SyntaxRemoveOptions.KeepExteriorTrivia);
+			SyntaxNode newRoot = rootNode.RemoveNode(newConstructor, SyntaxRemoveOptions.KeepDirectives | SyntaxRemoveOptions.KeepExteriorTrivia);
 
 			return document.WithSyntaxRoot(newRoot);
 		}

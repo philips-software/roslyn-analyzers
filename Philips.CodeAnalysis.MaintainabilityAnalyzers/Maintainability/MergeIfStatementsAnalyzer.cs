@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var parent = Node.Parent;
+			SyntaxNode parent = Node.Parent;
 
 			if (parent is BlockSyntax parentBlockSyntax)
 			{
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var location = Node.IfKeyword.GetLocation();
+			Location location = Node.IfKeyword.GetLocation();
 			ReportDiagnostic(location);
 		}
 

@@ -28,25 +28,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			var prop = Node.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
+			PropertyDeclarationSyntax prop = Node.Ancestors().OfType<PropertyDeclarationSyntax>().FirstOrDefault();
 			if (Node.Body == null || prop == null)
 			{
 				return;
 			}
 
-			var type = prop.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
+			BaseTypeDeclarationSyntax type = prop.Ancestors().OfType<BaseTypeDeclarationSyntax>().FirstOrDefault();
 			if (type == null)
 			{
 				return;
 			}
 
-			var propertiesInType = GetProperties(type);
-			var otherProperties = propertiesInType.Except(new[] { prop.Identifier.Text });
+			IEnumerable<string> propertiesInType = GetProperties(type);
+			IEnumerable<string> otherProperties = propertiesInType.Except(new[] { prop.Identifier.Text });
 
 			if (Node.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
 			{
 				var propertyName = prop.Identifier.Text;
-				var loc = Node.GetLocation();
+				Location loc = Node.GetLocation();
 				ReportDiagnostic(loc, propertyName);
 			}
 		}

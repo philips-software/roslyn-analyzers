@@ -32,19 +32,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			LambdaExpressionSyntax node = (LambdaExpressionSyntax)context.Node;
+			var node = (LambdaExpressionSyntax)context.Node;
 			MethodDeclarationSyntax parent =
 				node.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault();
 
 			// We need at least 2 lambdas in the same method to have even the possibility of a violation.
-			var lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
+			IEnumerable<LambdaExpressionSyntax> lambdas = parent?.DescendantNodes().OfType<LambdaExpressionSyntax>();
 			if (lambdas == null || lambdas.Count() < 2)
 			{
 				return;
 			}
 
 			// Get a list of the lambdas that start on the same line, excluding our lambda.
-			var lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
+			IEnumerable<LambdaExpressionSyntax> lambdasOnSameLine = FindOtherLambdasOnSameLine(node, lambdas);
 			if (lambdasOnSameLine == null || !lambdasOnSameLine.Any())
 			{
 				return;
@@ -63,10 +63,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static IEnumerable<LambdaExpressionSyntax> FindOtherLambdasOnSameLine(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
 			List<LambdaExpressionSyntax> result = new();
-			int theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
+			var theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 			foreach (LambdaExpressionSyntax lambda in lambdas)
 			{
-				int currentLine = lambda.GetLocation().GetLineSpan().StartLinePosition.Line;
+				var currentLine = lambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 				// Do not report ourLambda itself.
 				if (currentLine == theLine && !ReferenceEquals(lambda, ourLambda))
 				{
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static bool IsLeftMost(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
 			// ourLambda is the left most if all the lambdas are further to the right, which means a higher Character number.
-			int column = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Character;
+			var column = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Character;
 			return lambdas.All(l => l.GetLocation().GetLineSpan().StartLinePosition.Character > column);
 		}
 	}

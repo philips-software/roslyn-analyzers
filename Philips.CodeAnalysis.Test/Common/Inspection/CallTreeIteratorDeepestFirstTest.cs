@@ -21,17 +21,17 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		{
 			// Arrange
 			var root = new CallTreeNode(null, null);
-			var firstChild = root.AddChild(null);
-			var secondChild = root.AddChild(null);
+			CallTreeNode firstChild = root.AddChild(null);
+			CallTreeNode secondChild = root.AddChild(null);
 			var iterator = new CallTreeIteratorDeepestFirst(root);
 
 			// Act
 			var firstMoveResult = iterator.MoveNext();
-			var firstNode = iterator.Current;
+			CallTreeNode firstNode = iterator.Current;
 			var secondMoveResult = iterator.MoveNext();
-			var secondNode = iterator.Current;
+			CallTreeNode secondNode = iterator.Current;
 			var thirdMoveResult = iterator.MoveNext();
-			var thirdNode = iterator.Current;
+			CallTreeNode thirdNode = iterator.Current;
 			var fourthMoveResult = iterator.MoveNext();
 
 			// Assert
@@ -54,11 +54,11 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void CreateCallTreeFromSystemIoDirectoryWithExpectedNumberOfNodes(string methodName)
 		{
-			var type = typeof(System.IO.Directory);
-			var assembly = type.Assembly;
-			ModuleDefinition module = ModuleDefinition.ReadModule(assembly.Location);
-			var typeDef = module.GetType(type.FullName);
-			var methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
+			System.Type type = typeof(System.IO.Directory);
+			System.Reflection.Assembly assembly = type.Assembly;
+			var module = ModuleDefinition.ReadModule(assembly.Location);
+			TypeDefinition typeDef = module.GetType(type.FullName);
+			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);
 			var expectedNodeCount = GetNodeCount(tree);
 			var iterator = new CallTreeIteratorDeepestFirst(tree);
@@ -70,8 +70,8 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 
 		private int GetNodeCount(CallTreeNode node)
 		{
-			int sum = 1;
-			foreach (var child in node.Children)
+			var sum = 1;
+			foreach (CallTreeNode child in node.Children)
 			{
 				sum += GetNodeCount(child);
 			}

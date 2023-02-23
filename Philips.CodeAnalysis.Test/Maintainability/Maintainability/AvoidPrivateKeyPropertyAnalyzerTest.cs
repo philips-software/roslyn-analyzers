@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
 		{
-			string mockReference = typeof(X509Certificate2).Assembly.Location;
+			var mockReference = typeof(X509Certificate2).Assembly.Location;
 			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
 
 			return base.GetMetadataReferences().Add(reference);
@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidPrivateKeyPropertyOnX509CertificateAsync(string s)
 		{
-			string code = string.Format(ClassString, s);
+			var code = string.Format(ClassString, s);
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 	}

@@ -26,19 +26,19 @@ namespace Philips.CodeAnalysis.Common
 
 		public static string GetFullName(this TypeSyntax typeSyntax, IReadOnlyDictionary<string, string> aliases)
 		{
-			string name = string.Empty;
+			var name = string.Empty;
 			if (typeSyntax is SimpleNameSyntax simpleNameSyntax)
 			{
 				name = simpleNameSyntax.Identifier.Text;
 			}
 			else if (typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
 			{
-				string left = qualifiedNameSyntax.Left.GetFullName(aliases);
-				string right = qualifiedNameSyntax.Right.Identifier.Text;
+				var left = qualifiedNameSyntax.Left.GetFullName(aliases);
+				var right = qualifiedNameSyntax.Right.Identifier.Text;
 				name = $"{left}.{right}";
 			}
 
-			if (aliases.TryGetValue(name, out string aliased))
+			if (aliases.TryGetValue(name, out var aliased))
 			{
 				return aliased;
 			}

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public void ReportDiagnostic(Location location = null, params object[] messageArgs)
 		{
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location, messageArgs);
+			var diagnostic = Diagnostic.Create(Rule, location, messageArgs);
 			Context.ReportDiagnostic(diagnostic);
 		}
 	}

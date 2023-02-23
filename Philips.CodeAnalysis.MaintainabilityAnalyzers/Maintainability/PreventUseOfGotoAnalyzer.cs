@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext analysisContext)
 		{
-			var location = analysisContext.Node.GetLocation();
+			Location location = analysisContext.Node.GetLocation();
 			analysisContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 

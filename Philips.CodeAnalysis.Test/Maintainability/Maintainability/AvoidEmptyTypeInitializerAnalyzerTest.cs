@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 }}
 ";
-			string classContent = template;
+			var classContent = template;
 			await VerifySuccessfulCompilation(classContent).ConfigureAwait(false);
 		}
 
@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
   #endregion
 }}
 ";
-			string classContent = string.Format(template, modifier, content);
+			var classContent = string.Format(template, modifier, content);
 
 			if (isError)
 			{
@@ -69,10 +69,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
   #endregion
 }}
 ";
-			string classContent = string.Format(template, string.Format(@"{0}
+			var classContent = string.Format(template, string.Format(@"{0}
 static Foo() {{ }}", summaryComment));
 
-			string expected = string.Format(template, "  \r\n");
+			var expected = string.Format(template, "  \r\n");
 
 			await VerifyFix(classContent, expected).ConfigureAwait(false);
 		}

@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (Node.Modifiers.Any(SyntaxKind.ProtectedKeyword))
 			{
-				var location = Node.GetLocation();
+				Location location = Node.GetLocation();
 				ReportDiagnostic(location);
 			}
 		}

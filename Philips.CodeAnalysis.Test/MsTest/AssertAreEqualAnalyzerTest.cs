@@ -76,8 +76,8 @@ Assert.AreEqual(default, GetValue());
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
 		{
-			string expectedParameter = arg0 ?? "GetValue()";
-			string actualParameter = arg1 ?? "GetValue()";
+			var expectedParameter = arg0 ?? "GetValue()";
+			var actualParameter = arg1 ?? "GetValue()";
 
 			if (shouldWrapArgument)
 			{
@@ -92,7 +92,7 @@ Assert.AreEqual(default, GetValue());
 				}
 			}
 
-			string template = @$"
+			var template = @$"
 int GetValue()
 {{
 	return 0;
@@ -101,7 +101,7 @@ int GetValue()
 Assert.AreEqual({expectedParameter}, {actualParameter});
 ";
 
-			string fixTemplate = @$"
+			var fixTemplate = @$"
 int GetValue()
 {{
 	return 0;
@@ -131,10 +131,10 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNull(string arg)
 		{
-			string template = @$"
+			var template = @$"
 Assert.AreEqual(null, {arg});
 ";
-			string fixTemplate = @$"
+			var fixTemplate = @$"
 Assert.IsNull({arg});
 ";
 
@@ -151,10 +151,10 @@ Assert.IsNull({arg});
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNotNull(string arg)
 		{
-			string template = @$"
+			var template = @$"
 Assert.AreNotEqual(null, {arg});
 ";
-			string fixTemplate = @$"
+			var fixTemplate = @$"
 Assert.IsNotNull({arg});
 ";
 

@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (property.Modifiers.Any(SyntaxKind.NewKeyword))
 			{
-				var location = property.Identifier.GetLocation();
+				Location location = property.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, property.Identifier.Text));
 			}
 		}
@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (method.Modifiers.Any(SyntaxKind.NewKeyword))
 			{
-				var location = method.Identifier.GetLocation();
+				Location location = method.Identifier.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, method.Identifier.Text));
 			}
 		}

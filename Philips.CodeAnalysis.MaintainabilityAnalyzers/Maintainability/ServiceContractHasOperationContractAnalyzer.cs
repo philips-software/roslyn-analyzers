@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				if (!_attributeHelper.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
 				{
-					var location = method.Identifier.GetLocation();
+					Location location = method.Identifier.GetLocation();
 					ReportDiagnostic(location, method.Identifier);
 				}
 			}

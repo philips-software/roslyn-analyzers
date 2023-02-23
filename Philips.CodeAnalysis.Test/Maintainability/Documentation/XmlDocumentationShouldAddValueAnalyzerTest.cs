@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DefaultWhiteSpaceTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>
 /// 
 /// </summary>
@@ -45,7 +45,7 @@ public class Foo
 }}
 ";
 
-			string newContent = $@"
+			var newContent = $@"
 public class Foo
 {{
 }}
@@ -59,13 +59,13 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyClassTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 /// <summary></summary>
 public class Foo
 {{
 }}
 ";
-			string newContent = $@"
+			var newContent = $@"
 public class Foo
 {{
 }}
@@ -79,7 +79,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyMethodTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
@@ -88,7 +88,7 @@ public class TestClass
 	}}
 }}
 ";
-			string newContent = $@"
+			var newContent = $@"
 public class TestClass
 {{
 	public void Foo()
@@ -105,14 +105,14 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyPropertyTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
 	public int Foo {{ get; }}
 }}
 ";
-			string newContent = $@"
+			var newContent = $@"
 public class TestClass
 {{
 	public int Foo {{ get; }}
@@ -127,14 +127,14 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyFieldTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
 	public int Foo;
 }}
 ";
-			string newContent = $@"
+			var newContent = $@"
 public class TestClass
 {{
 	public int Foo;
@@ -149,7 +149,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyEventTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary></summary>
@@ -164,7 +164,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyEnumTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary></summary>
@@ -184,13 +184,13 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public class Foo
 {{
 }}
 ";
-			string newContent = $@"
+			var newContent = $@"
 public class Foo
 {{
 }}
@@ -205,7 +205,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public class Foo
 {{
@@ -227,7 +227,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -245,7 +245,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -269,7 +269,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -288,7 +288,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -313,7 +313,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -329,7 +329,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -350,7 +350,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -366,7 +366,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <summary>{text}</summary>
@@ -382,7 +382,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public enum Foo
 {{
@@ -398,7 +398,7 @@ public enum Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 /// <summary>{text}</summary>
 public enum Foo
 {{
@@ -415,7 +415,7 @@ public enum Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberInvalidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary>{text}</summary>
@@ -430,7 +430,7 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberValidTestsAsync(string text)
 		{
-			string content = $@"
+			var content = $@"
 public enum TestEnumeration
 {{
 	/// <summary>{text}</summary>
@@ -449,7 +449,7 @@ public enum TestEnumeration
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixEmptyTests(string text)
 		{
-			string errorContent = $@"
+			var errorContent = $@"
 public class TestClass
 {{
 	/// <summary>
@@ -459,7 +459,7 @@ public class TestClass
 }}
 ";
 
-			string fixedContent = $@"
+			var fixedContent = $@"
 public class TestClass
 {{
   public {text}
@@ -478,7 +478,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixValueTests(string text)
 		{
-			string errorContent = $@"
+			var errorContent = $@"
 public class TestClass
 {{
 	/// <summary>raise the.</summary>
@@ -486,7 +486,7 @@ public class TestClass
 }}
 ";
 
-			string fixedContent = $@"
+			var fixedContent = $@"
 public class TestClass
 {{
   public {text}
@@ -501,7 +501,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InheritDocTestsAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class TestClass
 {{
 	/// <inheritdoc />
@@ -519,7 +519,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RemarksOnlyTestsAsync()
 		{
-			string content = $@"
+			var content = $@"
 using System;
 
 public class TestClass
@@ -539,7 +539,7 @@ public class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorTestAsync()
 		{
-			string content = $@"
+			var content = $@"
 public class Foo
 {{
 	/// <summary>

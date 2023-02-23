@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			var typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
 			if (typeSymbol == null)
 			{
 				return;
@@ -73,8 +73,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			var location = creation.ArgumentList.GetLocation();
-			Diagnostic diagnostic = Diagnostic.Create(Rule, location);
+			Location location = creation.ArgumentList.GetLocation();
+			var diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
 	}

@@ -38,7 +38,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionWithNestedExpressionAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Scan(MethodDefinition method, MethodData data)
@@ -84,7 +84,7 @@ Instruction i = method.Body.Instructions[0];
 		public async Task DereferenceNullAsExpressionFindingTestAsync(string content1, string content2)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content1, content2);
+			var testCode = string.Format(format, content1, content2);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
@@ -104,7 +104,7 @@ Instruction i = method.Body.Instructions[0];
 		public async Task DereferenceNullAsExpressionNoFindingTestAsync(string content1, string content2)
 		{
 			var format = GetTemplate();
-			string testCode = string.Format(format, content1, content2);
+			var testCode = string.Format(format, content1, content2);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
@@ -113,7 +113,7 @@ Instruction i = method.Body.Instructions[0];
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionDifferentBlockTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -136,7 +136,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -158,7 +158,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -180,7 +180,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionReturnLogicalAndCheckDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -199,7 +199,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckLogicalOrDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -222,7 +222,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionReturnCheckLogicalOrDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public bool Foo()
@@ -242,7 +242,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckDereference2TestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -265,7 +265,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckDereference3TestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -284,7 +284,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckDereference4TestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -306,7 +306,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionIfCheckHasValueTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -328,7 +328,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionWhileCheckDereferenceTestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()
@@ -351,7 +351,7 @@ class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DereferenceNullAsExpressionWhileCheckDereference2TestAsync()
 		{
-			string testCode = @"
+			var testCode = @"
 class Foo 
 {{
   public void Foo()

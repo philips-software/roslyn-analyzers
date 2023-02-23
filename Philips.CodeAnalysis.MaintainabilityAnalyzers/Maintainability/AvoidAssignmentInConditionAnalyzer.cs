@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var ifStatement = ((IfStatementSyntax)context.Node).Condition;
+			ExpressionSyntax ifStatement = ((IfStatementSyntax)context.Node).Condition;
 			CheckDescendantHasNoAssignment(context, ifStatement);
 		}
 
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var condition = ((ConditionalExpressionSyntax)context.Node).Condition;
+			ExpressionSyntax condition = ((ConditionalExpressionSyntax)context.Node).Condition;
 			CheckDescendantHasNoAssignment(context, condition);
 		}
 
@@ -61,7 +61,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (node.DescendantTokens().Any(child => child.IsKind(SyntaxKind.EqualsToken)))
 			{
-				var location = node.GetLocation();
+				Location location = node.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location));
 			}
 		}
