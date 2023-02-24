@@ -9,9 +9,9 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
 
-#  format:
-#    if: ${{ github.event_name == 'pull_request' }}
-#    uses: philips-software/roslyn-analyzers/.github/workflows/format.yml@master
+  format:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: philips-software/roslyn-analyzers/.github/workflows/format.yml@master
 
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' }}
