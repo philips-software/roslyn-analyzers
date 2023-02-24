@@ -14,7 +14,7 @@ jobs:
     steps:
     - name: Bump version
       id: tag_version
-      uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 // 6.1
+      uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
