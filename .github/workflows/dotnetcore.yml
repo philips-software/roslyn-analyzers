@@ -29,6 +29,7 @@ jobs:
           <Project>
             <PropertyGroup>
               <Version>${{ inputs.new_tag }}</Version>
+              <FileVersion>${{ inputs.new_tag }}</FileVersion>
             </PropertyGroup>
           </Project>
           EOF
