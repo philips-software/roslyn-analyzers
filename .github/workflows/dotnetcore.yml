@@ -41,10 +41,38 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
-      - name: Upload Artifact
+      - name: Upload MaintainabilityAnalyzers Artifact
         uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
         with:
           name: MaintainabilityAnalyzers 
           retention-days: 1
           path: ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
+
+      - name: Upload DuplicateCodeAnalyzer Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: DuplicateCodeAnalyzer
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg
+
+      - name: Upload MoqAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: MoqAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.nupkg
+
+      - name: Upload MsTestAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: MsTestAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg
+
+      - name: Upload SecurityAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: SecurityAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.SecurityAnalyzers.*.nupkg
     
