@@ -20,7 +20,6 @@ jobs:
           <Project>
             <PropertyGroup>
               <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
-              <PackageVersion>1.0.0</PackageVersion>
             </PropertyGroup>
           </Project>
           EOF
@@ -67,6 +66,9 @@ jobs:
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
+            <PropertyGroup>
+              <FileVersion>1.0.0</FileVersion>
+            </PropertyGroup>
             <ItemGroup>
               <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
