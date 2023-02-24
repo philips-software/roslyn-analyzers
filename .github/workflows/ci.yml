@@ -40,7 +40,7 @@ jobs:
 
   dogfood:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@bcollamore-semver
 
   performance:
     uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
