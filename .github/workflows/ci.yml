@@ -5,9 +5,11 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  codeql:
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
+
+# CodeQL is slow and has yet to find anything
+#  codeql:
+#    if: ${{ github.event_name == 'pull_request' }}
+#    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
 
 #  format:
 #    if: ${{ github.event_name == 'pull_request' }}
