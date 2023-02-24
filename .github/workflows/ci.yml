@@ -22,7 +22,7 @@ jobs:
   
   build:
     needs: tagversion
-    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@bcollamore-semver
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
