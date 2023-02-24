@@ -36,10 +36,14 @@ jobs:
       - name: Build
         run: |
           dotnet build --configuration Release
-          cd ./Packages
-          ls
-          cd ../
           
       - name: Test
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: MaintainabilityAnalyzers 
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
+    
