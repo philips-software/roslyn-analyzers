@@ -22,6 +22,7 @@ jobs:
           <Project>
             <PropertyGroup>
               <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+              <FileVersion>1.0.0</FileVersion>
             </PropertyGroup>
           </Project>
           EOF
