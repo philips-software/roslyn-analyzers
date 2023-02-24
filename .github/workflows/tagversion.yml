@@ -1,0 +1,32 @@
+name: TagVersion
+
+on:
+  workflow_call:
+    outputs:
+      new_tag:
+        value: ${{ jobs.tagversion.outputs.new_tag }}
+      new_version:
+        value: ${{ jobs.tagversion.outputs.new_version }}      
+jobs:
+  tagversion:
+    runs-on: ubuntu-latest
+    name: Tag Version
+    steps:
+    - name: Bump version
+      id: tag_version
+      uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
+      with:
+        dry_run: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
+        tag_prefix: ""
+        release_branches: ""
+        append_to_pre_release_tag: prerelease
+    - name: Results
+      run: |
+        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
+        echo New Version:  ${{ steps.tag_version.outputs.new_version }}
+        
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
+      new_version: ${{ steps.tag_version.outputs.new_version }}

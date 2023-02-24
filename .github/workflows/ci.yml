@@ -5,33 +5,37 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  codeql:
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
-
   format:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/format.yml@master
+    uses: ./.github/workflows/format.yml
 
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
+    uses: ./.github/workflows/pinned-actions.yml
 
+  tagversion:
+    uses: ./.github/workflows/tagversion.yml
+    
   build:
-    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+    needs: tagversion
+    uses: ./.github/workflows/dotnetcore.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      new_version: ${{ needs.tagversion.outputs.new_version }}
 
   sonarcloud:
-    uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
+    uses: ./.github/workflows/sonarcloud.yml
     secrets:
       sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
       
   docupdate:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
+    uses: ./.github/workflows/doc-update.yml
 
   dogfood:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
+    uses: ./.github/workflows/dogfood.yml
 
   performance:
-    uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
+    uses: ./.github/workflows/performance.yml
+
