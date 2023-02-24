@@ -45,14 +45,3 @@ jobs:
   performance:
     uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
 
-  outputstuff:
-    runs-on: ubuntu-latest
-    needs: tagversion
-    steps:
-    - name: Results
-      run: |
-        echo New Tag:  ${{ needs.tagversion.outputs.new_tag }}
-        echo New Version:  ${{ needs.tagversion.outputs.new_version }}
-
-
-        
