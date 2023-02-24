@@ -20,13 +20,25 @@ jobs:
             7.0.x
 
       - name: Set version
+        if: ${{ inputs.new_tag }}
         run: |
           echo New Tag:  ${{ inputs.new_tag }}
           echo New Version:  ${{ inputs.new_version }}
           
+          cat > ./Directory.Build.props << 'EOF'
+          <Project>
+            <PropertyGroup>
+              <PackageVersion>${{ inputs.new_tag }}</PackageVersion>
+            </PropertyGroup>
+          </Project>
+          EOF
+          
       - name: Build
         run: |
           dotnet build --configuration Release
+          cd ./Packages
+          ls
+          cd ../
           
       - name: Test
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
