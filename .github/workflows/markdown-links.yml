@@ -1,6 +1,9 @@
 name: Markdown Links
 on:
-  workflow_call:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'Documentation/**'
 jobs:
   format:
     runs-on: ubuntu-latest
