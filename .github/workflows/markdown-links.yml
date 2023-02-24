@@ -1,8 +1,8 @@
 name: Markdown Links
 on:
-  workflow_call:
   pull_request:
-    branches: [master]
+    branches:
+      - master
     paths:
       - 'Documentation/**'
 jobs:

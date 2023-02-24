@@ -17,10 +17,6 @@ jobs:
     if: ${{ github.event_name == 'pull_request' }}
     uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
 
-#  markdown-links:
-#    if: ${{ github.event_name == 'pull_request' }}
-#    uses: philips-software/roslyn-analyzers/.github/workflows/markdown-links.yml@master
-
   build:
     uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
 
