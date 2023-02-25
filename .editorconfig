@@ -101,6 +101,9 @@ dotnet_diagnostic.CA2241.severity = error
 # Temporarly diabled to fix the tech dept.
 dotnet_diagnostic.CS1591.severity = none
 
+# Accept versioning that is not of form major.minor.build.revision
+dotnet_diagnostic.CS7035.severity = none
+
 # We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.
 dotnet_diagnostic.SYSLIB1045.severity = none
 
