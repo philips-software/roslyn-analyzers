@@ -20,15 +20,14 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
-        release_branches: ""
+        pre_release_branches: "${{ github.head_ref || github.ref_name }}"
+        release_branches: "not-blank"
         append_to_pre_release_tag: prerelease
     - name: Results
       run: |
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
         echo New Version:  ${{ steps.tag_version.outputs.new_version }}
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
-        echo GITHUBREF: '${{ github.ref }}'
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
