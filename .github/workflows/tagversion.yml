@@ -19,8 +19,8 @@ jobs:
       uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
       with:
         dry_run: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
         tag_prefix: ""
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
         release_branches: ""
         append_to_pre_release_tag: prerelease
@@ -29,6 +29,7 @@ jobs:
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
         echo New Version:  ${{ steps.tag_version.outputs.new_version }}
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
+        echo GITHUBREF: '${{ env.GITHUB_REF }}'
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
