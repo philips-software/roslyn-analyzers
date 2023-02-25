@@ -58,7 +58,7 @@ jobs:
           
 #      - name: "Commit"
 #        if: "steps.calculate_version.outputs.changelog != ''"
-#        uses: EndBug/add-and-commit@v7.2.1
+#        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
 #        with:
 #          message: "chore: storing version and changelog"
 #          push: true
