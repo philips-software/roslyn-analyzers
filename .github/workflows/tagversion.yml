@@ -6,7 +6,9 @@ on:
       new_tag:
         value: ${{ jobs.tagversion.outputs.new_tag }}
       new_version:
-        value: ${{ jobs.tagversion.outputs.new_version }}      
+        value: ${{ jobs.tagversion.outputs.new_version }}
+      changelog:
+        value: ${{ jobs.tagversion.outputs.changelog }}
 jobs:
   tagversion:
     runs-on: ubuntu-latest
@@ -19,14 +21,16 @@ jobs:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
-        tag_prefix: ""
         release_branches: ""
         append_to_pre_release_tag: prerelease
     - name: Results
       run: |
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
         echo New Version:  ${{ steps.tag_version.outputs.new_version }}
+        echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
+        echo GITHUBREF: '${{ github.ref }}'
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
       new_version: ${{ steps.tag_version.outputs.new_version }}
+      changelog: ${{ steps.tag_version.outputs.changelog }}

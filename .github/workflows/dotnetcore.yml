@@ -28,8 +28,8 @@ jobs:
           cat > ./Directory.Build.props << 'EOF'
           <Project>
             <PropertyGroup>
-              <Version>${{ inputs.new_tag }}</Version>
-              <FileVersion>${{ inputs.new_tag }}</FileVersion>
+              <Version>${{ inputs.new_version }}</Version>
+              <FileVersion>${{ inputs.new_version }}</FileVersion>
             </PropertyGroup>
           </Project>
           EOF
