@@ -19,9 +19,8 @@ jobs:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
-        tag_prefix: ""
         release_branches: ""
-        append_to_pre_release_tag: prerelease
+#        append_to_pre_release_tag: prerelease
     - name: Results
       run: |
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
