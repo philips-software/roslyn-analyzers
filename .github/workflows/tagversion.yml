@@ -23,7 +23,7 @@ jobs:
         pre_release_branches: "${{ github.head_ref || github.ref_name }}"
         release_branches: "not-blank"
         append_to_pre_release_tag: prerelease
-        custom_tag: 'v1.2.33-prerelease.0'
+        custom_tag: '1.2.33-prerelease.0'
     - name: Results
       run: |
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
