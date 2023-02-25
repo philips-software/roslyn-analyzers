@@ -27,7 +27,7 @@ jobs:
       run: |
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
         echo New Version:  ${{ steps.tag_version.outputs.new_version }}
-        echo Changelog:  ${{ steps.tag_version.outputs.changelog }}
+        echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}
