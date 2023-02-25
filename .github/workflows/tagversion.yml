@@ -19,9 +19,9 @@ jobs:
       uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
       with:
         dry_run: true
-        tag_prefix: ""
         github_token: ${{ secrets.GITHUB_TOKEN }}
         pre_release_branches: "${{ github.head_ref || github.ref_name }},master,main"
+        tag_prefix: ""
         release_branches: ""
         append_to_pre_release_tag: prerelease
     - name: Results
