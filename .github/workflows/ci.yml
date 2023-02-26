@@ -40,7 +40,7 @@ jobs:
       new_version: ${{ needs.tagversion.outputs.new_version }}
 
   changelog:
-#    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     needs: [tagversion, build]
     steps:
@@ -56,30 +56,31 @@ jobs:
           
           cat CHANGELOG.md
           
-#      - name: "Commit"
-#        if: "steps.calculate_version.outputs.changelog != ''"
-#        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
-#        with:
-#          message: "chore: storing version and changelog"
-#          push: true
+      - name: "Commit"
+        if: "steps.calculate_version.outputs.changelog != ''"
+        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
+        with:
+          message: "chore: storing version and changelog"
+          push: true
           
-  gitrelease:
+  gittagrelease:
     if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     needs: [tagversion, build, changelog]
     steps:
     - name: Create GitHub Tag & Release
-      run: |
-         echo '${{ needs.tagversion.outputs.new_tag }}'
-         echo '${{ needs.tagversion.outputs.new_version }}'
-#      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
-#      with:
-#        tag: ${{ needs.tagversion.outputs.new_tag }}
-#        name: Release ${{ needs.tagversion.outputs.new_tag }}
-#        body: ${{ needs.tagversion.outputs.changelog }}
-#        prerelease: true
-#        allowUpdates: true
-#        generateReleaseNotes: true
-#        commit: ${{ github.sha }}
+#      run: |
+#         echo '${{ needs.tagversion.outputs.new_tag }}'
+#         echo '${{ needs.tagversion.outputs.new_version }}'
+      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
+      with:
+        tag: ${{ needs.tagversion.outputs.new_tag }}
+        name: Release ${{ needs.tagversion.outputs.new_tag }}
+        body: ${{ needs.tagversion.outputs.changelog }}
+        prerelease: true
+        allowUpdates: true
+        generateReleaseNotes: true
+        commit: ${{ github.sha }}
+        artifacts: ./Packages/*.nupkg
          
         
