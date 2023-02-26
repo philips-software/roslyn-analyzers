@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
-
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
