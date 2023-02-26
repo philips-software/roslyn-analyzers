@@ -41,27 +41,10 @@ jobs:
 
   changelog:
     if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-latest
     needs: [tagversion, build]
-    steps:
-      - name: Write Changelog
-        if: "needs.tagversion.outputs.changelog != ''"
-        run: |
-          CHANGELOG=""
-          if [ -e CHANGELOG.md ]
-          then
-              CHANGELOG=$(cat CHANGELOG.md)
-          fi
-          echo -e "${{needs.tagversion.outputs.changelog}}\n\n${CHANGELOG}" > CHANGELOG.md
-          
-          cat CHANGELOG.md
-          
-      - name: "Commit"
-        if: "needs.tagversion.outputs.changelog != ''"
-        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
-        with:
-          message: "chore: storing version and changelog"
-          push: true
+    uses: ./.github/workflows/changelog.yml
+    with:
+      changelog: ${{ needs.tagversion.outputs.changelog }}
           
   gittagrelease:
     if: ${{ github.event_name == 'push-DISABLE' }}
