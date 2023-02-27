@@ -10,7 +10,7 @@ jobs:
   changelog:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v1
       
       - name: Write Changelog
         if: ${{ inputs.changelog }}
