@@ -29,8 +29,6 @@
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers moq Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.1.0</Version>
-    <FileVersion>1.1.0.0</FileVersion>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
   </PropertyGroup>
 
