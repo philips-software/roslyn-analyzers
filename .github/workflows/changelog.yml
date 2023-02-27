@@ -24,9 +24,9 @@ jobs:
           
           cat CHANGELOG.md
           
-      - name: "Commit"
-        if: ${{ inputs.changelog }}
-        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
-        with:
-          message: "chore: storing version and changelog"
-          push: true
+#      - name: "Commit"
+#        if: ${{ inputs.changelog }}
+#        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
+#        with:
+#          message: "chore: storing version and changelog"
+#          push: true
