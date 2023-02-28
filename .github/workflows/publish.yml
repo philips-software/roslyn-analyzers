@@ -13,6 +13,6 @@ jobs:
     - name: Nuget
       run: |
         ls -a
-#        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key 0000000000000000000000000000000000000000000000 --source https://api.nuget.org/v3/index.json
+#        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
 
         
