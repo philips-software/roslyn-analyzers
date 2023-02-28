@@ -2,14 +2,28 @@ name: Publish
 
 on:
   workflow_call:
+    
 jobs:
   publish:
+    strategy:
+      matrix:
+        version: [Philips.CodeAnalysis.MaintainabilityAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
     runs-on: ubuntu-latest
     name: Publish
     steps:
+    - uses: actions/checkout@v3
+    - uses: dorny/paths-filter@v2.11.1
+      id: filter
+      with:
+        filters: |
+          Philips.CodeAnalysis.MaintainabilityAnalyzers:
+            - 'Philips.CodeAnalysis.MaintainabilityAnalyzers/**'
+          Philips.CodeAnalysis.MsTestAnalyzers:
+            - 'Philips.CodeAnalysis.MsTestAnalyzers/**'
+            
     - name: Download artifacts
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
-        
+
     - name: Nuget
       run: |
         ls -a
