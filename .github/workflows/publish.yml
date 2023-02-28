@@ -9,11 +9,10 @@ jobs:
     steps:
     - name: Download artifacts
       uses: actions/download-artifact@v3
-      with:
-        name: Philips.CodeAnalysis.*.nupkg
         
-#    - name: Nuget
-#      run: |
+    - name: Nuget
+      run: |
+        ls -a
 #        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key 0000000000000000000000000000000000000000000000 --source https://api.nuget.org/v3/index.json
 
         
