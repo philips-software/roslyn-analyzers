@@ -1,0 +1,19 @@
+name: Publish
+
+on:
+  workflow_call:
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: Philips.CodeAnalysis.*.nupkg
+        
+#    - name: Nuget
+#      run: |
+#        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key 0000000000000000000000000000000000000000000000 --source https://api.nuget.org/v3/index.json
+
+        
