@@ -47,14 +47,11 @@ jobs:
       changelog: ${{ needs.tagversion.outputs.changelog }}
           
   gittagrelease:
-    if: ${{ github.event_name == 'push-DISABLE' }}
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     needs: [tagversion, build, changelog]
     steps:
     - name: Create GitHub Tag & Release
-#      run: |
-#         echo '${{ needs.tagversion.outputs.new_tag }}'
-#         echo '${{ needs.tagversion.outputs.new_version }}'
       uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
       with:
         tag: ${{ needs.tagversion.outputs.new_tag }}
@@ -64,6 +61,5 @@ jobs:
         allowUpdates: true
         generateReleaseNotes: true
         commit: ${{ github.sha }}
-        artifacts: ./Packages/*.nupkg
          
         
