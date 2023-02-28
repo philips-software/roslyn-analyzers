@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Return only immutable or readonly collections from a public method, otherwise these collections can be changed by the caller without the callee noticing.";
 
 		public ReturnImmutableCollectionsAnalyzer()
-			: base(DiagnosticId.ReturnImmutableCollections, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.ReturnImmutableCollections, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 
 		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { StringConstants.List, StringConstants.QueueClassName, StringConstants.SortedListClassName, StringConstants.StackClassName, StringConstants.DictionaryClassName, StringConstants.IListInterfaceName, StringConstants.IDictionaryInterfaceName };

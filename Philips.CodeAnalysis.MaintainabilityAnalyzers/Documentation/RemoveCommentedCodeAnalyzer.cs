@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string Description = Title;
 
 		public RemoveCommentedCodeAnalyzer()
-			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation)
+			: base(DiagnosticId.RemoveCommentedCode, Title, MessageFormat, Description, Categories.Documentation, isEnabled: false)
 		{ }
 	}
 

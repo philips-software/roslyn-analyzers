@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Getting other properties in a setter makes this setter dependent on the order in which these properties are set.";
 
 		public SetPropertiesInAnyOrderAnalyzer()
-			: base(DiagnosticId.SetPropertiesInAnyOrder, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.SetPropertiesInAnyOrder, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

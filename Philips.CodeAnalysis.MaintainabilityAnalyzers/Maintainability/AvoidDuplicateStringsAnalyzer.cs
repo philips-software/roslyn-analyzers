@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Duplicate strings are less maintainable";
 
 		public AvoidDuplicateStringsAnalyzer()
-			: base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidDuplicateStrings, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 
 		public ConcurrentDictionary<string, Location> UsedLiterals { get; } = new();

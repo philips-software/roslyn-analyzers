@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Description = @"Avoid implement a finalizer, use Dispose instead. If the class has unmanaged fields, finalizers are allowed if they only call Dispose.";
 
 		public AvoidImplementingFinalizersAnalyzer()
-			: base(DiagnosticId.AvoidImplementingFinalizers, Title, MessageFormat, Description, Categories.RuntimeFailure)
+			: base(DiagnosticId.AvoidImplementingFinalizers, Title, MessageFormat, Description, Categories.RuntimeFailure, isEnabled: false)
 		{ }
 	}
 

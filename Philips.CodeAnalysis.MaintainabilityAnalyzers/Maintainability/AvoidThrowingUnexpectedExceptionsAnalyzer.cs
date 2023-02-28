@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = @"Avoid throwing exceptions from {0}, as this location is unexpected.";
 		private const string Description = @"Avoid throwing exceptions from unexpected locations, like Finalizers, Dispose, Static Constructors, etc...";
 		public AvoidThrowingUnexpectedExceptionsAnalyzer()
-			: base(DiagnosticId.AvoidExceptionsFromUnexpectedLocations, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidExceptionsFromUnexpectedLocations, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 	public class AvoidThrowingUnexpectedExceptionsSyntaxNodeAction : SyntaxNodeAction<ThrowStatementSyntax>
