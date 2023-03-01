@@ -2,7 +2,10 @@ name: Publish
 
 on:
   workflow_call:
-    
+    secrets:
+      nuget-token:
+        required: true
+        
 jobs:
   publish:
     strategy:
@@ -28,6 +31,6 @@ jobs:
     - name: Nuget
       if: steps.changes.outputs.${{ matrix.package }} == 'true'    
       run: |
-        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
 
         
