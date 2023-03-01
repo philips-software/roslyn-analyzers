@@ -7,24 +7,25 @@ jobs:
   publish:
     strategy:
       matrix:
-        version: [Philips.CodeAnalysis.MaintainabilityAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
+        package: [Philips.CodeAnalysis.MaintainabilityAnalyzers, Philips.CodeAnalysis.DuplicateCodeAnalyzer, Philips.CodeAnalysis.MoqAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
     runs-on: ubuntu-latest
     name: Publish
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v2.11.1
-      id: filter
+      id: changes
       with:
         filters: |
-          Philips.CodeAnalysis.MaintainabilityAnalyzers:
-            - 'Philips.CodeAnalysis.MaintainabilityAnalyzers/**'
-          Philips.CodeAnalysis.MsTestAnalyzers:
-            - 'Philips.CodeAnalysis.MsTestAnalyzers/**'
+          ${{ matrix.package }}:
+            - '${{ matrix.package }}/**'
             
     - name: Download artifacts
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
+      with:
+        name: ${{ matrix.package }}
 
     - name: Nuget
+      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
       run: |
         ls -a
 #        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
