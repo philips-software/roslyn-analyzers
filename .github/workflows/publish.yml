@@ -20,6 +20,7 @@ jobs:
             - '${{ matrix.package }}/**'
             
     - name: Download artifacts
+      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
       with:
         name: ${{ matrix.package }}
