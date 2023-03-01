@@ -7,7 +7,7 @@ jobs:
   publish:
     strategy:
       matrix:
-        package: [Philips.CodeAnalysis.MaintainabilityAnalyzers, Philips.CodeAnalysis.DuplicateCodeAnalyzer, Philips.CodeAnalysis.MoqAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
+        package: [Philips.CodeAnalysis.MaintainabilityAnalyzers] #, Philips.CodeAnalysis.DuplicateCodeAnalyzer, Philips.CodeAnalysis.MoqAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
     runs-on: ubuntu-latest
     name: Publish
     steps:
