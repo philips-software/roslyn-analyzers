@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = @"Avoid putting multiple Lambda expressions on the same line. To improve readability, split them into separate lines.";
 
 		public AvoidMultipleLambdasOnSingleLineAnalyzer()
-			: base(DiagnosticId.AvoidMultipleLambdasOnSingleLine, Title, MessageFormat, Description, Categories.Readability)
+			: base(DiagnosticId.AvoidMultipleLambdasOnSingleLine, Title, MessageFormat, Description, Categories.Readability, isEnabled: false)
 		{ }
 
 		public override void Initialize(AnalysisContext context)

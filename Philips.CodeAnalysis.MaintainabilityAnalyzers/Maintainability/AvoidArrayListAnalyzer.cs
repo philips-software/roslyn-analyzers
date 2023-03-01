@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = @"Don't use ArrayList for variable {0}, use List<T> instead";
 		private const string Description = @"Usage of Arraylist is discouraged by Microsoft for performance reasons, use List<T> instead.";
 		public AvoidArrayListAnalyzer()
-			: base(DiagnosticId.AvoidArrayList, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidArrayList, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 	public class AvoidArrayListSyntaxNodeAction : SyntaxNodeAction<VariableDeclarationSyntax>

@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the Assembly Name and Namespace must match.";
 
 		public NamespaceMatchAssemblyNameAnalyzer()
-			: base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Categories.Naming)
+			: base(DiagnosticId.NamespaceMatchAssemblyName, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{ }
 	}
 

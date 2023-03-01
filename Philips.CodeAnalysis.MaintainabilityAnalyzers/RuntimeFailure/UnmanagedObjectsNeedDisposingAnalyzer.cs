@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Description = "Every field which holds an unmanaged object needs to be declared in a class that implements IDisposable.";
 
 		public UnmanagedObjectsNeedDisposingAnalyzer()
-			: base(DiagnosticId.UnmanagedObjectsNeedDisposing, Title, MessageFormat, Description, Categories.RuntimeFailure)
+			: base(DiagnosticId.UnmanagedObjectsNeedDisposing, Title, MessageFormat, Description, Categories.RuntimeFailure, isEnabled: false)
 		{ }
 	}
 

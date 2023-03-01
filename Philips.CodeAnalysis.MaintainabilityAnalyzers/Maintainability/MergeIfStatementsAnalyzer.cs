@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = "Merging If statement with outer If statement to reduce cognitive load";
 
 		public MergeIfStatementsAnalyzer()
-			: base(DiagnosticId.MergeIfStatements, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.MergeIfStatements, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

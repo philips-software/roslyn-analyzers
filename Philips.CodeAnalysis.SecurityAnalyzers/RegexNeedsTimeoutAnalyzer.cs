@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public static readonly DiagnosticDescriptor Rule = new(
 			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout),
 			Title, MessageFormat, Category,
-			DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+			DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

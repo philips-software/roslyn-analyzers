@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string Description = @"Name the file after the class, struct or enum it contains";
 
 		public AlignFilenameAndClassNameAnalyzer()
-			: base(DiagnosticId.AlignFilenameAndClassName, Title, MessageFormat, Description, Categories.Naming)
+			: base(DiagnosticId.AlignFilenameAndClassName, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{ }
 
 		public override void Initialize(AnalysisContext context)

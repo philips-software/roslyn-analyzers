@@ -135,7 +135,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				{
 					if (!diagnostic.IsEnabledByDefault)
 					{
-						specificOptions = specificOptions.Add(diagnostic.Id, ReportDiagnostic.Error);
+						ReportDiagnostic reportDiagnostic = diagnostic.DefaultSeverity switch
+						{
+							DiagnosticSeverity.Info => ReportDiagnostic.Info,
+							DiagnosticSeverity.Warning => ReportDiagnostic.Warn,
+							DiagnosticSeverity.Error => ReportDiagnostic.Error,
+							_ => ReportDiagnostic.Default,
+						};
+						specificOptions = specificOptions.Add(diagnostic.Id, reportDiagnostic);
 					}
 				}
 
