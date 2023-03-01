@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"A cast should include all information from the previous type. By casting to a type of one of the fields, the cast is losing information. Use an AsType() or ToType() method instead.";
 
 		public CastCompleteObjectAnalyzer()
-			: base(DiagnosticId.CastCompleteObject, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.CastCompleteObject, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = "Avoid multiple conditions on the same line of a multi-line condition statement. Instead, break lines right after the logical operators.";
 
 		public SplitMultiLineConditionOnLogicalOperatorAnalyzer()
-			: base(DiagnosticId.SplitMultiLineConditionOnLogicalOperator, Title, MessageFormat, Description, Categories.Readability, DiagnosticSeverity.Warning)
+			: base(DiagnosticId.SplitMultiLineConditionOnLogicalOperator, Title, MessageFormat, Description, Categories.Readability, DiagnosticSeverity.Warning, isEnabled: false)
 		{ }
 
 		/// <summary>

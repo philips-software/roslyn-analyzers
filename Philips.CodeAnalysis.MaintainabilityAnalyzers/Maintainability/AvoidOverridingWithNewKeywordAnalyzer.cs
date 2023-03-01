@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = "Overriding with the new keyword gives unexpected behavior for the callers of the overridden method or property.";
 
 		public AvoidOverridingWithNewKeywordAnalyzer()
-			: base(DiagnosticId.AvoidOverridingWithNewKeyword, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidOverridingWithNewKeyword, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 
 		/// <summary>

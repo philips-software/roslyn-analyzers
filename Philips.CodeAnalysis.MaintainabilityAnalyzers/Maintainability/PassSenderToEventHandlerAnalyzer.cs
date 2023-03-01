@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Prevent passing null values for sender/object to event handler (for instance-based events).";
 
 		public PassSenderToEventHandlerAnalyzer()
-			: base(DiagnosticId.PassSenderToEventHandler, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.PassSenderToEventHandler, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

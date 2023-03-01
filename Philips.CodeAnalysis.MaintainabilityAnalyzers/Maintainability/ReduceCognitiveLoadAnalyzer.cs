@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{ }
 
 		public ReduceCognitiveLoadAnalyzer(AdditionalFilesHelper additionalFilesHelper)
-			: base(DiagnosticId.ReduceCognitiveLoad, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.ReduceCognitiveLoad, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{
 			AdditionalFilesHelper = additionalFilesHelper;
 		}

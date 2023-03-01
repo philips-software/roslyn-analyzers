@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = @"Avoid '{0}' as an argument";
 		private const string Description = @"Avoid method calls as arguments to method calls";
 		public AvoidInvocationAsArgumentAnalyzer()
-			: base(DiagnosticId.AvoidInvocationAsArgument, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidInvocationAsArgument, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

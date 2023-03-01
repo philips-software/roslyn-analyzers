@@ -22,10 +22,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Category = Categories.Maintainability;
 
 		private static readonly DiagnosticDescriptor TempRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidUsingParametersAsTempVariables),
-			TempTitle, TempMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
+			TempTitle, TempMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: TempDescription);
 		private static readonly DiagnosticDescriptor LoopRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidChangingLoopVariables),
-			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true,
+			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: LoopDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(TempRule, LoopRule);
