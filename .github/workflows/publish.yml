@@ -11,8 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish
     steps:
-    - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2.11.1
+    - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c #v3
+    - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
       id: changes
       with:
         filters: |
@@ -28,7 +28,6 @@ jobs:
     - name: Nuget
       if: steps.changes.outputs.${{ matrix.package }} == 'true'    
       run: |
-        ls -a
-#        dotnet nuget push Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
+#        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
 
         
