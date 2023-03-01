@@ -62,4 +62,8 @@ jobs:
         generateReleaseNotes: true
         commit: ${{ github.sha }}
          
-        
+  publish:
+    if: ${{ github.event_name == 'push' }}
+    needs: [gittagrelease]
+    uses: ./.github/workflows/publish.yml
+    
