@@ -2,7 +2,7 @@ name: Markdown Links
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
       - 'Documentation/**'
 jobs:

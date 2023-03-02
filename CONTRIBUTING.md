@@ -48,7 +48,7 @@ Before you submit your merge request consider the following guidelines:
 * Build your changes locally to ensure all the tests pass
 * Push your branch to Github
 
-In Github, send a pull request to original master branch.
+In Github, send a pull request to original main branch.
 If we suggest changes, then:
 
 * Make the required updates.
