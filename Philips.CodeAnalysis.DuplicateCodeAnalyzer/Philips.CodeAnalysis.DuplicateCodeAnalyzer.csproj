@@ -15,7 +15,7 @@
   <PropertyGroup>
     <PackageOutputPath>../Packages</PackageOutputPath>
     <Authors>Brian Collamore, Jean-Paul Mayer</Authors>
-    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/main/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
