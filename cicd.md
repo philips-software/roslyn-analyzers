@@ -15,7 +15,11 @@ The performance of all analyzers are measured as part of the dogfooding process,
 
 ## GitHub CodeQL
 
-We also run GitHub's [CodeQL](https://codeql.github.com)
+We also run GitHub's [CodeQL](https://codeql.github.com). (This is currently disabled as it has yet to find issues and significantly slows down the CI pipeline.)
+
+## Markdown Links
+
+Markdown links are checked for dead links.
 
 ## GitHub Action Version Pinning
 
