@@ -29,23 +29,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			var parameters = Node.ParameterList.Parameters;
+			SeparatedSyntaxList<ParameterSyntax> parameters = Node.ParameterList.Parameters;
 			if (!parameters.Any())
 			{
 				return;
 			}
 
-			var aliases = Helper.GetUsingAliases(Node);
-			var collections = parameters.Where(p => IsReadWriteCollection(p.Type, aliases));
+			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
+			IEnumerable<ParameterSyntax> collections = parameters.Where(p => IsReadWriteCollection(p.Type, aliases));
 			if (!collections.Any())
 			{
 				return;
 			}
-			var accesses = Node.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
-			var setters = Node.DescendantNodes()
+			IEnumerable<MemberAccessExpressionSyntax> accesses = Node.DescendantNodes().OfType<MemberAccessExpressionSyntax>();
+			IEnumerable<ElementAccessExpressionSyntax> setters = Node.DescendantNodes()
 				.OfType<AssignmentExpressionSyntax>()
 				.Select(ass => ass.Left as ElementAccessExpressionSyntax);
-			var invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			foreach (ParameterSyntax collectionParameter in collections)
 			{
 				var parameterName = collectionParameter.Identifier.Text;
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					!setters.Any(element => element != null && IsCallingParameter(element.Expression, parameterName)) &&
 					!invocations.Any(voc => RequiresReadWrite(voc, parameterName)))
 				{
-					var location = collectionParameter.Type.GetLocation();
+					Location location = collectionParameter.Type.GetLocation();
 					ReportDiagnostic(location, collectionParameter.Identifier.Text);
 				}
 			}
@@ -82,13 +82,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool RequiresReadWrite(InvocationExpressionSyntax invocation, string parameterName)
 		{
-			var arguments = invocation.ArgumentList.Arguments.Where(arg => IsCallingParameter(arg.Expression, parameterName));
+			IEnumerable<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments.Where(arg => IsCallingParameter(arg.Expression, parameterName));
 			if (!arguments.Any())
 			{
 				return false;
 			}
-			bool needsReadWrite = false;
-			var symbol = Context.SemanticModel.GetSymbolInfo(invocation).Symbol;
+			var needsReadWrite = false;
+			ISymbol symbol = Context.SemanticModel.GetSymbolInfo(invocation).Symbol;
 			foreach (ArgumentSyntax argument in arguments)
 			{
 				if (symbol != null)
