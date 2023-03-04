@@ -12,6 +12,8 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class Helper
 	{
+		private static readonly char[] TrimCharacters = { '/', '\\' };
+
 		public static string ToDiagnosticId(DiagnosticId id)
 		{
 			return @"PH" + ((int)id).ToString();
@@ -19,7 +21,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public static string ToHelpLinkUrl(string id)
 		{
-			return $"https://github.com/philips-software/roslyn-analyzers/blob/master/Documentation/Diagnostics/{id}.md";
+			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{id}.md";
 		}
 
 		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
@@ -108,7 +110,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public string GetFileName(string filePath)
 		{
-			var nodes = filePath.Split('/', '\\');
+			var nodes = filePath.Split(TrimCharacters);
 			return nodes[nodes.Length - 1];
 		}
 

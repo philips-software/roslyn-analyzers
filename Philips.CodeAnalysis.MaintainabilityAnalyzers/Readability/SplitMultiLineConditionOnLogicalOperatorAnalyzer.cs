@@ -1,9 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = "Avoid multiple conditions on the same line of a multi-line condition statement. Instead, break lines right after the logical operators.";
 
 		public SplitMultiLineConditionOnLogicalOperatorAnalyzer()
-			: base(DiagnosticId.SplitMultiLineConditionOnLogicalOperator, Title, MessageFormat, Description, Categories.Readability, DiagnosticSeverity.Warning)
+			: base(DiagnosticId.SplitMultiLineConditionOnLogicalOperator, Title, MessageFormat, Description, Categories.Readability, DiagnosticSeverity.Warning, isEnabled: false)
 		{ }
 
 		/// <summary>

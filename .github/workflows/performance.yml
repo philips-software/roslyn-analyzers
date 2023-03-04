@@ -20,7 +20,6 @@ jobs:
           <Project>
             <PropertyGroup>
               <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
-              <PackageVersion>1.0.0</PackageVersion>
             </PropertyGroup>
           </Project>
           EOF
@@ -47,6 +46,7 @@ jobs:
           dotnet_diagnostic.CA1845.severity = none
           dotnet_diagnostic.CA1847.severity = none
           dotnet_diagnostic.CA1852.severity = none
+          dotnet_diagnostic.IDE0008.severity = none
           dotnet_diagnostic.IDE0010.severity = none
           dotnet_diagnostic.IDE0025.severity = none
           dotnet_diagnostic.IDE0045.severity = none
@@ -66,6 +66,9 @@ jobs:
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
+            <PropertyGroup>
+              <FileVersion>1.0.0</FileVersion>
+            </PropertyGroup>
             <ItemGroup>
               <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>

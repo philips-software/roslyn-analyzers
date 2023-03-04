@@ -22,7 +22,6 @@ jobs:
           <Project>
             <PropertyGroup>
               <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
-              <PackageVersion>1.0.3</PackageVersion>
             </PropertyGroup>
           </Project>
           EOF
@@ -34,24 +33,27 @@ jobs:
           rm -f ./Directory.Build.props
           cat > ./Directory.Build.props << EOF
           <Project>
+            <PropertyGroup>
+              <FileVersion>1.0.0</FileVersion>
+            </PropertyGroup>
             <ItemGroup>
-              <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.3">
+              <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
                 <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
               </PackageReference>
-              <PackageReference Include="Philips.CodeAnalysis.DuplicateCodeAnalyzer.Dogfood" Version="1.0.3">
+              <PackageReference Include="Philips.CodeAnalysis.DuplicateCodeAnalyzer.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
                 <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
               </PackageReference>
-              <PackageReference Include="Philips.CodeAnalysis.SecurityAnalyzers.Dogfood" Version="1.0.3">
+              <PackageReference Include="Philips.CodeAnalysis.SecurityAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
                 <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
               </PackageReference>
-              <PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers.Dogfood" Version="1.0.3">
+              <PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
                 <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
               </PackageReference>
-              <PackageReference Include="Philips.CodeAnalysis.MoqAnalyzers.Dogfood" Version="1.0.3">
+              <PackageReference Include="Philips.CodeAnalysis.MoqAnalyzers.Dogfood" Version="1.0.0">
                 <PrivateAssets>all</PrivateAssets>
                 <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
               </PackageReference>

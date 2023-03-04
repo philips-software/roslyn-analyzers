@@ -1,12 +1,12 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.IO;
+using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {

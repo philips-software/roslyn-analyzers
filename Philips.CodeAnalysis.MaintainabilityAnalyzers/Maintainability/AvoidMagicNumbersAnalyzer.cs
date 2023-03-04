@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Avoid inline magic number, define them as constant or include in an enumeration instead.";
 
 		public AvoidMagicNumbersAnalyzer()
-			: base(DiagnosticId.AvoidMagicNumbers, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidMagicNumbers, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

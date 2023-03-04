@@ -11,8 +11,8 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Rename;
-using Philips.CodeAnalysis.Common;
 using Microsoft.CodeAnalysis.Text;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
@@ -25,7 +25,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
-			// See https://github.com/dotnet/roslyn/blob/master/docs/analyzers/FixAllProvider.md for more information on Fix All Providers
 			return WellKnownFixAllProviders.BatchFixer;
 		}
 

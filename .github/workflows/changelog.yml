@@ -1,0 +1,32 @@
+name: Changelog
+on:
+  workflow_call:
+    inputs:
+      changelog:
+        type: string
+        required: true
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v1
+      
+      - name: Write Changelog
+        if: ${{ inputs.changelog }}
+        run: |
+          CHANGELOG=""
+          if [ -e CHANGELOG.md ]
+          then
+              CHANGELOG=$(cat CHANGELOG.md)
+          fi
+          echo -e "${{ inputs.changelog }}\n\n${CHANGELOG}" > CHANGELOG.md
+          
+          cat CHANGELOG.md
+          
+#      - name: "Commit"
+#        if: ${{ inputs.changelog }}
+#        uses: EndBug/add-and-commit@61a88be553afe4206585b31aa72387c64295d08b # v9.1.1
+#        with:
+#          message: "chore: storing version and changelog"
+#          push: true

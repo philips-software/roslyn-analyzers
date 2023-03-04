@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string Description = Title;
 
 		public EnableDocumentationCreationAnalyzer()
-			: base(DiagnosticId.EnableDocumentationCreation, Title, MessageFormat, Description, Categories.Documentation)
+			: base(DiagnosticId.EnableDocumentationCreation, Title, MessageFormat, Description, Categories.Documentation, isEnabled: false)
 		{ }
 	}
 

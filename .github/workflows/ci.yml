@@ -1,31 +1,70 @@
 name: CI
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 jobs:
-  codeql:
-    uses: philips-software/roslyn-analyzers/.github/workflows/codeql-analysis.yml@master
-
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/pinned-actions.yml@master
+    uses: ./.github/workflows/pinned-actions.yml
 
-  build:
-    uses: philips-software/roslyn-analyzers/.github/workflows/dotnetcore.yml@master
+  docupdate:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/doc-update.yml
+
+  format:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/format.yml
+
+  dogfood:
+    if: ${{ github.event_name == 'pull_request' }}
+    uses: ./.github/workflows/dogfood.yml
 
   sonarcloud:
-    uses: philips-software/roslyn-analyzers/.github/workflows/sonarcloud.yml@master
+    uses: ./.github/workflows/sonarcloud.yml
     secrets:
       sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
       
-  docupdate:
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: philips-software/roslyn-analyzers/.github/workflows/doc-update.yml@master
-
-  dogfood:
-    uses: philips-software/roslyn-analyzers/.github/workflows/dogfood.yml@master
-
   performance:
-    uses: philips-software/roslyn-analyzers/.github/workflows/performance.yml@master
+    uses: ./.github/workflows/performance.yml
+    
+  tagversion:
+    uses: ./.github/workflows/tagversion.yml
+    
+  build:
+    needs: tagversion
+    uses: ./.github/workflows/dotnetcore.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      new_version: ${{ needs.tagversion.outputs.new_version }}
+
+  changelog:
+    if: ${{ github.event_name == 'push' }}
+    needs: [tagversion, build]
+    uses: ./.github/workflows/changelog.yml
+    with:
+      changelog: ${{ needs.tagversion.outputs.changelog }}
+          
+  gittagrelease:
+    if: ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    needs: [tagversion, build, changelog]
+    steps:
+    - name: Create GitHub Tag & Release
+      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
+      with:
+        tag: ${{ needs.tagversion.outputs.new_tag }}
+        name: Release ${{ needs.tagversion.outputs.new_tag }}
+        body: ${{ needs.tagversion.outputs.changelog }}
+        prerelease: true
+        allowUpdates: true
+        generateReleaseNotes: true
+        commit: ${{ github.sha }}
+         
+  publish:
+    if: ${{ github.event_name == 'push' }}
+    needs: [gittagrelease]
+    uses: ./.github/workflows/publish.yml
+    secrets:
+      nuget-token: ${{ secrets.NUGET_TOKEN }}

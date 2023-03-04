@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Description = Title;
 
 		public EveryLinqStatementOnSeparateLineAnalyzer()
-			: base(DiagnosticId.EveryLinqStatementOnSeparateLine, Title, MessageFormat, Description, Categories.Readability)
+			: base(DiagnosticId.EveryLinqStatementOnSeparateLine, Title, MessageFormat, Description, Categories.Readability, isEnabled: false)
 		{ }
 	}
 

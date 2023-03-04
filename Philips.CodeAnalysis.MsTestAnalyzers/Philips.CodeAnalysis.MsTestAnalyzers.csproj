@@ -16,7 +16,7 @@
     <PackageOutputPath>../Packages</PackageOutputPath>
     <Authors>Brian Collamore, Jean-Paul Mayer</Authors>
     <Company>Philips</Company>
-    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/main/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
@@ -29,8 +29,6 @@
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>1.1.7</Version>
-    <FileVersion>1.1.7</FileVersion>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
   </PropertyGroup>
   

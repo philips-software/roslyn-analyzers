@@ -1,17 +1,39 @@
 name: .NET Core
 on:
   workflow_call:
+    inputs:
+      new_tag:
+        type: string
+        required: false
+      new_version:
+        type: string
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@50fbc622fc4ef5163becd7fab6573eac35f8462e # ratchet:actions/checkout@v1
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v1
       - name: Setup .NET
         uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
         with:
           dotnet-version: |
             7.0.x
-            
+
+      - name: Set version
+        if: ${{ inputs.new_tag }}
+        run: |
+          echo New Tag:  ${{ inputs.new_tag }}
+          echo New Version:  ${{ inputs.new_version }}
+          
+          cat > ./Directory.Build.props << 'EOF'
+          <Project>
+            <PropertyGroup>
+              <Version>${{ inputs.new_version }}</Version>
+              <FileVersion>${{ inputs.new_version }}</FileVersion>
+            </PropertyGroup>
+          </Project>
+          EOF
+          
       - name: Build
         run: |
           dotnet build --configuration Release
@@ -19,3 +41,38 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
+      - name: Upload MaintainabilityAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: Philips.CodeAnalysis.MaintainabilityAnalyzers 
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
+
+      - name: Upload DuplicateCodeAnalyzer Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: Philips.CodeAnalysis.DuplicateCodeAnalyzer
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg
+
+      - name: Upload MoqAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: Philips.CodeAnalysis.MoqAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.nupkg
+
+      - name: Upload MsTestAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: Philips.CodeAnalysis.MsTestAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg
+
+      - name: Upload SecurityAnalyzers Artifact
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3
+        with:
+          name: Philips.CodeAnalysis.SecurityAnalyzers
+          retention-days: 1
+          path: ./Packages/Philips.CodeAnalysis.SecurityAnalyzers.*.nupkg
+    

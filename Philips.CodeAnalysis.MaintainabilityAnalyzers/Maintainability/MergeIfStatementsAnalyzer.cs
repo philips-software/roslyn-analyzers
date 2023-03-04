@@ -1,13 +1,11 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Diagnostics;
-
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-
+using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
-using System.Linq;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -19,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = "Merging If statement with outer If statement to reduce cognitive load";
 
 		public MergeIfStatementsAnalyzer()
-			: base(DiagnosticId.MergeIfStatements, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.MergeIfStatements, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 
