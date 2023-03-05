@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.FlowAnalysis.DataFlow.ValueContentAnalysis;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-	internal class ReadOnlyParameterAnalysis : ForwardDataFlowAnalysis<DictionaryAnalysisData<AbstractLocation, ReadOnlyParameterAbstractValue>, ReadOnlyParameterAnalysisContext, ReadOnlyParameterAnalysisResult, ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue>
+	internal sealed class ReadOnlyParameterAnalysis : ForwardDataFlowAnalysis<DictionaryAnalysisData<AbstractLocation, ReadOnlyParameterAbstractValue>, ReadOnlyParameterAnalysisContext, ReadOnlyParameterAnalysisResult, ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue>
 	{
 		public ReadOnlyParameterAnalysis(AbstractAnalysisDomain<DictionaryAnalysisData<AbstractLocation, ReadOnlyParameterAbstractValue>> analysisDomain, DataFlowOperationVisitor<DictionaryAnalysisData<AbstractLocation, ReadOnlyParameterAbstractValue>, ReadOnlyParameterAnalysisContext, ReadOnlyParameterAnalysisResult, ReadOnlyParameterAbstractAnalysisValue> operationVisitor) : base(analysisDomain, operationVisitor)
 		{
@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 	}
 
-	internal class ReadOnlyParameterAbstractValue : CacheBasedEquatable<DisposeAbstractValue>
+	internal sealed class ReadOnlyParameterAbstractValue : CacheBasedEquatable<DisposeAbstractValue>
 	{
 		protected override void ComputeHashCodeParts(Action<int> addPart)
 		{
@@ -94,21 +94,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 	}
 
-	internal class ReadOnlyParameterAnalysisResult : DataFlowAnalysisResult<ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue>
+	internal sealed class ReadOnlyParameterAnalysisResult : DataFlowAnalysisResult<ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue>
 	{
-		protected ReadOnlyParameterAnalysisResult(DataFlowAnalysisResult<ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue> other) : base(other)
+		internal ReadOnlyParameterAnalysisResult(DataFlowAnalysisResult<ReadOnlyParameterBlockAnalysisResult, ReadOnlyParameterAbstractAnalysisValue> other) : base(other)
 		{
 		}
 	}
 
-	internal class ReadOnlyParameterBlockAnalysisResult : AbstractBlockAnalysisResult
+	internal sealed class ReadOnlyParameterBlockAnalysisResult : AbstractBlockAnalysisResult
 	{
 		public ReadOnlyParameterBlockAnalysisResult(BasicBlock basicBlock) : base(basicBlock)
 		{
 		}
 	}
 
-	internal class ReadOnlyParameterAbstractAnalysisValue : CacheBasedEquatable<ReadOnlyParameterAbstractAnalysisValue>
+	internal sealed class ReadOnlyParameterAbstractAnalysisValue : CacheBasedEquatable<ReadOnlyParameterAbstractAnalysisValue>
 	{
 		protected override void ComputeHashCodeParts(Action<int> addPart)
 		{
