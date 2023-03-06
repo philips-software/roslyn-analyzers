@@ -1,7 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Mono.Cecil;
 using Mono.Cecil.Rocks;
@@ -28,10 +27,6 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		{
 			// Hack: Linux has one method call more for Exists.
 			var expectedNodeCount = nodeCount;
-			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && methodName == @"Exists")
-			{
-				expectedNodeCount++;
-			}
 			System.Type type = typeof(System.IO.Directory);
 			System.Reflection.Assembly assembly = type.Assembly;
 			using var module = ModuleDefinition.ReadModule(assembly.Location);
