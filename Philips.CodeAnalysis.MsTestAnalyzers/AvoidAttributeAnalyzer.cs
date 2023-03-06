@@ -17,9 +17,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public const string AttributesWhitelist = @"AvoidAttributesWhitelist.txt";
 
-		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> attributes = GetAttributeModels();
+		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> Attributes = GetAttributeModels();
 
-		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
+		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(Attributes);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				ImmutableHashSet<string> whitelist = null;
 
-				foreach (System.Collections.Generic.KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in attributes)
+				foreach (KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in Attributes)
 				{
 					if (startContext.Compilation.GetTypeByMetadataName(kvp.Key) == null)
 					{
