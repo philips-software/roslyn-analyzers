@@ -59,11 +59,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				return Array.Empty<string>();
 			}
-			var module = ModuleDefinition.ReadModule(assemblyPath);
+			using var module = ModuleDefinition.ReadModule(assemblyPath);
 			TypeDefinition type = module.GetType(fullTypeName);
 			MethodDefinition methodDef = type.GetMethods().FirstOrDefault(m => m.Name == symbol.Name);
 			var root = CallTreeNode.CreateCallTree(methodDef);
-			return UnhandledExceptionsFromCallTree(root);
+			IEnumerable<string> unhandledExceptions = UnhandledExceptionsFromCallTree(root);
+			// For now clear it every time, accuracy before performance.
+			CallTreeNode.ClearCache();
+			return unhandledExceptions;
 		}
 
 		public IEnumerable<string> UnhandledExceptionsFromCallTree(CallTreeNode root)

@@ -66,6 +66,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			var actualExceptions = walker.UnhandledExceptionsFromCallTree(tree).ToList();
 			// Assert
 			CollectionAssert.IsSubsetOf(expectedExceptions, actualExceptions);
+			// Clean up
+			CallTreeNode.ClearCache();
 		}
 	}
 }
