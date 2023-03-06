@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return root.FindNode(diagnosticSpan) as IfStatementSyntax;
 		}
 
-		protected override async Task<Document> ApplyFix(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, IfStatementSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 

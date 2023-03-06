@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.TestHasCategoryAttribute;
 
-		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxList<AttributeListSyntax> attributeLists = node.AttributeLists;
 

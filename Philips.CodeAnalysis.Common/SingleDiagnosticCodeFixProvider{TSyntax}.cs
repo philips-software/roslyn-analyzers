@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <typeparam name="TSyntax">The <see cref="SyntaxNode"/> type to fix.</typeparam>
 	public abstract class SingleDiagnosticCodeFixProvider<TSyntax> : CodeFixProvider where TSyntax : SyntaxNode
 	{
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId));
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Common
 				context.RegisterCodeFix(
 					CodeAction.Create(
 						title: Title,
-						createChangedDocument: c => ApplyFix(context.Document, node, c),
+						createChangedDocument: c => ApplyFix(context.Document, node, diagnostic.Properties, c),
 						equivalenceKey: Title),
 					diagnostic);
 			}
@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Common
 
 		protected abstract DiagnosticId DiagnosticId { get; }
 
-		protected abstract Task<Document> ApplyFix(Document document, TSyntax node, CancellationToken cancellationToken);
+		protected abstract Task<Document> ApplyFix(Document document, TSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken);
 
 		protected virtual TSyntax GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{

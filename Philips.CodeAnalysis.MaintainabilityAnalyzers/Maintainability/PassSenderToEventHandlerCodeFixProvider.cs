@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.PassSenderToEventHandler;
 
-		protected override async Task<Document> ApplyFix(Document document, ArgumentSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, ArgumentSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			ArgumentSyntax argument = node;
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);

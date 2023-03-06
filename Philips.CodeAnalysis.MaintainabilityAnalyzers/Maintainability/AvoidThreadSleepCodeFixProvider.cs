@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidThreadSleep;
 
-		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode syntaxNodeExpression = node.Parent;
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);

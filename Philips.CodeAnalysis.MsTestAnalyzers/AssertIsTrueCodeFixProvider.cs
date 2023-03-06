@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
@@ -20,7 +21,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.AssertIsEqual;
 
-		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			var calledMethod = ((MemberAccessExpressionSyntax)node.Expression).Name.Identifier.Text;
 
