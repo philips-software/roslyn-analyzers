@@ -1,64 +1,38 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MergeIfStatementsCodeFixProvider)), Shared]
-	public class MergeIfStatementsCodeFixProvider : CodeFixProvider
+	public class MergeIfStatementsCodeFixProvider : SingleDiagnosticCodeFixProvider<IfStatementSyntax>
 	{
-		private const string Title = "Merge with outer If Statement";
+		protected override string Title => "Merge with outer If Statement";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.MergeIfStatements));
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.MergeIfStatements;
+
+		protected override async Task<Document> ApplyFix(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			var ifStatement = root.FindNode(diagnosticSpan) as IfStatementSyntax;
-
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => MergeIfStatements(context.Document, ifStatement, c),
-					equivalenceKey: Title),
-				diagnostic);
-		}
-
-		private async Task<Document> MergeIfStatements(Document document, IfStatementSyntax ifStatementSyntax, CancellationToken c)
-		{
-			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
-
-			SyntaxNode parent = ifStatementSyntax.Parent;
+			SyntaxNode parent = node.Parent;
 			if (parent is BlockSyntax)
 			{
 				parent = parent.Parent;
 			}
 			if (parent is IfStatementSyntax parentIfStatementSyntax)
 			{
-				ExpressionSyntax mergedExpression = SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, parentIfStatementSyntax.Condition, ifStatementSyntax.Condition);
-				IfStatementSyntax newIfStatement = SyntaxFactory.IfStatement(mergedExpression, ifStatementSyntax.Statement)
+				ExpressionSyntax mergedExpression = SyntaxFactory.BinaryExpression(SyntaxKind.LogicalAndExpression, parentIfStatementSyntax.Condition, node.Condition);
+				IfStatementSyntax newIfStatement = SyntaxFactory.IfStatement(mergedExpression, node.Statement)
 					.WithTriviaFrom(parentIfStatementSyntax)
 					.WithAdditionalAnnotations(Formatter.Annotation);
 

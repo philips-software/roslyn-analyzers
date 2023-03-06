@@ -1,62 +1,32 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidTaskResultCodeFixProvider)), Shared]
-	public class AvoidTaskResultCodeFixProvider : CodeFixProvider
+	public class AvoidTaskResultCodeFixProvider : SingleDiagnosticCodeFixProvider<MemberAccessExpressionSyntax>
 	{
-		private const string Title = "Use await";
+		protected override string Title => "Use await";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult));
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidTaskResult;
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (root != null)
-			{
-				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-				if (node != null)
-				{
-					MemberAccessExpressionSyntax resultExpression = node.AncestorsAndSelf().OfType<MemberAccessExpressionSyntax>().First();
-
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => ReplaceWithAwait(context.Document, resultExpression, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> ReplaceWithAwait(Document document, MemberAccessExpressionSyntax resultExpression, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, MemberAccessExpressionSyntax node, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
-			SyntaxTriviaList trivia = resultExpression.GetLeadingTrivia();
-			AwaitExpressionSyntax newExpression = SyntaxFactory.AwaitExpression(resultExpression.Expression);
+			SyntaxTriviaList trivia = node.GetLeadingTrivia();
+			AwaitExpressionSyntax newExpression = SyntaxFactory.AwaitExpression(node.Expression);
 			AwaitExpressionSyntax newExpressionWithLeadingTrivia = newExpression.WithLeadingTrivia(trivia).WithAdditionalAnnotations(Formatter.Annotation);
-			rootNode = rootNode.ReplaceNode(resultExpression, newExpressionWithLeadingTrivia);
+			rootNode = rootNode.ReplaceNode(node, newExpressionWithLeadingTrivia);
 			return document.WithSyntaxRoot(rootNode);
 		}
 	}

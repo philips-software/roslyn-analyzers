@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidArrayListCodeFixProvider : CodeFixProvider
 	{
 		private const string Title = "Replace ArrayList with List<T>";
-		private readonly SyntaxAnnotation annotation = new("ReplaceArrayList");
+		private readonly SyntaxAnnotation _annotation = new("ReplaceArrayList");
 
 		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidArrayList));
 
@@ -52,11 +52,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				TypeSyntax type = variable?.Type;
 				root = ReplaceTypeWithList(root, type);
-				VariableDeclarationSyntax replacedVariable = root.GetAnnotatedNodes(annotation).FirstOrDefault()?.Ancestors()
+				VariableDeclarationSyntax replacedVariable = root.GetAnnotatedNodes(_annotation).FirstOrDefault()?.Ancestors()
 					.OfType<VariableDeclarationSyntax>().FirstOrDefault();
-				if (
-					replacedVariable != null &&
-					replacedVariable.Variables[0]?.Initializer?.Value is ObjectCreationExpressionSyntax creation)
+				if (replacedVariable?.Variables[0]?.Initializer?.Value is ObjectCreationExpressionSyntax creation)
 				{
 					root = ReplaceTypeWithList(root, creation.Type);
 				}
@@ -73,7 +71,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (root != null && existingType != null)
 			{
 				TypeSyntax parameterType = SyntaxFactory.ParseTypeName("int")
-					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
+					.WithAdditionalAnnotations(RenameAnnotation.Create(), _annotation);
 				TypeSyntax list = CreateGenericTypeSyntax(StringConstants.List, parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
 
 				newRoot = root.ReplaceNode(existingType, list);
