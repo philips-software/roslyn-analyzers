@@ -1,23 +1,19 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 using Document = Microsoft.CodeAnalysis.Document;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AssertAreEqualCodeFixProvider)), Shared]
-	public class AssertAreEqualCodeFixProvider : CodeFixProvider
+	public class AssertAreEqualCodeFixProvider : SingleDiagnosticCodeFixProvider<InvocationExpressionSyntax>
 	{
 		private readonly Helper _helper;
 
@@ -29,50 +25,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			_helper = helper;
 		}
 
+		protected override string Title => "Refactor equality assertion";
 
-		private const string Title = "Refactor equality assertion";
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AssertAreEqual;
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual));
-
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					InvocationExpressionSyntax invocationExpression = syntaxNode.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => AssertAreEqualFix(context.Document, invocationExpression, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> AssertAreEqualFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, CancellationToken cancellationToken)
 		{
 			Document newDocument = document;
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 
 			var isFirstArgumentNull = false;
 			var isFirstArgumentConstant = false;
-			ArgumentListSyntax argumentList = invocationExpression.ArgumentList;
+			ArgumentListSyntax argumentList = node.ArgumentList;
 			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
 				Optional<object> literalValue = semanticModel.GetConstantValue(arg0Literal, cancellationToken);
@@ -99,7 +63,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			if (isFirstArgumentNull || isSecondArgumentNull)
 			{
-				return await ReplaceWithIsNull(document, argumentList, invocationExpression, isFirstArgumentNull, cancellationToken);
+				return await ReplaceWithIsNull(document, argumentList, node, isFirstArgumentNull, cancellationToken);
 			}
 			else if (isSecondArgumentConstant && !isFirstArgumentConstant)
 			{

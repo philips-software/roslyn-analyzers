@@ -1,65 +1,28 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TestHasDescriptionCodeFixProvider)), Shared]
-	public class TestHasDescriptionCodeFixProvider : CodeFixProvider
+	public class TestHasDescriptionCodeFixProvider : SingleDiagnosticCodeFixProvider<MethodDeclarationSyntax>
 	{
-		private const string Title = "Remove Description Attribute";
+		protected override string Title => "Remove Description Attribute";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidDescriptionAttribute)); }
-		}
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidDescriptionAttribute;
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					MethodDeclarationSyntax attributeList = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => RemoveDescriptionAttribute(context.Document, attributeList, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> RemoveDescriptionAttribute(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			var newAttributes = new SyntaxList<AttributeListSyntax>();
-			foreach (AttributeListSyntax attributelist in method.AttributeLists)
+			foreach (AttributeListSyntax attributelist in node.AttributeLists)
 			{
 				AttributeSyntax[] nodesToRemove = attributelist.Attributes.Where(att => (att.Name as IdentifierNameSyntax).Identifier.Text.StartsWith("Description")).ToArray();
 
@@ -70,8 +33,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(newAttributes);
-			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
+			MethodDeclarationSyntax newMethod = node.WithAttributeLists(newAttributes);
+			SyntaxNode newRoot = rootNode.ReplaceNode(node, newMethod);
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}
