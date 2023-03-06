@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(attributes);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return Rules; } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
 		private readonly AttributeHelper _attributeHelper;
 
@@ -130,7 +131,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			ImmutableArray<DiagnosticDescriptor>.Builder builder = ImmutableArray.CreateBuilder<DiagnosticDescriptor>();
 
-			System.Collections.Generic.IEnumerable<DiagnosticDescriptor> items = attributes.SelectMany(x => x.Value)
+			IEnumerable<DiagnosticDescriptor> items = attributes.SelectMany(x => x.Value)
 									.Select(x => x.Rule);
 			builder.AddRange(items);
 

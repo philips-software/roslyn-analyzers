@@ -4,12 +4,13 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class Categories
 	{
-		public const string Documentation = @"Documentation";
-		public const string Maintainability = @"Maintainability";
-		public const string Naming = @"Naming";
-		public const string Readability = @"Readability";
-		public const string RuntimeFailure = @"Runtime Failure";
-		public const string Security = @"Security";
-		public const string FunctionalProgramming = @"Functional Programming";
+		public const string Documentation = @"Philips Documentation";
+		public const string Maintainability = @"Philips Maintainability";
+		public const string Naming = @"Philips Naming";
+		public const string Readability = @"Philips Readability";
+		public const string RuntimeFailure = @"Philips Runtime Failure";
+		public const string Security = @"Philips Security";
+		public const string FunctionalProgramming = @"Philips Functional Programming";
+		public const string MsTest = @"Philips MsTest";
 	}
 }
