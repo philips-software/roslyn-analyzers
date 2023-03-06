@@ -1,12 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,49 +14,26 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(EveryLinqStatementOnSeparateLineCodeFixProvider)), Shared]
-	public class EveryLinqStatementOnSeparateLineCodeFixProvider : CodeFixProvider
+	public class EveryLinqStatementOnSeparateLineCodeFixProvider : SingleDiagnosticCodeFixProvider<QueryClauseSyntax>
 	{
-		private const string Title = "Put every linq statement on a separate line";
+		protected override string Title => "Put every linq statement on a separate line";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.EveryLinqStatementOnSeparateLine));
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.EveryLinqStatementOnSeparateLine;
+
+		protected override QueryClauseSyntax GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			return root.FindNode(diagnosticSpan) as QueryClauseSyntax;
 		}
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			if (root != null)
-			{
-				if (root.FindNode(diagnosticSpan) is not QueryClauseSyntax clause)
-				{
-					return;
-				}
-
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => AddNewLineAfter(context.Document, clause, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> AddNewLineAfter(Document document, QueryClauseSyntax clause, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, QueryClauseSyntax node, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
-			SyntaxToken lastToken = clause.GetLastToken();
+			SyntaxToken lastToken = node.GetLastToken();
 			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
-			QueryClauseSyntax clauseWithTrivia = clause.WithTrailingTrivia(newTrivia);
-			root = root.ReplaceNode(clause, clauseWithTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			QueryClauseSyntax clauseWithTrivia = node.WithTrailingTrivia(newTrivia);
+			root = root.ReplaceNode(node, clauseWithTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 
 			return document.WithSyntaxRoot(root);
 		}

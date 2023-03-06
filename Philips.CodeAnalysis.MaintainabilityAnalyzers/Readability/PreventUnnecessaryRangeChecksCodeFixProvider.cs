@@ -1,13 +1,10 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -19,41 +16,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PreventUnnecessaryRangeChecksCodeFixProvider)), Shared]
-	public class PreventUnnecessaryRangeChecksCodeFixProvider : CodeFixProvider
+	public class PreventUnnecessaryRangeChecksCodeFixProvider : SingleDiagnosticCodeFixProvider<IfStatementSyntax>
 	{
-		private const string Title = "Don't check a collections' Length or Count before iterating over it";
+		protected override string Title => "Don't check a collections' Length or Count before iterating over it";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.PreventUnnecessaryRangeChecks));
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.PreventUnnecessaryRangeChecks;
+
+		protected override IfStatementSyntax GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			return root.FindNode(diagnosticSpan) as IfStatementSyntax;
 		}
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			if (root != null)
-			{
-				if (root.FindNode(diagnosticSpan) is not IfStatementSyntax node)
-				{
-					return;
-				}
-
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => RemoveIfStatement(context.Document, node, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> RemoveIfStatement(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, IfStatementSyntax node, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
