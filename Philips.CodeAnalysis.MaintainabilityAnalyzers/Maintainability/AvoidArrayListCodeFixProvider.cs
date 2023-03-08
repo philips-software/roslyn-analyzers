@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeActions;
@@ -10,61 +11,35 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidArrayListCodeFixProvider)), Shared]
-	public class AvoidArrayListCodeFixProvider : CodeFixProvider
+	public class AvoidArrayListCodeFixProvider : SingleDiagnosticCodeFixProvider<VariableDeclarationSyntax>
 	{
-		private const string Title = "Replace ArrayList with List<T>";
-		private readonly SyntaxAnnotation annotation = new("ReplaceArrayList");
+		private readonly SyntaxAnnotation _annotation = new("ReplaceArrayList");
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidArrayList));
+		protected override string Title => "Replace ArrayList with List<T>";
 
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidArrayList;
+
+		protected override async Task<Document> ApplyFix(Document document, VariableDeclarationSyntax node, ImmutableDictionary<string, string> properties,
+			CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			if (root != null)
+			VariableDeclarationSyntax variable = node;
+			TypeSyntax type = variable?.Type;
+			root = ReplaceTypeWithList(root, type);
+			VariableDeclarationSyntax replacedVariable = root.GetAnnotatedNodes(_annotation).FirstOrDefault()?.Ancestors()
+				.OfType<VariableDeclarationSyntax>().FirstOrDefault();
+			if (replacedVariable?.Variables[0]?.Initializer?.Value is ObjectCreationExpressionSyntax creation)
 			{
-				SyntaxToken token = root.FindToken(diagnosticSpan.Start);
-
-				// Register a code action that will invoke the fix.
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => SwapType(context.Document, token),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> SwapType(Document document, SyntaxToken token)
-		{
-			SyntaxNode root = await document.GetSyntaxRootAsync();
-
-			if (token.Parent?.Parent is VariableDeclarationSyntax variable)
-			{
-				TypeSyntax type = variable?.Type;
-				root = ReplaceTypeWithList(root, type);
-				VariableDeclarationSyntax replacedVariable = root.GetAnnotatedNodes(annotation).FirstOrDefault()?.Ancestors()
-					.OfType<VariableDeclarationSyntax>().FirstOrDefault();
-				if (
-					replacedVariable != null &&
-					replacedVariable.Variables[0]?.Initializer?.Value is ObjectCreationExpressionSyntax creation)
-				{
-					root = ReplaceTypeWithList(root, creation.Type);
-				}
-
-				return document.WithSyntaxRoot(root);
+				root = ReplaceTypeWithList(root, creation.Type);
 			}
 
-			return document;
+			return document.WithSyntaxRoot(root);
 		}
 
 		private SyntaxNode ReplaceTypeWithList(SyntaxNode root, TypeSyntax existingType)
@@ -73,18 +48,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (root != null && existingType != null)
 			{
 				TypeSyntax parameterType = SyntaxFactory.ParseTypeName("int")
-					.WithAdditionalAnnotations(RenameAnnotation.Create(), annotation);
+					.WithAdditionalAnnotations(RenameAnnotation.Create(), _annotation);
 				TypeSyntax list = CreateGenericTypeSyntax(StringConstants.List, parameterType).WithTriviaFrom(existingType).WithAdditionalAnnotations(Formatter.Annotation);
 
 				newRoot = root.ReplaceNode(existingType, list);
 			}
 
 			return newRoot;
-		}
-
-		public override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
 		}
 
 		/// <summary>

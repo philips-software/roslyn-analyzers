@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 		{
 			System.Type type = typeof(System.IO.Directory);
 			System.Reflection.Assembly assembly = type.Assembly;
-			var module = ModuleDefinition.ReadModule(assembly.Location);
+			using var module = ModuleDefinition.ReadModule(assembly.Location);
 			TypeDefinition typeDef = module.GetType(type.FullName);
 			MethodDefinition methodDef = typeDef.GetMethods().FirstOrDefault(method => method.Name == methodName);
 			var tree = CallTreeNode.CreateCallTree(methodDef);

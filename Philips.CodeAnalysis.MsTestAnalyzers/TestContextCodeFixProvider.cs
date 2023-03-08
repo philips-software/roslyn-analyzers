@@ -7,53 +7,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TestContextCodeFixProvider)), Shared]
-	public class TestContextCodeFixProvider : CodeFixProvider
+	public class TestContextCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		private const string Title = "Remove Test Context declaration";
+		protected override string Title => "Remove Test Context declaration";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestContext)); }
-		}
+		protected override DiagnosticId DiagnosticId => DiagnosticId.TestContext;
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// find the node which is the "TestContext" type identifier
-			// the parent of the parent is the declaration we want to remove
-			if (root != null)
-			{
-				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-
-				// Register a code action that will invoke the fix.
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => TestContextFix(context.Document, node, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> TestContextFix(Document document, SyntaxNode declaration, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			if (rootNode == null)
@@ -62,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// find the underlying variable
-			IEnumerable<SyntaxNode> propNodes = declaration.DescendantNodes();
+			IEnumerable<SyntaxNode> propNodes = node.DescendantNodes();
 			ReturnStatementSyntax returnStatement = propNodes.OfType<ReturnStatementSyntax>().First();
 			var varName = string.Empty;
 			if (returnStatement?.Expression is IdentifierNameSyntax returnVar)
@@ -71,7 +38,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// remove the property
-			rootNode = rootNode.RemoveNode(declaration, SyntaxRemoveOptions.KeepNoTrivia);
+			rootNode = rootNode.RemoveNode(node, SyntaxRemoveOptions.KeepNoTrivia);
 
 			if (!string.IsNullOrEmpty(varName))
 			{
