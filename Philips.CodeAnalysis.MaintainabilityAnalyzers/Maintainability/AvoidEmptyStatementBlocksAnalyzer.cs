@@ -89,7 +89,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// Empty lock blocks are acceptable.  lock (x) {}
+			// Empty lock blocks are acceptable.
 			if (blockSyntax.Parent is LockStatementSyntax)
 			{
 				return;
