@@ -2,51 +2,26 @@
 
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XmlDocumentationCodeFixProvider)), Shared]
-	public class XmlDocumentationCodeFixProvider : CodeFixProvider
+	public class XmlDocumentationCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		private const string Title = "Remove Summary";
-
 		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue));
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
+		protected override string Title => "Remove Summary";
 
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+		protected override DiagnosticId DiagnosticId { get; }
 
-			if (root != null)
-			{
-				SyntaxNode node = root.FindNode(diagnosticSpan);
-
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => RemoveXmlComment(context.Document, node, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> RemoveXmlComment(Document document, SyntaxNode node, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 			SyntaxNode newRoot = root;

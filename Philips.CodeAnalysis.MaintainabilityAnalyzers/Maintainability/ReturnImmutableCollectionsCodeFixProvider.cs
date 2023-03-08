@@ -3,11 +3,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,9 +16,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(ReturnImmutableCollectionsCodeFixProvider)), Shared]
-	public class ReturnImmutableCollectionsCodeFixProvider : CodeFixProvider
+	public class ReturnImmutableCollectionsCodeFixProvider : SingleDiagnosticCodeFixProvider<TypeSyntax>
 	{
-		private const string Title = "Return immutable collections";
 		private const string ReadonlyCollection = "IReadOnlyCollection";
 		private const string ReadonlyDictionary = "IReadOnlyDictionary";
 		private const string ReadonlyList = "IReadOnlyList";
@@ -37,44 +34,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{StringConstants.IDictionaryInterfaceName, ReadonlyDictionary}
 		};
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.ReturnImmutableCollections));
+		protected override string Title => "Return immutable collections";
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.ReturnImmutableCollections;
+
+		protected override TypeSyntax GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			return root.FindNode(diagnosticSpan) as TypeSyntax;
 		}
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task<Document> ApplyFix(Document document, TypeSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			var type = root.FindNode(diagnosticSpan) as TypeSyntax;
-
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => ReplaceType(context.Document, type, c),
-					equivalenceKey: Title),
-				diagnostic);
-		}
-
-		private async Task<Document> ReplaceType(Document document, TypeSyntax type, CancellationToken c)
-		{
-			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
-			var origTypeName = ReturnImmutableCollectionsAnalyzer.GetTypeName(type);
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			var origTypeName = ReturnImmutableCollectionsAnalyzer.GetTypeName(node);
 			string newTypeName;
-			if (type is ArrayTypeSyntax arrayType)
+			if (node is ArrayTypeSyntax arrayType)
 			{
 				var elementTypeName = arrayType.ElementType.ToString();
 				newTypeName = $"IReadOnlyList<{elementTypeName}>";
 			}
 			else if (CollectionsMap.TryGetValue(origTypeName, out var newCollectionType))
 			{
-				var genericTypeNames = GetGenericTypeNames(type);
+				var genericTypeNames = GetGenericTypeNames(node);
 				newTypeName = $"{newCollectionType}{genericTypeNames}";
 
 			}
@@ -82,8 +63,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return document;
 			}
-			TypeSyntax newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(type);
-			rootNode = rootNode.ReplaceNode(type, newType);
+			TypeSyntax newType = SyntaxFactory.ParseTypeName(newTypeName).WithTriviaFrom(node);
+			rootNode = rootNode.ReplaceNode(node, newType);
 			return document.WithSyntaxRoot(rootNode);
 		}
 
