@@ -98,7 +98,7 @@ dotnet_diagnostic.CA2016.severity = error
 dotnet_diagnostic.CA2211.severity = error
 dotnet_diagnostic.CA2241.severity = error
 
-# Temporarly diabled to fix the tech dept.
+# We will not add code documentation to EVERYTHING, only where it adds value
 dotnet_diagnostic.CS1591.severity = none
 
 # Accept versioning that is not of form major.minor.build.revision
