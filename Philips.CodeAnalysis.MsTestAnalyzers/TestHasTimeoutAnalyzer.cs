@@ -88,7 +88,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
 					}
 
-					Location location = methodDeclaration.GetLocation();
+					Location location = methodDeclaration.Identifier.GetLocation();
 					var diagnostic = Diagnostic.Create(Rule, location, additionalData, string.Empty);
 					context.ReportDiagnostic(diagnostic);
 					return;
