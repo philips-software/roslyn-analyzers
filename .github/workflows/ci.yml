@@ -8,19 +8,19 @@ on:
     branches: [main]
 jobs:
   pinnedactions:
-    if: ${{ github.event_name == 'pull_request' or github.event_name == 'merge_group' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/pinned-actions.yml
 
   docupdate:
-    if: ${{ github.event_name == 'pull_request' or github.event_name == 'merge_group' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/doc-update.yml
 
   format:
-    if: ${{ github.event_name == 'pull_request' or github.event_name == 'merge_group' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/format.yml
 
   dogfood:
-    if: ${{ github.event_name == 'pull_request' or github.event_name == 'merge_group' }}
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/dogfood.yml
 
   sonarcloud:
