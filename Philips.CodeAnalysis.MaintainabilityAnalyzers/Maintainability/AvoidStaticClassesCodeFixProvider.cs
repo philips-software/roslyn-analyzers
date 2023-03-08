@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
@@ -17,58 +14,22 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidStaticClassesCodeFixProvider)), Shared]
-	public class AvoidStaticClassesCodeFixProvider : CodeFixProvider
+	public class AvoidStaticClassesCodeFixProvider : SolutionCodeFixProvider<ClassDeclarationSyntax>
 	{
-		private const string Title = "Whitelist this class";
+		protected override string Title => "Whitelist this class";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidStaticClasses));
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidStaticClasses;
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override string GetAdditionalFileName()
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			return AvoidStaticClassesAnalyzer.AllowedFileName;
 		}
 
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			TextDocument text = GetDocument(context.Document.Project, AvoidStaticClassesAnalyzer.AllowedFileName);
-
-			if (text == null)
-			{
-				return;
-			}
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			if (root != null)
-			{
-				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-				if (node != null)
-				{
-					ClassDeclarationSyntax classDeclaration = node.AncestorsAndSelf().OfType<ClassDeclarationSyntax>().First();
-
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedSolution: c => AdditionalDocumentAppendLine(context.Document, text, classDeclaration, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-
-		private static TextDocument GetDocument(Project project, string fileName)
-		{
-			return project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(fileName, StringComparison.Ordinal));
-		}
-
-
-		private async Task<Solution> AdditionalDocumentAppendLine(Document document, TextDocument textDocument, ClassDeclarationSyntax classDeclaration, CancellationToken cancellationToken)
+		protected override async Task<Solution> ApplyFix(Document document, ClassDeclarationSyntax node, CancellationToken cancellationToken)
 		{
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-			var newLine = semanticModel.GetDeclaredSymbol(classDeclaration, cancellationToken).ToDisplayString();
+			var newLine = semanticModel.GetDeclaredSymbol(node, cancellationToken).ToDisplayString();
+			TextDocument textDocument = AdditionalFileDocument;
 
 			SourceText sourceText = await textDocument.GetTextAsync(cancellationToken).ConfigureAwait(false);
 			SourceText newSourceText = AddLineToSourceText(sourceText, newLine);

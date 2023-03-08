@@ -6,72 +6,36 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidOwnerAttributeCodeFixProvider)), Shared]
-	public class AvoidOwnerAttributeCodeFixProvider : CodeFixProvider
+	public class AvoidOwnerAttributeCodeFixProvider : SingleDiagnosticCodeFixProvider<MethodDeclarationSyntax>
 	{
-		private const string Title = "Remove Owner Attribute";
+		protected override string Title => "Remove Owner Attribute";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidOwnerAttribute)); }
-		}
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidOwnerAttribute;
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode node = root.FindToken(diagnosticSpan.Start).Parent;
-				if (node != null)
-				{
-					MethodDeclarationSyntax attributeList = node.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => RemoveOwnerAttribute(context.Document, attributeList, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> RemoveOwnerAttribute(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 			var newAttributes = new SyntaxList<AttributeListSyntax>();
-			foreach (AttributeListSyntax attributelist in method.AttributeLists)
+			foreach (AttributeListSyntax attributeList in node.AttributeLists)
 			{
-				AttributeSyntax[] nodesToRemove = attributelist.Attributes.Where(att => (att.Name as IdentifierNameSyntax).Identifier.Text.StartsWith("Owner")).ToArray();
+				AttributeSyntax[] nodesToRemove = attributeList.Attributes.Where(att => (att.Name as IdentifierNameSyntax).Identifier.Text.StartsWith("Owner")).ToArray();
 
-				if (nodesToRemove.Length != attributelist.Attributes.Count)
+				if (nodesToRemove.Length != attributeList.Attributes.Count)
 				{
-					AttributeListSyntax newAttribute = attributelist.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
+					AttributeListSyntax newAttribute = attributeList.RemoveNodes(nodesToRemove, SyntaxRemoveOptions.KeepNoTrivia);
 					newAttributes = newAttributes.Add(newAttribute);
 				}
 			}
 
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(newAttributes);
-			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
+			MethodDeclarationSyntax newMethod = node.WithAttributeLists(newAttributes);
+			SyntaxNode newRoot = rootNode.ReplaceNode(node, newMethod);
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,48 +16,44 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidMultipleLambdasOnSingleLineCodeFixProvider)), Shared]
-	public class AvoidMultipleLambdasOnSingleLineCodeFixProvider : CodeFixProvider
+	public class AvoidMultipleLambdasOnSingleLineCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		private const string Title = "Put every lambda on a separate line";
+		protected override string Title => "Put every lambda on a separate line";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidMultipleLambdasOnSingleLine));
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidMultipleLambdasOnSingleLine;
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override SyntaxNode GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			SyntaxNode diagnosticNode = root.FindNode(diagnosticSpan);
+			LambdaExpressionSyntax secondLambda = diagnosticNode.ChildNodes().OfType<LambdaExpressionSyntax>().FirstOrDefault();
+			SyntaxNode parent = GetParentOnHigherLine(secondLambda);
+			if (secondLambda is null || parent is null)
+			{
+				// Apparently, the code is different than what we expect.
+				return null;
+			}
+			LambdaExpressionSyntax firstLambdaOnLine = GetOtherLambdaOnSameLine(parent, secondLambda);
+			// Nice location to break the line, after the closing parenthesis of the ArgumentList where the first lambda is part of.
+			return firstLambdaOnLine?.Parent?.Parent;
 		}
 
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			if (root != null)
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SyntaxNode oldNode = node;
+			SyntaxToken lastToken = oldNode.GetLastToken();
+			// If the 2 lambdas are distinct statements, put the new line after the semicolon.
+			if (lastToken.GetNextToken().IsKind(SyntaxKind.SemicolonToken))
 			{
-				SyntaxNode diagnosticNode = root.FindNode(diagnosticSpan);
-				LambdaExpressionSyntax secondLambda = diagnosticNode.ChildNodes().OfType<LambdaExpressionSyntax>().FirstOrDefault();
-				SyntaxNode parent = GetParentOnHigherLine(secondLambda);
-				if (secondLambda is null || parent is null)
-				{
-					// Apparently, the code is different than what we expect.
-					return;
-				}
-				LambdaExpressionSyntax firstLambdaOnLine = GetOtherLambdaOnSameLine(parent, secondLambda);
-				// Nice location to break the line, after the closing parenthesis of the ArgumentList where the first lambda is part of.
-				SyntaxNode parentOfFirst = firstLambdaOnLine?.Parent?.Parent;
-				if (parentOfFirst is not null)
-				{
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => AddNewLineAfter(context.Document, parentOfFirst, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
+				lastToken = lastToken.GetNextToken();
+				oldNode = lastToken.Parent;
 			}
+			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
+
+			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			root = root.ReplaceNode(oldNode, newNode);
+
+			return document.WithSyntaxRoot(root);
 		}
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
@@ -77,25 +72,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				.OfType<LambdaExpressionSyntax>()
 				.Where(k => !ReferenceEquals(k, second))
 				.FirstOrDefault(l => l.GetLocation().GetLineSpan().StartLinePosition.Line == lineNumber);
-		}
-
-		private async Task<Document> AddNewLineAfter(Document document, SyntaxNode node, CancellationToken cancellationToken)
-		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SyntaxNode oldNode = node;
-			SyntaxToken lastToken = oldNode.GetLastToken();
-			// If the 2 lambdas are distinct statements, put the new line after the semicolon.
-			if (lastToken.GetNextToken().IsKind(SyntaxKind.SemicolonToken))
-			{
-				lastToken = lastToken.GetNextToken();
-				oldNode = lastToken.Parent;
-			}
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
-
-			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
-			root = root.ReplaceNode(oldNode, newNode);
-
-			return document.WithSyntaxRoot(root);
 		}
 	}
 }

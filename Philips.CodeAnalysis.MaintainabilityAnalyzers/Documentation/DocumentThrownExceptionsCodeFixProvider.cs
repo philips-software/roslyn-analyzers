@@ -2,11 +2,9 @@
 
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
@@ -16,48 +14,30 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DocumentThrownExceptionsCodeFixProvider)), Shared]
-	public class DocumentThrownExceptionsCodeFixProvider : CodeFixProvider
+	public class DocumentThrownExceptionsCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		private const string Title = "Document thrown exceptions";
-
 		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.DocumentThrownExceptions), Helper.ToDiagnosticId(DiagnosticId.DocumentUnhandledExceptions));
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override string Title => "Document thrown exceptions";
+
+		protected override DiagnosticId DiagnosticId { get; }
+
+		protected override SyntaxNode GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
+			SyntaxNode diagnosticNode = root.FindNode(diagnosticSpan);
+			return DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnosticNode);
 		}
 
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-			if (!diagnostic.Properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out var missingExceptionTypeName))
-			{
-				return;
-			}
-
-			if (root != null)
-			{
-				SyntaxNode diagnsticNode = root.FindNode(diagnosticSpan);
-				SyntaxNode node = DocumentationHelper.FindAncestorThatCanHaveDocumentation(diagnsticNode);
-
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => AddExceptionComment(context.Document, node, missingExceptionTypeName, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
-		}
-
-		private async Task<Document> AddExceptionComment(Document document, SyntaxNode node, string exceptionTypeName, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 			SyntaxNode newRoot = root;
-
+			if (!properties.TryGetValue(StringConstants.ThrownExceptionPropertyKey, out var missingExceptionTypeName))
+			{
+				return document;
+			}
 			DocumentationHelper docHelper = new(node);
-			var parts = exceptionTypeName.Split(',');
+			var parts = missingExceptionTypeName.Split(',');
 			foreach (var part in parts)
 			{
 				docHelper.AddException(part);

@@ -3,85 +3,40 @@
 using System;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AssertAreEqualLiteralAnalyzer)), Shared]
-	public class AssertAreEqualLiteralCodeFixProvider : CodeFixProvider
+	public class AssertAreEqualLiteralCodeFixProvider : SingleDiagnosticCodeFixProvider<InvocationExpressionSyntax>
 	{
-		private const string Title = "Refactor AreEqual(<literal true/false>, other) into IsTrue/IsFalse";
+		protected override string Title => "Refactor AreEqual(<literal true/false>, other) into IsTrue/IsFalse";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral)); }
-		}
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AssertAreEqualLiteral;
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					InvocationExpressionSyntax invocationExpression = syntaxNode.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
-					ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
-
-					Helper helper = new();
-					if (!helper.IsLiteralTrueFalse(arg.Expression))
-					{
-						return;
-					}
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => AssertAreEqualFix(context.Document, invocationExpression, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> AssertAreEqualFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			ArgumentSyntax literalExpected = invocationExpression.ArgumentList.Arguments[0];
-			ArgumentSyntax actual = invocationExpression.ArgumentList.Arguments[1];
+			ArgumentSyntax literalExpected = node.ArgumentList.Arguments[0];
+			ArgumentSyntax actual = node.ArgumentList.Arguments[1];
 
 			ArgumentSyntax message = null;
-			if (invocationExpression.ArgumentList.Arguments.Count > 2)
+			if (node.ArgumentList.Arguments.Count > 2)
 			{
-				message = invocationExpression.ArgumentList.Arguments[2];
+				message = node.ArgumentList.Arguments[2];
 			}
 
-			InvocationExpressionSyntax newInvocation = ConvertToInvocation(((MemberAccessExpressionSyntax)invocationExpression.Expression).Name, literalExpected.Expression, actual.Expression, message?.Expression);
-			SyntaxTriviaList trivia = invocationExpression.GetLeadingTrivia();
+			InvocationExpressionSyntax newInvocation = ConvertToInvocation(((MemberAccessExpressionSyntax)node.Expression).Name, literalExpected.Expression, actual.Expression, message?.Expression);
+			SyntaxTriviaList trivia = node.GetLeadingTrivia();
 			InvocationExpressionSyntax newInvocationWithTrivia = newInvocation.WithLeadingTrivia(trivia);
-			root = root.ReplaceNode(invocationExpression, newInvocationWithTrivia);
+			root = root.ReplaceNode(node, newInvocationWithTrivia);
 
 			return document.WithSyntaxRoot(root);
 		}
