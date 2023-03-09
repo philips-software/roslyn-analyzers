@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"The [ExpectedException()] attribute does not have line number granularity and trips the debugger anyway.  Use AssertEx.Throws() instead.";
 
 		public ExpectedExceptionAttributeAnalyzer()
-			: base(DiagnosticId.ExpectedExceptionAttribute, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.ExpectedExceptionAttribute, Title, MessageFormat, Description, Categories.MsTest)
 		{
 			FullyQualifiedMetaDataName = "Microsoft.VisualStudio.TestTools.UnitTesting.ExpectedExceptionAttribute";
 		}

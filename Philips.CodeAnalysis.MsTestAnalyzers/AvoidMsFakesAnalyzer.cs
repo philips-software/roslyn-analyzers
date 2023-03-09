@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Avoid MS Fakes. Use Moq instead for example.  If applicable, remove the Reference and the .fakes file as well.";
 
 		public AvoidMsFakesAnalyzer()
-			: base(DiagnosticId.AvoidMsFakes, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidMsFakes, Title, MessageFormat, Description, Categories.MsTest)
 		{ }
 	}
 	public class AvoidMsFakesSyntaxNodeAction : SyntaxNodeAction<UsingStatementSyntax>

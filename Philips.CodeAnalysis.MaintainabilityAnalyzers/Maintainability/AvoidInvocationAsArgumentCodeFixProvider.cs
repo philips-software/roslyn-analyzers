@@ -100,7 +100,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If we're not already inside a block statement, we need to make it so.
-			// (E.g., "if (true) Foo(Moo())" => "if (true) { var renameMe=Moo();Foo(renameMe); }"
 			if (fullExistingExpressionSyntax.Parent is StatementSyntax and not BlockSyntax)
 			{
 				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedLocalDeclarationSyntax, newFullExistingExpressionSyntax);

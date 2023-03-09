@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Assert.Fail should not be used if an alternative is more appropriate";
 		private const string MessageFormat = @"Assert.Fail should not be used in this scenario.  Consider using Assert.AreEqual or Assert.IsTrue or Assert.IsNull";
 		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertFail), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 

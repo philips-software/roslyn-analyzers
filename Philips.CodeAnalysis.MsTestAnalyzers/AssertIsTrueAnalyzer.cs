@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string IsEqualTitle = @"Assert.IsTrue/IsFalse Usage";
 		private const string IsEqualMessageFormat = @"Do not call IsTrue/IsFalse if AreEqual/AreNotEqual will suffice";
 		private const string IsEqualDescription = @"Assert.IsTrue(<actual> == <expected>) => Assert.AreEqual(<expected>, <actual>)";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 		private const string EqualsName = "Equals";
 
 		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);

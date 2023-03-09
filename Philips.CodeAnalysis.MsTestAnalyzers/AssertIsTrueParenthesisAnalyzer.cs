@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string MessageFormat = @"Do not call IsTrue/IsFalse with parenthesis around the argument";
 		private const string Description = @"Assert.IsTrue((<actual> == <expected>)) => Assert.IsTrue(<expected> == <actual>)";
 		public AssertIsTrueParenthesisAnalyzer()
-			: base(DiagnosticId.AssertIsTrueParenthesis, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AssertIsTrueParenthesis, Title, MessageFormat, Description, Categories.MsTest)
 		{
 		}
 	}
