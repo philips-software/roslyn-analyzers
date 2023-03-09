@@ -21,7 +21,7 @@ jobs:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         pre_release_branches: "${{ github.head_ref || github.ref_name }}"
-        release_branches: "not-blank"
+        release_branches: "release"
         append_to_pre_release_tag: prerelease
         
     - name: Results
