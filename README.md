@@ -1,4 +1,4 @@
-# Introduction 
+# Introduction
 Roslyn Diagnostic Analyzers are customized compiler errors providing real-time feedback to C# developers. Many Analyzers include an automatic Code Fixer. While Microsoft (and other organizations) offer many analyzers, the market is nascent. Moreover, many tools offer a rich set of rules, but lack the shift-left integration that Roslyn achieves.
 
 We have a policy whereby Code Reviewers ask themselves if a review comment can be automated.  If so, and if a Diagnostic Analyzer is the right tool for the scenario in question, and if an Analyzer does not readily exist in the market already, an issue is created to track the need. That is, all analyzers herein are based on real-world code review feedback. This project is the result. It was open-sourced in 2020.
@@ -15,7 +15,7 @@ Consult the following for details on the available rules:
 * [Philips.CodeAnalysis.MsTestAnalyzers](./Philips.CodeAnalysis.MsTestAnalyzers/Philips.CodeAnalysis.MsTestAnalyzers.md)
 
 * [Philips.CodeAnalysis.SecurityAnalyzers](./Philips.CodeAnalysis.SecurityAnalyzers/Philips.CodeAnalysis.SecurityAnalyzers.md)
-  
+
 
 ## Getting Started
 
