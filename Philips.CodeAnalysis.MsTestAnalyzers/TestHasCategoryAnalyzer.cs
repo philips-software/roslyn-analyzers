@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Test must have an appropriate TestCategory";
 		public const string MessageFormat = @"Test must have an appropriate TestCategory attribute. Check EditorConfig";
 		private const string Description = @"Tests are required to have an appropriate TestCategory to allow running tests category wise.";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 

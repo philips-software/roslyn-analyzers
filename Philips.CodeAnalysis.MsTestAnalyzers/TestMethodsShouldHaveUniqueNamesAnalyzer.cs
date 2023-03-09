@@ -16,13 +16,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"TestMethods/DataTestMethods should not have the same name";
 		public static readonly string MessageFormat = @"Multiple tests named '{0}'";
 		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override void OnTestClass(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax classDeclaration)
 		{

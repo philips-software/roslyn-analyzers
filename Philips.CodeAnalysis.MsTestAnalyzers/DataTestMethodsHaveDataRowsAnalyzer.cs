@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public static readonly string MessageFormatIsDataTestMethod = @"DataTestMethod has no input data.  Convert to TestMethod.";
 
 		private const string Description = @"DataTestMethods are only executed with DataRows";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
 												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
