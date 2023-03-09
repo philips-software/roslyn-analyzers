@@ -1,0 +1,42 @@
+name: CD
+on:
+  push:
+    branches: [release/*]
+jobs:
+  tagversion:
+    uses: ./.github/workflows/tagversion.yml
+    
+  build:
+    needs: tagversion
+    uses: ./.github/workflows/dotnetcore.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      new_version: ${{ needs.tagversion.outputs.new_version }}
+
+  changelog:
+    needs: [tagversion, build]
+    uses: ./.github/workflows/changelog.yml
+    with:
+      changelog: ${{ needs.tagversion.outputs.changelog }}
+          
+#  gittagrelease:
+#    runs-on: ubuntu-latest
+#    needs: [tagversion, build, changelog]
+#    steps:
+#    - name: Create GitHub Tag & Release
+#      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
+#      with:
+#        tag: ${{ needs.tagversion.outputs.new_tag }}
+#        name: Release ${{ needs.tagversion.outputs.new_tag }}
+#        body: ${{ needs.tagversion.outputs.changelog }}
+#        prerelease: false
+#        allowUpdates: true
+#        generateReleaseNotes: true
+#        commit: ${{ github.sha }}
+         
+#  publish:
+#    needs: [gittagrelease]
+#    uses: ./.github/workflows/publish.yml
+#    secrets:
+#      nuget-token: ${{ secrets.NUGET_TOKEN }}
+      
