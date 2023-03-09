@@ -1,71 +1,34 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidMethodsCodeFixProvider)), Shared]
-	public class AvoidMethodsCodeFixProvider : CodeFixProvider
+	public class AvoidMethodsCodeFixProvider : SingleDiagnosticCodeFixProvider<MethodDeclarationSyntax>
 	{
-		private const string Title = "Remove this Method";
+		public sealed override ImmutableArray<string> FixableDiagnosticIds =>
+			ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
+				Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
+				Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
+				Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod));
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
-		{
-			get
-			{
-				return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
-			  Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
-			  Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
-			  Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod));
-			}
-		}
+		protected override string Title => "Remove this Method";
 
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
+		protected override DiagnosticId DiagnosticId { get; }
 
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					IEnumerable<MethodDeclarationSyntax> attributeList = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => RemoveMethod(context.Document, attributeList, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> RemoveMethod(Document document, IEnumerable<MethodDeclarationSyntax> method, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, ImmutableDictionary<string, string> properties,
+			CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
-			SyntaxNode newRoot = rootNode.RemoveNodes(method, SyntaxRemoveOptions.KeepDirectives);
+			SyntaxNode newRoot = rootNode.RemoveNode(node, SyntaxRemoveOptions.KeepDirectives);
 
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;

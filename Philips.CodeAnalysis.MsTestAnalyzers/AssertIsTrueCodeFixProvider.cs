@@ -7,62 +7,29 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AssertIsTrueCodeFixProvider)), Shared]
-	public class AssertIsTrueCodeFixProvider : CodeFixProvider
+	public class AssertIsTrueCodeFixProvider : SingleDiagnosticCodeFixProvider<InvocationExpressionSyntax>
 	{
-		private const string Title = "Refactor IsTrue/IsFalse";
+		protected override string Title => "Refactor IsTrue/IsFalse";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual));
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AssertIsEqual;
 
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override async Task<Document> ApplyFix(Document document, InvocationExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					InvocationExpressionSyntax invocationExpression = syntaxNode.AncestorsAndSelf().OfType<InvocationExpressionSyntax>().First();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => AssertIsTrueFix(context.Document, invocationExpression, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> AssertIsTrueFix(Document document, InvocationExpressionSyntax invocationExpression, CancellationToken cancellationToken)
-		{
-			var calledMethod = ((MemberAccessExpressionSyntax)invocationExpression.Expression).Name.Identifier.Text;
+			var calledMethod = ((MemberAccessExpressionSyntax)node.Expression).Name.Identifier.Text;
 
 			var isIsTrue = calledMethod == StringConstants.IsTrue;
 
-			ArgumentSyntax arg = invocationExpression.ArgumentList.Arguments[0];
+			ArgumentSyntax arg = node.ArgumentList.Arguments[0];
 
-			return await HandleArgument(document, arg.Expression, invocationExpression, isIsTrue, cancellationToken);
+			return await HandleArgument(document, arg.Expression, node, isIsTrue, cancellationToken);
 		}
 
 		private async Task<Document> HandleArgument(Document document, ExpressionSyntax arg, InvocationExpressionSyntax invocationExpression, bool isIsTrue, CancellationToken cancellationToken)

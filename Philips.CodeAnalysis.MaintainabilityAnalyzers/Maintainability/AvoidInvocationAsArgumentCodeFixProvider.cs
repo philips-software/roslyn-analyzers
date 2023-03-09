@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -19,23 +18,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidInvocationAsArgumentCodeFixProvider)), Shared]
-	public class AvoidInvocationAsArgumentCodeFixProvider : CodeFixProvider
+	public class AvoidInvocationAsArgumentCodeFixProvider : SingleDiagnosticCodeFixProvider<ExpressionSyntax>
 	{
-		private const string Title = "Extract local variable";
+		protected override string Title => "Extract local variable";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidInvocationAsArgument));
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidInvocationAsArgument;
+
+		protected override ExpressionSyntax GetNode(SyntaxNode root, TextSpan diagnosticSpan)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
 			// Find the nested method call identified by the diagnostic.
 			SyntaxNode node = root.FindNode(diagnosticSpan, false, true);
 			var expressionNode = node as ExpressionSyntax;
@@ -52,27 +42,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<IfStatementSyntax>();
 			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<WhileStatementSyntax>();
 
-			if (fullExistingExpressionSyntax != null)
-			{
-				// Register a code action that will invoke the fix.
-				context.RegisterCodeFix(
-					CodeAction.Create(
-						title: Title,
-						createChangedDocument: c => ExtractLocalVariable(context.Document, expressionNode, c),
-						equivalenceKey: Title),
-					diagnostic);
-			}
+			return fullExistingExpressionSyntax == null ? null : expressionNode;
 		}
 
-		private async Task<Document> ExtractLocalVariable(Document document, ExpressionSyntax argumentSyntax, CancellationToken c)
+		protected override async Task<Document> ApplyFix(Document document, ExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
-
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(c).ConfigureAwait(false);
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			ExpressionSyntax argumentSyntax = node;
 
 			string newName;
 			SyntaxToken identifier;
-			IOperation operation = semanticModel.GetOperation(argumentSyntax, c);
+			IOperation operation = semanticModel.GetOperation(argumentSyntax, cancellationToken);
 			if (operation?.Parent is IArgumentOperation argumentOperation)
 			{
 				IParameterSymbol parameterSymbol = argumentOperation.Parameter;
@@ -119,7 +100,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If we're not already inside a block statement, we need to make it so.
-			// (E.g., "if (true) Foo(Moo())" => "if (true) { var renameMe=Moo();Foo(renameMe); }"
 			if (fullExistingExpressionSyntax.Parent is StatementSyntax and not BlockSyntax)
 			{
 				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedLocalDeclarationSyntax, newFullExistingExpressionSyntax);

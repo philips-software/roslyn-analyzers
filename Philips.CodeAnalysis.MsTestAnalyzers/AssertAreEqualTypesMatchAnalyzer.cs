@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"The types of the parameters of Are[Not]Equal must match.";
 
 		public AssertAreEqualTypesMatchAnalyzer()
-			: base(DiagnosticId.AssertAreEqualTypesMatch, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AssertAreEqualTypesMatch, Title, MessageFormat, Description, Categories.MsTest)
 		{
 		}
 	}

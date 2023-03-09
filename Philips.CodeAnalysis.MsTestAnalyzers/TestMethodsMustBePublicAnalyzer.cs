@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"TestMethods/DataTestMethods must be public, instance methods";
 		public static readonly string MessageFormat = @"'{0}' is not a public instance method";
 		private const string Description = @"";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustBePublic),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
