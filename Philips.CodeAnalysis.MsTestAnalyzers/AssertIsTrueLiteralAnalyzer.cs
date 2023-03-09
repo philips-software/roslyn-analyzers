@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string IsTrueMessageFormat = @"Do not call IsTrue/IsFalse with a literal true/false";
 		private const string IsTrueDescription = IsTrueMessageFormat;
 
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor IsTrueRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral), IsTrueTitle, IsTrueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsTrueDescription);
 

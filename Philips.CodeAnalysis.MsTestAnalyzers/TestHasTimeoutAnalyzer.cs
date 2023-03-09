@@ -16,14 +16,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Test must have an appropriate Timeout";
 		public const string MessageFormat = @"Test must have an appropriate Timeout attribute.{0}";
 		private const string Description = @"Tests that lack a Timeout may indefinitely block.";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		public static readonly string DefaultTimeoutKey = "defaultTimeout";
 
 		public static DiagnosticDescriptor Rule => new(Helper.ToDiagnosticId(DiagnosticId.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{

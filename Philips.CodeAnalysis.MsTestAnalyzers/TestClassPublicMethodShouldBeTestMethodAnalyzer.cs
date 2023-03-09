@@ -16,11 +16,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"Test class public method should be a Test method";
 		public const string MessageFormat = @"Public method should either be a test method or non-public";
 		private const string Description = @"Test class cannot have a public method unless its a test method. Either change the access modifier or make it a test method";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private readonly TestHelper _testHelper;
 		public TestClassPublicMethodShouldBeTestMethodAnalyzer()

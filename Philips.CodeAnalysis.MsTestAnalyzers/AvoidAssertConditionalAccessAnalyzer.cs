@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public const string MessageFormat = @"Do not use an inline null check while asserting. Use IsNotNull check.";
 		private const string Description = @"Assert.AreEqual(<actual>?.attribute, <expected>) => Assert.IsNotNull(<actual>); Assert.AreEqual(<actual>.attribute, <expected>)";
 
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 

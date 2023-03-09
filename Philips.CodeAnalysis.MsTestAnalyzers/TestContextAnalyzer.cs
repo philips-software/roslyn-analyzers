@@ -17,11 +17,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public const string MessageFormat = @"TestContext should be used or removed.";
 		private const string Title = @"TestContext Usage";
 		private const string Description = @"TestContext should not be included in test classes unless it is actually used.";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		public override void Initialize(AnalysisContext context)
 		{

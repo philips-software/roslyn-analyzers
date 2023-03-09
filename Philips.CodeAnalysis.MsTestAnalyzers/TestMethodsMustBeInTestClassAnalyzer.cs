@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Title = @"TestMethods/DataTestMethods must be in [TestClass]";
 		public static readonly string MessageFormat = @"{0} is not in a [TestClass]";
 		private const string Description = @"Tests are only executed if they are [TestClass]";
-		private const string Category = Categories.Maintainability;
+		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustBeInTestClass),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
