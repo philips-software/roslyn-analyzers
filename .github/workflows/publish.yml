@@ -38,4 +38,4 @@ jobs:
           (steps.changes.outputs.MoqAnalyzers == 'true' && ${{ matrix.package }} == 'MoqAnalyzers') ||
           (steps.changes.outputs.MsTestAnalyzers == 'true' && ${{ matrix.package }} == 'MsTestAnalyzers') ||
       run: |
-#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
