@@ -27,13 +27,13 @@ jobs:
             - '${{ matrix.package }}/**'
             
     - name: Download artifacts
-      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
+      if: steps.changes.outputs.Philips.CodeAnalysis.MaintainabilityAnalyzers && ${{ matrix.package }} == 'Philips.CodeAnalysis.MaintainabilityAnalyzers'    
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
       with:
         name: ${{ matrix.package }}-${{ inputs.new_tag }}
 
     - name: Nuget
-      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
+      if: steps.changes.outputs.Philips.CodeAnalysis.MaintainabilityAnalyzers && ${{ matrix.package }} == 'Philips.CodeAnalysis.MaintainabilityAnalyzers'    
       run: |
         echo input value:  ${{ steps.changes.outputs.<matrix.package> }}
 #        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
