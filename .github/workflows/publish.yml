@@ -2,6 +2,10 @@ name: Publish
 
 on:
   workflow_call:
+    inputs:
+      new_tag:
+        type: string
+        required: true
     secrets:
       nuget-token:
         required: true
