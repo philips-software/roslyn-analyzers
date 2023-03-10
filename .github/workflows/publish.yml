@@ -19,6 +19,7 @@ jobs:
     name: Publish
     steps:
     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c #v3
+    
     - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
       id: changes
       with:
@@ -26,11 +27,10 @@ jobs:
           ${{ matrix.package }}:
             - 'Philips.CodeAnalysis.${{ matrix.package }}/**'
             
-#    - name: Download artifacts
-#      if: steps.changes.outputs.Philips.CodeAnalysis.MaintainabilityAnalyzers && ${{ matrix.package }} == 'Philips.CodeAnalysis.MaintainabilityAnalyzers'    
-#      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
-#      with:
-#        name: ${{ matrix.package }}-${{ inputs.new_tag }}
+    - name: Download artifact
+      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
+      with:
+        name: ${{ matrix.package }}-${{ inputs.new_tag }}
 
     - name: Nuget
       if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && ${{ matrix.package }} == 'MaintainabilityAnalyzers') ||
@@ -38,11 +38,4 @@ jobs:
           (steps.changes.outputs.MoqAnalyzers == 'true' && ${{ matrix.package }} == 'MoqAnalyzers') ||
           (steps.changes.outputs.MsTestAnalyzers == 'true' && ${{ matrix.package }} == 'MsTestAnalyzers') ||
       run: |
-        echo input value:  ${{ steps.changes.outputs.MaintainabilityAnalyzers }}
 #        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
-
-    - name: Nuget2
-      run: |
-        echo input value:  ${{ steps.changes.outputs.MaintainabilityAnalyzers }}
-#        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
-        
