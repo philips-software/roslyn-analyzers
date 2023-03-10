@@ -65,7 +65,7 @@ jobs:
         commit: ${{ github.sha }}
          
   publish:
-    if: ${{ github.event_name == 'push' }}
+#    if: ${{ github.event_name == 'push' }}
     needs: [tagversion, gittagrelease]
     uses: ./.github/workflows/publish.yml
     with:
