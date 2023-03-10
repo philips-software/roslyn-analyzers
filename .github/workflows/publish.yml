@@ -35,7 +35,7 @@ jobs:
     - name: Nuget
       if: steps.changes.outputs.${{ matrix.package }} == 'true'    
       run: |
-        echo 'input value: ' ${{ steps.changes.outputs.[matrix.package] }}
+        echo input value:  ${{ steps.changes.outputs.<matrix.package> }}
 #        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
 
         
