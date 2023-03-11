@@ -1,0 +1,16 @@
+name: Prepare for Release
+on:
+  workflow_dispatch:
+jobs:
+  tagversion:
+    uses: ./.github/workflows/tagversion.yml
+
+  branch:
+    needs: tagversion
+    runs-on: ubuntu-latest
+    steps:
+    - uses: peterjgrainger/action-create-branch@c2800a3a9edbba2218da6861fa46496cf8f3195a # @v2.2.0
+      with:
+        branch: 'release-${{ needs.tagversion.outputs.new_version }}'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
