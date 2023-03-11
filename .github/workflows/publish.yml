@@ -14,27 +14,26 @@ jobs:
   publish:
     strategy:
       matrix:
-        package: [Philips.CodeAnalysis.MaintainabilityAnalyzers] #, Philips.CodeAnalysis.DuplicateCodeAnalyzer, Philips.CodeAnalysis.MoqAnalyzers, Philips.CodeAnalysis.MsTestAnalyzers]
+        package: [MaintainabilityAnalyzers, DuplicateCodeAnalyzer, MoqAnalyzers, MsTestAnalyzers]
     runs-on: ubuntu-latest
     name: Publish
     steps:
     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c #v3
+    
     - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
       id: changes
       with:
         filters: |
           ${{ matrix.package }}:
-            - '${{ matrix.package }}/**'
+            - 'Philips.CodeAnalysis.${{ matrix.package }}/**'
             
-    - name: Download artifacts
-      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
+    - name: Download artifact
       uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a #v3
       with:
-        name: ${{ matrix.package }}-${{ inputs.new_tag }}
+        name: Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }}
 
     - name: Nuget
-      if: steps.changes.outputs.${{ matrix.package }} == 'true'    
+      if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && ${{ matrix.package }} == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && ${{ matrix.package }} == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && ${{ matrix.package }} == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && ${{ matrix.package }} == 'MsTestAnalyzers')
       run: |
-        dotnet nuget push ${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
-
-        
+         echo ${{ steps.changes.outputs.MoqAnalyzers }}
+#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
