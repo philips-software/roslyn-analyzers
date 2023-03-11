@@ -15,7 +15,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
+      id: changes
+      with:
+        filters: |
+          packages:
+            - 'Philips.CodeAnalysis.MaintainabilityAnalyzers/**'
+            - 'Philips.CodeAnalysis.DuplicateCodeAnalyzer/**'
+            - 'Philips.CodeAnalysis.MoqAnalyzers/**'
+            - 'Philips.CodeAnalysis.MaintainabilityAnalyzers/**'
+            - 'Philips.CodeAnalysis.MsTestAnalyzers/**'
+            - 'Philips.CodeAnalysis.SecurityAnalyzers/**'
+          
     - name: GitHub Tag & Release
+      if: steps.changes.outputs.packages == 'true'
       uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
       with:
         tag: ${{ inputs.new_tag }}
