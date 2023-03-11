@@ -100,7 +100,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NegativeLocalVariableInTestClass()
+		public async Task NegativeLocalVariableInTestClassShouldBeIgnored()
 		{
 			const string template = @"
 using System;
@@ -108,7 +108,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 [TestClass]
 class Foo
 {
-	public void Test(int a)
+    [TestMethod]
+	public void Test()
 	{
 		bool disableFeature;
 	}
@@ -120,7 +121,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NegativePropertyInTestClass()
+		public async Task NegativePropertyInTestClassShouldBeIgnored()
 		{
 			const string template = @"
 using System;
@@ -133,6 +134,33 @@ class Foo
 ";
 
 			await VerifySuccessfulCompilation(template);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NagativeLocalVariablesInGeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+    public bool featureMissing { get; }
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NegativePropertiesInGeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+    public void Bar()
+    {{
+        bool disableFeature;
+    }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
 		}
 	}
 }

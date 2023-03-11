@@ -390,6 +390,18 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+    private int foo = 0;
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
 		#endregion
 	}
 }

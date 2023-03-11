@@ -249,6 +249,22 @@ public class TestClass
 			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = $@"public class TestClass
+{{
+	static bool Foo(ref int i)
+	{{
+		return i == 1;
+	}}
+
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PassByRefAnalyzer();

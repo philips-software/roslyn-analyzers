@@ -471,5 +471,21 @@ abstract class Foo : ApplicationContext
 			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Bar(bool foo)
+	{{
+        // Some code
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
 	}
 }
