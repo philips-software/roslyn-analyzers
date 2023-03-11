@@ -24,6 +24,8 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
           github.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
             title: 'Release ${{ needs.tagversion.outputs.new_version }}',
             head: 'release/${{ needs.tagversion.outputs.new_version }}',
             base: 'main'
