@@ -6,7 +6,11 @@ on:
 #    branches: [release/*]
 #    types: [opened]
 jobs:
+  tagversion:
+    uses: ./.github/workflows/tagversion.yml
+    
   changelog:
+    needs: tagversion
     if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/changelog.yml
     with:
@@ -27,10 +31,6 @@ jobs:
             repo: context.repo.repo,
             body: 'Changelog.md file is updated. Merge the PR to release to production.'
           })
-            
-  tagversion:
-    if: ${{ github.event_name == 'push' }}
-    uses: ./.github/workflows/tagversion.yml
     
 #  build:
 #    needs: tagversion
