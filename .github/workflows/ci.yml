@@ -54,7 +54,7 @@ jobs:
     uses: ./.github/workflows/release.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
-      new_version: ${{ needs.tagversion.outputs.new_version }}
+      changelog: ${{ needs.tagversion.outputs.changelog }}
       prerelease: true
       
   publish:
