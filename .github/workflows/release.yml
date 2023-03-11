@@ -12,7 +12,7 @@ on:
         type: boolean
         required: true
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
     - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
