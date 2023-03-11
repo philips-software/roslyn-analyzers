@@ -33,7 +33,7 @@ jobs:
         name: Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }}
 
     - name: Nuget
-      if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && ${{ matrix.package }} == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && ${{ matrix.package }} == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && ${{ matrix.package }} == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && ${{ matrix.package }} == 'MsTestAnalyzers')
+      if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && matrix.package == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && matrix.package == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && matrix.package == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && matrix.package == 'MsTestAnalyzers')
       run: |
-         echo ${{ steps.changes.outputs.MoqAnalyzers }}
-#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+        echo Publishing to Nuget Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }} >> $GITHUB_STEP_SUMMARY
+        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
