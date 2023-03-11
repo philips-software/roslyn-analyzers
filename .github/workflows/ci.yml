@@ -48,25 +48,18 @@ jobs:
     with:
       changelog: ${{ needs.tagversion.outputs.changelog }}
           
-  gittagrelease:
+  release:
     if: ${{ github.event_name == 'push' }}
-    runs-on: ubuntu-latest
     needs: [tagversion, build]
-    steps:
-    - name: Create GitHub Tag & Release
-      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
-      with:
-        tag: ${{ needs.tagversion.outputs.new_tag }}
-        name: Release ${{ needs.tagversion.outputs.new_tag }}
-        body: ${{ needs.tagversion.outputs.changelog }}
-        prerelease: true
-        allowUpdates: true
-        generateReleaseNotes: true
-        commit: ${{ github.sha }}
-         
+    uses: ./.github/workflows/release.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      new_version: ${{ needs.tagversion.outputs.new_version }}
+      prerelease: true
+      
   publish:
     if: ${{ github.event_name == 'push' }}
-    needs: [tagversion, gittagrelease]
+    needs: [tagversion, release]
     uses: ./.github/workflows/publish.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
