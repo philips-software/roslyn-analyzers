@@ -1,0 +1,27 @@
+name: Release
+on:
+  workflow_call:
+    inputs:
+      new_tag:
+        type: string
+        required: false
+      changelog:
+        type: string
+        required: false
+      prerelease:
+        type: boolean
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: GitHub Tag & Release
+      uses: ncipollo/release-action@a2e71bdd4e7dab70ca26a852f29600c98b33153e #v1.12
+      with:
+        tag: ${{ inputs.new_tag }}
+        name: Release ${{ inputs.new_tag }}
+        body: ${{ inputs.changelog }}
+        prerelease: ${{ inputs.prerelease }}
+        allowUpdates: true
+        generateReleaseNotes: true
+        commit: ${{ github.sha }}
