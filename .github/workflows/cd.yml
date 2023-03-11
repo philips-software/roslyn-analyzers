@@ -2,7 +2,7 @@ name: CD
 on:
   push:
     branches: [release/*]
-  pull_request:
+  pull_request_target:
     branches: [release/*]
     types: [opened]
 jobs:
@@ -11,14 +11,14 @@ jobs:
     
   changelog:
     needs: tagversion
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request_target' }}
     uses: ./.github/workflows/changelog.yml
     with:
       changelog: ${{ needs.tagversion.outputs.changelog }}
 
   comment:
     needs: changelog
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request_target' }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # @v6.4.0
