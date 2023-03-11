@@ -20,9 +20,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
-			return new NamespaceMatchFilePathAnalyzer(_mockAdditionalFilesHelper.Object);
+			Mock<AdditionalFilesHelper> mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
+			_ = mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("false");
+			return new NamespaceMatchFilePathAnalyzer(mockAdditionalFilesHelper.Object);
 		}
 
 		[DataTestMethod]
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
 				{
-					GetBaseDiagnosticLocation(sanitizedPath, 0,0)
+					GetBaseDiagnosticLocation(sanitizedPath)
 				}
 			};
 
