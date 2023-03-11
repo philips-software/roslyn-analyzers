@@ -40,14 +40,7 @@ jobs:
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
-
-  changelog:
-    if: ${{ github.event_name == 'merge_group' }}
-    needs: [tagversion, build, sonarcloud, dogfood, format, docupdate, pinnedactions]
-    uses: ./.github/workflows/changelog.yml
-    with:
-      changelog: ${{ needs.tagversion.outputs.changelog }}
-          
+      
   release:
     if: ${{ github.event_name == 'push' }}
     needs: [tagversion, build]
