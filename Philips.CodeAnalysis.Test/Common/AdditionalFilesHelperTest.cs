@@ -21,6 +21,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	public class AdditionalFilesHelperTest
 	{
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LoadExceptionsShouldReturnSame()
 		{
 			// Arrange
@@ -36,6 +37,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void GetValuesFromEditorConfigShouldReturnSame()
 		{
 			// Arrange
@@ -56,6 +58,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, false)]
 		[DataRow(true, true)]
 		[DataRow(true, false)]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void LoadExceptionsOptionsShouldReturnSame(bool shouldUse, bool shouldGenerate)
 		{
 			// Arrange
@@ -81,6 +84,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void InitializeExceptionsShouldReturnSame()
 		{
 			// Arrange
