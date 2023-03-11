@@ -29,5 +29,6 @@ jobs:
             title: 'Release ${{ needs.tagversion.outputs.new_version }}',
             head: 'release/${{ needs.tagversion.outputs.new_version }}',
             base: 'main'
+            debug: true
           })
 
