@@ -2,22 +2,43 @@ name: CD
 on:
   push:
     branches: [release/*]
+  pull_request:
+    branches: [release/*]
+    types: [opened]
 jobs:
   tagversion:
     uses: ./.github/workflows/tagversion.yml
     
-  build:
-    needs: tagversion
-    uses: ./.github/workflows/dotnetcore.yml
-    with:
-      new_tag: ${{ needs.tagversion.outputs.new_tag }}
-      new_version: ${{ needs.tagversion.outputs.new_version }}
-
   changelog:
-    needs: [tagversion, build]
+    needs: tagversion
+    if: ${{ github.event_name == 'pull_request' }}
     uses: ./.github/workflows/changelog.yml
     with:
       changelog: ${{ needs.tagversion.outputs.changelog }}
+
+  comment:
+    needs: changelog
+    if: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # @v6.4.0
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Changelog.md file is updated. Merge this PR to release artifacts into production.'
+          })
+    
+#  build:
+#    needs: tagversion
+#    if: ${{ github.event_name == 'push' }}
+#    uses: ./.github/workflows/dotnetcore.yml
+#    with:
+#      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+#      new_version: ${{ needs.tagversion.outputs.new_version }}
           
 #  release:
 #    needs: [tagversion, build, changelog]
