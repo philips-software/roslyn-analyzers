@@ -4,7 +4,7 @@ on:
     branches: [release/*]
   pull_request:
     branches: [release/*]
-    types: [opened]
+    types: [opened, reopened]
 jobs:
   tagversion:
     uses: ./.github/workflows/tagversion.yml
