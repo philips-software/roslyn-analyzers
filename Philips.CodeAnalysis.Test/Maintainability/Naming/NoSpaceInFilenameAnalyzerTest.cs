@@ -42,7 +42,7 @@ namespace PathTooLongUnitTest {
 		[DataRow(CorrectName, DisplayName = "CorrectName"),
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
 			await VerifySuccessfulCompilation(Correct, filePath).ConfigureAwait(false);
 		}
@@ -55,7 +55,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(SpaceAbsolutePath, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, DisplayName = "SpaceRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenFileNameHasSpaceDiagnosticIsRaisedAsync(string filePath)
+		public async Task WhenFileNameHasSpaceDiagnosticIsRaised(string filePath)
 		{
 			await VerifyDiagnostic(Correct, DiagnosticId.NoSpaceInFilename, filePath).ConfigureAwait(false);
 		}

@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ReportEmptyNamespacePrefixAsync()
+		public async Task ReportEmptyNamespacePrefix()
 		{
 
 			var code = string.Format(ClassString, "");

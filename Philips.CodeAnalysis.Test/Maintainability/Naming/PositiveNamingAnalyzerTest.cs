@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NegativeFieldAsync()
+		public async Task NegativeField()
 		{
 			const string template = @"
 using System;
@@ -35,7 +35,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PositiveFieldAsync()
+		public async Task PositiveField()
 		{
 			const string template = @"
 using System;
@@ -50,7 +50,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NegativeLocalVariableAsync()
+		public async Task NegativeLocalVariable()
 		{
 			const string template = @"
 using System;
@@ -68,7 +68,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NegativePropertyAsync()
+		public async Task NegativeProperty()
 		{
 			const string template = @"
 using System;
@@ -79,6 +79,60 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.PositiveNaming).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NegativeFieldInTestClass()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	private bool ignoreWhitespace;
+}
+";
+
+			await VerifySuccessfulCompilation(template);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NegativeLocalVariableInTestClass()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	public void Test(int a)
+	{
+		bool disableFeature;
+	}
+}
+";
+
+			await VerifySuccessfulCompilation(template);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NegativePropertyInTestClass()
+		{
+			const string template = @"
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+[TestClass]
+class Foo
+{
+	public bool featureMissing { get; }
+}
+";
+
+			await VerifySuccessfulCompilation(template);
 		}
 	}
 }

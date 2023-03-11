@@ -13,10 +13,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	[TestClass]
 	public class VariableNamingConventionAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -32,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -61,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo_", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableNameIgnoresPublicFieldsAsync(string content, bool isGood)
+		public async Task FieldVariableNameIgnoresPublicFields(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -82,7 +78,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromArrayAsync()
+		public async Task FieldVariableFromArray()
 		{
 			var baseline = @"class Foo 
 {{
@@ -95,7 +91,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromConstantAsync()
+		public async Task FieldVariableFromConstant()
 		{
 			var baseline = @"class Foo 
 {{
@@ -109,7 +105,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromCastConstantAsync()
+		public async Task FieldVariableFromCastConstant()
 		{
 			var baseline = @"class Foo 
 {{
@@ -123,7 +119,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromCharArrayAsync()
+		public async Task FieldVariableFromCharArray()
 		{
 			var baseline = @"class Foo 
 {{
@@ -137,7 +133,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromImplicitArrayAsync()
+		public async Task FieldVariableFromImplicitArray()
 		{
 			var baseline = @"public static class Foo 
 {{
@@ -151,7 +147,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromImplicitArrayInitializerAsync()
+		public async Task FieldVariableFromImplicitArrayInitializer()
 		{
 			var baseline = @"public static class Foo 
 {{
@@ -165,7 +161,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromArrayWrittenToAsync()
+		public async Task FieldVariableFromArrayWrittenTo()
 		{
 			var baseline = @"public static class Foo 
 {{
@@ -185,7 +181,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromFunctionAsync()
+		public async Task FieldVariableFromFunction()
 		{
 			var baseline = @"public static class Foo 
 {{
@@ -200,7 +196,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromDateTimeAsync()
+		public async Task FieldVariableFromDateTime()
 		{
 			var baseline = @"public static class Foo 
 {{
@@ -214,7 +210,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromConstantValueAsync()
+		public async Task FieldVariableFromConstantValue()
 		{
 			var baseline = @"class Foo 
 {{
@@ -235,7 +231,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo_", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EventNameIsCorrectAsync(string content, bool isGood)
+		public async Task EventNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -262,7 +258,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -292,7 +288,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_foo", "const", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AttributedLocalVariableNameIsCorrectAsync(string content, string attribute, bool isGood)
+		public async Task AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -321,7 +317,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectForLoopAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForLoop(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -347,7 +343,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("using(var _I = new MemoryStream()){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectUsingAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectUsing(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -373,7 +369,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForeach(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{

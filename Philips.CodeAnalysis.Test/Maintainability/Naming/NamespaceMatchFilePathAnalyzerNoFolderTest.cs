@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ReportIncorrectNamespaceMatchAsync(string ns, string path)
+		public async Task ReportIncorrectNamespaceMatch(string ns, string path)
 		{
 			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			var code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[DataRow("System.Runtime.CompilerServices", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Built-in exceptions")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoNotReportANamespaceSupersetMatchAsync(string ns, string path)
+		public async Task DoNotReportANamespaceSupersetMatch(string ns, string path)
 		{
 			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
 			var code = string.Format(NamespaceMatchFilePathAnalyzerUseFolderTest.ClassString, ns);
