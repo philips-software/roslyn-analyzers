@@ -19,16 +19,6 @@ jobs:
 
     - name: Create Pull Request
       if: steps.create-branch.outputs.created
-      uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # @v6.4.0
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.pulls.create({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            title: 'Release ${{ needs.tagversion.outputs.new_version }}',
-            head: 'release/${{ needs.tagversion.outputs.new_version }}',
-            base: 'main',
-            debug: true
-          })
-
+      run: gh pr create -B 'main' -H 'release/${{ needs.tagversion.outputs.new_version }}' --title 'Release ${{ needs.tagversion.outputs.new_version }}' --body 'Created by Github action'
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
