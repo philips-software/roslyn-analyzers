@@ -31,7 +31,6 @@ jobs:
     - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # @v1
     
     - name: Create Pull Request
-      if: steps.create-branch.outputs.created
       run: gh pr create -B 'main' -H 'release-${{ needs.tagversion.outputs.new_version }}' --title 'Release ${{ needs.tagversion.outputs.new_version }}' --body 'Created by Github action'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
