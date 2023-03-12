@@ -43,7 +43,7 @@ jobs:
       
   publish:
     if: ${{ github.event_name == 'push' }}
-    needs: [tagversion]
+    needs: [build, tagversion]
     uses: ./.github/workflows/publish.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
