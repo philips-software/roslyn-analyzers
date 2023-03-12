@@ -41,18 +41,9 @@ jobs:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
       
-  release:
-    if: ${{ github.event_name == 'push' }}
-    needs: [tagversion, build]
-    uses: ./.github/workflows/release.yml
-    with:
-      new_tag: ${{ needs.tagversion.outputs.new_tag }}
-      changelog: ${{ needs.tagversion.outputs.changelog }}
-      prerelease: true
-      
   publish:
     if: ${{ github.event_name == 'push' }}
-    needs: [tagversion, release]
+    needs: [tagversion]
     uses: ./.github/workflows/publish.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
