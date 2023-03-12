@@ -1,36 +1,10 @@
 name: CD
 on:
   push:
-    branches: [release/*]
-  pull_request:
-    branches: [release/*]
-    types: [opened, reopened]
+    branches: [release-*]
 jobs:
   tagversion:
     uses: ./.github/workflows/tagversion.yml
-    
-  changelog:
-    needs: tagversion
-    if: ${{ github.event_name == 'pull_request' }}
-    uses: ./.github/workflows/changelog.yml
-    with:
-      changelog: ${{ needs.tagversion.outputs.changelog }}
-
-  comment:
-    needs: changelog
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # @v6.4.0
-      with:
-        github-token: ${{secrets.GITHUB_TOKEN}}
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: 'Changelog.md file is updated. Merge this PR to release artifacts into production.'
-          })
     
 #  build:
 #    needs: tagversion
