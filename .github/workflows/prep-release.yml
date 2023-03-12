@@ -13,7 +13,7 @@ jobs:
       id: create-branch
       uses: peterjgrainger/action-create-branch@c2800a3a9edbba2218da6861fa46496cf8f3195a # @v2.2.0
       with:
-        branch: 'release/${{ needs.tagversion.outputs.new_version }}'
+        branch: 'release-${{ needs.tagversion.outputs.new_version }}'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
@@ -22,7 +22,7 @@ jobs:
     uses: ./.github/workflows/changelog.yml
     with:
       changelog: ${{ needs.tagversion.outputs.changelog }}
-      ref: release/${{ needs.tagversion.outputs.new_version }}
+      ref: release-${{ needs.tagversion.outputs.new_version }}
 
   pr:
     needs: changelog
@@ -32,7 +32,7 @@ jobs:
     
     - name: Create Pull Request
       if: steps.create-branch.outputs.created
-      run: gh pr create -B 'main' -H 'release/${{ needs.tagversion.outputs.new_version }}' --title 'Release ${{ needs.tagversion.outputs.new_version }}' --body 'Created by Github action'
+      run: gh pr create -B 'main' -H 'release-${{ needs.tagversion.outputs.new_version }}' --title 'Release ${{ needs.tagversion.outputs.new_version }}' --body 'Created by Github action'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
