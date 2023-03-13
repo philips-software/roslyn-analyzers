@@ -1,37 +1,37 @@
 name: CD
 on:
-  merge_group:
+  pull_request:
+    paths:
+    - 'changelog.md'
+  push:
     branches: [main]
-#    paths:
-#    - 'changelog.md'
+    paths:
+    - 'changelog.md'
     
 jobs:
-  release:
+  publish-warning:
+    if: ${{ github.event_name == 'pull_request' && !startsWith(github.ref_name, 'release-') }}
     runs-on: ubuntu-latest
+    name: Publish Warning
     steps:
-    - name: Test
-      run: |
-        echo ${{ github.actor }}
-        echo ${{ github.ref }}
-        echo ${{ github.ref_name }}
-        echo ${{ github.base_ref }}
-        echo ${{ github.head_ref }}
+    - run: |
+         echo 'This PR changes the Changelog.md file and as such will trigger a release of production software! If this is not your intent, revert the changes to changelog.md. If your intent is to publish software, manually invoke the Prep Release workflow.' >> $GITHUB_STEP_SUMMARY
         
   tagversion:
-    if: ${{ startsWith(github.ref, 'release-') }}
+    if: ${{ github.event_name == 'push'}}
     uses: ./.github/workflows/tagversion.yml
     
   build:
-    needs: tagversion
-    if: ${{ startsWith(github.base_ref, 'release-') }}
+    needs: [tagversion]
+    if: ${{ github.event_name == 'push'}}
     uses: ./.github/workflows/dotnetcore.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
          
 #  release:
-#    if: ${{ startsWith(github.base_ref, 'release-') }}
 #    needs: [tagversion, build]
+#    if: ${{ github.event_name == 'push'}}
 #    uses: ./.github/workflows/release.yml
 #    with:
 #      new_tag: ${{ needs.tagversion.outputs.new_tag }}
@@ -39,8 +39,8 @@ jobs:
 #      prerelease: false
               
 #  publish:
-#    if: ${{ startsWith(github.base_ref, 'release-') }}
 #    needs: [release]
+#    if: ${{ github.event_name == 'push'}}
 #    uses: ./.github/workflows/publish.yml
 #    secrets:
 #      nuget-token: ${{ secrets.NUGET_TOKEN }}      
