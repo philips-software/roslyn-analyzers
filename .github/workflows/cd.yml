@@ -2,16 +2,19 @@ name: CD
 on:
   push:
     branches: [main]
+#    paths:
+#    - 'changelog.md'
+    
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
     - name: Test
       run: |
-        echo ${{ github.base_ref }}
+        echo ${{ github.ref }}
         
   tagversion:
-    if: ${{ startsWith(github.base_ref, 'release-') }}
+    if: ${{ startsWith(github.ref, 'release-') }}
     uses: ./.github/workflows/tagversion.yml
     
   build:
