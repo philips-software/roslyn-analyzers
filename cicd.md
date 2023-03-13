@@ -25,3 +25,16 @@ Markdown links are checked for dead links.
 
 All actions are pinned to the git SHA using [ratchet](https://github.com/sethvargo/ratchet).
 Once versions are pinned, dependabot checked for updates.
+
+## Prereleases
+
+Every commit will create artifacts, 1 per Analyzer, having a 1 day retention period. The analyzers can be downloaded and tested with a local nuget.config file against repos as desired.  However, Prerelease versions of modified Nuget packages are published with each commit.
+
+GitHub Prereleases and Tags are not created with each merge to trunk.
+
+# Deployments
+
+To Deploy to production, manually invoke the [Prep for Release](https://github.com/philips-software/roslyn-analyzers/actions/workflows/prep-release.yml) workflow. This will create a PR containing automatic updates to one file, the CHANGELOG.md. Merging the PR will trigger creation of the following:
+* GitHub Release
+* GitHub Tag
+* Nuget Release
