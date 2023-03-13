@@ -3,13 +3,7 @@
 
 ### Documentation
 
-* Delete CHANGELOG.md ([#568](https://github.com/philips-software/roslyn-analyzers/issues/568)) ([7177532](https://github.com/philips-software/roslyn-analyzers/commit/7177532ed5eec10325e19708c658cdceb4e14a58))
 * describe the avoidvoidreturn analyzer ([#518](https://github.com/philips-software/roslyn-analyzers/issues/518)) ([0504c09](https://github.com/philips-software/roslyn-analyzers/commit/0504c09473ded10ad5c7602b4cf90063ba2855e4))
-* Release 1.3.0-prerelease.3  ([#570](https://github.com/philips-software/roslyn-analyzers/issues/570)) ([eef2b2f](https://github.com/philips-software/roslyn-analyzers/commit/eef2b2fb5b2f9544c56c0b61b680a9e3ea6ee49a))
-* Release 1.3.0-prerelease.3  ([#579](https://github.com/philips-software/roslyn-analyzers/issues/579)) ([591334d](https://github.com/philips-software/roslyn-analyzers/commit/591334d4815bf3352e60fede8be882bed44cc1ea))
-* Release 1.3.0-prerelease.3  ([#583](https://github.com/philips-software/roslyn-analyzers/issues/583)) ([bc0ce5a](https://github.com/philips-software/roslyn-analyzers/commit/bc0ce5a5c2bedb24e26d09ddd26abde12f9558eb))
-* Release 1.3.0-prerelease.5 ([#567](https://github.com/philips-software/roslyn-analyzers/issues/567)) ([27e101a](https://github.com/philips-software/roslyn-analyzers/commit/27e101afcd16b016b16fedb4889eef29145162e0))
-
 
 ### Continuous Integration
 
