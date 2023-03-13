@@ -3,6 +3,12 @@ on:
   push:
     branches: [main]
 jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test
+      run: echo ${{ github.base_ref }}
+        
   tagversion:
     if: ${{ startsWith(github.base_ref, 'release-') }}
     uses: ./.github/workflows/tagversion.yml
