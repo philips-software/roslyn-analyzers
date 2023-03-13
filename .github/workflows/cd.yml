@@ -7,7 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Test
-      run: echo ${{ github.base_ref }}
+      run: |
+        echo ${{ github.base_ref }}
         
   tagversion:
     if: ${{ startsWith(github.base_ref, 'release-') }}
