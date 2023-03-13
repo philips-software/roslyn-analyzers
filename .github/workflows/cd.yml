@@ -1,21 +1,23 @@
 name: CD
 on:
   push:
-    branches: [release-*]
+    branches: [main]
 jobs:
   tagversion:
+    if: ${{ startsWith(github.base_ref, 'release-') }}
     uses: ./.github/workflows/tagversion.yml
     
-#  build:
-#    needs: tagversion
-#    if: ${{ github.event_name == 'push' }}
-#    uses: ./.github/workflows/dotnetcore.yml
-#    with:
-#      new_tag: ${{ needs.tagversion.outputs.new_tag }}
-#      new_version: ${{ needs.tagversion.outputs.new_version }}
-          
+  build:
+    needs: tagversion
+    if: ${{ startsWith(github.base_ref, 'release-') }}
+    uses: ./.github/workflows/dotnetcore.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      new_version: ${{ needs.tagversion.outputs.new_version }}
+         
 #  release:
-#    needs: [tagversion, build, changelog]
+#    if: ${{ startsWith(github.base_ref, 'release-') }}
+#    needs: [tagversion, build]
 #    uses: ./.github/workflows/release.yml
 #    with:
 #      new_tag: ${{ needs.tagversion.outputs.new_tag }}
@@ -23,6 +25,7 @@ jobs:
 #      prerelease: false
               
 #  publish:
+#    if: ${{ startsWith(github.base_ref, 'release-') }}
 #    needs: [release]
 #    uses: ./.github/workflows/publish.yml
 #    secrets:
