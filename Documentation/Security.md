@@ -1,3 +1,3 @@
 # Security
 
-The security category of diagnostics flags potential security issues.
+The "Philips Security" category of diagnostics flags potential security issues.

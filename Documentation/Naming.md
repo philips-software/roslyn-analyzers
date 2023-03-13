@@ -1,6 +1,6 @@
 # Naming
 
-The naming category of diagnostics suggests ways to improve naming of various items, or to make naming more consistent. Examples include:
+The "Philips Naming" category of diagnostics suggests ways to improve naming of various items, or to make naming more consistent. Examples include:
 * Consistent naming of namespaces
 * Aligning naming of namespace, files, and projects
 
