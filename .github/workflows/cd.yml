@@ -11,6 +11,7 @@ jobs:
     steps:
     - name: Test
       run: |
+        echo ${{ github.actor }}
         echo ${{ github.ref }}
         echo ${{ github.ref_name }}
         echo ${{ github.base_ref }}
