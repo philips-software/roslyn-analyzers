@@ -42,6 +42,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var node = (VariableDeclarationSyntax)context.Node;
 
+			GeneratedCodeDetector detector = new();
+			if (detector.IsGeneratedCode(context))
+			{
+				return;
+			}
+
 			if (_testHelper.IsInTestClass(context))
 			{
 				return;
@@ -62,6 +68,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			var node = (PropertyDeclarationSyntax)context.Node;
+
+			GeneratedCodeDetector detector = new();
+			if (detector.IsGeneratedCode(context))
+			{
+				return;
+			}
 
 			if (_testHelper.IsInTestClass(context))
 			{

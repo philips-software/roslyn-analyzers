@@ -32,7 +32,7 @@ namespace AlignFilenameAndClassName {{
 		 DataRow("struct", "Program"),
 		 DataRow("enum", "Program.Part.Of.Many.Things")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string typeKind, string filePath)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string typeKind, string filePath)
 		{
 			await VerifySuccessfulCompilation(string.Format(SourceCodeTemplate, typeKind), filePath).ConfigureAwait(false);
 		}
@@ -44,7 +44,7 @@ namespace AlignFilenameAndClassName {{
 		[DataRow("Program"),
 		 DataRow("Program{T}")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenGenericTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
+		public async Task WhenGenericTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
 			const string sourceCode = @"
 namespace AlignFilenameAndClassName {{
@@ -63,7 +63,7 @@ namespace AlignFilenameAndClassName {{
 		 DataRow("struct", "SomethingElse"),
 		 DataRow("enum", "Prog")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenNamesDontAlignDiagnosticIsRaisedAsync(string typeKind, string filePath)
+		public async Task WhenNamesDontAlignDiagnosticIsRaised(string typeKind, string filePath)
 		{
 			await VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), DiagnosticId.AlignFilenameAndClassName, filePath).ConfigureAwait(false);
 		}
