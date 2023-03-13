@@ -7,6 +7,10 @@ on:
   merge_group:
     branches: [main]
 jobs:
+  superlinter:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+    uses: ./.github/workflows/superlinter.yml
+
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/pinned-actions.yml
