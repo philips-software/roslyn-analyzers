@@ -2,11 +2,11 @@ name: CD
 on:
   pull_request:
     paths:
-    - 'changelog.md'
+    - 'CHANGELOG.md'
   push:
     branches: [main]
     paths:
-    - 'changelog.md'
+    - 'CHANGELOG.md'
     
 jobs:
   publish-warning:
@@ -15,7 +15,7 @@ jobs:
     name: Publish Warning
     steps:
     - run: |
-         echo 'This PR changes the Changelog.md file and as such will trigger a release of production software! If this is not your intent, revert the changes to changelog.md. If your intent is to publish software, manually invoke the Prep Release workflow.' >> $GITHUB_STEP_SUMMARY
+         echo 'This PR changes the CHANGELOG.md file and as such will trigger a release of production software! If this is not your intent, revert the changes to changelog.md. If your intent is to publish software, manually invoke the Prep Release workflow instead.' >> $GITHUB_STEP_SUMMARY
         
   tagversion:
     if: ${{ github.event_name == 'push'}}
