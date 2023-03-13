@@ -16,6 +16,7 @@ jobs:
     steps:
     - run: |
          echo 'This PR changes the CHANGELOG.md file and as such will trigger a release of production software! If this is not your intent, revert the changes to changelog.md. If your intent is to publish software, manually invoke the Prep Release workflow instead.' >> $GITHUB_STEP_SUMMARY
+         exit 1
         
   tagversion:
     if: ${{ github.event_name == 'push'}}
