@@ -1,0 +1,14 @@
+name: Superlinter
+
+on:
+  workflow_call:
+jobs:
+  superlinter:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c
+
+    - name: Superlinter
+      uses: github/super-linter/slim@v4.9.6
+        
