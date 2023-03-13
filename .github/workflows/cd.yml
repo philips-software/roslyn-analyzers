@@ -1,6 +1,6 @@
 name: CD
 on:
-  push:
+  merge_group:
     branches: [main]
 #    paths:
 #    - 'changelog.md'
@@ -12,6 +12,9 @@ jobs:
     - name: Test
       run: |
         echo ${{ github.ref }}
+        echo ${{ github.ref_name }}
+        echo ${{ github.base_ref }}
+        echo ${{ github.head_ref }}
         
   tagversion:
     if: ${{ startsWith(github.ref, 'release-') }}
