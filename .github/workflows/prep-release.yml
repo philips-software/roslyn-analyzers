@@ -32,6 +32,6 @@ jobs:
     
     - name: Create Pull Request
       run: |
-        gh pr create -B 'main' -H 'release-${{ needs.tagversion.outputs.new_version }}' --title 'docs: Release ${{ needs.tagversion.outputs.new_version }}' --body 'Merge PR to Release. Abandon PR and delete branch if out-of-date. Created by Github action'
+        gh pr create -B 'main' -H 'release-${{ needs.tagversion.outputs.new_version }}' --title 'docs: Release ${{ needs.tagversion.outputs.new_version }}' --body 'Merge this PR to Release to production. Only merge if the Merge Queue is empty; otherwise, unintended changes will be included in the release, and the changelog will be missing information. Please abandon this PR and delete the branch if this PR becomes out-of-date. Because PRs created by bots do not trigger workflows, please close and re-open this PR to trigger required workflows to start. Also edit the PR title (e.g., remove the -Prerelease text) to trigger the Semantic Version Required workflow check.'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
