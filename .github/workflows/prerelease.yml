@@ -29,4 +29,4 @@ jobs:
     - name: Nuget
       run: |
         echo Publishing to Nuget ${{ inputs.package }}-${{ needs.tagversion.outputs.new_tag }} >> $GITHUB_STEP_SUMMARY
-#        dotnet nuget push ${{ inputs.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+#        dotnet nuget push ${{ inputs.package }}.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
