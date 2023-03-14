@@ -2,6 +2,11 @@ name: TagVersion
 
 on:
   workflow_call:
+    inputs:
+      is_prerelease:
+        type: boolean
+        required: false
+        default: true
     outputs:
       new_tag:
         value: ${{ jobs.tagversion.outputs.new_tag }}
@@ -14,13 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     name: Tag Version
     steps:
+    - name: Determine Suffix
+      id: suffix
+      run: |
+        if ${{ inputs.is_prerelease }}; then
+          echo "PRERELEASE_BRANCH=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+        fi
+        
     - name: Bump version
       id: tag_version
       uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "${{ github.head_ref || github.ref_name }}"
+        pre_release_branches: "${{ steps.outputs.suffix.PRERELEASE_BRANCH }}"
         release_branches: "release"
         append_to_pre_release_tag: prerelease
         
