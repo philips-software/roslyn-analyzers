@@ -42,7 +42,7 @@ jobs:
       new_version: ${{ needs.tagversion.outputs.new_version }}
       
   publish:
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'push' }}
     needs: [build, tagversion]
     uses: ./.github/workflows/publish.yml
     with:
