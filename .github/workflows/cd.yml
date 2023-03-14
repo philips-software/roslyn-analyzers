@@ -21,6 +21,8 @@ jobs:
   tagversion:
     if: ${{ github.event_name == 'push'}}
     uses: ./.github/workflows/tagversion.yml
+    with:
+      prerelease: false
     
   build:
     needs: [tagversion]
