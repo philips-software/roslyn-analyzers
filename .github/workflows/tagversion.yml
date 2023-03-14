@@ -22,7 +22,7 @@ jobs:
     - name: Determine Suffix
       id: suffix
       run: |
-        if ${{ inputs.is_prerelease }}; then
+        if ${{ inputs.prerelease }}; then
           echo "PRERELEASE_BRANCH=${{ github.head_ref }}" >> $GITHUB_OUTPUT
         fi
         
