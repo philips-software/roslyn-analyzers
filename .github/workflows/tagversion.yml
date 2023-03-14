@@ -3,7 +3,7 @@ name: TagVersion
 on:
   workflow_call:
     inputs:
-      is_prerelease:
+      prerelease:
         type: boolean
         required: false
         default: true
