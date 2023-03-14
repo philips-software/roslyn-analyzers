@@ -4,7 +4,9 @@ on:
 jobs:
   tagversion:
     uses: ./.github/workflows/tagversion.yml
-
+    with:
+      prerelease: false
+      
   branch:
     needs: tagversion
     runs-on: ubuntu-latest
