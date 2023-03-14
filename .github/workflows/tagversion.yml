@@ -32,7 +32,7 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "${{ steps.outputs.suffix.PRERELEASE_BRANCH }}"
+        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
         release_branches: "release"
         append_to_pre_release_tag: prerelease
         
