@@ -1,6 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,26 +25,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 	public class NamespaceMatchAssemblyNameSyntaxNodeAction : SyntaxNodeAction<NamespaceDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			var myNamespace = Node.Name.ToString();
 			var myAssemblyName = Context.Compilation?.AssemblyName;
 
 			if (string.IsNullOrEmpty(myAssemblyName))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (IsNamespacePartOfAssemblyName(myNamespace, myAssemblyName))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Helper.IsNamespaceExempt(myNamespace))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
-			ReportDiagnostic();
+			Location location = Node.Name.GetLocation();
+			return PrepareDiagnostic(location).ToSome();
 		}
 
 		private bool IsNamespacePartOfAssemblyName(string ns, string assemblyName)
@@ -49,10 +53,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return ns.StartsWith(assemblyName, StringComparison.OrdinalIgnoreCase);
 		}
 
-		private void ReportDiagnostic()
-		{
-			Location location = Node.Name.GetLocation();
-			ReportDiagnostic(location);
-		}
 	}
 }

@@ -1,5 +1,7 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,16 +26,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class PreferNamedTuplesSyntaxNodeAction : SyntaxNodeAction<TupleTypeSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
-			foreach (TupleElementSyntax element in Node.Elements)
-			{
-				if (element.Identifier.Kind() == SyntaxKind.None)
-				{
-					Location location = element.GetLocation();
-					ReportDiagnostic(location);
-				}
-			}
+			return Node.Elements
+				.Filter(element => element.Identifier.Kind() == SyntaxKind.None)
+				.Select(element => PrepareDiagnostic(element.GetLocation()));
 		}
 	}
 }

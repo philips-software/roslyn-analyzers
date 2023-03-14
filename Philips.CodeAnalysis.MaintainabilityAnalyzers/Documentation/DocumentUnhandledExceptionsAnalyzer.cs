@@ -3,10 +3,13 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
@@ -27,11 +30,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class DocumentUnhandledExceptionsSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Context.Compilation?.SyntaxTrees.FirstOrDefault()?.Options.DocumentationMode == DocumentationMode.None)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
@@ -62,9 +65,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				var methodName = Node.Identifier.Text;
 				var remainingExceptionsString = string.Join(",", remainingExceptions);
 				ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(StringConstants.ThrownExceptionPropertyKey, remainingExceptionsString);
-				var diagnostic = Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString);
-				Context.ReportDiagnostic(diagnostic);
+				return Optional(Diagnostic.Create(Rule, loc, properties, methodName, remainingExceptionsString));
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

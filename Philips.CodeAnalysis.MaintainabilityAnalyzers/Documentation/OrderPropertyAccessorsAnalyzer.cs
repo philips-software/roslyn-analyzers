@@ -1,10 +1,15 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 {
@@ -21,40 +26,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 	public class OrderPropertyAccessorsSyntaxNodeAction : SyntaxNodeAction<PropertyDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
-			AccessorListSyntax accessors = Node.AccessorList;
+			return Optional(Node.AccessorList)
+				.SelectMany(accsessors =>
+					accsessors.Accessors
+					.Fold(Option<bool>.None, ReduceSetIsBeforeGet)
+					.Filter(setIsBeforeGet => setIsBeforeGet)
+					.Select((setIsBeforeGet) => PrepareDiagnostic(accsessors.GetLocation()))
+				);
+		}
 
-			if (accessors is null)
+		private static Option<bool> ReduceSetIsBeforeGet(Option<bool> setIsBeforeGet, AccessorDeclarationSyntax accessor)
+		{
+			if (setIsBeforeGet.IsNone)
 			{
-				return;
-			}
-
-			var getIndex = -1;
-			var setIndex = int.MaxValue;
-
-			for (var i = 0; i < accessors.Accessors.Count; i++)
-			{
-				AccessorDeclarationSyntax accessor = accessors.Accessors[i];
-
 				if (accessor.Keyword.IsKind(SyntaxKind.GetKeyword))
 				{
-					getIndex = i;
-					continue;
+					return Optional(false);
 				}
-
-				// SyntaxKind.InitKeyword doesn't exist in the currently used version of Roslyn (it exists in at least 3.9.0)
-				if (accessor.Keyword.IsKind(SyntaxKind.SetKeyword) || accessor.Keyword.Text == "init")
+				else if (accessor.Keyword.IsKind(SyntaxKind.SetKeyword) || accessor.Keyword.Text == "init")
 				{
-					setIndex = i;
+					return Optional(true);
 				}
 			}
-
-			if (setIndex < getIndex)
-			{
-				Location location = accessors.GetLocation();
-				ReportDiagnostic(location);
-			}
+			return setIsBeforeGet;
 		}
 	}
 }

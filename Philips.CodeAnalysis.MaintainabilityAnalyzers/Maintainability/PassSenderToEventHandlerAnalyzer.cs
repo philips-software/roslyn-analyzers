@@ -1,6 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -24,12 +26,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly Helper _helper = new();
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			VariableDeclaratorSyntax variable = Node.Declaration.Variables.FirstOrDefault();
 			if (variable == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			var eventName = variable.Identifier.Text;
@@ -38,16 +40,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (parent == null)
 			{
 				// Should never happen, field must be declared inside a type declaration.
-				return;
+				return Option<Diagnostic>.None;
 			}
 
-			AnalyzeArguments(parent, eventName);
+			return AnalyzeArguments(parent, eventName);
 		}
 
-		private void AnalyzeArguments(TypeDeclarationSyntax parent, string eventName)
+		private IEnumerable<Diagnostic> AnalyzeArguments(TypeDeclarationSyntax parent, string eventName)
 		{
+			var errors = new List<Diagnostic>();
+
 			// EventHandlers must have 2 arguments as checked by CA1003, assume this rule is obeyed here.
-			System.Collections.Generic.IEnumerable<InvocationExpressionSyntax> invocations = parent.DescendantNodes()
+			IEnumerable<InvocationExpressionSyntax> invocations = parent.DescendantNodes()
 				.OfType<InvocationExpressionSyntax>()
 				.Where(invocation => IsOurEvent(invocation, eventName))
 				.Where(i => i.ArgumentList.Arguments.Count == 2);
@@ -58,15 +62,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (_helper.IsLiteralNull(arguments[0].Expression))
 				{
 					Location loc = arguments[0].GetLocation();
-					ReportDiagnostic(loc, eventName);
+					errors.Add(PrepareDiagnostic(loc, eventName));
 				}
 
 				if (_helper.IsLiteralNull(arguments[1].Expression))
 				{
 					Location loc = arguments[1].GetLocation();
-					ReportDiagnostic(loc, eventName);
+					errors.Add(PrepareDiagnostic(loc, eventName));
 				}
 			}
+
+			return errors;
 		}
 
 		private bool IsOurEvent(InvocationExpressionSyntax invocation, string eventName)

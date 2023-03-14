@@ -1,5 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -27,11 +30,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string PrivateKeyProperty = @"PrivateKey";
 		private const string ObjectType = @"X509Certificate2";
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (!Node.Name.ToString().Equals(PrivateKeyProperty, System.StringComparison.Ordinal))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			ITypeSymbol typeSymbol = Context.SemanticModel.GetTypeInfo(Node.Expression).Type;
@@ -39,8 +42,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (typeSymbol != null && typeSymbol.Name.Equals(ObjectType, System.StringComparison.Ordinal))
 			{
 				Location location = Node.GetLocation();
-				ReportDiagnostic(location);
+				return PrepareDiagnostic(location).ToSome();
 			}
+
+			return Option<Diagnostic>.None;
 		}
 	}
 }

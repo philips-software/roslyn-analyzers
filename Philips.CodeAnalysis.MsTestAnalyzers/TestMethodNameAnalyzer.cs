@@ -1,11 +1,15 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+using LanguageExt;
+
+using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
@@ -23,48 +27,26 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	}
 	public class TestMethodNameSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
 	{
-		public override void Analyze()
+		private readonly List<string> PrefixChecks = new()
 		{
-			// Only interested in TestMethod attributes
-			if (Node.Attributes.All(attr => attr.Name.ToString() != @"TestMethod"))
+				StringConstants.TestAttributeName,
+				StringConstants.EnsureAttributeName,
+				StringConstants.VerifyAttributeName,
+			};
+
+		public override IEnumerable<Diagnostic> Analyze()
+		{
+			if (Node.Attributes.Any(attr => attr.Name.ToString() == @"TestMethod"))
 			{
-				return;
+				return Optional(Node.Parent)
+					.Filter(methodName => methodName.Kind() == SyntaxKind.MethodDeclaration)
+					.SelectMany(methodName => methodName.ChildTokens())
+					.SelectMany(token =>
+						PrefixChecks.FindAll(token.ValueText.StartsWith)
+						.Select((invalidPrefix) => PrepareDiagnostic(token.GetLocation(), invalidPrefix))
+					);
 			}
-
-			SyntaxNode methodNode = Node.Parent;
-
-			// Confirm this is actually a method...
-			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
-			{
-				return;
-			}
-
-			var invalidPrefix = string.Empty;
-			foreach (SyntaxToken token in methodNode.ChildTokens())
-			{
-				if (token.Kind() == SyntaxKind.IdentifierToken)
-				{
-					if (token.ValueText.StartsWith(StringConstants.TestAttributeName))
-					{
-						invalidPrefix = StringConstants.TestAttributeName;
-					}
-					else if (token.ValueText.StartsWith(StringConstants.EnsureAttributeName))
-					{
-						invalidPrefix = StringConstants.EnsureAttributeName;
-					}
-					else if (token.ValueText.StartsWith(StringConstants.VerifyAttributeName))
-					{
-						invalidPrefix = StringConstants.VerifyAttributeName;
-					}
-
-					if (!string.IsNullOrEmpty(invalidPrefix))
-					{
-						Location location = token.GetLocation();
-						ReportDiagnostic(location, invalidPrefix);
-						return;
-					}
-				}
-			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

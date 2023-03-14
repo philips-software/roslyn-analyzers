@@ -1,5 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class LockObjectsMustBeReadonlySyntaxNodeAction : SyntaxNodeAction<LockStatementSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Expression is IdentifierNameSyntax identifier)
 			{
@@ -31,9 +34,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (info.Symbol is IFieldSymbol field && !field.IsReadOnly)
 				{
 					Location location = identifier.GetLocation();
-					ReportDiagnostic(location, identifier.ToString());
+					return PrepareDiagnostic(location, identifier.ToString()).ToSome();
 				}
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

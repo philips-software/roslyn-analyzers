@@ -1,12 +1,18 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+
 using Philips.CodeAnalysis.Common;
+
+using LanguageExt;
+using LanguageExt.SomeHelp;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -33,8 +39,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class ReduceCognitiveLoadSyntaxNodeAction : SyntaxNodeAction<MethodDeclarationSyntax>
 	{
 
+		private static readonly System.Collections.Generic.HashSet<SyntaxKind> matchingTokens = new()
+		{
+			SyntaxKind.BarBarToken,
+			SyntaxKind.AmpersandAmpersandToken,
+			SyntaxKind.ExclamationToken,
+			SyntaxKind.ExclamationEqualsToken,
+			SyntaxKind.BreakKeyword,
+			SyntaxKind.ContinueKeyword,
+		};
+
 		private int MaxCognitiveLoad { get; set; }
 		private const int DefaultMaxCognitiveLoad = 25;
+
 
 		private int CalcCognitiveLoad(BlockSyntax blockSyntax)
 		{
@@ -46,33 +63,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return cognitiveLoad;
 		}
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			BlockSyntax blockSyntax = Node.DescendantNodes().OfType<BlockSyntax>().FirstOrDefault();
 			if (blockSyntax == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
-			var cognitiveLoad = CalcCognitiveLoad(blockSyntax);
 
-			cognitiveLoad += blockSyntax.DescendantTokens().Count((token) =>
-			{
-				return
-					token.IsKind(SyntaxKind.BarBarToken) ||
-					token.IsKind(SyntaxKind.AmpersandAmpersandToken) ||
-					token.IsKind(SyntaxKind.ExclamationToken) ||
-					token.IsKind(SyntaxKind.ExclamationEqualsToken) ||
-					token.IsKind(SyntaxKind.BreakKeyword) ||
-					token.IsKind(SyntaxKind.ContinueKeyword)
-					;
-			});
+			var cognitiveLoad = CalcCognitiveLoad(blockSyntax);
+			cognitiveLoad += blockSyntax.DescendantTokens().Count(token => matchingTokens.Contains(token.Kind()));
 
 			InitializeMaxCognitiveLoad();
 			if (cognitiveLoad > MaxCognitiveLoad)
 			{
 				Location location = Node.Identifier.GetLocation();
-				ReportDiagnostic(location, cognitiveLoad, MaxCognitiveLoad);
+				return PrepareDiagnostic(location, cognitiveLoad, MaxCognitiveLoad).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 
 		private void InitializeMaxCognitiveLoad()

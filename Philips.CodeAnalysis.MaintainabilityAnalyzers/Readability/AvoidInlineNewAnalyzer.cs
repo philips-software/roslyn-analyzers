@@ -1,6 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -22,24 +24,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class AvoidInlineNewSyntaxNodeAction : SyntaxNodeAction<ObjectCreationExpressionSyntax>
 	{
-		private static readonly HashSet<string> AllowedMethods = new() { StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan" };
+		private static readonly System.Collections.Generic.HashSet<string> AllowedMethods = new() { StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan" };
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			SyntaxNode parent = Node.Parent;
 
 			if (!IsInlineNew(parent))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (IsCallingAllowedMethod(parent))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.GetLocation();
-			ReportDiagnostic(location, Node.Type.ToString());
+			return PrepareDiagnostic(location, Node.Type.ToString()).ToSome();
 		}
 
 		private static bool IsInlineNew(SyntaxNode node)

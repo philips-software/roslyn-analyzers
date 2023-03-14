@@ -1,6 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,28 +25,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	}
 	public class AvoidPublicMemberVariableSyntaxNodeAction : SyntaxNodeAction<FieldDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Parent.Kind() == SyntaxKind.StructDeclaration)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Node.Modifiers.Any(SyntaxKind.PublicKeyword))
 			{
 				if (Node.Modifiers.Any(SyntaxKind.ConstKeyword))
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 
 				if (Node.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 
 				Location location = Node.GetLocation();
-				ReportDiagnostic(location);
+				return PrepareDiagnostic(location).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

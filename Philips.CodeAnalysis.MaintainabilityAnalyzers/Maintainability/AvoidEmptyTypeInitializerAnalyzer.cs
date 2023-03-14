@@ -1,5 +1,8 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,28 +25,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidEmptyTypeInitializerSyntaxNodeAction : SyntaxNodeAction<ConstructorDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (!Node.Modifiers.Any(SyntaxKind.StaticKeyword))
 			{
 				//not a static constructor
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Node.Body == null)
 			{
 				//during the intellisense phase the body of a constructor can be non-existent.
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Node.Body.Statements.Any())
 			{
 				//not empty
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 	}
 }

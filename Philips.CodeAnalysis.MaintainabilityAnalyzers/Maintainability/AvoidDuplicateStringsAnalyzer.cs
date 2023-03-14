@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -8,6 +9,9 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+
+using LanguageExt;
+using LanguageExt.SomeHelp;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -32,24 +36,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidDuplicateStringsSyntaxNodeAction : SyntaxNodeAction<LiteralExpressionSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Ancestors().OfType<FieldDeclarationSyntax>().Any())
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			TestHelper testHelper = new();
 			if (testHelper.IsInTestClass(Context))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			SyntaxToken literal = Node.Token;
 			var literalText = literal.Text.Trim('\\', '\"');
 			if (string.IsNullOrWhiteSpace(literalText) || literalText.Length <= 2)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = literal.GetLocation();
@@ -60,8 +64,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				_ = usedLiterals.TryGetValue(literalText, out Location firstLocation);
 				var firstFilename = Path.GetFileName(firstLocation.SourceTree.FilePath);
 				var firstLineNumber = firstLocation.GetLineSpan().StartLinePosition.Line + 1;
-				ReportDiagnostic(location, firstFilename, firstLineNumber, literalText);
+				return PrepareDiagnostic(location, firstFilename, firstLineNumber, literalText).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

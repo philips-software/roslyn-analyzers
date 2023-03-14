@@ -1,6 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,18 +26,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidPragmaSyntaxNodeAction : SyntaxNodeAction<PragmaWarningDirectiveTriviaSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			var myOwnId = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma);
 			if (Node.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName))
 									.Any(i => i.ToString().Contains(myOwnId)))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			CSharpSyntaxNode violation = Node;
 			Location location = violation.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 	}
 }

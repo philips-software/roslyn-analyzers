@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -31,24 +32,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			@"CultureInfo"
 		};
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			// Ignore any methods not named TryParse.
 			if (Node.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax || memberAccessExpressionSyntax.Name.ToString() != TryParseMethodName)
 			{
-				return;
+				return LanguageExt.Option<Diagnostic>.None;
 			}
 
 			// If the invoked method contains an IFormatProvider parameter, stop analyzing.
 			if (Context.SemanticModel.GetSymbolInfo(memberAccessExpressionSyntax).Symbol is not IMethodSymbol invokedMethod || HasCultureParameter(invokedMethod))
 			{
-				return;
+				return LanguageExt.Option<Diagnostic>.None;
 			}
 
 			// Only display an error if the class implements an overload of TryParse that accepts IFormatProvider.
 			if (Context.SemanticModel.GetSymbolInfo(Node).Symbol is not IMethodSymbol methodSymbol)
 			{
-				return;
+				return LanguageExt.Option<Diagnostic>.None;
 			}
 
 			ImmutableArray<ISymbol> members = methodSymbol.ContainingType.GetMembers();
@@ -58,8 +59,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				// There is an overload that can accept culture as a parameter. Display an error.
 				Location location = Node.GetLocation();
-				ReportDiagnostic(location);
+				return PrepareDiagnostic(location).ToSome();
 			}
+
+			return LanguageExt.Option<Diagnostic>.None;
 		}
 
 		private static bool HasCultureParameter(IMethodSymbol method)

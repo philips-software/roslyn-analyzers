@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{ StringConstants.ToStringMethodName, "ToString method" }
 		};
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			// Determine our parent.
 			SyntaxNode methodDeclaration = Node.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
@@ -42,29 +44,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				methodDeclaration = Node.Ancestors().OfType<BasePropertyDeclarationSyntax>().FirstOrDefault();
 				if (methodDeclaration == null)
 				{
-					return;
+					return Option<Diagnostic>.None;
 				}
 			}
 
-			AnalyzeMethod(methodDeclaration);
-			AnalyzeEqualityOperator(methodDeclaration);
-			AnalyzeConversionOperator(methodDeclaration);
-			AnalyzeConstructor(methodDeclaration);
-			AnalyzeDestructor(methodDeclaration);
+			return AnalyzeMethod(methodDeclaration)
+				.Concat(AnalyzeEqualityOperator(methodDeclaration))
+				.Concat(AnalyzeConversionOperator(methodDeclaration))
+				.Concat(AnalyzeConstructor(methodDeclaration))
+				.Concat(AnalyzeDestructor(methodDeclaration));
 		}
 
-		private void AnalyzeMethod(SyntaxNode node)
+		private IEnumerable<Diagnostic> AnalyzeMethod(SyntaxNode node)
 		{
 			// Check overriden methods of Object.
 			if (node is MethodDeclarationSyntax method && SpecialMethods.TryGetValue(method.Identifier.Text, out var specialMethodKind))
 			{
 				Location loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, specialMethodKind);
+				return PrepareDiagnostic(loc, specialMethodKind).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 
-		private void AnalyzeConstructor(SyntaxNode node)
+		private IEnumerable<Diagnostic> AnalyzeConstructor(SyntaxNode node)
 		{
+			var diags = new List<Diagnostic>();
 			if (node is ConstructorDeclarationSyntax constructorDeclaration)
 			{
 				// Check constructors of an Exception.
@@ -73,44 +77,48 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (withinExceptionClass.HasValue && (bool)withinExceptionClass)
 				{
 					Location loc = Node.ThrowKeyword.GetLocation();
-					ReportDiagnostic(loc, "constructor of an Exception derived type");
+					diags.Add(PrepareDiagnostic(loc, "constructor of an Exception derived type"));
 				}
 				if (constructorDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword))
 				{
 					Location loc = Node.ThrowKeyword.GetLocation();
-					ReportDiagnostic(loc, "static constructor");
+					diags.Add(PrepareDiagnostic(loc, "static constructor"));
 				}
 			}
+			return diags;
 		}
 
-		private void AnalyzeDestructor(SyntaxNode node)
+		private IEnumerable<Diagnostic> AnalyzeDestructor(SyntaxNode node)
 		{
 			if (node is DestructorDeclarationSyntax)
 			{
 				// Check finalizers.
 				Location loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, "finalizer");
+				return PrepareDiagnostic(loc, "finalizer").ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 
-		private void AnalyzeEqualityOperator(SyntaxNode node)
+		private IEnumerable<Diagnostic> AnalyzeEqualityOperator(SyntaxNode node)
 		{
 			if (node is OperatorDeclarationSyntax { OperatorToken.Text: "==" or "!=" })
 			{
 				// Check == and != operators.
 				Location loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, "equality comparison operator");
+				return PrepareDiagnostic(loc, "equality comparison operator").ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 
-		private void AnalyzeConversionOperator(SyntaxNode methodDeclaration)
+		private IEnumerable<Diagnostic> AnalyzeConversionOperator(SyntaxNode methodDeclaration)
 		{
 			if (methodDeclaration is ConversionOperatorDeclarationSyntax conversion && conversion.ImplicitOrExplicitKeyword.Text == "implicit")
 			{
 				// Check implicit cast operators.
 				Location loc = Node.ThrowKeyword.GetLocation();
-				ReportDiagnostic(loc, "implicit cast operator");
+				return PrepareDiagnostic(loc, "implicit cast operator").ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

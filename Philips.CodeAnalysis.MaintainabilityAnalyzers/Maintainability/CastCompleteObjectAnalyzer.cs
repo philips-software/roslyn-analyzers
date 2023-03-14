@@ -1,6 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,7 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class CastCompleteObjectSyntaxNodeAction : SyntaxNodeAction<ConversionOperatorDeclarationSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			TypeSyntax container = Node.ParameterList.Parameters.FirstOrDefault()?.Type;
 			if (
@@ -31,15 +34,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				Context.SemanticModel.GetSymbolInfo(Node.Type).Symbol is not INamedTypeSymbol convertTo ||
 				Context.SemanticModel.GetSymbolInfo(container).Symbol is not INamedTypeSymbol containingType)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
-			System.Collections.Generic.IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
+			IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
 
 			if (itsFields is not null && itsFields.Count() > 1 && itsFields.Any(f => f.Type.Name == convertTo.Name))
 			{
 				Location loc = Node.Type.GetLocation();
-				ReportDiagnostic(loc);
+				return PrepareDiagnostic(loc).ToSome();
 			}
+			return Option<Diagnostic>.None;
 		}
 	}
 }

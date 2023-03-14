@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,17 +30,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly TestHelper _testHelper = new();
 
-		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
+		private IEnumerable<Diagnostic> IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
 			{
 				Location identifierLocation = Node.Identifier.GetLocation();
-				ReportDiagnostic(identifierLocation, Node.Identifier.ToString(), 0);
-				return;
+				return PrepareDiagnostic(identifierLocation, Node.Identifier.ToString(), 0).ToSome();
 			}
 
 			ConstructorSyntaxHelper constructorSyntaxHelper = new();
 			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
+
+			var errors = new List<Diagnostic>();
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
@@ -55,9 +58,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					{
 						location = ctor.Initializer.GetLocation();
 					}
-					ReportDiagnostic(location, ctor.Identifier, count);
+					errors.Add(PrepareDiagnostic(location, ctor.Identifier, count));
 				}
 			}
+			return errors;
 		}
 
 		private bool IsInitializeComponentInConstructorChainOnce(IReadOnlyList<ConstructorDeclarationSyntax> chain, out int count)
@@ -89,28 +93,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (!Node.Modifiers.Any(SyntaxKind.PartialKeyword) && !Node.Members.OfType<MethodDeclarationSyntax>().Any(x => x.Identifier.Text == "InitializeComponent"))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If we're in a TestClass, let it go.
 			if (_testHelper.IsInTestClass(Context))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// If we're not within a Control/Form, let it go.
 			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
 			if (!Helper.IsUserControl(type))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			ConstructorDeclarationSyntax[] constructors = Node.Members.OfType<ConstructorDeclarationSyntax>().Where(x => !x.Modifiers.Any(SyntaxKind.StaticKeyword)).ToArray();
-			IsInitializeComponentInConstructors(constructors);
+			return IsInitializeComponentInConstructors(constructors);
 		}
 	}
 }

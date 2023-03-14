@@ -1,6 +1,9 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
+using LanguageExt;
+using LanguageExt.SomeHelp;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,30 +26,30 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class PreventUnnecessaryRangeChecksSyntaxNodeAction : SyntaxNodeAction<IfStatementSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (Node.Else != null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (Node.Condition == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (!TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			if (!IsCountGreaterThanZero(Node.Condition, forEachStatementSyntax.Expression, Context.SemanticModel))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			Location location = Node.IfKeyword.GetLocation();
-			ReportDiagnostic(location);
+			return PrepareDiagnostic(location).ToSome();
 		}
 
 		private bool TryFindForeach(out ForEachStatementSyntax forEachStatementSyntax)

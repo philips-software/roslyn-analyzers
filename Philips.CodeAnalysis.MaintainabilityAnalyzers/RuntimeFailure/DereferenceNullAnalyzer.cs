@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,10 +29,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 	public class DereferenceNullSyntaxNodeAction : SyntaxNodeAction<ExpressionSyntax>
 	{
-		private void Report(IdentifierNameSyntax identifier)
+		private Diagnostic Report(IdentifierNameSyntax identifier)
 		{
 			Location location = identifier.GetLocation();
-			ReportDiagnostic(location, identifier.Identifier.ValueText);
+			return PrepareDiagnostic(location, identifier.Identifier.ValueText);
 		}
 
 		/// <summary>
@@ -136,17 +137,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return false;
 		}
 
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
 			if (!IsCaseWeUnderstand(Node))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			// Collect some items we'll use repeatedly
 			if (Node.Parent?.Parent is not VariableDeclaratorSyntax variableDeclarationSyntax)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			BlockSyntax blockOfInterest = variableDeclarationSyntax.Ancestors().OfType<BlockSyntax>().First();
@@ -157,27 +158,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			IdentifierNameSyntax identifierNameSyntax = GetFirstMemberAccess(ourSymbol, model, blockOfInterest);
 			if (identifierNameSyntax == null)
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 			if (!SameBlock(blockOfInterest, identifierNameSyntax))
 			{
-				return;
+				return Option<Diagnostic>.None;
 			}
 
 			//  Evaluate the code between (ie after) "y = x as yType" and "y.Foo" (ie before) to see if y is read (ie checked for null) or written to (ie rendering our check moot)
 			(StatementSyntax firstStatementOfAnalysis, var firstStatementOfAnalysisIndex) = GetStatement(blockOfInterest, variableDeclarationSyntax, offset: 1);
 			(StatementSyntax lastStatementOfAnalysis, var lastStatementOfAnalysisIndex) = GetStatement(blockOfInterest, identifierNameSyntax, offset: -1);
 
-			if (CheckStatements(lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis, identifierNameSyntax))
+			var errors = new List<Diagnostic>();
+
+			(var cont, var report) = CheckStatements(lastStatementOfAnalysisIndex, firstStatementOfAnalysisIndex, firstStatementOfAnalysis);
+			if (report)
 			{
-				return;
+				errors.Add(Report(identifierNameSyntax));
+			}
+
+			if (!cont)
+			{
+				return errors;
 			}
 
 			var isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
 			if (!isOurSymbolReadOrWritten)
 			{
-				Report(identifierNameSyntax);
+				errors.Add(Report(identifierNameSyntax));
 			}
+
+			return errors;
 		}
 
 		private static bool OurSymbolIsReadOrWritten(SemanticModel model, StatementSyntax firstStatementOfAnalysis,
@@ -194,9 +205,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			return isOurSymbolReadOrWritten;
 		}
 
-		private bool CheckStatements(int lastStatementOfAnalysisIndex,
-			int firstStatementOfAnalysisIndex, StatementSyntax firstStatementOfAnalysis,
-			IdentifierNameSyntax identifierNameSyntax)
+		private (bool, bool) CheckStatements(int lastStatementOfAnalysisIndex,
+			int firstStatementOfAnalysisIndex, StatementSyntax firstStatementOfAnalysis)
 		{
 			if (lastStatementOfAnalysisIndex < firstStatementOfAnalysisIndex)
 			{
@@ -206,32 +216,30 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				if (firstStatementOfAnalysis is IfStatementSyntax ifStatementSyntax &&
 					HasNullCheck(ifStatementSyntax.Condition))
 				{
-					return true;
+					return (true, false);
 				}
 
 				if (firstStatementOfAnalysis is WhileStatementSyntax whileStatementSyntax &&
 					HasNullCheck(whileStatementSyntax.Condition))
 				{
-					return true;
+					return (true, false);
 				}
 
 				if (firstStatementOfAnalysis is ReturnStatementSyntax returnStatementSyntax &&
 					HasNullCheck(returnStatementSyntax.Expression))
 				{
-					return true;
+					return (true, false);
 				}
 
 				if (firstStatementOfAnalysis.DescendantNodesAndSelf().OfType<ConditionalExpressionSyntax>()
 					.Any(c => HasNullCheck(c.Condition)))
 				{
-					return true;
+					return (true, false);
 				}
-
-				Report(identifierNameSyntax);
-				return true;
+				return (true, true);
 			}
 
-			return false;
+			return (false, false);
 		}
 	}
 }

@@ -97,31 +97,33 @@
       * Introduce PH2114: Avoid empty statement.
       * Introduce PH2115: Every Lambda expression on separate line.
       * Introduce PH2116: Avoid ArrayList, use List&lt;T&gt; instead.
-      * Introduce PH2117: Avoid unnecessary Where.
-      * Introduce PH2118: Avoid magic numbers.
-      * PH2006 now supports folders in namespace
-      * Introduce PH2119: Cast complete object.
-      * Introduce PH2120: Document thrown exceptions.
-      * Introduce PH2121: Throw informational exceptions.
-      * Introduce PH2122: Avoid throwing exceptions from unexpected locations.
-      * Introduce PH2123: Pass sender to EventHandler.
-      * Introduce PH2124: Document unhandled exceptions.
-      * Introduce PH2125: Align number of + and == operators.
-      * Introduce PH2126: Avoid using Parameters as temporary variables.
-      * Introduce PH2127: Avoid changing loop variables.
-      * Introduce PH2128: Split multi-line conditions on logical operators.
-      * Introduce PH2129: Return immutable collections.
-      * Increased the test coverage.
-      * Introduce PH2130: Avoid implementing finalizers.
-      * Introduce PH2131: Align filename and class name.
-      * Introduce PH2131: Remove commented code.
-      * Introduce PH2133: Unmanaged objects need disposing.
-      * Introduce PH2134: Set properties in any order.
-      * PH2090 now also uses an AdditionalFile on top of the existing .editorconfig option to configure allowed methods.
-      * Introduce PH2135: Match namespace and Assembly Name. This extends the functionality that was previously claimed by PH2006 but never enforced.
-	    * Introduce PH2136: Avoid duplicate strings.
-      * Introduce PH2139: Enable documentation creation.
-    </PackageReleaseNotes>
+		* Introduce PH2117: Avoid unnecessary Where.
+		* Introduce PH2118: Avoid magic numbers.
+		* PH2006 now supports folders in namespace
+		* Introduce PH2119: Cast complete object.
+		* Introduce PH2120: Document thrown exceptions.
+		* Introduce PH2121: Throw informational exceptions.
+		* Introduce PH2122: Avoid throwing exceptions from unexpected locations.
+		* Introduce PH2123: Pass sender to EventHandler.
+		* Introduce PH2124: Document unhandled exceptions.
+		* Introduce PH2125: Align number of + and == operators.
+		* Introduce PH2126: Avoid using Parameters as temporary variables.
+		* Introduce PH2127: Avoid changing loop variables.
+		* Introduce PH2128: Split multi-line conditions on logical operators.
+		* Introduce PH2129: Return immutable collections.
+		* Increased the test coverage.
+		* Introduce PH2130: Avoid implementing finalizers.
+		* Introduce PH2131: Align filename and class name.
+		* Introduce PH2131: Remove commented code.
+		* Introduce PH2133: Unmanaged objects need disposing.
+		* Introduce PH2134: Set properties in any order.
+		* PH2090 now also uses an AdditionalFile on top of the existing .editorconfig option to configure allowed methods.
+		* Introduce PH2135: Match namespace and Assembly Name. This extends the functionality that was previously claimed by PH2006 but never enforced.
+		* Introduce PH2136: Avoid duplicate strings.
+		* Introduce PH2138: Avoid void return.
+		* Introduce PH2139: Enable documentation creation.
+		* Introduce PH2140: Avoid enum parameters.
+	</PackageReleaseNotes>
     <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>

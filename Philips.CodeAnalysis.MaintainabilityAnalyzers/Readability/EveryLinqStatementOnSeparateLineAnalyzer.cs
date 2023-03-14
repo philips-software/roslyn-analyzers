@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,13 +23,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class EveryLinqStatementOnSeparateLineSyntaxNodeAction : SyntaxNodeAction<QueryExpressionSyntax>
 	{
-		public override void Analyze()
+		public override IEnumerable<Diagnostic> Analyze()
 		{
+			var errors = new List<Diagnostic>();
+
 			FromClauseSyntax from = Node.FromClause;
 			if (!EndsWithNewline(from))
 			{
 				Location fromLocation = from.GetLocation();
-				ReportDiagnostic(fromLocation);
+				errors.Add(PrepareDiagnostic(fromLocation));
 			}
 
 			foreach (QueryClauseSyntax clause in Node.Body.Clauses)
@@ -36,9 +39,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (!EndsWithNewline(clause))
 				{
 					Location clauseLocation = clause.GetLocation();
-					ReportDiagnostic(clauseLocation);
+					errors.Add(PrepareDiagnostic(clauseLocation));
 				}
 			}
+			return errors;
 		}
 
 		private static bool EndsWithNewline(QueryClauseSyntax clause)
