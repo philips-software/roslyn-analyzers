@@ -26,6 +26,8 @@ jobs:
         
     - name: Results
       run: |
+        echo head_ref:  ${{ github.head_ref }}
+        echo ref_name:  ${{ github.ref_name }}
         echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
         echo New Version:  ${{ steps.tag_version.outputs.new_version }}
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
