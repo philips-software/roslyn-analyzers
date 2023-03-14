@@ -24,11 +24,11 @@ Markdown links are checked for dead links.
 ## GitHub Action Version Pinning
 
 All actions are pinned to the git SHA using [ratchet](https://github.com/sethvargo/ratchet).
-Once versions are pinned, dependabot checked for updates.
+Once versions are pinned, dependabot checks for updates.
 
 ## Prereleases
 
-Every commit will create artifacts, 1 per Analyzer, having a 1 day retention period. The analyzers can be downloaded and tested with a local nuget.config file against repos as desired.  However, Prerelease versions of modified Nuget packages are published with each commit.
+Every commit will create artifacts, 1 per Analyzer, having a 1 day retention period. The analyzers can be downloaded and tested with a local nuget.config file against repos as desired.  However, Prerelease versions of modified Nuget packages are also published with each commit.
 
 GitHub Prereleases and Tags are not created with each merge to trunk.
 
