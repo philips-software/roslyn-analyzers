@@ -23,7 +23,7 @@ jobs:
       id: suffix
       run: |
         if ${{ inputs.prerelease }}; then
-          echo "PRERELEASE_BRANCH=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+          echo "PRERELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
         fi
         
     - name: Bump version
