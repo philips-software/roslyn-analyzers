@@ -33,7 +33,7 @@ namespace PathTooLongUnitTest {
 		private const string SpaceName = "Incorrect Name.cs";
 		private const string SpaceAbsolutePath = "C:\\My Documents\\Wrong.cs";
 		private const string SpaceRelativePath = "..\\..\\My Code\\Wrong.cs";
-		private const string OutOfScopePath = @"./GlobalSuppressions.cs";
+		private const string OutOfScopePath = @"GlobalSuppressions.cs";
 
 		/// <summary>
 		/// No diagnostics expected to show up.

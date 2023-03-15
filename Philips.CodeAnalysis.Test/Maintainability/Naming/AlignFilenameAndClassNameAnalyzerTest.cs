@@ -23,9 +23,6 @@ namespace AlignFilenameAndClassName {{
     }}
 }}";
 
-		/// <summary>
-		/// No diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
 		[DataRow("class", "Program"),
 		 DataRow("class", "Program.Part"),
@@ -37,9 +34,6 @@ namespace AlignFilenameAndClassName {{
 			await VerifySuccessfulCompilation(string.Format(SourceCodeTemplate, typeKind), filePath).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// No diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
 		[DataRow("Program"),
 		 DataRow("Program{T}")]
@@ -55,9 +49,6 @@ namespace AlignFilenameAndClassName {{
 		}
 
 
-		/// <summary>
-		/// Diagnostics should show up hare.
-		/// </summary>
 		[DataTestMethod]
 		[DataRow("class", "Program2"),
 		 DataRow("struct", "SomethingElse"),
@@ -66,6 +57,20 @@ namespace AlignFilenameAndClassName {{
 		public async Task WhenNamesDontAlignDiagnosticIsRaised(string typeKind, string filePath)
 		{
 			await VerifyDiagnostic(string.Format(SourceCodeTemplate, typeKind), DiagnosticId.AlignFilenameAndClassName, filePath).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldBeIgnored()
+		{
+			await VerifySuccessfulCompilation(string.Format(SourceCodeTemplate, "class"), "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoTypeDeclaredShouldBeIgnored()
+		{
+			await VerifySuccessfulCompilation("// Just a comment").ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

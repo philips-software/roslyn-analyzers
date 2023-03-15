@@ -392,7 +392,24 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task GeneratedCodeFilesShouldBeIgnored()
+		public async Task GeneratedCodeFilesShouldIgnoreForEach()
+		{
+			var givenText = @"class Foo 
+{{
+    private void Bar()
+    {{
+        foreach (var _i in new[] { 1, 2 })
+        {{
+        }}
+    }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreLocalVariable()
 		{
 			var givenText = @"class Foo 
 {{
