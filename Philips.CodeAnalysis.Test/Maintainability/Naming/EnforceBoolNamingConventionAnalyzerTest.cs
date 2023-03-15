@@ -402,6 +402,36 @@ class Foo
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NonBooleanParameterIsIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Bar(int i)
+	{{
+        // Some code
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NonBooleanPropertyIsIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+	public int Index
+	{{
+		get;
+		set;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -474,7 +504,51 @@ abstract class Foo : ApplicationContext
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task GeneratedCodeFilesShouldBeIgnored()
+		public async Task GeneratedCodeFilesShouldIgnoreField()
+		{
+			var givenText = @"class Foo 
+{{
+	public bool Read = true;
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreForEach()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Method(bool[] bees)
+    {{
+        foreach (bool read in bees)
+        {{
+        }}
+    }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreProperty()
+		{
+			var givenText = @"class Foo 
+{{
+	public bool Read
+	{{
+		get;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreParameter()
 		{
 			var givenText = @"class Foo 
 {{
