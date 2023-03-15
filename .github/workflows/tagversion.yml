@@ -28,6 +28,7 @@ jobs:
         else
           echo "RELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
         fi
+        echo "CUSTOM_RELEASE_RULES=fix:prerelease,feat:prerelease,chore:prerelease" >> $GITHUB_OUTPUT
         
     - name: Bump version
       id: tag_version
@@ -35,7 +36,8 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-#        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
+         custom_release_rules:"${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
+         pre_release_branches:"${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
 #        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
 #        append_to_pre_release_tag: prerelease
         
