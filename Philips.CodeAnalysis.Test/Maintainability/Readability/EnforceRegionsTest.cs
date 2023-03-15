@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow(@"class A {{}}", true)]
 		[DataRow(@"private class A {{}}", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EnforcePublicInterfaceRegionAsync(string given, bool isError)
+		public async Task EnforcePublicInterfaceRegion(string given, bool isError)
 		{
 
 			var baseline = @"
@@ -67,7 +67,7 @@ class Foo
 	{0}
 	#endregion
 }}";
-			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
+			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 
 		}
 
@@ -129,7 +129,7 @@ class Foo
 		[DataRow(@"private delegate int();", true)]
 		[DataRow(@"public delegate int();", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EnforeNonPublicPropertiesMethodsRegionAsync(string given, bool isError)
+		public async Task EnforeNonPublicPropertiesMethodsRegion(string given, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -139,7 +139,7 @@ class Foo
 	{0}
 	#endregion
 }}";
-			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
+			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -182,7 +182,7 @@ class Foo
 		[DataRow(@"private delegate int();", false)]
 		[DataRow(@"public delegate int();", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EnforeNonPublicDataMembersRegionAsync(string given, bool isError)
+		public async Task EnforeNonPublicDataMembersRegion(string given, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -192,7 +192,7 @@ class Foo
 	{0}
 	#endregion
 }}";
-			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
+			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
@@ -204,7 +204,7 @@ class Foo
 		[DataRow(@"#region", false)]
 		[DataRow(@"#regionPublic Interface", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task RegionNameTestAsync(string given, bool isError)
+		public async Task RegionNameTest(string given, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -216,13 +216,13 @@ class Foo
 
 
 }}";
-			await VerifyErrorAsync(baseline, given, isError, 6, 2).ConfigureAwait(false);
+			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
 		[DataTestMethod]
 		[DataRow(@"Non-Public Properties/Methods")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DupliateRegionTestAsync(string given)
+		public async Task DupliateRegionTest(string given)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -244,7 +244,7 @@ class Foo
 			await VerifyDiagnostic(givenText, DiagnosticId.EnforceNonDuplicateRegion, regex: EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat, line: 8, column: 3).ConfigureAwait(false);
 		}
 
-		private async Task VerifyErrorAsync(string baseline, string given, bool isError, int line = 6, int column = 2)
+		private async Task VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
 		{
 			var givenText = string.Format(baseline, given);
 			if (isError)

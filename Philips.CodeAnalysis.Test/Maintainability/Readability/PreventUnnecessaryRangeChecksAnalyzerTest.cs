@@ -78,7 +78,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckElseClauseAsync(string declaration, string countLengthMethod)
+		public async Task CheckElseClause(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 class Foo
@@ -170,7 +170,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckNestedRange2Async(string declaration, string countLengthMethod)
+		public async Task CheckNestedRange2(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 public class Container
@@ -203,7 +203,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckNestedRange2aAsync()
+		public async Task CheckNestedRange2a()
 		{
 			const string template = @"
 public class Container
@@ -241,7 +241,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckNestedRange3Async(string declaration, string countLengthMethod)
+		public async Task CheckNestedRange3(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 public class OuterContainer
@@ -371,7 +371,7 @@ class Foo
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckArrayRange2Async(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange2(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -403,7 +403,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckArrayRange3Async(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange3(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -433,7 +433,7 @@ public void test()
 		[DataRow("List<int> data = new List<int>()", "Count()")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CheckArrayRange4Async(string declaration, string countLengthMethod)
+		public async Task CheckArrayRange4(string declaration, string countLengthMethod)
 		{
 			const string template = @"
 using System.Linq;
@@ -457,6 +457,60 @@ public void test()
 ";
 
 			await VerifySuccessfulCompilation(string.Format(template, declaration, countLengthMethod)).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckMissingCondition()
+		{
+			const string givenText = @"
+using System;
+
+class Foo {{
+public void test(string data)
+{{
+	if()
+	{{
+		foreach(int i in data)
+		{{
+		}}
+		Console.WriteLine(data.ToString());
+	}}
+}}
+}}
+";
+
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow("data == null")]
+		[DataRow("data == data")]
+		[DataRow("data.Length == 4")]
+		[DataRow("data.Clone() == data")]
+		[DataRow("data.Length == 4 || data.Length == 5")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckBooleanCondition(string condition)
+		{
+			const string template = @"
+using System;
+
+class Foo {{
+public void test(string data)
+{{
+	if({0})
+	{{
+		foreach(int i in data)
+		{{
+		}}
+		Console.WriteLine(data.ToString());
+	}}
+}}
+}}
+"
+			;
+
+			await VerifySuccessfulCompilation(string.Format(template, condition)).ConfigureAwait(false);
 		}
 	}
 }

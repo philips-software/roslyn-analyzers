@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("string")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SwitchWithOnlyDefaultCaseIsFlaggedAsync(string type)
+		public async Task SwitchWithOnlyDefaultCaseIsFlagged(string type)
 		{
 			var input = $@"
 public static class Foo
@@ -65,7 +65,7 @@ public class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
+		public async Task GeneratedSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			var input = @"[System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]" + SampleMethodWithSwitches;
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
@@ -74,7 +74,7 @@ public class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlaggedAsync()
+		public async Task GeneratedFileSwitchWithOnlyDefaultCaseIsNotFlagged()
 		{
 			await VerifySuccessfulCompilation(SampleMethodWithSwitches, @"Foo.designer").ConfigureAwait(false);
 		}
@@ -84,7 +84,7 @@ public class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SwitchWithMultipleCasesIsFlaggedAsync(string type, string value)
+		public async Task SwitchWithMultipleCasesIsFlagged(string type, string value)
 		{
 			var input = $@"
 public static class Foo
@@ -110,7 +110,7 @@ public static class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SwitchWithMultipleCasesIsIgnoredAsync(string type, string value)
+		public async Task SwitchWithMultipleCasesIsIgnored(string type, string value)
 		{
 			var input = $@"
 public static class Foo
@@ -138,7 +138,7 @@ public static class Foo
 		[DataRow("string")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlaggedAsync(string type)
+		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlagged(string type)
 		{
 			var input = $@"
 public static class Foo
@@ -161,7 +161,7 @@ public static class Foo
 		[DataRow("string", "\"foo\"")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SwitchExpressionWithMultipleCasesIsIgnoredAsync(string type, string value)
+		public async Task SwitchExpressionWithMultipleCasesIsIgnored(string type, string value)
 		{
 			var input = $@"
 public static class Foo
