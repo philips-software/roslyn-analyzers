@@ -24,12 +24,7 @@ jobs:
       run: |
         if ${{ inputs.prerelease }}; then
           echo "CUSTOM_SUFFIX=${{ github.head_ref }}" >> $GITHUB_OUTPUT
-          echo "PRERELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
-          echo "RELEASE_BRANCH=${{ github.base_ref }}" >> $GITHUB_OUTPUT
-        else
-          echo "RELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
         fi
-        echo "CUSTOM_RELEASE_RULES=fix:prerelease,feat:prerelease,chore:prerelease" >> $GITHUB_OUTPUT
         
     - name: Bump version
       id: tag_version
@@ -37,19 +32,11 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-#        custom_release_rules: "${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
-#        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
-#        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
-#        append_to_pre_release_tag: prerelease
         
     - name: Results
       run: |
-        echo head_ref:  ${{ github.head_ref }}
-        echo base_ref:  ${{ github.base_ref }}
-        echo ref:  ${{ github.ref }}
-        echo ref_name:  ${{ github.ref_name }}
-        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}
-        echo New Version:  ${{ steps.tag_version.outputs.new_version }}
+        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
+        echo New Version:  ${{ steps.tag_version.outputs.new_version }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
         
     outputs:
