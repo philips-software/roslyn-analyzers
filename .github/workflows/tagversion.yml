@@ -23,7 +23,7 @@ jobs:
       id: suffix
       run: |
         if ${{ inputs.prerelease }}; then
-          echo "CUSTOM_SUFFIX=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "CUSTOM_SUFFIX=${{ github.run_number }}" >> $GITHUB_OUTPUT
         fi
         
     - name: Bump version
