@@ -24,6 +24,7 @@ jobs:
       run: |
         if ${{ inputs.prerelease }}; then
           echo "PRERELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
+          echo "RELEASE_BRANCH=${{ github.base_ref }}" >> $GITHUB_OUTPUT
         else
           echo "RELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
         fi
@@ -34,8 +35,8 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
-        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
+#        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
+#        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
         append_to_pre_release_tag: prerelease
         
     - name: Results
