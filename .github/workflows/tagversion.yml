@@ -23,6 +23,7 @@ jobs:
       id: suffix
       run: |
         if ${{ inputs.prerelease }}; then
+          echo "CUSTOM_SUFFIX=${{ github.head_ref }}" >> $GITHUB_OUTPUT
           echo "PRERELEASE_BRANCH=${{ github.head_ref || github.ref_name }}" >> $GITHUB_OUTPUT
           echo "RELEASE_BRANCH=${{ github.base_ref }}" >> $GITHUB_OUTPUT
         else
@@ -36,8 +37,8 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        custom_release_rules: "${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
-        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
+#        custom_release_rules: "${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
+#        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
 #        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
 #        append_to_pre_release_tag: prerelease
         
@@ -52,6 +53,6 @@ jobs:
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
         
     outputs:
-      new_tag: ${{ steps.tag_version.outputs.new_tag }}
-      new_version: ${{ steps.tag_version.outputs.new_version }}
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
+      new_version: ${{ steps.tag_version.outputs.new_version }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
       changelog: ${{ steps.tag_version.outputs.changelog }}
