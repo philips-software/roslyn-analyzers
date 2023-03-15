@@ -36,8 +36,8 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
-         custom_release_rules:"${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
-         pre_release_branches:"${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
+        custom_release_rules: "${{ steps.suffix.outputs.CUSTOM_RELEASE_RULES }}"
+        pre_release_branches: "${{ steps.suffix.outputs.PRERELEASE_BRANCH }}"
 #        release_branches: "${{ steps.suffix.outputs.RELEASE_BRANCH }}"
 #        append_to_pre_release_tag: prerelease
         
