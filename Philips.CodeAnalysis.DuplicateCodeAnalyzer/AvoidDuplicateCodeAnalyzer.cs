@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
 				if (options.ShouldUseExceptionsFile)
 				{
-					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+					var _ = allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 				}
 				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);

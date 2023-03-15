@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					var allowedSymbols = new AllowedSymbols(compilationContext.Compilation);
 					allowedSymbols.RegisterLine("*.Log.*");
-					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+					var hasAdditionalFile = allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 
 					// Support legacy configuration via .editorconfig also.
 					var additionalFiles = new AdditionalFilesHelper(
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 					var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);
 
-					if (allowedSymbols.Count == 0)
+					if (hasAdditionalFile && allowedSymbols.Count <= 1)
 					{
 						compilationContext.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
 					}

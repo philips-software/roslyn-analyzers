@@ -39,11 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxNode methodDeclaration = Node.Ancestors().OfType<BaseMethodDeclarationSyntax>().FirstOrDefault();
 			if (methodDeclaration == null)
 			{
-				methodDeclaration = Node.Ancestors().OfType<BasePropertyDeclarationSyntax>().FirstOrDefault();
-				if (methodDeclaration == null)
-				{
-					return;
-				}
+				return;
 			}
 
 			AnalyzeMethod(methodDeclaration);
