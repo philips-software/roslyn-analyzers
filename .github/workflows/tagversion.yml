@@ -32,6 +32,7 @@ jobs:
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: 1.2.33
         
     - name: Results
       run: |
