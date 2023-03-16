@@ -36,4 +36,4 @@ jobs:
       if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && matrix.package == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && matrix.package == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && matrix.package == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && matrix.package == 'MsTestAnalyzers')
       run: |
         echo Publishing to Nuget Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }} >> $GITHUB_STEP_SUMMARY
-        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
