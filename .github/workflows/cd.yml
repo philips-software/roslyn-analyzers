@@ -42,8 +42,10 @@ jobs:
       prerelease: false
               
   publish:
-    needs: [release]
+    needs: [tagversion, release]
     if: ${{ github.event_name == 'push'}}
     uses: ./.github/workflows/publish.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
     secrets:
       nuget-token: ${{ secrets.NUGET_TOKEN }}      
