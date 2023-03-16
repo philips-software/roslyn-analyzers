@@ -23,7 +23,7 @@ jobs:
       id: suffix
       run: |
         if ${{ inputs.prerelease }}; then
-          echo "CUSTOM_SUFFIX=${{ github.run_number }}" >> $GITHUB_OUTPUT
+          echo "CUSTOM_SUFFIX=-${{ github.run_number }}" >> $GITHUB_OUTPUT
         fi
         
     - name: Bump version
@@ -40,6 +40,6 @@ jobs:
         echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
         
     outputs:
-      new_tag: ${{ steps.tag_version.outputs.new_tag }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
-      new_version: ${{ steps.tag_version.outputs.new_version }}-${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
+      new_version: ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
       changelog: ${{ steps.tag_version.outputs.changelog }}
