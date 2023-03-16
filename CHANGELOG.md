@@ -1,3 +1,7 @@
+### [0.0.1](https://github.com/philips-software/roslyn-analyzers/compare/v0.0.0...v0.0.1) (2023-03-16)
+
+
+
 ## [1.3.0](https://github.com/philips-software/roslyn-analyzers/compare/v0.0.0...v1.3.0) (2023-03-15)
 
 
@@ -112,7 +116,3 @@
 * Update prep-release.yml ([#604](https://github.com/philips-software/roslyn-analyzers/issues/604)) ([d8bd701](https://github.com/philips-software/roslyn-analyzers/commit/d8bd70112632b3282b8e567f87829850f092306d))
 * Update tagversion.yml ([#606](https://github.com/philips-software/roslyn-analyzers/issues/606)) ([46740e5](https://github.com/philips-software/roslyn-analyzers/commit/46740e59ba21099013cf5af49b4dfa3e0d6ed6b2))
 * wire nuget token ([#507](https://github.com/philips-software/roslyn-analyzers/issues/507)) ([f6b78d2](https://github.com/philips-software/roslyn-analyzers/commit/f6b78d25ded2d9cc3f46f5c58a81c4d2db15e4bf))
-
-
-
-
