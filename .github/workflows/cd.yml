@@ -32,18 +32,18 @@ jobs:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
          
-#  release:
-#    needs: [tagversion, build]
-#    if: ${{ github.event_name == 'push'}}
-#    uses: ./.github/workflows/release.yml
-#    with:
-#      new_tag: ${{ needs.tagversion.outputs.new_tag }}
-#      changelog: ${{ needs.tagversion.outputs.changelog }}
-#      prerelease: false
+  release:
+    needs: [tagversion, build]
+    if: ${{ github.event_name == 'push'}}
+    uses: ./.github/workflows/release.yml
+    with:
+      new_tag: ${{ needs.tagversion.outputs.new_tag }}
+      changelog: ${{ needs.tagversion.outputs.changelog }}
+      prerelease: false
               
-#  publish:
-#    needs: [release]
-#    if: ${{ github.event_name == 'push'}}
-#    uses: ./.github/workflows/publish.yml
-#    secrets:
-#      nuget-token: ${{ secrets.NUGET_TOKEN }}      
+  publish:
+    needs: [release]
+    if: ${{ github.event_name == 'push'}}
+    uses: ./.github/workflows/publish.yml
+    secrets:
+      nuget-token: ${{ secrets.NUGET_TOKEN }}      
