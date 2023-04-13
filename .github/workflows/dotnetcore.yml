@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # ratchet:actions/checkout@v1
+      - uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # ratchet:actions/checkout@v1
       - name: Setup .NET
         uses: actions/setup-dotnet@607fce577a46308457984d59e4954e075820f10a # @v3.0.3
         with:

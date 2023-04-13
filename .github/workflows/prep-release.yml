@@ -30,7 +30,7 @@ jobs:
     needs: [tagversion, branch, changelog]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # @v1
+    - uses: actions/checkout@83b7061638ee4956cf7545a6f7efe594e5ad0247 # @v1
     
     - name: Create Pull Request
       run: |
