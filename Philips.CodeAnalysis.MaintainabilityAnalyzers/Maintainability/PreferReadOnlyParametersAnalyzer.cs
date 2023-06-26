@@ -1,6 +1,5 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -51,7 +50,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var parameterName = collectionParameter.Identifier.Text;
 				// Calling member that will change the type...
 				// Or using the setter of the indexer (example: list[8] = 42) ...
-				// Or invocations that require the type
+				// Or invocations that require the read-write type
 				if (
 					!accesses.Any(acc => IsCallingParameter(acc.Expression, parameterName) && IsModifyingMember(acc.Name)) &&
 					!setters.Any(element => element != null && IsCallingParameter(element.Expression, parameterName)) &&
@@ -77,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static bool IsModifyingMember(SimpleNameSyntax name)
 		{
 			var nameString = name.Identifier.Text;
-			return WriteMethods.Exists(method => StringComparer.OrdinalIgnoreCase.Compare(nameString, method) == 0);
+			return WriteMethods.Exists(method => string.CompareOrdinal(nameString, method) == 0);
 		}
 
 		private bool RequiresReadWrite(InvocationExpressionSyntax invocation, string parameterName)
