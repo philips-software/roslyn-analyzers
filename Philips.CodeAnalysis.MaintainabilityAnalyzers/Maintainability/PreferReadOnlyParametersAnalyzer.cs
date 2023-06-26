@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private bool IsReadWriteCollection(TypeSyntax type, IReadOnlyDictionary<string, string> aliases)
 		{
 			var fullName = type?.GetFullName(aliases);
-			return ReadWriteCollections.Any(col => _comparer.Compare(fullName, col) == 0);
+			return ReadWriteCollections.Exists(col => _comparer.Compare(fullName, col) == 0);
 		}
 
 		private bool IsCallingParameter(ExpressionSyntax expression, string name)
@@ -77,7 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static bool IsModifyingMember(SimpleNameSyntax name)
 		{
 			var nameString = name.Identifier.Text;
-			return WriteMethods.Any(method => StringComparer.OrdinalIgnoreCase.Compare(nameString, method) == 0);
+			return WriteMethods.Exists(method => StringComparer.OrdinalIgnoreCase.Compare(nameString, method) == 0);
 		}
 
 		private bool RequiresReadWrite(InvocationExpressionSyntax invocation, string parameterName)

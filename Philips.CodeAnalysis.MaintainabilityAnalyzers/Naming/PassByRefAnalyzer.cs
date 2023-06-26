@@ -106,7 +106,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return true;
 			}
 
-			DataFlowAnalysis flow = DataFlowHelper.GetDataFlowAnalysis(Context.SemanticModel, Node);
+			DataFlowHelper dfHelper = new();
+			DataFlowAnalysis flow = dfHelper.GetDataFlowAnalysis(Context.SemanticModel, Node);
 			if (flow is null)
 			{
 				// No usage found.

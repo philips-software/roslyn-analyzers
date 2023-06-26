@@ -7,7 +7,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class DataFlowHelper
 	{
-		public static DataFlowAnalysis GetDataFlowAnalysis(SemanticModel semanticModel, BaseMethodDeclarationSyntax methodDeclaration)
+		public DataFlowAnalysis GetDataFlowAnalysis(SemanticModel semanticModel, BaseMethodDeclarationSyntax methodDeclaration)
 		{
 			DataFlowAnalysis flow;
 			BlockSyntax body = methodDeclaration.Body;
