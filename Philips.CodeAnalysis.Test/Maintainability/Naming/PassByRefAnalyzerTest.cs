@@ -7,7 +7,7 @@ using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
-namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
+namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 {
 	[TestClass]
 	public class PassByRefAnalyzerTest : DiagnosticVerifier
@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToAsync(bool isWrittenTo)
+		public async Task ParameterNotWrittenTo(bool isWrittenTo)
 		{
 			var content = $@"public class TestClass
 {{
@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToStructAsync(bool isWrittenTo)
+		public async Task ParameterNotWrittenToStruct(bool isWrittenTo)
 		{
 			var content = $@"
 public struct FooStruct
@@ -75,7 +75,7 @@ public class TestClass
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToButRequiredForInterfaceAsync(bool isExplicit)
+		public async Task ParameterNotWrittenToButRequiredForInterface(bool isExplicit)
 		{
 			var content = $@"
 public interface IData
@@ -97,7 +97,7 @@ public class TestClass : IData
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToButRequiredForBaseClassAsync()
+		public async Task ParameterNotWrittenToButRequiredForBaseClass()
 		{
 			var content = $@"
 public abstract class Data
@@ -121,7 +121,7 @@ public class TestClass : Data
 		[DataRow(false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToExpressionMethodAsync(bool isWrittenTo)
+		public async Task ParameterNotWrittenToExpressionMethod(bool isWrittenTo)
 		{
 			var content = $@"public class TestClass
 {{
@@ -142,7 +142,7 @@ public class TestClass : Data
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ParameterNotWrittenToNestedMethodAsync()
+		public async Task ParameterNotWrittenToNestedMethod()
 		{
 			var content = $@"public class TestClass
 {{
@@ -168,7 +168,7 @@ public class TestClass : Data
 		[DataRow("", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EmptyStatementMethodBodyAsync(string baseClass, bool isError)
+		public async Task EmptyStatementMethodBody(string baseClass, bool isError)
 		{
 			var content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -195,7 +195,7 @@ public class TestClass {baseClass}
 		[DataRow("", "_ = i.ToString()", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task SingleStatementMethodBodyAsync(string baseClass, string statement, bool isError)
+		public async Task SingleStatementMethodBody(string baseClass, string statement, bool isError)
 		{
 			var content = $@"
 public interface Foo {{ void Bar(ref int i); }}
@@ -217,6 +217,53 @@ public class TestClass {baseClass}
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodWithoutParameters()
+		{
+			var content = @"
+public class TestClass
+{
+	public void Bar()
+	{
+		int i = 0;
+	}
+}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodWithoutRefParameters()
+		{
+			var content = @"
+public class TestClass
+{
+	public void Bar(int i)
+	{
+		int j = i;
+	}
+}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldBeIgnored()
+		{
+			var givenText = $@"public class TestClass
+{{
+	static bool Foo(ref int i)
+	{{
+		return i == 1;
+	}}
+
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{

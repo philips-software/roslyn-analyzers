@@ -33,7 +33,7 @@ namespace {0} {{
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "CodeAnalysis.Test")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ReportIncorrectNamespaceMatchAsync(string ns, string assemblyName)
+		public async Task ReportIncorrectNamespaceMatch(string ns, string assemblyName)
 		{
 			var code = string.Format(Template, ns);
 			await VerifyDiagnostic(code, assemblyName: assemblyName).ConfigureAwait(false);
@@ -45,7 +45,7 @@ namespace {0} {{
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis")]
 		[DataRow("System.Runtime.CompilerServices", "Philips.CodeAnalysis")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoNotReportANamespaceSupersetMatchAsync(string ns, string assemblyName)
+		public async Task DoNotReportANamespaceSupersetMatch(string ns, string assemblyName)
 		{
 			var code = string.Format(Template, ns);
 			await VerifySuccessfulCompilation(code, null, assemblyName).ConfigureAwait(false);

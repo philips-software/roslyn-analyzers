@@ -33,7 +33,7 @@ namespace PathTooLongUnitTest {
 		private const string SpaceName = "Incorrect Name.cs";
 		private const string SpaceAbsolutePath = "C:\\My Documents\\Wrong.cs";
 		private const string SpaceRelativePath = "..\\..\\My Code\\Wrong.cs";
-		private const string OutOfScopePath = @"./GlobalSuppressions.cs";
+		private const string OutOfScopePath = @"GlobalSuppressions.cs";
 
 		/// <summary>
 		/// No diagnostics expected to show up.
@@ -42,7 +42,7 @@ namespace PathTooLongUnitTest {
 		[DataRow(CorrectName, DisplayName = "CorrectName"),
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string filePath)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string filePath)
 		{
 			await VerifySuccessfulCompilation(Correct, filePath).ConfigureAwait(false);
 		}
@@ -55,7 +55,7 @@ namespace PathTooLongUnitTest {
 		 DataRow(SpaceAbsolutePath, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, DisplayName = "SpaceRelativePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenFileNameHasSpaceDiagnosticIsRaisedAsync(string filePath)
+		public async Task WhenFileNameHasSpaceDiagnosticIsRaised(string filePath)
 		{
 			await VerifyDiagnostic(Correct, DiagnosticId.NoSpaceInFilename, filePath).ConfigureAwait(false);
 		}

@@ -6,59 +6,23 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(TestHasCategoryCodeFixProvider)), Shared]
-	public class TestHasCategoryCodeFixProvider : CodeFixProvider
+	public class TestHasCategoryCodeFixProvider : SingleDiagnosticCodeFixProvider<MethodDeclarationSyntax>
 	{
-		private const string Title = "Add Test Category";
+		protected override string Title => "Add Test Category";
 
-		public sealed override ImmutableArray<string> FixableDiagnosticIds
+		protected override DiagnosticId DiagnosticId => DiagnosticId.TestHasCategoryAttribute;
+
+		protected override async Task<Document> ApplyFix(Document document, MethodDeclarationSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)); }
-		}
-
-		public sealed override FixAllProvider GetFixAllProvider()
-		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			// Find the method declaration identified by the diagnostic.
-			if (root != null)
-			{
-				SyntaxNode syntaxNode = root.FindToken(diagnosticSpan.Start).Parent;
-				if (syntaxNode != null)
-				{
-					MethodDeclarationSyntax attributeList = syntaxNode.AncestorsAndSelf().OfType<MethodDeclarationSyntax>().First();
-
-					// Register a code action that will invoke the fix.
-					context.RegisterCodeFix(
-						CodeAction.Create(
-							title: Title,
-							createChangedDocument: c => AddTestCategory(context.Document, attributeList, c),
-							equivalenceKey: Title),
-						diagnostic);
-				}
-			}
-		}
-
-		private async Task<Document> AddTestCategory(Document document, MethodDeclarationSyntax method, CancellationToken cancellationToken)
-		{
-			SyntaxList<AttributeListSyntax> attributeLists = method.AttributeLists;
+			SyntaxList<AttributeListSyntax> attributeLists = node.AttributeLists;
 
 			if (attributeLists.Any(list =>
 					list.Attributes.Any(attributeSyntax => attributeSyntax.Name.ToString().Contains(@"TestCategory"))))
@@ -75,10 +39,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			AttributeListSyntax attributeList = SyntaxFactory.AttributeList(
 				SyntaxFactory.SingletonSeparatedList(attribute));
 
-			attributeLists = method.AttributeLists.Add(attributeList);
-			MethodDeclarationSyntax newMethod = method.WithAttributeLists(attributeLists);
+			attributeLists = node.AttributeLists.Add(attributeList);
+			MethodDeclarationSyntax newMethod = node.WithAttributeLists(attributeLists);
 
-			SyntaxNode newRoot = rootNode.ReplaceNode(method, newMethod);
+			SyntaxNode newRoot = rootNode.ReplaceNode(node, newMethod);
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}

@@ -25,7 +25,6 @@ namespace Philips.CodeAnalysis.Common.Inspection
 
 		public static CallTreeNode CreateCallTree(MethodDefinition entryPoint)
 		{
-			Cache.Clear();
 			var root = new CallTreeNode(entryPoint, null);
 			CreateCallTree(root);
 			return root;
@@ -37,10 +36,13 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			if (methodDef is { HasBody: true })
 			{
 				MethodBody body = methodDef.Body;
-				if (Cache.TryGetValue(methodDef.FullName, out CallTreeNode cached))
+				lock (Cache)
 				{
-					node.CopyChildrenFrom(cached);
-					return;
+					if (Cache.TryGetValue(methodDef.FullName, out CallTreeNode cached))
+					{
+						node.CopyChildrenFrom(cached);
+						return;
+					}
 				}
 
 				foreach (Instruction instruction in body.Instructions.Where(IsCallInstruction))
@@ -56,7 +58,11 @@ namespace Philips.CodeAnalysis.Common.Inspection
 						CreateCallTree(child);
 					}
 				}
-				Cache[methodDef.FullName] = node;
+
+				lock (Cache)
+				{
+					Cache[methodDef.FullName] = node;
+				}
 			}
 		}
 
@@ -65,6 +71,20 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			var opCode = instruction.OpCode.Op2;
 			return opCode is CallOpcode or VirtualCallOpcode or NewObjectCallOpcode;
 		}
+
+		public static void ClearCache()
+		{
+			lock (Cache)
+			{
+				foreach (KeyValuePair<string, CallTreeNode> pair in Cache)
+				{
+					pair.Value._children.Clear();
+				}
+
+				Cache.Clear();
+			}
+		}
+
 
 		public CallTreeNode Parent { get; }
 

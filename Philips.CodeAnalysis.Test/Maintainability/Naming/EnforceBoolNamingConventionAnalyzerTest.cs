@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("wasFoo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableNameIsCorrectAsync(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task VariableNameIsNotBoolAsync()
+		public async Task VariableNameIsNotBool()
 		{
 			var givenText = @"class Foo 
 {{
@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableNameIsCorrectPublicAsync(string content, bool isGood)
+		public async Task FieldVariableNameIsCorrectPublic(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -132,7 +132,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromConstantAsync()
+		public async Task FieldVariableFromConstant()
 		{
 			var baseline = @"class Foo 
 {{
@@ -145,7 +145,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableFromConstantValueAsync()
+		public async Task FieldVariableFromConstantValue()
 		{
 			var baseline = @"class Foo 
 {{
@@ -184,7 +184,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_is12foo", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -235,7 +235,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(int i in new[] { 55, 22 }){}", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameIsCorrectForeachAsync(string content, bool isGood)
+		public async Task LocalVariableNameIsCorrectForeach(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -261,7 +261,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("_isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldVariableNameOfTypeBooleanAsync(string content, bool isGood)
+		public async Task FieldVariableNameOfTypeBoolean(string content, bool isGood)
 		{
 			var baseline = @"using System;
 class Foo 
@@ -285,7 +285,7 @@ class Foo
 		[DataRow("isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameOfTypeBooleanAsync(string content, bool isGood)
+		public async Task LocalVariableNameOfTypeBoolean(string content, bool isGood)
 		{
 			var baseline = @"using System;
 class Foo 
@@ -312,13 +312,46 @@ class Foo
 		[DataRow("isFoo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LocalVariableNameOfTypeVarAsync(string content, bool isGood)
+		public async Task LocalVariableNameOfTypeVar(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
 	private void Bar()
 	{{
 		var {0} = true;
+	}}
+}}
+";
+			var givenText = string.Format(baseline, content);
+
+			if (isGood)
+			{
+				await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifyDiagnostic(givenText, DiagnosticId.EnforceBoolNamingConvention).ConfigureAwait(false);
+			}
+		}
+
+		[DataRow("Foo", false)]
+		[DataRow("foo", false)]
+		[DataRow("isFoo", true)]
+		[DataRow("areFoo", true)]
+		[DataRow("shouldFoo", true)]
+		[DataRow("hasFoo", true)]
+		[DataRow("doesFoo", true)]
+		[DataRow("wasFoo", true)]
+		[DataRow("is12Foo", true)]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ParameterNameIsCorrect(string content, bool isGood)
+		{
+			var baseline = @"class Foo 
+{{
+	public void Bar(bool {0})
+	{{
+        // Some code
 	}}
 }}
 ";
@@ -345,7 +378,7 @@ class Foo
 		[DataRow("Is12Foo", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PropertyNameIsCorrectAsync(string content, bool isGood)
+		public async Task PropertyNameIsCorrect(string content, bool isGood)
 		{
 			var baseline = @"class Foo 
 {{
@@ -369,10 +402,40 @@ class Foo
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NonBooleanParameterIsIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Bar(int i)
+	{{
+        // Some code
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task BaseClassPropertiesAreNotErrorsAsync()
+		public async Task NonBooleanPropertyIsIgnored()
+		{
+			var givenText = @"class Foo 
+{{
+	public int Index
+	{{
+		get;
+		set;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task BaseClassPropertiesAreNotErrors()
 		{
 			var baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -397,7 +460,7 @@ class Foo : BaseClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task InterfacePropertiesAreNotErrorsAsync()
+		public async Task InterfacePropertiesAreNotErrors()
 		{
 			var baseline = @"
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -422,7 +485,7 @@ abstract class Foo : BaseClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task BaseClassMethodsAreNotErrorsAsync()
+		public async Task BaseClassMethodsAreNotErrors()
 		{
 			var baseline = @"
 using System.Windows.Forms;
@@ -438,5 +501,65 @@ abstract class Foo : ApplicationContext
 			var givenText = baseline;
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreField()
+		{
+			var givenText = @"class Foo 
+{{
+	public bool Read = true;
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreForEach()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Method(bool[] bees)
+    {{
+        foreach (bool read in bees)
+        {{
+        }}
+    }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreProperty()
+		{
+			var givenText = @"class Foo 
+{{
+	public bool Read
+	{{
+		get;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task GeneratedCodeFilesShouldIgnoreParameter()
+		{
+			var givenText = @"class Foo 
+{{
+	public void Bar(bool foo)
+	{{
+        // Some code
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
+		}
+
 	}
 }

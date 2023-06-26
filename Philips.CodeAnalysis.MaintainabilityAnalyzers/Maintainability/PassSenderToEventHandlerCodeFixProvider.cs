@@ -2,52 +2,28 @@
 
 using System.Collections.Immutable;
 using System.Composition;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PassSenderToEventHandlerCodeFixProvider)), Shared]
-	public class PassSenderToEventHandlerCodeFixProvider : CodeFixProvider
+	public class PassSenderToEventHandlerCodeFixProvider : SingleDiagnosticCodeFixProvider<ArgumentSyntax>
 	{
-		private const string Title = "Pass sender to EventHandler";
+		protected override string Title => "Pass sender to EventHandler";
 
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.PassSenderToEventHandler));
-		public sealed override FixAllProvider GetFixAllProvider()
+		protected override DiagnosticId DiagnosticId => DiagnosticId.PassSenderToEventHandler;
+
+		protected override async Task<Document> ApplyFix(Document document, ArgumentSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			return WellKnownFixAllProviders.BatchFixer;
-		}
-
-		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-		{
-			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-			Diagnostic diagnostic = context.Diagnostics.First();
-			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
-
-			var argument = root.FindNode(diagnosticSpan) as ArgumentSyntax;
-
-			// Register a code action that will invoke the fix.
-			context.RegisterCodeFix(
-				CodeAction.Create(
-					title: Title,
-					createChangedDocument: c => ReplaceArgument(context.Document, argument, c),
-					equivalenceKey: Title),
-				diagnostic);
-		}
-
-		private async Task<Document> ReplaceArgument(Document document, ArgumentSyntax argument, CancellationToken c)
-		{
-			SyntaxNode rootNode = await document.GetSyntaxRootAsync(c).ConfigureAwait(false);
+			ArgumentSyntax argument = node;
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
 			if (argument.Parent is ArgumentListSyntax argumentList)
 			{
@@ -59,8 +35,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 				else if (index == 1)
 				{
-					SemanticModel semanticModel = await document.GetSemanticModelAsync(c);
-					var typeName = semanticModel?.GetTypeInfo(argument, c).Type?.Name ?? "EventArgs";
+					SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+					var typeName = semanticModel?.GetTypeInfo(argument, cancellationToken).Type?.Name ?? "EventArgs";
 					ArgumentSyntax emptyArgument = SyntaxFactory.Argument(SyntaxFactory.MemberAccessExpression(SyntaxKind.SimpleMemberAccessExpression, SyntaxFactory.IdentifierName(typeName), SyntaxFactory.IdentifierName("Empty"))).WithTriviaFrom(argument);
 					rootNode = rootNode.ReplaceNode(argument, emptyArgument);
 				}
