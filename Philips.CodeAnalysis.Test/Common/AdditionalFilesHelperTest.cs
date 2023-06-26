@@ -100,12 +100,12 @@ namespace Philips.CodeAnalysis.Test.Common
 			CollectionAssert.AreEqual(content, actual.ToArray());
 		}
 
-		private static AnalyzerOptions CreateOptions(Dictionary<string, string> settings)
+		private static AnalyzerOptions CreateOptions(IReadOnlyDictionary<string, string> settings)
 		{
 			return new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty, new TestAnalyzerConfigOptionsProvider(settings));
 		}
 
-		private static AnalyzerOptions CreateOptions(Dictionary<string, string> settings,
+		private static AnalyzerOptions CreateOptions(IReadOnlyDictionary<string, string> settings,
 			ImmutableArray<AdditionalText> additionalTexts)
 		{
 			return new AnalyzerOptions(additionalTexts, new TestAnalyzerConfigOptionsProvider(settings));
