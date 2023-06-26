@@ -24,12 +24,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		public override void Analyze()
 		{
-			if (Node.ParameterList is null || Node.ParameterList.Parameters.Count == 0)
+			if (Node.ParameterList.Parameters.Count == 0)
 			{
 				return;
 			}
 
-			bool? isInterfaceMethod = null;
+			if (IsInterfaceOrBaseClassMethod())
+			{
+				return;
+			}
+
 			foreach (ParameterSyntax parameterSyntax in Node.ParameterList.Parameters)
 			{
 				if (!parameterSyntax.Modifiers.Any(SyntaxKind.RefKeyword))
@@ -42,16 +46,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				if (!isInterfaceMethod.HasValue)
-				{
-					isInterfaceMethod = IsInterfaceOrBaseClassMethod();
-				}
-
-				if (isInterfaceMethod.Value)
-				{
-					return;
-				}
-
 				Location location = parameterSyntax.GetLocation();
 				ReportDiagnostic(location, parameterSyntax.Identifier);
 			}
@@ -59,6 +53,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private bool IsInterfaceOrBaseClassMethod()
 		{
+			// Abstract methods don't have an implementation.
+			if (Node.Modifiers.Any(SyntaxKind.AbstractKeyword))
+			{
+				return true;
+			}
+
+			// Interface methods don't have an implementation.
+			if (Node.Parent.IsKind(SyntaxKind.InterfaceDeclaration))
+			{
+				return true;
+			}
+
 			SemanticModel semanticModel = Context.SemanticModel;
 
 			IMethodSymbol method = semanticModel.GetDeclaredSymbol(Node);
@@ -103,7 +109,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			DataFlowAnalysis flow = DataFlowHelper.GetDataFlowAnalysis(Context.SemanticModel, Node);
 			if (flow is null)
 			{
-				return true;
+				// No usage found.
+				return false;
 			}
 
 			var isWrittenInside = flow.WrittenInside.Contains(targetSymbol);
