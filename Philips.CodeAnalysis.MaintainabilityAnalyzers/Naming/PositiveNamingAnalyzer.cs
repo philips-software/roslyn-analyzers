@@ -1,5 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
 		private const string Description = MessageFormat;
 
-		private static readonly string[] negativeWords = { "disable", "ignore", "missing", "absent" };
+		private static readonly List<string> NegativeWords = new(new[] { "disable", "ignore", "missing", "absent" });
 
 		private readonly TestHelper _testHelper;
 
@@ -34,8 +35,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+			context.RegisterCompilationStartAction((ctx) =>
+			{
+				AdditionalFilesHelper additionalFilesHelper = new(ctx.Options, ctx.Compilation);
+				var additionalWords = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"negative_words");
+				var words = additionalWords.Split(',');
+				if (words.Any())
+				{
+					IEnumerable<string> filteredWords = words.Where(x => !string.IsNullOrWhiteSpace(x)).Select(w => w.Trim());
+					NegativeWords.AddRange(filteredWords);
+				}
+
+				ctx.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
+				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+			});
 		}
 
 		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
@@ -96,7 +109,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool IsPositiveName(string name)
 		{
 			var lower = name.ToLowerInvariant();
-			return !negativeWords.Any(lower.Contains);
+			return !NegativeWords.Any(lower.Contains);
 		}
 	}
 }
