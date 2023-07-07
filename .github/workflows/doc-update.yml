@@ -24,6 +24,11 @@ jobs:
           fi
           while read status file
           do
+            # Ignore the common package, as that is not user documented.
+            if [[ "$file" =~ ^.+/Common/.+$]]
+            then
+              continue
+            fi
             if [[ "$file" =~ ^.+Analyzer\.cs$ ]] && [[ "$status" == "A" ]]
             then
               ADDED_ANALYZER="true"
