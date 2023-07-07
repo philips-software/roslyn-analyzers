@@ -33,8 +33,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var node = (VariableDeclarationSyntax)context.Node;
 
-			GeneratedCodeDetector detector = new(Helper);
-			if (detector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -60,8 +59,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var node = (PropertyDeclarationSyntax)context.Node;
 
-			GeneratedCodeDetector detector = new(Helper);
-			if (detector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

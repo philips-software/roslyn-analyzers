@@ -42,8 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void Analyze(OperationAnalysisContext operationContext)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(Helper);
-			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(operationContext))
 			{
 				return;
 			}
@@ -66,8 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(Helper);
-			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(operationContext))
 			{
 				return;
 			}

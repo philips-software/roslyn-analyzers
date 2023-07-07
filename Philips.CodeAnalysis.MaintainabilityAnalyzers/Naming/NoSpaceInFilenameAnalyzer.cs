@@ -58,8 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(_helper);
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

@@ -53,8 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				return;
 			}
-			GeneratedCodeDetector generatedCodeDetector = new(Helper);
-			if (generatedCodeDetector.IsGeneratedCode(context))
+
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

@@ -51,8 +51,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeTree)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new(_helper);
-					if (generatedCodeDetector.IsGeneratedCode(context))
+					if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 					{
 						return;
 					}
@@ -64,8 +63,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeConstructor)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new(_helper);
-					if (generatedCodeDetector.IsGeneratedCode(context))
+					if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 					{
 						return;
 					}
@@ -77,8 +75,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeStruct)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new(_helper);
-					if (generatedCodeDetector.IsGeneratedCode(context))
+					if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 					{
 						return;
 					}
@@ -90,8 +87,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeSwitch)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new(_helper);
-					if (generatedCodeDetector.IsGeneratedCode(context))
+					if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 					{
 						return;
 					}

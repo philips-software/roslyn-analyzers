@@ -19,6 +19,7 @@ namespace Philips.CodeAnalysis.Common
 			ForAdditionalFiles = new AdditionalFilesHelper(options, compilation);
 			ForAttributes = new AttributeHelper();
 			ForConstructors = new ConstructorSyntaxHelper();
+			ForGeneratedCode = new GeneratedCodeDetector(this);
 			ForLiterals = new LiteralHelper();
 			ForTests = new TestHelper();
 			ForTypes = new TypesHelper();
@@ -29,6 +30,8 @@ namespace Philips.CodeAnalysis.Common
 		public AttributeHelper ForAttributes { get; }
 
 		public ConstructorSyntaxHelper ForConstructors { get; }
+
+		public GeneratedCodeDetector ForGeneratedCode { get; }
 
 		public LiteralHelper ForLiterals { get; }
 

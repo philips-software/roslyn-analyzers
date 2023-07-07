@@ -78,8 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(_helper);
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

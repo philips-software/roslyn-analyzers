@@ -81,8 +81,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(_helper);
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -97,8 +96,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeStruct(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new(_helper);
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
