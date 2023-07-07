@@ -1,7 +1,5 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -48,12 +46,6 @@ namespace Philips.CodeAnalysis.Common
 		public static string ToHelpLinkUrl(string id)
 		{
 			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{id}.md";
-		}
-
-		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
-		{
-			IEnumerable<string> values = diagnostics.Select(diagnostic => diagnostic.Id);
-			return string.Join(", ", values);
 		}
 	}
 }

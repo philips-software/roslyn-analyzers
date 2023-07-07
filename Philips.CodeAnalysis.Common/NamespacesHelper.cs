@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Common
 		{
 			// https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
 			List<string> exceptions = new() { "System.Runtime.CompilerServices" };
-			return exceptions.Any(e => e == myNamespace);
+			return exceptions.Contains(myNamespace);
 		}
 
 		public IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)

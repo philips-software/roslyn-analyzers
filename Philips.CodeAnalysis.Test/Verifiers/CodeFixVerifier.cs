@@ -10,7 +10,6 @@ using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
 
 namespace Philips.CodeAnalysis.Test.Verifiers
@@ -147,7 +146,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			// After applying all of the code fixes, there shouldn't be any problems remaining
 			var numberOfDiagnostics = analyzerDiagnostics.Count();
-			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {Helper.ToPrettyList(analyzerDiagnostics)}");
+			var diagnosticIdString = string.Join(", ", analyzerDiagnostics.Select(diag => diag.Id));
+			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {diagnosticIdString}");
 
 			// After applying all of the code fixes, compare the resulting string to the inputted one
 			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
