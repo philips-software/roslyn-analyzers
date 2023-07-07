@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public static string ToHelpLinkUrl(this DiagnosticId id)
 		{
-			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{ToId(id)}.md";
+			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{id.ToId()}.md";
 		}
 	}
 }
