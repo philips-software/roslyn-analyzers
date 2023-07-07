@@ -26,20 +26,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(context =>
+			if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
 			{
-				if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
-				{
-					context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
-					context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-					context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-					context.RegisterSyntaxTreeAction(AnalyzeComments);
-				}
-			});
+				context.RegisterSyntaxNodeAction(AnalyzeFields, SyntaxKind.FieldDeclaration);
+				context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+				context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+				context.RegisterSyntaxTreeAction(AnalyzeComments);
+			}
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)

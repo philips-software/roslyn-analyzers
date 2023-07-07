@@ -24,9 +24,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
+		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile, Helper helper)
 		{
-			return new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, shouldGenerateExceptionsFile);
+			var analyzer = new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, shouldGenerateExceptionsFile, helper);
+			return analyzer;
 		}
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
@@ -38,9 +39,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			allowedSymbols.RegisterLine(@"*.Program");
 			allowedSymbols.RegisterLine(@"*.AssemblyInitialize");
 
-			AdditionalFilesHelper helper = new(compilationContext.Options, compilationContext.Compilation);
-			ExceptionsOptions exceptionsOptions = helper.LoadExceptionsOptions(Rule.Id);
-			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile);
+			Helper helper = new(compilationContext.Options, compilationContext.Compilation);
+			ExceptionsOptions exceptionsOptions = helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
+			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile, helper);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -56,16 +57,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		private readonly AllowedSymbols _allowedSymbols;
 		private readonly bool _shouldGenerateExceptionsFile;
+		private readonly Helper _helper;
 
-		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile)
+		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile, Helper helper)
 		{
 			_allowedSymbols = allowedSymbols;
 			_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
+			_helper = helper;
 		}
 
 		public void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -97,8 +100,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			Helper helper = new();
-			if (helper.IsExtensionClass(declaredSymbol))
+			if (_helper.IsExtensionClass(declaredSymbol))
 			{
 				return;
 			}

@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Common
 		public DiagnosticDescriptor Rule { get; init; }
 		public DiagnosticAnalyzer Analyzer { get; init; }
 
-		protected Helper Helper { get; init; } = new Helper();
+		public Helper Helper { get; init; }
 
 		public abstract void Analyze();
 

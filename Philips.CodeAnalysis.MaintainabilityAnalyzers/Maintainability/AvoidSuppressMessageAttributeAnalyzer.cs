@@ -25,16 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
-		private readonly AttributeHelper _attributeHelper;
-
-		public AvoidSuppressMessageAttributeAnalyzer()
-			: this(new AttributeHelper())
-		{ }
-
-		public AvoidSuppressMessageAttributeAnalyzer(AttributeHelper attributeHelper)
-		{
-			_attributeHelper = attributeHelper;
-		}
+		private Helper _helper;
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -43,6 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
 				ImmutableHashSet<string> whitelist = null;
 
 				if (startContext.Compilation.GetTypeByMetadataName(attribute.FullName) != null)
@@ -86,7 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -95,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var attributesNode = (AttributeListSyntax)context.Node;
 
 			if (
-				_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation) &&
+				_helper.ForAttributes.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation) &&
 				!IsWhitelisted(whitelist, context.SemanticModel, attributesNode.Parent, out var id))
 			{
 				var diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);

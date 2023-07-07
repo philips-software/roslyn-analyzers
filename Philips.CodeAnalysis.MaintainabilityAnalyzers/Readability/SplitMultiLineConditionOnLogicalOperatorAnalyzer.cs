@@ -30,17 +30,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LogicalAndExpression);
 			context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.LogicalOrExpression);
 		}
 
 		private void AnalyzeNode(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

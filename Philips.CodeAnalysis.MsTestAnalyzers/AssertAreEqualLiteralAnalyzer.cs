@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private bool IsLiteral(ExpressionSyntax expression)
 		{
-			return Helper.IsLiteralTrueFalse(expression);
+			return Helper.ForLiterals.IsLiteralTrueFalse(expression);
 		}
 	}
 }

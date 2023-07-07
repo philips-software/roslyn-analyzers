@@ -34,6 +34,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				description: Description
 			);
 
+		private Helper _helper;
+
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
@@ -47,12 +49,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxTreeAction(AnalyzeTree);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
+				startContext.RegisterSyntaxTreeAction(AnalyzeTree);
+			});
 		}
 
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

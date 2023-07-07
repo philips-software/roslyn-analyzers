@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		#region Helper Analyzer
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private sealed class AvoidWritingCodeAnalyzer : SingleDiagnosticAnalyzer
+		private sealed class AvoidWritingCodeAnalyzer : CompilationAnalyzer
 		{
 			public AvoidWritingCodeAnalyzer()
 				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)
@@ -27,6 +27,8 @@ namespace Philips.CodeAnalysis.Test.Common
 			public static bool ShouldAnalyzeStruct { get; set; }
 			public static bool ShouldAnalyzeSwitch { get; set; }
 
+			private Helper _helper;
+
 			public override void Initialize(AnalysisContext context)
 			{
 				// By changing the following line to GeneratedCodeAnalysisFlags.None, and then enabling code coverage,
@@ -35,17 +37,21 @@ namespace Philips.CodeAnalysis.Test.Common
 				// thereby simplifying GeneratedCodeDetector to only need to check magic file extensions.
 				context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
 				context.EnableConcurrentExecution();
-				context.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
-				context.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
-				context.RegisterOperationAction(AnalyzeSwitch, OperationKind.Switch);
-				context.RegisterSyntaxTreeAction(AnalyzeTree);
+				context.RegisterCompilationStartAction(startContext =>
+				{
+					_helper = new Helper(startContext.Options, startContext.Compilation);
+					startContext.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
+					startContext.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
+					startContext.RegisterOperationAction(AnalyzeSwitch, OperationKind.Switch);
+					startContext.RegisterSyntaxTreeAction(AnalyzeTree);
+				});
 			}
 
 			private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 			{
 				if (ShouldAnalyzeTree)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new();
+					GeneratedCodeDetector generatedCodeDetector = new(_helper);
 					if (generatedCodeDetector.IsGeneratedCode(context))
 					{
 						return;
@@ -58,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeConstructor)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new();
+					GeneratedCodeDetector generatedCodeDetector = new(_helper);
 					if (generatedCodeDetector.IsGeneratedCode(context))
 					{
 						return;
@@ -71,7 +77,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeStruct)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new();
+					GeneratedCodeDetector generatedCodeDetector = new(_helper);
 					if (generatedCodeDetector.IsGeneratedCode(context))
 					{
 						return;
@@ -84,7 +90,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			{
 				if (ShouldAnalyzeSwitch)
 				{
-					GeneratedCodeDetector generatedCodeDetector = new();
+					GeneratedCodeDetector generatedCodeDetector = new(_helper);
 					if (generatedCodeDetector.IsGeneratedCode(context))
 					{
 						return;
@@ -122,7 +128,7 @@ public class Foo
 public struct MyStruct {}
 public void Method(int i) { switch(i) { default: break;} }
 ";
-			await VerifyDiagnostic(input).ConfigureAwait(false);
+			await VerifyDiagnostic(input, DiagnosticId.TestMethodName).ConfigureAwait(false);
 		}
 
 		[TestMethod]

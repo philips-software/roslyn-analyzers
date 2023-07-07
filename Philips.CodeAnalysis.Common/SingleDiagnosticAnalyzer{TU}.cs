@@ -17,35 +17,25 @@ namespace Philips.CodeAnalysis.Common
 			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
-		/// <summary>
-		/// Boilerplate initialization for the Analyzer
-		/// </summary>
-		/// <exception cref="InvalidOperationException">When an Analyzer with a new type of SyntaxKind is added.</exception>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
 			SyntaxKind syntaxKind = GetSyntaxKind();
 			if (syntaxKind == SyntaxKind.None)
 			{
 				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(T)}");
 			}
 
-			context.RegisterCompilationStartAction(startContext =>
+			if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && context.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
 			{
-				if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && startContext.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
-			});
+			context.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
 		}
 
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -57,6 +47,7 @@ namespace Philips.CodeAnalysis.Common
 				Node = (T)context.Node,
 				Rule = Rule,
 				Analyzer = this,
+				Helper = Helper
 			};
 			syntaxNodeAction.Analyze();
 		}

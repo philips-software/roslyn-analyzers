@@ -43,6 +43,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly DiagnosticDescriptor PlusAndEqualRule =
 			GenerateRule(Plus, "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
 
+		private Helper _helper;
+
 		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{
 			return new(
@@ -69,13 +71,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
+				startContext.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+				startContext.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
+			});
 		}
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -91,7 +97,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeStruct(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

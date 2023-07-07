@@ -1,4 +1,4 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
 using System.Collections.Generic;
@@ -10,26 +10,20 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public class Helper
+	public class FixHelper
 	{
 		private static readonly char[] TrimCharacters = { '/', '\\' };
 
-		public Helper(AnalyzerOptions options, Compilation compilation)
+		public FixHelper()
 		{
-			ForAdditionalFiles = new AdditionalFilesHelper(options, compilation);
 			ForAttributes = new AttributeHelper();
 			ForConstructors = new ConstructorSyntaxHelper();
-			ForLiterals = new LiteralHelper();
 			ForTests = new TestHelper();
 		}
-
-		public AdditionalFilesHelper ForAdditionalFiles { get; }
 
 		public AttributeHelper ForAttributes { get; }
 
 		public ConstructorSyntaxHelper ForConstructors { get; }
-
-		public LiteralHelper ForLiterals { get; }
 
 		public TestHelper ForTests { get; }
 
@@ -43,7 +37,7 @@ namespace Philips.CodeAnalysis.Common
 			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{id}.md";
 		}
 
-		public static string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
+		public string ToPrettyList(IEnumerable<Diagnostic> diagnostics)
 		{
 			IEnumerable<string> values = diagnostics.Select(diagnostic => diagnostic.Id);
 			return string.Join(", ", values);
@@ -126,7 +120,7 @@ namespace Philips.CodeAnalysis.Common
 			return IsInheritingFromClass(type, @"ContainerControl");
 		}
 
-		public static IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)
+		public IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)
 		{
 			var list = new Dictionary<string, string>();
 			SyntaxNode root = node.SyntaxTree.GetRoot();
@@ -142,7 +136,7 @@ namespace Philips.CodeAnalysis.Common
 			return list;
 		}
 
-		public static bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
+		public bool IsCallableFromOutsideClass(MemberDeclarationSyntax method)
 		{
 			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
 		}

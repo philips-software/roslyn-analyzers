@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Common
 		public AdditionalFilesHelper(AnalyzerOptions options, Compilation compilation)
 		{
 			_options = options;
-			_additionalFiles = options.AdditionalFiles;
+			_additionalFiles = options?.AdditionalFiles ?? ImmutableArray<AdditionalText>.Empty;
 			_compilation = compilation;
 		}
 

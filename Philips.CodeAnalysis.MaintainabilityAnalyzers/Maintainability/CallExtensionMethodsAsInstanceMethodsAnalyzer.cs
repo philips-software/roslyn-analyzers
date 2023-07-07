@@ -22,10 +22,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{ }
 
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterOperationAction(OnInvoke, OperationKind.Invocation);
 		}
 

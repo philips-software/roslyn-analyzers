@@ -23,12 +23,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { StringConstants.List, StringConstants.QueueClassName, StringConstants.SortedListClassName, StringConstants.StackClassName, StringConstants.DictionaryClassName, StringConstants.IListInterfaceName, StringConstants.IDictionaryInterfaceName };
 
-		private static readonly Helper _helper = new();
-
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
@@ -47,7 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if (!_helper.IsCallableFromOutsideClass(parent))
+			if (!Helper.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
@@ -72,7 +68,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		internal static string GetTypeName(TypeSyntax type)
 		{
-			IReadOnlyDictionary<string, string> aliases = _helper.GetUsingAliases(type);
+			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(type);
 			var typeName = type.GetFullName(aliases);
 			if (type is GenericNameSyntax genericName)
 			{

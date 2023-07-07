@@ -28,18 +28,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: LoopDescription);
 
+		private Helper _helper;
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(TempRule, LoopRule);
 
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleAssignmentExpression);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
+				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleAssignmentExpression);
+			});
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector detector = new();
+			GeneratedCodeDetector detector = new(_helper);
 			if (detector.IsGeneratedCode(context))
 			{
 				return;

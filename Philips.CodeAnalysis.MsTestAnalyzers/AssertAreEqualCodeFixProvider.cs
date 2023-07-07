@@ -16,16 +16,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AssertAreEqualCodeFixProvider)), Shared]
 	public class AssertAreEqualCodeFixProvider : SingleDiagnosticCodeFixProvider<InvocationExpressionSyntax>
 	{
-		private readonly Helper _helper;
-
-		public AssertAreEqualCodeFixProvider()
-			: this(new Helper())
-		{ }
-		public AssertAreEqualCodeFixProvider(Helper helper)
-		{
-			_helper = helper;
-		}
-
 		protected override string Title => "Refactor equality assertion";
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.AssertAreEqual;
@@ -37,6 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var isFirstArgumentNull = false;
 			var isFirstArgumentConstant = false;
+			var literalHelper = new LiteralHelper();
 			ArgumentListSyntax argumentList = node.ArgumentList;
 			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
@@ -46,7 +37,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isFirstArgumentConstant = _helper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
+				isFirstArgumentConstant = literalHelper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
 			var isSecondArgumentNull = false;
@@ -59,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isSecondArgumentConstant = _helper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
+				isSecondArgumentConstant = literalHelper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
 			}
 
 			if (isFirstArgumentNull || isSecondArgumentNull)

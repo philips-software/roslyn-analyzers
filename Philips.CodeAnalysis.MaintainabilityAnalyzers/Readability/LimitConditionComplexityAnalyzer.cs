@@ -34,12 +34,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				description: Description);
 
 		private int _maxOperators;
+		private Helper _helper;
 
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer.SupportedDiagnostics"/>
 		/// </summary>
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-		public int DefaultMaxOperators { get; private set; } = 4;
+
+		public static int DefaultMaxOperators { get; private set; } = 4;
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -51,10 +53,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			context.RegisterCompilationStartAction(
 				startContext =>
 				{
-					var additionalFiles = new AdditionalFilesHelper(
-						startContext.Options,
-						startContext.Compilation);
-					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
+
+					_helper = new Helper(startContext.Options, startContext.Compilation);
+					var maxStr = _helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
 					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedMax))
 					{
 						_maxOperators = parsedMax;
@@ -86,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void AnalyzeCondition(SyntaxNodeAnalysisContext context, ExpressionSyntax conditionNode)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

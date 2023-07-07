@@ -28,12 +28,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string StatementMessageFormat = StatementTitle;
 		private const string StatementDescription = StatementTitle;
 
-
 		public DiagnosticDescriptor BlockRule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyStatementBlock), BlockTitle, BlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: BlockDescription);
 		public DiagnosticDescriptor CatchRule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyCatchBlock), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
 		public DiagnosticDescriptor StatementRule { get; } = new(Helper.ToDiagnosticId(DiagnosticId.AvoidEmptyStatement), StatementTitle, StatementMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: StatementDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(BlockRule, CatchRule, StatementRule); } }
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -67,9 +67,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			Helper helper = new();
 			// Empty public or protected methods are acceptable, as it could be part of an API, or an interface implementation
-			if (blockSyntax.Parent is MethodDeclarationSyntax methodSyntax && helper.IsCallableFromOutsideClass(methodSyntax))
+			if (blockSyntax.Parent is MethodDeclarationSyntax methodSyntax && Helper.IsCallableFromOutsideClass(methodSyntax))
 			{
 				return;
 			}

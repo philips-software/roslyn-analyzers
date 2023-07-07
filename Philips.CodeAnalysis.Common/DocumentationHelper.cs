@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common
 	public class DocumentationHelper
 	{
 		private const string ExceptionElementName = "exception";
-		private readonly List<XmlElementSyntax> xmlElements = new();
+		private readonly List<XmlElementSyntax> _xmlElements = new();
 
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Common
 				ExistingDocumentation = doc.GetStructure() as DocumentationCommentTriviaSyntax;
 				if (ExistingDocumentation != null)
 				{
-					xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
+					_xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
 				}
 			}
 		}
@@ -59,12 +59,12 @@ namespace Philips.CodeAnalysis.Common
 			XmlElementStartTagSyntax exceptionStart = SyntaxFactory.XmlElementStartTag(exceptionXmlName, attributesList);
 			XmlElementEndTagSyntax exceptionEnd = SyntaxFactory.XmlElementEndTag(exceptionXmlName);
 			XmlElementSyntax xmlException = SyntaxFactory.XmlElement(exceptionStart, exceptionEnd);
-			xmlElements.Add(xmlException);
+			_xmlElements.Add(xmlException);
 		}
 
 		public IEnumerable<string> GetExceptionCrefs()
 		{
-			return xmlElements.Where(IsExceptionElement).Select(GetCrefAttributeValue);
+			return _xmlElements.Where(IsExceptionElement).Select(GetCrefAttributeValue);
 		}
 
 		public DocumentationCommentTriviaSyntax CreateDocumentation()
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Common
 			XmlTextSyntax endOfLine = SyntaxFactory.XmlText("\r\n");
 			DocumentationCommentTriviaSyntax comment = ExistingDocumentation;
 			var content = new List<XmlNodeSyntax>();
-			foreach (XmlElementSyntax xmlElement in xmlElements)
+			foreach (XmlElementSyntax xmlElement in _xmlElements)
 			{
 				content.Add(startOfLine);
 				content.Add(xmlElement);

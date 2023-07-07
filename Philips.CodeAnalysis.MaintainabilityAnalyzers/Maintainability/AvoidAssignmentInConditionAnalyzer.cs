@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = "Assignment in condition.";
 		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private readonly GeneratedCodeDetector _detector = new();
+		private GeneratedCodeDetector _detector;
 
 		public AvoidAssignmentInConditionAnalyzer()
 			: base(DiagnosticId.AvoidAssignmentInCondition, Title, MessageFormat, Description, Categories.Maintainability)
@@ -27,10 +27,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
+			_detector = new GeneratedCodeDetector(Helper);
 			context.RegisterSyntaxNodeAction(AnalyzeIfStatement, SyntaxKind.IfStatement);
 			context.RegisterSyntaxNodeAction(AnalyzeTernary, SyntaxKind.ConditionalExpression);
 		}

@@ -20,27 +20,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.AvoidAsyncVoid, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				INamedTypeSymbol namedSymbol = startContext.Compilation.GetTypeByMetadataName("System.EventArgs");
-				if (namedSymbol == null)
-				{
-					return;
-				}
+			INamedTypeSymbol namedSymbol = context.Compilation.GetTypeByMetadataName("System.EventArgs");
+			if (namedSymbol == null)
+			{
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction((x) => Analyze(namedSymbol, x), SyntaxKind.MethodDeclaration);
-				startContext.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.SimpleLambdaExpression);
-				startContext.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.ParenthesizedLambdaExpression);
-			});
+			context.RegisterSyntaxNodeAction((x) => Analyze(namedSymbol, x), SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.SimpleLambdaExpression);
+			context.RegisterSyntaxNodeAction(AnalyzeLambda, SyntaxKind.ParenthesizedLambdaExpression);
 		}
 
 		private void AnalyzeLambda(SyntaxNodeAnalysisContext context)

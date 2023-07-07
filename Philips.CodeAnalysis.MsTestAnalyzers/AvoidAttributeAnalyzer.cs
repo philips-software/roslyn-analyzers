@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
 		private readonly AttributeHelper _attributeHelper;
+		private Helper _helper;
 
 		public AvoidAttributeAnalyzer()
 			: this(new AttributeHelper())
@@ -41,6 +42,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			context.RegisterCompilationStartAction(startContext =>
 			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
 				ImmutableHashSet<string> whitelist = null;
 
 				foreach (KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in Attributes)
@@ -86,7 +88,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(_helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

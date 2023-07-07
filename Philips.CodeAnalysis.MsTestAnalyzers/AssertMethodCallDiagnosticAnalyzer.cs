@@ -13,14 +13,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		protected Helper Helper { get; set; }
 
-		protected AssertMethodCallDiagnosticAnalyzer()
-			: this(new Helper())
-		{ }
-		protected AssertMethodCallDiagnosticAnalyzer(Helper helper)
-		{
-			Helper = helper;
-		}
-
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var invocationExpression = (InvocationExpressionSyntax)context.Node;
@@ -57,6 +49,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
+				Helper = new Helper(startContext.Options, startContext.Compilation);
 				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
 			});
 		}

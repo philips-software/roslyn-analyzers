@@ -34,11 +34,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
 			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeForEachStatement, SyntaxKind.ForEachStatement);
 			context.RegisterSyntaxNodeAction(AnalyzeParameter, SyntaxKind.Parameter);
@@ -47,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -73,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -149,7 +146,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeParameter(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -181,7 +178,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;

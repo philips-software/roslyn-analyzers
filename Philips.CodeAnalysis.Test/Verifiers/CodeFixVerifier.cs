@@ -145,12 +145,11 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				}
 			}
 
-			//after applying all of the code fixes, there shouldn't be any problems remaining
-			Helper helper = new();
+			// After applying all of the code fixes, there shouldn't be any problems remaining
 			var numberOfDiagnostics = analyzerDiagnostics.Count();
-			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {helper.ToPrettyList(analyzerDiagnostics)}");
+			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {Helper.ToPrettyList(analyzerDiagnostics)}");
 
-			//after applying all of the code fixes, compare the resulting string to the inputted one
+			// After applying all of the code fixes, compare the resulting string to the inputted one
 			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
 			var actualSourceLines = actualSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
 			var expectedSourceLines = expectedSource.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);

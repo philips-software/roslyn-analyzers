@@ -28,11 +28,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			Diagnostic diagnostic2 = Make("PH2000");
 			Diagnostic diagnostic3 = Make("PH3000");
 
-			Helper helper = new();
-			Assert.AreEqual("", helper.ToPrettyList(Array.Empty<Diagnostic>()));
-			Assert.AreEqual("PH1000", helper.ToPrettyList(new Diagnostic[] { diagnostic1 }));
-			Assert.AreEqual("PH1000, PH2000", helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2 }));
-			Assert.AreEqual("PH1000, PH2000, PH3000", helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2, diagnostic3 }));
+			Assert.AreEqual("", Helper.ToPrettyList(Array.Empty<Diagnostic>()));
+			Assert.AreEqual("PH1000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1 }));
+			Assert.AreEqual("PH1000, PH2000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2 }));
+			Assert.AreEqual("PH1000, PH2000, PH3000", Helper.ToPrettyList(new Diagnostic[] { diagnostic1, diagnostic2, diagnostic3 }));
 		}
 
 		[DataTestMethod]
@@ -68,8 +67,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
-			Helper helper = new();
-			var isActualCallable = helper.IsCallableFromOutsideClass(memberDeclaration);
+			var isActualCallable = Helper.IsCallableFromOutsideClass(memberDeclaration);
 
 			// Assert
 			Assert.AreEqual(isExpectedCallable, isActualCallable);
