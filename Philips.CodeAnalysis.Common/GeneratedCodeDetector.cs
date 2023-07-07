@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsGeneratedCode(string filePath)
 		{
-			var fileName = _helper.GetFileName(filePath);
+			var fileName = _helper.ForAssemblies.GetFileName(filePath);
 			// Various Microsoft tools generate files with this postfix.
 			var isDesignerFile = fileName.EndsWith(@".Designer.cs", StringComparison.OrdinalIgnoreCase);
 			// WinForms generate files with this postfix.
