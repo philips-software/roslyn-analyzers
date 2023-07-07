@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				}
 			}
 
-			if (Helper.IsNamespaceExempt(myNamespace))
+			if (Helper.ForNamespaces.IsNamespaceExempt(myNamespace))
 			{
 				return;
 			}

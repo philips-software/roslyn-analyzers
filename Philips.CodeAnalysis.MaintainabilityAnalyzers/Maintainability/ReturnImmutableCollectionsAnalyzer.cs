@@ -1,7 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
+using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,6 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Title = @"Return only immutable collections";
 		private const string MessageFormat = @"Don't return the mutable collection {0}, use a ReadOnly interface or immutable collection instead";
 		private const string Description = @"Return only immutable or readonly collections from a public method, otherwise these collections can be changed by the caller without the callee noticing.";
+		public const string AnnotationsKey = "SimplifiedCollectionTypeName";
 
 		public ReturnImmutableCollectionsAnalyzer()
 			: base(DiagnosticId.ReturnImmutableCollections, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
@@ -49,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var typeName = GetTypeName(type);
+			var typeName = Helper.ForTypes.GetTypeNameWithoutGeneric(type);
 
 			NamespaceIgnoringComparer comparer = new();
 			if (type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
@@ -60,26 +63,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var ns = symbolType?.ContainingNamespace?.ToString();
 				if (symbolType != null && (isArray || ns is "System.Collections.Generic" or "<global namespace>"))
 				{
+					ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(AnnotationsKey, typeName);
 					Location loc = type.GetLocation();
-					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, typeName));
+					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, properties, typeName));
 				}
 			}
-		}
-
-		internal static string GetTypeName(TypeSyntax type)
-		{
-			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(type);
-			var typeName = type.GetFullName(aliases);
-			if (type is GenericNameSyntax genericName)
-			{
-				var baseName = genericName.Identifier.Text;
-				if (!aliases.TryGetValue(baseName, out typeName))
-				{
-					typeName = baseName;
-				}
-			}
-
-			return typeName;
 		}
 	}
 }

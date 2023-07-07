@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
@@ -18,8 +17,9 @@ namespace Philips.CodeAnalysis.Common
 			ForConstructors = new ConstructorSyntaxHelper();
 			ForGeneratedCode = new GeneratedCodeDetector(this);
 			ForLiterals = new LiteralHelper();
+			ForNamespaces = new NamespacesHelper();
 			ForTests = new TestHelper();
-			ForTypes = new TypesHelper();
+			ForTypes = new TypesHelper(this);
 		}
 
 		public AdditionalFilesHelper ForAdditionalFiles { get; }
@@ -33,6 +33,8 @@ namespace Philips.CodeAnalysis.Common
 		public GeneratedCodeDetector ForGeneratedCode { get; }
 
 		public LiteralHelper ForLiterals { get; }
+
+		public NamespacesHelper ForNamespaces { get; }
 
 		public TestHelper ForTests { get; }
 
@@ -52,29 +54,6 @@ namespace Philips.CodeAnalysis.Common
 		{
 			IEnumerable<string> values = diagnostics.Select(diagnostic => diagnostic.Id);
 			return string.Join(", ", values);
-		}
-
-		public static bool IsNamespaceExempt(string myNamespace)
-		{
-			// https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
-			List<string> exceptions = new() { "System.Runtime.CompilerServices" };
-			return exceptions.Any(e => e == myNamespace);
-		}
-
-		public static IReadOnlyDictionary<string, string> GetUsingAliases(SyntaxNode node)
-		{
-			var list = new Dictionary<string, string>();
-			SyntaxNode root = node.SyntaxTree.GetRoot();
-			foreach (UsingDirectiveSyntax child in root.DescendantNodes(n => n is not TypeDeclarationSyntax).OfType<UsingDirectiveSyntax>())
-			{
-				if (child.Alias != null)
-				{
-					var alias = child.Alias.Name.GetFullName(list);
-					var name = child.Name.GetFullName(list);
-					list.Add(alias, name);
-				}
-			}
-			return list;
 		}
 	}
 }

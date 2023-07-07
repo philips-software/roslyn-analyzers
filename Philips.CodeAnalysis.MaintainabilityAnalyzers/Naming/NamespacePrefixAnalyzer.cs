@@ -22,6 +22,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string DescriptionForEmptyPrefix = MessageFormatForEmptyPrefix;
 		private const string Category = Categories.Naming;
 
+		private Helper _helper;
+
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
@@ -37,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
 			{
-				if (Helper.IsNamespaceExempt(myNamespace))
+				if (_helper.ForNamespaces.IsNamespaceExempt(myNamespace))
 				{
 					return;
 				}
@@ -60,7 +62,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
+				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
+			});
 		}
 	}
 }

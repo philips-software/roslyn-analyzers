@@ -30,11 +30,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
+		private Helper _helper;
+
 		public override void Initialize(AnalysisContext context)
 		{
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.EnableConcurrentExecution();
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
+			context.RegisterCompilationStartAction(startContext =>
+			{
+				_helper = new Helper(startContext.Options, startContext.Compilation);
+				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
+			});
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -46,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.
-				aliases = Helper.GetUsingAliases(throwStatement);
+				aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
 				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
@@ -69,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			aliases = Helper.GetUsingAliases(throwStatement);
+			aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
 			if (aliases.TryGetValue(thrownExceptionName, out var aliasedName))
 			{
 				thrownExceptionName = aliasedName;
