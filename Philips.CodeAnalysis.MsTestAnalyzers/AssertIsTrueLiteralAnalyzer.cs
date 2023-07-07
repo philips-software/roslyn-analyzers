@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor IsTrueRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsTrueLiteral), IsTrueTitle, IsTrueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsTrueDescription);
+		private static readonly DiagnosticDescriptor IsTrueRule = new(DiagnosticId.AssertIsTrueLiteral.ToId(), IsTrueTitle, IsTrueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsTrueDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(IsTrueRule); } }
 

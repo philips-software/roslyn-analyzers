@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Category = Categories.MsTest;
 		private const string EqualsName = "Equals";
 
-		private static readonly DiagnosticDescriptor IsEqualRule = new(Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
+		private static readonly DiagnosticDescriptor IsEqualRule = new(DiagnosticId.AssertIsEqual.ToId(), IsEqualTitle, IsEqualMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: IsEqualDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(IsEqualRule); } }
 

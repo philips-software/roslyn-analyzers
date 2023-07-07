@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private readonly TestHelper _helper = new();
 
 		public static readonly DiagnosticDescriptor Rule = new(
-			Helper.ToDiagnosticId(DiagnosticId.RegexNeedsTimeout),
+			DiagnosticId.RegexNeedsTimeout.ToId(),
 			Title, MessageFormat, Category,
 			DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 

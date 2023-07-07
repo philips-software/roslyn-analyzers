@@ -37,15 +37,5 @@ namespace Philips.CodeAnalysis.Common
 		public TestHelper ForTests { get; }
 
 		public TypesHelper ForTypes { get; }
-
-		public static string ToDiagnosticId(DiagnosticId id)
-		{
-			return @"PH" + ((int)id).ToString();
-		}
-
-		public static string ToHelpLinkUrl(string id)
-		{
-			return $"https://github.com/philips-software/roslyn-analyzers/blob/main/Documentation/Diagnostics/{id}.md";
-		}
 	}
 }

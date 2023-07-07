@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 
-		public static readonly string RuleId = Helper.ToDiagnosticId(DiagnosticId.NamespacePrefix);
+		public static readonly string RuleId = DiagnosticId.NamespacePrefix.ToId();
 
 		public static readonly DiagnosticDescriptor RuleForIncorrectNamespace = new(RuleId, TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
 		public static readonly DiagnosticDescriptor RuleForEmptyPrefix = new(RuleId, TitleForEmptyPrefix, string.Format(MessageFormatForEmptyPrefix, RuleId), Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: string.Format(DescriptionForEmptyPrefix, RuleId));

@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"DataTestMethods should have the same number of parameters of the DataRows, TestMethods should have no arguments";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments),
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments.ToId(),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 

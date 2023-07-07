@@ -19,8 +19,8 @@ namespace Philips.CodeAnalysis.Common
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
-			Id = Helper.ToDiagnosticId(id);
-			var helpLink = Helper.ToHelpLinkUrl(Id);
+			Id = id.ToId();
+			var helpLink = id.ToHelpLinkUrl();
 			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpLink);
 		}
 

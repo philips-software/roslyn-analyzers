@@ -133,7 +133,7 @@ var foo = 4;
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasTimeoutAttribute),
+				Id = DiagnosticId.TestHasTimeoutAttribute.ToId(),
 				Message = new Regex(TestHasTimeoutAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

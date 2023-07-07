@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	{
 		public sealed override ImmutableArray<string> FixableDiagnosticIds
 		{
-			get { return ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode)); }
+			get { return ImmutableArray.Create(DiagnosticId.AvoidDuplicateCode.ToId()); }
 		}
 
 		public sealed override FixAllProvider GetFixAllProvider()

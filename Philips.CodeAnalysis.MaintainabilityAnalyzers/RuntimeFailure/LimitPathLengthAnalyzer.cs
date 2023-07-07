@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticId.LimitPathLength),
+				DiagnosticId.LimitPathLength.ToId(),
 				Title,
 				Message,
 				Category,

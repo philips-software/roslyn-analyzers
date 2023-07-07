@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Tests are required to have an appropriate TestCategory to allow running tests category wise.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestHasCategoryAttribute.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

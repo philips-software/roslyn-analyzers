@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(id),
+				Id = id.ToId(),
 				Location = new DiagnosticResultLocation(null, line, column),
 				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,

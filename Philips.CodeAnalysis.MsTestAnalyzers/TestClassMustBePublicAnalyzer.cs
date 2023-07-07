@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestClassesMustBePublic.ToId(),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

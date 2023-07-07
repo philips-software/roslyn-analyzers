@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticId.NoSpaceInFilename),
+				DiagnosticId.NoSpaceInFilename.ToId(),
 				Title,
 				Message,
 				Category,

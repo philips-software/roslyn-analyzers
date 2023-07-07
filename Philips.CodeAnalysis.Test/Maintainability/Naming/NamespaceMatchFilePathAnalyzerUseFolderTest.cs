@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			var code = string.Format(ClassString, ns);
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.NamespaceMatchFilePath),
+				Id = DiagnosticId.NamespaceMatchFilePath.ToId(),
 				Message = new Regex(".+ "),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

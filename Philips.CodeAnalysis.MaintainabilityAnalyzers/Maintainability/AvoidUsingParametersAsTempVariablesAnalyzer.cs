@@ -21,10 +21,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string LoopDescription = @"Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor TempRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidUsingParametersAsTempVariables),
+		private static readonly DiagnosticDescriptor TempRule = new(DiagnosticId.AvoidUsingParametersAsTempVariables.ToId(),
 			TempTitle, TempMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: TempDescription);
-		private static readonly DiagnosticDescriptor LoopRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidChangingLoopVariables),
+		private static readonly DiagnosticDescriptor LoopRule = new(DiagnosticId.AvoidChangingLoopVariables.ToId(),
 			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: LoopDescription);
 

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"";
 		private const string Category = Categories.Naming;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveUniqueNames),
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustHaveUniqueNames.ToId(),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 

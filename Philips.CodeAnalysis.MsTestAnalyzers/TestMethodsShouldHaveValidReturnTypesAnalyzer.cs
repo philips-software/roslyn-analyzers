@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"MSTest will not run tests that return something other than void, or Task for async tests.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveValidReturnType),
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustHaveValidReturnType.ToId(),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 

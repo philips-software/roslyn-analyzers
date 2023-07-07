@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"TestContext should not be included in test classes unless it is actually used.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestContext), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestContext.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

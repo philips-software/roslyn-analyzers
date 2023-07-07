@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{
 			return new(
-				Helper.ToDiagnosticId(diagnosticId),
+				diagnosticId.ToId(),
 				string.Format(Title, first, second),
 				string.Format(MessageFormat, first, second),
 				Category,

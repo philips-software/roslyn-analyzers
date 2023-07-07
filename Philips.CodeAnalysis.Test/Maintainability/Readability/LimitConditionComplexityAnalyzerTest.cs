@@ -104,7 +104,7 @@ namespace ComplexConditionUnitTests {
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var key =
-				$@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity)}.max_operators";
+				$@"dotnet_code_quality.{DiagnosticId.LimitConditionComplexity.ToId()}.max_operators";
 			return base.GetAdditionalAnalyzerConfigOptions().Add(key, ConfiguredMaxOperators.ToString());
 		}
 	}

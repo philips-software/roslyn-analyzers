@@ -70,7 +70,7 @@ public class Tests
 			{
 				await VerifyDiagnostic(string.Format(code, testType, parameterListString), new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments),
+					Id = DiagnosticId.TestMethodsMustHaveTheCorrectNumberOfArguments.ToId(),
 					Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) },
 					Message = new Regex(".*"),
 					Severity = DiagnosticSeverity.Error,

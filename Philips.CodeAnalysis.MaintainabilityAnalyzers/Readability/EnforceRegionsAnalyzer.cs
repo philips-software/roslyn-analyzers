@@ -43,12 +43,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{ PublicInterfaceRegion, CheckMembersOfPublicInterfaceRegion }
 		};
 
-		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(Helper.ToDiagnosticId(DiagnosticId.EnforceRegions), EnforceRegionTitle,
+		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(DiagnosticId.EnforceRegions.ToId(), EnforceRegionTitle,
 			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
-		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
+		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
-		private static readonly DiagnosticDescriptor NonCheckedMember = new(Helper.ToDiagnosticId(DiagnosticId.NonCheckedRegionMember),
+		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
 			NonCheckedRegionMemberTitle, NonCheckedRegionMemberTitleMessageFormat, NonCheckedRegionMemberTitleCategory,
 			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
 

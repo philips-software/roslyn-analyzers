@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <typeparam name="TSyntax">The <see cref="SyntaxNode"/> type to fix.</typeparam>
 	public abstract class SingleDiagnosticCodeFixProvider<TSyntax> : CodeFixProvider where TSyntax : SyntaxNode
 	{
-		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId));
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ToId());
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{

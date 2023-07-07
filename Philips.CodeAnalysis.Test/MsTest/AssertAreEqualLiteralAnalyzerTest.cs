@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			return new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral),
+				Id = DiagnosticId.AssertAreEqualLiteral.ToId(),
 				Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
 			};

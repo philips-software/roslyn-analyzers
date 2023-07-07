@@ -15,10 +15,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class AvoidMethodsCodeFixProvider : SingleDiagnosticCodeFixProvider<MethodDeclarationSyntax>
 	{
 		public sealed override ImmutableArray<string> FixableDiagnosticIds =>
-			ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
-				Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
-				Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
-				Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod));
+			ImmutableArray.Create(DiagnosticId.AvoidTestInitializeMethod.ToId(),
+				DiagnosticId.AvoidClassInitializeMethod.ToId(),
+				DiagnosticId.AvoidClassCleanupMethod.ToId(),
+				DiagnosticId.AvoidTestCleanupMethod.ToId());
 
 		protected override string Title => "Remove this Method";
 

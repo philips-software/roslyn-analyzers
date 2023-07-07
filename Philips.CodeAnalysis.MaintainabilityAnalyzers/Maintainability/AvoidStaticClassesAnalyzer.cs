@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = Title;
 		private const string Description = @"Static Classes are not easily mockable. Avoid them so that your code is Unit Testable.";
 		private const string Category = Categories.Maintainability;
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidStaticClasses), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidStaticClasses.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
