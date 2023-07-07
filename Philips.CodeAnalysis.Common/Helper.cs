@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.Common
 		public string GetFileName(string filePath)
 		{
 			var nodes = filePath.Split(TrimCharacters);
-			return nodes[nodes.Length - 1];
+			return nodes.Last();
 		}
 
 		public bool IsAssemblyInfo(SyntaxNode node)

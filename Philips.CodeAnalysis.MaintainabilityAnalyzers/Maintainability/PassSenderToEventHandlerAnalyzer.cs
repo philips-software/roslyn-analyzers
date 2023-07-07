@@ -53,13 +53,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
 				SeparatedSyntaxList<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments;
-				if (Helper.ForLiterals.IsLiteralNull(arguments[0].Expression))
+				if (Helper.ForLiterals.IsNull(arguments[0].Expression))
 				{
 					Location loc = arguments[0].GetLocation();
 					ReportDiagnostic(loc, eventName);
 				}
 
-				if (Helper.ForLiterals.IsLiteralNull(arguments[1].Expression))
+				if (Helper.ForLiterals.IsNull(arguments[1].Expression))
 				{
 					Location loc = arguments[1].GetLocation();
 					ReportDiagnostic(loc, eventName);

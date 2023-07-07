@@ -8,7 +8,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class LiteralHelper
 	{
-		public bool IsLiteralNull(ExpressionSyntax expression)
+		public bool IsNull(ExpressionSyntax expression)
 		{
 			return expression is LiteralExpressionSyntax { Token.Text: "null" };
 		}
@@ -47,12 +47,12 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
-		public bool IsLiteralTrueFalse(ExpressionSyntax expressionSyntax)
+		public bool IsTrueOrFalse(ExpressionSyntax expressionSyntax)
 		{
 			SyntaxKind kind = expressionSyntax.Kind();
 			return kind switch
 			{
-				SyntaxKind.LogicalNotExpression => IsLiteralTrueFalse(((PrefixUnaryExpressionSyntax)expressionSyntax).Operand),//recurse.
+				SyntaxKind.LogicalNotExpression => IsTrueOrFalse(((PrefixUnaryExpressionSyntax)expressionSyntax).Operand),//recurse.
 				SyntaxKind.TrueLiteralExpression or SyntaxKind.FalseLiteralExpression => true,//literal true/false
 				_ => false,
 			};
