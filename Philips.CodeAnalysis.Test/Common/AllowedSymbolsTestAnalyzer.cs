@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 
-		private AllowedSymbols _allowedSymbols;
+		private Helper _helper;
 		private readonly bool _shouldCheckMethods;
 
 		public AllowedSymbolsTestAnalyzer(bool shouldCheckMethods)
@@ -34,8 +34,8 @@ namespace Philips.CodeAnalysis.Test.Common
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
 		{
-			_allowedSymbols = new AllowedSymbols(context.Compilation);
-			_allowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			_helper = new Helper(context.Options, context.Compilation);
+			_helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
 			if (_shouldCheckMethods)
 			{
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		private void AnalyzeMethod(SymbolAnalysisContext context)
 		{
 			var methodSymbol = context.Symbol as IMethodSymbol;
-			if (_allowedSymbols.IsAllowed(methodSymbol))
+			if (_helper.ForAllowedSymbols.IsAllowed(methodSymbol))
 			{
 				Location loc = methodSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		private void AnalyzeType(SymbolAnalysisContext context)
 		{
 			var typeSymbol = context.Symbol as INamedTypeSymbol;
-			if (_allowedSymbols.IsAllowed(typeSymbol))
+			if (_helper.ForAllowedSymbols.IsAllowed(typeSymbol))
 			{
 				Location loc = typeSymbol.Locations[0];
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));

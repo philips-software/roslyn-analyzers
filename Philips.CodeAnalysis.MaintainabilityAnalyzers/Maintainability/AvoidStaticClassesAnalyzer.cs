@@ -24,24 +24,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile, Helper helper)
+		public virtual AvoidStaticClassesCompilationAnalyzer CreateCompilationAnalyzer(Helper helper, bool shouldGenerateExceptionsFile)
 		{
-			var analyzer = new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, shouldGenerateExceptionsFile, helper);
+			var analyzer = new AvoidStaticClassesCompilationAnalyzer(helper, shouldGenerateExceptionsFile);
 			return analyzer;
 		}
 
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
-			AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
-			allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
-			// Add standard exceptions
-			allowedSymbols.RegisterLine(@"*.Startup");
-			allowedSymbols.RegisterLine(@"*.Program");
-			allowedSymbols.RegisterLine(@"*.AssemblyInitialize");
-
 			Helper helper = new(compilationContext.Options, compilationContext.Compilation);
+			helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+			// Add standard exceptions
+			helper.ForAllowedSymbols.RegisterLine(@"*.Startup");
+			helper.ForAllowedSymbols.RegisterLine(@"*.Program");
+			helper.ForAllowedSymbols.RegisterLine(@"*.AssemblyInitialize");
+
 			ExceptionsOptions exceptionsOptions = helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
-			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(allowedSymbols, exceptionsOptions.ShouldGenerateExceptionsFile, helper);
+			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(helper, exceptionsOptions.ShouldGenerateExceptionsFile);
 			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -55,13 +54,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidStaticClassesCompilationAnalyzer
 	{
-		private readonly AllowedSymbols _allowedSymbols;
 		private readonly bool _shouldGenerateExceptionsFile;
 		private readonly Helper _helper;
 
-		public AvoidStaticClassesCompilationAnalyzer(AllowedSymbols allowedSymbols, bool shouldGenerateExceptionsFile, Helper helper)
+		public AvoidStaticClassesCompilationAnalyzer(Helper helper, bool shouldGenerateExceptionsFile)
 		{
-			_allowedSymbols = allowedSymbols;
 			_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 			_helper = helper;
 		}
@@ -94,7 +91,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			INamedTypeSymbol declaredSymbol = context.SemanticModel.GetDeclaredSymbol(classDeclarationSyntax);
 
 			// We need to let it go if it's white-listed (i.e., legacy)
-			if (_allowedSymbols.IsAllowed(declaredSymbol))
+			if (_helper.ForAllowedSymbols.IsAllowed(declaredSymbol))
 			{
 				return;
 			}

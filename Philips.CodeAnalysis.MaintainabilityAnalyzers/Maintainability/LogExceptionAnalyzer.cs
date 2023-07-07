@@ -1,5 +1,6 @@
 ﻿// © 2020 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -42,6 +43,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig or <AdditionalFiles> element.";
 		private static readonly DiagnosticDescriptor InvalidSetupRule = new(DiagnosticId.LogException.ToId(), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
+		private Helper _helper;
 
 		/// <summary>
 		/// <inheritdoc/>
@@ -58,23 +60,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			context.RegisterCompilationStartAction(
 				compilationContext =>
 				{
-					var allowedSymbols = new AllowedSymbols(compilationContext.Compilation);
-					allowedSymbols.RegisterLine("*.Log.*");
-					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+					_helper = new Helper(compilationContext.Options, compilationContext.Compilation);
+					_helper.ForAllowedSymbols.RegisterLine("*.Log.*");
+					_helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 
 					// Support legacy configuration via .editorconfig also.
 					var additionalFiles = new AdditionalFilesHelper(
 						compilationContext.Options,
 						compilationContext.Compilation);
-					System.Collections.Generic.IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
 					foreach (var methodName in methodNames)
 					{
-						allowedSymbols.RegisterLine(methodName);
+						_helper.ForAllowedSymbols.RegisterLine(methodName);
 					}
 
-					var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);
+					var compilationAnalyzer = new CompilationAnalyzer(_helper);
 
-					if (allowedSymbols.Count == 0)
+					if (_helper.ForAllowedSymbols.Count == 0)
 					{
 						compilationContext.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
 					}
@@ -87,11 +89,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private sealed class CompilationAnalyzer
 		{
-			private readonly AllowedSymbols _logMethodNames;
+			private readonly Helper _helper;
 
-			public CompilationAnalyzer(AllowedSymbols logMethodNames)
+			public CompilationAnalyzer(Helper helper)
 			{
-				_logMethodNames = logMethodNames;
+				_helper = helper;
 			}
 
 
@@ -126,7 +128,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{
-					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(_logMethodNames.IsAllowed);
+					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(_helper.ForAllowedSymbols.IsAllowed);
 				}
 
 				return isLoggingMethod;

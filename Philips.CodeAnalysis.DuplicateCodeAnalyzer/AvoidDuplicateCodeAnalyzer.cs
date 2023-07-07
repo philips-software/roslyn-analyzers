@@ -46,6 +46,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const int MaxTokenCount = 200;
 		private const int MinTokenCount = 20;
 
+		private Helper _helper;
+
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
 		public override void Initialize(AnalysisContext context)
@@ -55,13 +57,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			context.RegisterCompilationStartAction(compilationContext =>
 			{
-				AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
-				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
+				_helper = new Helper(compilationContext.Options, compilationContext.Compilation);
+				EditorConfigOptions options = InitializeEditorConfigOptions(out Diagnostic configurationError);
 				if (options.ShouldUseExceptionsFile)
 				{
-					allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+					_helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
+				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, _helper, options.ShouldGenerateExceptionsFile, configurationError);
 				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
 				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 			});
@@ -69,17 +71,16 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";
 
-		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic diagnosticError)
+		public virtual EditorConfigOptions InitializeEditorConfigOptions(out Diagnostic diagnosticError)
 		{
 			diagnosticError = null;
 			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
-			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
-			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
+			ExceptionsOptions exceptionsOptions = _helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
 			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
 			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
-			var strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
+			var strTokenCount = _helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
@@ -112,13 +113,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly DuplicateDetector _library = new();
 			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
-			private readonly AllowedSymbols _allowedSymbols;
+			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, AllowedSymbols allowed, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
+			public CompilationAnalyzer(int duplicateTokenThreshold, Helper helper, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
-				_allowedSymbols = allowed;
+				_helper = helper;
 				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 				if (configurationError != null)
 				{
@@ -146,7 +147,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					}
 
 					IMethodSymbol methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-					if (_allowedSymbols.IsAllowed(methodSymbol))
+					if (_helper.ForAllowedSymbols.IsAllowed(methodSymbol))
 					{
 						return;
 					}

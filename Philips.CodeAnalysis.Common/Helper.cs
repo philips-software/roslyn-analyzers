@@ -9,6 +9,7 @@ namespace Philips.CodeAnalysis.Common
 	{
 		public Helper(AnalyzerOptions options, Compilation compilation)
 		{
+			ForAllowedSymbols = new AllowedSymbols(compilation);
 			ForAdditionalFiles = new AdditionalFilesHelper(options, compilation);
 			ForAssemblies = new AssembliesHelper();
 			ForAttributes = new AttributeHelper();
@@ -19,6 +20,8 @@ namespace Philips.CodeAnalysis.Common
 			ForTests = new TestHelper();
 			ForTypes = new TypesHelper(this);
 		}
+
+		public AllowedSymbols ForAllowedSymbols { get; }
 
 		public AdditionalFilesHelper ForAdditionalFiles { get; }
 
