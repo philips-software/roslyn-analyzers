@@ -25,7 +25,7 @@ jobs:
           while read status file
           do
             # Ignore the common package, as that is not user documented.
-            if [[ "$file" =~ ^.+/Common/.+$]]
+            if [[ "$file" =~ ^.+/Common/.+$ ]]
             then
               continue
             fi
