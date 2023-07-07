@@ -8,7 +8,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer<T, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where T : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<T>, new()
+	/// <summary>
+	/// Base class for an <see cref="DiagnosticAnalyzer"/> which uses a single <see cref="SyntaxNodeAction{SyntaxNode}"/>.
+	/// </summary>
+	public abstract class SingleDiagnosticAnalyzer<TNode, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where TNode : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<TNode>, new()
 	{
 		public string FullyQualifiedMetaDataName { get; protected set; }
 
@@ -22,7 +25,7 @@ namespace Philips.CodeAnalysis.Common
 			SyntaxKind syntaxKind = GetSyntaxKind();
 			if (syntaxKind == SyntaxKind.None)
 			{
-				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(T)}");
+				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(TNode)}");
 			}
 
 			if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && context.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
@@ -44,7 +47,7 @@ namespace Philips.CodeAnalysis.Common
 			TSyntaxNodeAction syntaxNodeAction = new()
 			{
 				Context = context,
-				Node = (T)context.Node,
+				Node = (TNode)context.Node,
 				Rule = Rule,
 				Analyzer = this,
 				Helper = Helper
@@ -54,7 +57,7 @@ namespace Philips.CodeAnalysis.Common
 
 		protected virtual SyntaxKind GetSyntaxKind()
 		{
-			return typeof(T).Name switch
+			return typeof(TNode).Name switch
 			{
 				nameof(CompilationUnitSyntax) => SyntaxKind.CompilationUnit,
 				nameof(MethodDeclarationSyntax) => SyntaxKind.MethodDeclaration,

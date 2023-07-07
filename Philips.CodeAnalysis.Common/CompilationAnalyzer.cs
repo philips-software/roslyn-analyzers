@@ -6,6 +6,9 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
+	/// <summary>
+	/// Base class for <see cref="DiagnosticAnalyzer"/> which operate on the entire <see cref="Compilation"/>.
+	/// </summary>
 	public abstract class CompilationAnalyzer : DiagnosticAnalyzer
 	{
 		public DiagnosticId DiagnosticId { get; }

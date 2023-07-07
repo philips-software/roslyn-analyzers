@@ -7,21 +7,17 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer : DiagnosticAnalyzer
+	/// <summary>
+	/// Base class for an <see cref="DiagnosticAnalyzer"/> which may report only a single <see cref="DiagnosticDescriptor"/>.
+	/// </summary>
+	public abstract class SingleDiagnosticAnalyzer : CompilationAnalyzer
 	{
-		public DiagnosticId DiagnosticId { get; }
-		public string Id { get; }
-		protected DiagnosticDescriptor Rule { get; }
-
 		public Helper Helper { get; private set; }
 
 		protected SingleDiagnosticAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+			DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{
-			DiagnosticId = id;
-			Id = Helper.ToDiagnosticId(id);
-			var helpLink = Helper.ToHelpLinkUrl(Id);
-			Rule = new(Id, title, messageFormat, category, severity, isEnabled, description, helpLink);
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
