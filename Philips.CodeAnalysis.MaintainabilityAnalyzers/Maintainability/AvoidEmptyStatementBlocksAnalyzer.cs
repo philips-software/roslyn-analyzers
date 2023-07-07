@@ -67,8 +67,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// Empty public or protected methods are acceptable, as it could be part of an API, or an interface implementation
-			if (blockSyntax.Parent is MethodDeclarationSyntax methodSyntax && Helper.IsCallableFromOutsideClass(methodSyntax))
+			// Empty public or protected members are acceptable, as it could be part of an API, or an interface implementation
+			if (blockSyntax.Parent is MemberDeclarationSyntax memberSyntax && memberSyntax.IsCallableFromOutsideClass())
 			{
 				return;
 			}

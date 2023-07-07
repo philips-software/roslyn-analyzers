@@ -104,7 +104,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// If we're not within a Control/Form, let it go.
 			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
-			if (!Helper.IsUserControl(type))
+			if (!Helper.ForTypes.IsUserControl(type))
 			{
 				return;
 			}

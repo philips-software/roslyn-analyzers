@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
-			var isActualCallable = Helper.IsCallableFromOutsideClass(memberDeclaration);
+			var isActualCallable = memberDeclaration.IsCallableFromOutsideClass();
 
 			// Assert
 			Assert.AreEqual(isExpectedCallable, isActualCallable);
