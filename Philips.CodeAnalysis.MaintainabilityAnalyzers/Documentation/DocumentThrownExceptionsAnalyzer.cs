@@ -48,11 +48,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			IReadOnlyDictionary<string, string> aliases;
+			IReadOnlyDictionary<string, string> aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.
-				aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
 				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
@@ -75,7 +74,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
 			if (aliases.TryGetValue(thrownExceptionName, out var aliasedName))
 			{
 				thrownExceptionName = aliasedName;
