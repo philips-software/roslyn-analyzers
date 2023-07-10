@@ -9,13 +9,13 @@ namespace Philips.CodeAnalysis.Common
 	/// <summary>
 	/// Base class for <see cref="DiagnosticAnalyzer"/> which operate on the entire <see cref="Compilation"/>.
 	/// </summary>
-	public abstract class CompilationAnalyzer : DiagnosticAnalyzer
+	public abstract class CompilationSessionAnalyzer : DiagnosticAnalyzer
 	{
 		public DiagnosticId DiagnosticId { get; }
 		public string Id { get; }
 		protected DiagnosticDescriptor Rule { get; }
 
-		protected CompilationAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
+		protected CompilationSessionAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
