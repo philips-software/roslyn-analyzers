@@ -26,8 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
-			var expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
+			var expectedPrefix = _helper.ForAdditionalFiles.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
 			var namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			var myNamespace = namespaceDeclaration.Name.ToString();

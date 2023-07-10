@@ -42,8 +42,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			context.EnableConcurrentExecution();
 			context.RegisterCompilationStartAction(ctx =>
 			{
-				var additionalFilesHelper = new AdditionalFilesHelper(ctx.Options, ctx.Compilation);
-				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
+				var helper = new Helper(ctx.Options, ctx.Compilation);
+				var line = helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
 				additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
 				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
 				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);

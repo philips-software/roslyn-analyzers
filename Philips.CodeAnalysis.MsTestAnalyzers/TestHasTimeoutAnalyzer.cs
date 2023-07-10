@@ -27,20 +27,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			var additionalFilesHelper = new AdditionalFilesHelper(options, compilation);
+			var helper = new Helper(options, compilation);
 
-			return new TestHasTimeout(definitions, additionalFilesHelper);
+			return new TestHasTimeout(definitions, helper);
 		}
 
 		private sealed class TestHasTimeout : TestMethodImplementation
 		{
-			private readonly AdditionalFilesHelper _additionalFilesHelper;
+			private readonly Helper _helper;
 			private readonly object _lock1 = new();
 			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new();
 
-			public TestHasTimeout(MsTestAttributeDefinitions definitions, AdditionalFilesHelper additionalFilesHelper) : base(definitions)
+			public TestHasTimeout(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions)
 			{
-				_additionalFilesHelper = additionalFilesHelper;
+				_helper = helper;
 			}
 
 			private bool TryGetAllowedTimeouts(string category, out ImmutableList<string> values)
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 				}
 
-				IReadOnlyList<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
+				IReadOnlyList<string> allowedTimeouts = _helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, category);
 
 				lock (_lock1)
 				{

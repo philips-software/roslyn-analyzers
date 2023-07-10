@@ -65,10 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					_helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 
 					// Support legacy configuration via .editorconfig also.
-					var additionalFiles = new AdditionalFilesHelper(
-						compilationContext.Options,
-						compilationContext.Compilation);
-					IReadOnlyList<string> methodNames = additionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+					IReadOnlyList<string> methodNames = _helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
 					foreach (var methodName in methodNames)
 					{
 						_helper.ForAllowedSymbols.RegisterLine(methodName);

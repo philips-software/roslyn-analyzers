@@ -90,9 +90,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			if (!_isConfigInitialized)
 			{
-				AdditionalFilesHelper additionalFilesHelper = (Analyzer as NamespaceMatchFilePathAnalyzer).AdditionalFilesHelper;
-				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
-				var folderInNamespace = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
+				Helper helper = (Analyzer as NamespaceMatchFilePathAnalyzer).Helper;
+				helper ??= new Helper(Context.Options, Context.Compilation);
+				var folderInNamespace = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"folder_in_namespace");
 				_ = bool.TryParse(folderInNamespace, out _isFolderInNamespace);
 				_isConfigInitialized = true;
 			}

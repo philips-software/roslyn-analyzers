@@ -38,8 +38,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private void Analyze(CompilationAnalysisContext context)
 		{
 			Version expectedVersion = new(@"1.0.0.0");
-			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			var value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+			var helper = new Helper(context.Options, context.Compilation);
+			var value = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))
 			{
 				var isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);

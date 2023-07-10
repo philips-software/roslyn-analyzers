@@ -90,8 +90,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var hasYear = yearRegex.IsMatch(comment);
 
 			// Check the company name, only if it is configured.
-			var additionalFilesHelper = new AdditionalFilesHelper(Context.Options, Context.Compilation);
-			var companyName = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"company_name");
+			var helper = new Helper(Context.Options, Context.Compilation);
+			var companyName = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"company_name");
 			var hasCompanyName = string.IsNullOrEmpty(companyName) || comment.Contains(companyName);
 
 			return hasCopyright && hasYear && hasCompanyName;
