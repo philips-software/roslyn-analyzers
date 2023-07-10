@@ -28,12 +28,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions);
+			return new TestMethodsMustHaveTheCorrectNumberOfArguments(definitions, Helper);
 		}
 
 		private sealed class TestMethodsMustHaveTheCorrectNumberOfArguments : TestMethodImplementation
 		{
-			public TestMethodsMustHaveTheCorrectNumberOfArguments(MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestMethodsMustHaveTheCorrectNumberOfArguments(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{ }
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
@@ -78,14 +78,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				dataRowParameters = new();
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					if (AttributeHelper.IsDataRowAttribute(attribute, context))
+					if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
 					{
 						var argumentCount = attribute.ArgumentList.Arguments.Count((arg) => { return arg.NameEquals?.Name.Identifier.ValueText != @"DisplayName"; });
 						_ = dataRowParameters.Add(argumentCount);
 						continue;
 					}
 
-					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					if (Helper.ForAttributes.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
 						hasAnyDynamicData = true;
 						continue;

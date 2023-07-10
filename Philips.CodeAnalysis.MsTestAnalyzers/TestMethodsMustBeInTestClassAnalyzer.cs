@@ -20,20 +20,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustBeInTestClass.ToId(),
 												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
-
-		public TestMethodsMustBeInTestClassAnalyzer()
-		{ }
-
 		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new TestMethodsMustBeInTestClass() { Helper = Helper };
+			return new TestMethodsMustBeInTestClass(Helper);
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private sealed class TestMethodsMustBeInTestClass : Implementation
 		{
-			public Helper Helper { get; set; }
+			public TestMethodsMustBeInTestClass(Helper helper) : base(helper) { }
 
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{

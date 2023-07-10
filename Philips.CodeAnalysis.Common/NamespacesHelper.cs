@@ -9,6 +9,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class NamespacesHelper
 	{
+		internal NamespacesHelper()
+		{
+			// Hide the constructor.
+		}
+
 		public bool IsNamespaceExempt(string myNamespace)
 		{
 			// https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809

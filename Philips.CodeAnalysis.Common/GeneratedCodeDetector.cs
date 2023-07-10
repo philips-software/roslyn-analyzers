@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Common
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
-		public GeneratedCodeDetector(Helper helper)
+		internal GeneratedCodeDetector(Helper helper)
 		{
 			_helper = helper;
 		}

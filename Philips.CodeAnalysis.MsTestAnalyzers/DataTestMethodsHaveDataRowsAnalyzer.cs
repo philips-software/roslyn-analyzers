@@ -31,13 +31,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new DataTestMethodsHaveDataRowsImplementation(definitions);
+			return new DataTestMethodsHaveDataRowsImplementation(definitions, Helper);
 		}
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, RuleShouldBeTestMethod, RuleShouldBeDataTestMethod);
 
 		public class DataTestMethodsHaveDataRowsImplementation : TestMethodImplementation
 		{
-			public DataTestMethodsHaveDataRowsImplementation(MsTestAttributeDefinitions definitions) : base(definitions)
+			public DataTestMethodsHaveDataRowsImplementation(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{ }
 			private void CollectSupportingData(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration,
 												out int dynamicDataCount, out int dataRowCount, out bool hasTestSource)
@@ -48,13 +48,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
-					if (AttributeHelper.IsDataRowAttribute(attribute, context))
+					if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
 					{
 						dataRowCount++;
 						continue;
 					}
 
-					if (AttributeHelper.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
+					if (Helper.ForAttributes.IsAttribute(attribute, context, MsTestFrameworkDefinitions.DynamicDataAttribute, out _, out _))
 					{
 						dynamicDataCount++;
 						continue;

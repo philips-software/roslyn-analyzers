@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common
 	{
 		private readonly Helper _helper;
 
-		public TypesHelper(Helper helper)
+		internal TypesHelper(Helper helper)
 		{
 			_helper = helper;
 		}

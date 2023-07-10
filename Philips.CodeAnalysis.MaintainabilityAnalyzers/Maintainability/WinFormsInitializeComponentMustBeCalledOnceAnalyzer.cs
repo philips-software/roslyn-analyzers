@@ -35,12 +35,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
+			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = Helper.ForConstructors.CreateMapping(Context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
-				IReadOnlyList<ConstructorDeclarationSyntax> chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
+				IReadOnlyList<ConstructorDeclarationSyntax> chain = Helper.ForConstructors.GetCtorChain(mapping, ctor);
 
 				if (!IsInitializeComponentInConstructorChainOnce(chain, out var count))
 				{

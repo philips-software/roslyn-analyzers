@@ -23,17 +23,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new TestHasDescription(definitions);
+			return new TestHasDescription(definitions, Helper);
 		}
 
 		public class TestHasDescription : TestMethodImplementation
 		{
-			public TestHasDescription(MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestHasDescription(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{ }
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				if (!AttributeHelper.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
+				if (!Helper.ForAttributes.HasAttribute(methodDeclaration.AttributeLists, context, MsTestFrameworkDefinitions.DescriptionAttribute, out Location location, out AttributeArgumentSyntax argument))
 				{
 					return;
 				}

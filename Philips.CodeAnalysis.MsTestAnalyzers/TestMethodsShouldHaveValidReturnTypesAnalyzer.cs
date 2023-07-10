@@ -24,14 +24,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new TestMethodsShouldHaveValidReturnTypes(compilation, definitions);
+			return new TestMethodsShouldHaveValidReturnTypes(compilation, definitions, Helper);
 		}
 
 		private sealed class TestMethodsShouldHaveValidReturnTypes : TestMethodImplementation
 		{
 			private readonly INamedTypeSymbol _taskSymbol;
 
-			public TestMethodsShouldHaveValidReturnTypes(Compilation compilation, MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestMethodsShouldHaveValidReturnTypes(Compilation compilation, MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{
 				_taskSymbol = compilation.GetTypeByMetadataName("System.Threading.Tasks.Task");
 			}

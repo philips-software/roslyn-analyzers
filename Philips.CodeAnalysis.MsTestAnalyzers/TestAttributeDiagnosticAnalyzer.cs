@@ -14,6 +14,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	{
 		public abstract class Implementation
 		{
+			protected Implementation(Helper helper)
+			{
+				Helper = helper;
+			}
+			public Helper Helper { get; }
+
 			public virtual void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes) { }
 		}
 

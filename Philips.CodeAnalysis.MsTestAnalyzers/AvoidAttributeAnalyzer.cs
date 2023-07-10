@@ -23,17 +23,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
-		private readonly AttributeHelper _attributeHelper;
-
-		public AvoidAttributeAnalyzer()
-			: this(new AttributeHelper())
-		{ }
-
-		public AvoidAttributeAnalyzer(AttributeHelper attributeHelper)
-		{
-			_attributeHelper = attributeHelper;
-		}
-
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			ImmutableHashSet<string> whitelist = null;
@@ -89,7 +78,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			foreach (AttributeModel attribute in attributes)
 			{
-				if (!_attributeHelper.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation))
+				if (!Helper.ForAttributes.HasAttribute(attributesNode, context, attribute.Name, attribute.FullName, out Location descriptionLocation))
 				{
 					continue;
 				}

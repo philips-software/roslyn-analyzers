@@ -23,11 +23,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new NoEmptyTestMethodsImplementation();
+			return new NoEmptyTestMethodsImplementation(Helper);
 		}
 
 		public class NoEmptyTestMethodsImplementation : Implementation
 		{
+			public NoEmptyTestMethodsImplementation(Helper helper) : base(helper) { }
+
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
 				if (methodDeclaration.Body == null)

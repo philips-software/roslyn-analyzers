@@ -10,6 +10,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class ConstructorSyntaxHelper
 	{
+		internal ConstructorSyntaxHelper()
+		{
+			// Hide the constructor
+		}
+
 		public IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> CreateMapping(SyntaxNodeAnalysisContext context, ConstructorDeclarationSyntax[] constructors)
 		{
 			Dictionary<ConstructorDeclarationSyntax, ISymbol> deferredCtor = new();

@@ -34,13 +34,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private sealed class TestHasTimeout : TestMethodImplementation
 		{
-			private readonly Helper _helper;
 			private readonly object _lock1 = new();
 			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new();
 
-			public TestHasTimeout(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions)
+			public TestHasTimeout(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{
-				_helper = helper;
 			}
 
 			private bool TryGetAllowedTimeouts(string category, out ImmutableList<string> values)
@@ -53,7 +51,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 				}
 
-				IReadOnlyList<string> allowedTimeouts = _helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, category);
+				IReadOnlyList<string> allowedTimeouts = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, category);
 
 				lock (_lock1)
 				{
@@ -74,10 +72,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-				AttributeHelper attributeHelper = new();
-				var hasCategory = attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
+				var hasCategory = Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
 
-				if (!attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 

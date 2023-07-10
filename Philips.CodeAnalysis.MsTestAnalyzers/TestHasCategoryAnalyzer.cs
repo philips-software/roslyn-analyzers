@@ -34,12 +34,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public class TestHasAttributeCategory : TestMethodImplementation
 		{
-			private readonly Helper _helper;
 			private readonly ImmutableHashSet<string> _allowedCategories;
 
-			public TestHasAttributeCategory(Helper helper, IReadOnlyList<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestHasAttributeCategory(Helper helper, IReadOnlyList<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions, helper)
 			{
-				_helper = helper;
 				_allowedCategories = allowedCategories.Select(cat => TrimStart(cat, "~T:")).ToImmutableHashSet();
 			}
 
@@ -49,12 +47,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (
 					context.SemanticModel.GetDeclaredSymbol(methodDeclaration) is IMethodSymbol symbol &&
-					_helper.ForAllowedSymbols.IsAllowed(symbol))
+					Helper.ForAllowedSymbols.IsAllowed(symbol))
 				{
 					return;
 				}
 
-				if (!AttributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					Location location = methodDeclaration.Identifier.GetLocation();
 					var diagnostic = Diagnostic.Create(Rule, location);
