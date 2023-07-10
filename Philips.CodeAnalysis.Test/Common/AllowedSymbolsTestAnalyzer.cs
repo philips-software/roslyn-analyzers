@@ -1,6 +1,5 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -12,14 +11,14 @@ namespace Philips.CodeAnalysis.Test.Common
 	/// The analyzer reports a <see cref="Diagnostic"/> on each of its AllowedSymbols. In production analyzers the allowed symbols is used reciprocally.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AllowedSymbolsTestAnalyzer : DiagnosticAnalyzer
+	public class AllowedSymbolsTestAnalyzer : CompilationSessionAnalyzer
 	{
 		public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 
-		private Helper _helper;
 		private readonly bool _shouldCheckMethods;
+		private Helper _helper;
 
-		public AllowedSymbolsTestAnalyzer(bool shouldCheckMethods)
+		public AllowedSymbolsTestAnalyzer(bool shouldCheckMethods) : base(DiagnosticId.AssertAreEqual, "AllowedSymbols", "AllowedSymbolsFound", "", "", DiagnosticSeverity.Error, true)
 		{
 			_shouldCheckMethods = shouldCheckMethods;
 		}
@@ -29,7 +28,6 @@ namespace Philips.CodeAnalysis.Test.Common
 			context.RegisterCompilationStartAction(AnalyzeCompilationStart);
 			context.EnableConcurrentExecution();
 			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze);
-
 		}
 
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
@@ -66,10 +64,5 @@ namespace Philips.CodeAnalysis.Test.Common
 				context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 			}
 		}
-
-		public static DiagnosticDescriptor Rule =>
-			new("DUMMY0001", "AllowedSymbols", "AllowedSymbolsFound", "", DiagnosticSeverity.Error, true);
-
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 	}
 }

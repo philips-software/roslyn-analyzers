@@ -80,7 +80,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 		{
 			DiagnosticResult expected = new()
 			{
-				Id = AllowedSymbolsTestAnalyzer.Rule.Id,
+				Id = GetDiagnosticAnalyzer().SupportedDiagnostics[0].Id,
 				Message = new Regex("AllowedSymbolsFound"),
 				Severity = DiagnosticSeverity.Error,
 				Location = new DiagnosticResultLocation("Test0.cs", null, null)

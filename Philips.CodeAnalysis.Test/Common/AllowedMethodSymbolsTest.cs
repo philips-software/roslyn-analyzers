@@ -82,7 +82,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 			await VerifyDiagnostic(file,
 				new DiagnosticResult()
 				{
-					Id = AllowedSymbolsTestAnalyzer.Rule.Id,
+					Id = GetDiagnosticAnalyzer().SupportedDiagnostics[0].Id,
 					Message = new Regex("AllowedSymbolsFound"),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
