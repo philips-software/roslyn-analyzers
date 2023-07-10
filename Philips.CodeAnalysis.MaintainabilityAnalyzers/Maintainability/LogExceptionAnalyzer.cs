@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Report when a catch exception block does not call one of the logging methods.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LogExceptionAnalyzer : DiagnosticAnalyzer
+	public class LogExceptionAnalyzer : DiagnosticAnalyzerBase
 	{
 		public const string AllowedFileName = "AllowedLogMethods.txt";
 		private const string LogMethodNames = "log_method_names";
@@ -43,8 +43,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig or <AdditionalFiles> element.";
 		private static readonly DiagnosticDescriptor InvalidSetupRule = new(DiagnosticId.LogException.ToId(), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
 
-		private Helper _helper;
-
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
@@ -53,46 +51,38 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(
-				compilationContext =>
-				{
-					_helper = new Helper(compilationContext.Options, compilationContext.Compilation);
-					_helper.ForAllowedSymbols.RegisterLine("*.Log.*");
-					_helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+			Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
+			Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
-					// Support legacy configuration via .editorconfig also.
-					IReadOnlyList<string> methodNames = _helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
-					foreach (var methodName in methodNames)
-					{
-						_helper.ForAllowedSymbols.RegisterLine(methodName);
-					}
+			// Support legacy configuration via .editorconfig also.
+			IReadOnlyList<string> methodNames = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+			foreach (var methodName in methodNames)
+			{
+				Helper.ForAllowedSymbols.RegisterLine(methodName);
+			}
 
-					var compilationAnalyzer = new CompilationAnalyzer(_helper);
+			var compilationAnalyzer = new CompilationAnalyzer(Helper);
 
-					if (_helper.ForAllowedSymbols.Count == 0)
-					{
-						compilationContext.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
-					}
-					else
-					{
-						compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
-					}
-				});
+			if (Helper.ForAllowedSymbols.Count == 0)
+			{
+				context.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
+			}
+			else
+			{
+				context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
+			}
 		}
 
 		private sealed class CompilationAnalyzer
 		{
-			private readonly Helper _helper;
-
 			public CompilationAnalyzer(Helper helper)
 			{
-				_helper = helper;
+				Helper = helper;
 			}
 
+			private Helper Helper { get; }
 
 			public void AnalyzeCatchException(SyntaxNodeAnalysisContext context)
 			{
@@ -125,7 +115,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
 					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
 				{
-					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(_helper.ForAllowedSymbols.IsAllowed);
+					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
 				}
 
 				return isLoggingMethod;
