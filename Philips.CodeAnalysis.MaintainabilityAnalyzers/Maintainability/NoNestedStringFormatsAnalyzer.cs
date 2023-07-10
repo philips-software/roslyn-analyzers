@@ -12,7 +12,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoNestedStringFormatsAnalyzer : DiagnosticAnalyzer
+	public class NoNestedStringFormatsAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string NestedStringFormatTitle = @"Don't nest string.Format (or similar) methods";
 		private const string NestedStringFormatMessageFormat = @"Don't nest a call to {0} inside a call to {1}";
@@ -29,13 +29,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly DiagnosticDescriptor NestedRule = new(DiagnosticId.NoNestedStringFormats.ToId(), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(DiagnosticId.NoUnnecessaryStringFormats.ToId(), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
 
-		private void Analyze(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterOperationBlockStartAction(compilationContext =>
-			{
-				compilationContext.RegisterOperationAction(OnInvocation, OperationKind.Invocation);
-				compilationContext.RegisterOperationAction(OnInterpolatedString, OperationKind.InterpolatedString);
-			});
+			context.RegisterOperationAction(OnInvocation, OperationKind.Invocation);
+			context.RegisterOperationAction(OnInterpolatedString, OperationKind.InterpolatedString);
 		}
 
 		private void OnInterpolatedString(OperationAnalysisContext operationContext)
@@ -299,13 +296,5 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(NestedRule, UnnecessaryRule);
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
-			context.RegisterCompilationStartAction(Analyze);
-		}
 	}
 }

@@ -8,7 +8,12 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class TestHelper
 	{
-		private readonly AttributeHelper _attributeHelper = new();
+		private readonly Helper _helper;
+
+		internal TestHelper(Helper helper)
+		{
+			_helper = helper;
+		}
 
 		public bool IsInTestClass(SyntaxNodeAnalysisContext context)
 		{
@@ -23,13 +28,13 @@ namespace Philips.CodeAnalysis.Common
 				return false;
 			}
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return _attributeHelper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return _helper.ForAttributes.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		public bool IsTestClass(ClassDeclarationSyntax classDeclaration, SyntaxNodeAnalysisContext context)
 		{
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return _attributeHelper.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return _helper.ForAttributes.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
 		}
 
 		public bool IsTestMethod(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context)
@@ -54,10 +59,10 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsTestMethod(AttributeListSyntax attributes, SyntaxNodeAnalysisContext context, out Location location, out bool isDataTestMethod)
 		{
 			isDataTestMethod = false;
-			var hasAttribute = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.TestMethodAttribute, out location);
+			var hasAttribute = _helper.ForAttributes.HasAttribute(attributes, context, MsTestFrameworkDefinitions.TestMethodAttribute, out location);
 			if (!hasAttribute)
 			{
-				hasAttribute = _attributeHelper.HasAttribute(attributes, context, MsTestFrameworkDefinitions.DataTestMethodAttribute, out location);
+				hasAttribute = _helper.ForAttributes.HasAttribute(attributes, context, MsTestFrameworkDefinitions.DataTestMethodAttribute, out location);
 
 				if (hasAttribute)
 				{

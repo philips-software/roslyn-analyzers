@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidStaticClassesAnalyzer : DiagnosticAnalyzer
+	public class AvoidStaticClassesAnalyzer : DiagnosticAnalyzerBase
 	{
 		public const string AllowedFileName = @"StaticClasses.Allowed.txt";
 		private const string Title = @"Avoid static classes";
@@ -30,25 +30,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return analyzer;
 		}
 
-		public virtual void Register(CompilationStartAnalysisContext compilationContext)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			Helper helper = new(compilationContext.Options, compilationContext.Compilation);
-			helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+			Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 			// Add standard exceptions
-			helper.ForAllowedSymbols.RegisterLine(@"*.Startup");
-			helper.ForAllowedSymbols.RegisterLine(@"*.Program");
-			helper.ForAllowedSymbols.RegisterLine(@"*.AssemblyInitialize");
+			Helper.ForAllowedSymbols.RegisterLine(@"*.Startup");
+			Helper.ForAllowedSymbols.RegisterLine(@"*.Program");
+			Helper.ForAllowedSymbols.RegisterLine(@"*.AssemblyInitialize");
 
-			ExceptionsOptions exceptionsOptions = helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
-			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(helper, exceptionsOptions.ShouldGenerateExceptionsFile);
-			compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
-		}
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.RegisterCompilationStartAction(Register);
+			ExceptionsOptions exceptionsOptions = Helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
+			AvoidStaticClassesCompilationAnalyzer compilationAnalyzer = CreateCompilationAnalyzer(Helper, exceptionsOptions.ShouldGenerateExceptionsFile);
+			context.RegisterSyntaxNodeAction(compilationAnalyzer.Analyze, SyntaxKind.ClassDeclaration);
 		}
 	}
 

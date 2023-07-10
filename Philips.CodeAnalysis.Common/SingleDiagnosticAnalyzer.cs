@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <summary>
 	/// Base class for an <see cref="DiagnosticAnalyzer"/> which may report only a single <see cref="DiagnosticDescriptor"/>.
 	/// </summary>
-	public abstract class SingleDiagnosticAnalyzer : AnalyzerBase
+	public abstract class SingleDiagnosticAnalyzer : DiagnosticAnalyzerBase
 	{
 		public DiagnosticId DiagnosticId { get; }
 		public string Id { get; }

@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespacePrefixAnalyzer : DiagnosticAnalyzer
+	public class NamespacePrefixAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string TitleForIncorrectPrefix = @"Namespace uses predefined prefix";
 		private const string MessageFormatForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
@@ -22,11 +22,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string DescriptionForEmptyPrefix = MessageFormatForEmptyPrefix;
 		private const string Category = Categories.Naming;
 
-		private Helper _helper;
-
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var expectedPrefix = _helper.ForAdditionalFiles.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
+			var expectedPrefix = Helper.ForAdditionalFiles.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
 			var namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			var myNamespace = namespaceDeclaration.Name.ToString();
@@ -38,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
 			{
-				if (_helper.ForNamespaces.IsNamespaceExempt(myNamespace))
+				if (Helper.ForNamespaces.IsNamespaceExempt(myNamespace))
 				{
 					return;
 				}
@@ -57,15 +55,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIncorrectNamespace, RuleForEmptyPrefix); } }
 
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				_helper = new Helper(startContext.Options, startContext.Compilation);
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
 		}
 	}
 }

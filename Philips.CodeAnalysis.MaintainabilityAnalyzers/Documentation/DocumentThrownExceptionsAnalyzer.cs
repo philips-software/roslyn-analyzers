@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Analyzer that checks if the text of the XML code documentation contains a reference to each exception being thrown inside the method or property.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzer
+	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string DocumentTitle = @"Document thrown exceptions";
 		private const string DocumentMessageFormat = @"Document the fact that this method can potentially throw an exception of type {0}.";
@@ -30,17 +30,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
-		private Helper _helper;
-
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				_helper = new Helper(startContext.Options, startContext.Compilation);
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -48,7 +40,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			IReadOnlyDictionary<string, string> aliases = _helper.ForNamespaces.GetUsingAliases(throwStatement);
+			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(throwStatement);
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.

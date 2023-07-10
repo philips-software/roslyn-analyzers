@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			HashSet<MethodDeclarationSyntax> testMethods = new();
 			foreach (MemberDeclarationSyntax member in classDeclaration.Members)
 			{
-				if (member is not MethodDeclarationSyntax method || !TestHelper.IsTestMethod(method, context))
+				if (member is not MethodDeclarationSyntax method || !Helper.ForTests.IsTestMethod(method, context))
 				{
 					continue;
 				}

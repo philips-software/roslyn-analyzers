@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Adding such low value comments doesn't add anything to the readability and just takes longer to read.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzer
+	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string EmptyTitle = @"Avoid empty Summary XML comments";
 		private const string EmptyMessageFormat = @"Summary XML comments must be useful or non-existent.";
@@ -36,24 +36,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(ctx =>
-			{
-				var helper = new Helper(ctx.Options, ctx.Compilation);
-				var line = helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
-				additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
-				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
-			});
+			var line = Helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
+			additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
+			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
 		}
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)

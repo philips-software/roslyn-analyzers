@@ -26,17 +26,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new TestMethodsMustBeInTestClass();
+			return new TestMethodsMustBeInTestClass() { Helper = Helper };
 		}
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		private sealed class TestMethodsMustBeInTestClass : Implementation
 		{
+			public Helper Helper { get; set; }
+
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				TestHelper testHelper = new();
-				if (testHelper.IsInTestClass(context))
+				if (Helper.ForTests.IsInTestClass(context))
 				{
 					return;
 				}

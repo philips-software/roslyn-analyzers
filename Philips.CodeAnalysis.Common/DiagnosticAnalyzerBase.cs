@@ -7,7 +7,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <summary>
 	/// Base class for <see cref="DiagnosticAnalyzer"/>.
 	/// </summary>
-	public abstract class AnalyzerBase : DiagnosticAnalyzer
+	public abstract class DiagnosticAnalyzerBase : DiagnosticAnalyzer
 	{
 		public sealed override void Initialize(AnalysisContext context)
 		{

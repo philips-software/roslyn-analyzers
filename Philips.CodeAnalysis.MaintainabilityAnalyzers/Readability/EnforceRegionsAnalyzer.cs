@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceRegionsAnalyzer : DiagnosticAnalyzer
+	public class EnforceRegionsAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string RegionTag = "#region";
 
@@ -55,11 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
 		}
 

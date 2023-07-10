@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					continue;
 				}
 
-				if (AttributeHelper.HasAnyAttribute(method.AttributeLists, context, MsTestFrameworkDefinitions.AssemblyInitializeAttribute, MsTestFrameworkDefinitions.AssemblyCleanupAttribute))
+				if (Helper.ForAttributes.HasAnyAttribute(method.AttributeLists, context, MsTestFrameworkDefinitions.AssemblyInitializeAttribute, MsTestFrameworkDefinitions.AssemblyCleanupAttribute))
 				{
 					return true;
 				}

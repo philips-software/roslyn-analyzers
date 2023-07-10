@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Common
 		public SyntaxNodeAnalysisContext Context { get; init; }
 		public T Node { get; init; }
 		public DiagnosticDescriptor Rule { get; init; }
-		public DiagnosticAnalyzer Analyzer { get; init; }
+		public DiagnosticAnalyzerBase Analyzer { get; init; }
 
 		public Helper Helper { get; init; }
 

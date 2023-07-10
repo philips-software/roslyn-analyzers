@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/// Diagnostic for inconsistent number of operators in a class.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AlignOperatorsCountAnalyzer : DiagnosticAnalyzer
+	public class AlignOperatorsCountAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = "Align number of {0} and {1} operators.";
 		private const string MessageFormat = Title;
@@ -43,8 +43,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private static readonly DiagnosticDescriptor PlusAndEqualRule =
 			GenerateRule(Plus, "==", DiagnosticId.AlignNumberOfPlusAndEqualOperators);
 
-		private Helper _helper;
-
 		private static DiagnosticDescriptor GenerateRule(string first, string second, DiagnosticId diagnosticId)
 		{
 			return new(
@@ -67,21 +65,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// <summary>
 		/// <inheritdoc cref="DiagnosticAnalyzer"/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				_helper = new Helper(startContext.Options, startContext.Compilation);
-				startContext.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
-				startContext.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
-			});
+			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
 		}
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
-			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -96,7 +88,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeStruct(SyntaxNodeAnalysisContext context)
 		{
-			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

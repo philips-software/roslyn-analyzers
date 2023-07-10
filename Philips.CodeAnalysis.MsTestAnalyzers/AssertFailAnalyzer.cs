@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AssertFailAnalyzer : DiagnosticAnalyzer
+	public class AssertFailAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Assert.Fail should not be used if an alternative is more appropriate";
 		private const string MessageFormat = @"Assert.Fail should not be used in this scenario.  Consider using Assert.AreEqual or Assert.IsTrue or Assert.IsNull";
@@ -25,27 +25,21 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			public ImmutableArray<IMethodSymbol> FailMethods { get; set; }
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
+			INamedTypeSymbol assertClass = context.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName);
 
-			context.RegisterCompilationStartAction(startContext =>
+			if (assertClass == null)
 			{
-				INamedTypeSymbol assertClass = startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName);
+				return;
+			}
 
-				if (assertClass == null)
-				{
-					return;
-				}
+			AssertMetadata metadata = new()
+			{
+				FailMethods = assertClass.GetMembers("Fail").OfType<IMethodSymbol>().ToImmutableArray(),
+			};
 
-				AssertMetadata metadata = new()
-				{
-					FailMethods = assertClass.GetMembers("Fail").OfType<IMethodSymbol>().ToImmutableArray(),
-				};
-
-				startContext.RegisterOperationAction((x) => OnMethodCall(metadata, x), OperationKind.Invocation);
-			});
+			context.RegisterOperationAction((x) => OnMethodCall(metadata, x), OperationKind.Invocation);
 		}
 
 		private void OnMethodCall(AssertMetadata metadata, OperationAnalysisContext obj)

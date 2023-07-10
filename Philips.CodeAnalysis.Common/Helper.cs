@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common
 			ForGeneratedCode = new GeneratedCodeDetector(this);
 			ForLiterals = new LiteralHelper();
 			ForNamespaces = new NamespacesHelper();
-			ForTests = new TestHelper();
+			ForTests = new TestHelper(this);
 			ForTypes = new TypesHelper(this);
 		}
 

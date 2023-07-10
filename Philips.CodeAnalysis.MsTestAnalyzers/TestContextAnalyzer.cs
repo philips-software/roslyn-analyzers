@@ -12,7 +12,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestContextAnalyzer : DiagnosticAnalyzer
+	public class TestContextAnalyzer : DiagnosticAnalyzerBase
 	{
 		public const string MessageFormat = @"TestContext should be used or removed.";
 		private const string Title = @"TestContext Usage";
@@ -23,19 +23,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestContext") == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName("Microsoft.VisualStudio.TestTools.UnitTesting.TestContext") == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.PropertyDeclaration);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.PropertyDeclaration);
 		}
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)

@@ -22,7 +22,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string MessageFormat = Title;
 		private const string Description = Title;
 		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
-		private readonly TestHelper _helper = new();
 
 		public NoHardCodedPathsAnalyzer()
 			: base(DiagnosticId.NoHardcodedPaths, Title, MessageFormat, Description, Categories.Maintainability)
@@ -33,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var stringLiteralExpressionNode = (LiteralExpressionSyntax)context.Node;
 
-			if (_helper.IsInTestClass(context))
+			if (Helper.ForTests.IsInTestClass(context))
 			{
 				return;
 			}

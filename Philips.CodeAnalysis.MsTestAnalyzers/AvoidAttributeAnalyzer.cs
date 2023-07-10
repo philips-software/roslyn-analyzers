@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidAttributeAnalyzer : DiagnosticAnalyzer
+	public class AvoidAttributeAnalyzer : DiagnosticAnalyzerBase
 	{
 		public const string AttributesWhitelist = @"AvoidAttributesWhitelist.txt";
 
@@ -24,7 +24,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
 
 		private readonly AttributeHelper _attributeHelper;
-		private Helper _helper;
 
 		public AvoidAttributeAnalyzer()
 			: this(new AttributeHelper())
@@ -35,28 +34,21 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			_attributeHelper = attributeHelper;
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			ImmutableHashSet<string> whitelist = null;
 
-			context.RegisterCompilationStartAction(startContext =>
+			foreach (KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in Attributes)
 			{
-				_helper = new Helper(startContext.Options, startContext.Compilation);
-				ImmutableHashSet<string> whitelist = null;
-
-				foreach (KeyValuePair<string, ImmutableArray<AttributeModel>> kvp in Attributes)
+				if (context.Compilation.GetTypeByMetadataName(kvp.Key) == null)
 				{
-					if (startContext.Compilation.GetTypeByMetadataName(kvp.Key) == null)
-					{
-						continue;
-					}
-
-					whitelist ??= PopulateWhitelist(startContext.Options);
-
-					startContext.RegisterSyntaxNodeAction((c) => Analyze(kvp.Value, c, whitelist), SyntaxKind.AttributeList);
+					continue;
 				}
-			});
+
+				whitelist ??= PopulateWhitelist(context.Options);
+
+				context.RegisterSyntaxNodeAction((c) => Analyze(kvp.Value, c, whitelist), SyntaxKind.AttributeList);
+			}
 		}
 
 		private ImmutableHashSet<string> PopulateWhitelist(AnalyzerOptions options)
@@ -88,7 +80,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private void Analyze(ImmutableArray<AttributeModel> attributes, SyntaxNodeAnalysisContext context, ImmutableHashSet<string> whitelist)
 		{
-			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

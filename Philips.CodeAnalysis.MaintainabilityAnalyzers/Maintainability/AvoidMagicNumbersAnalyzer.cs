@@ -29,8 +29,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			TestHelper helper = new();
-			if (helper.IsInTestClass(Context))
+			if (Helper.ForTests.IsInTestClass(Context))
 			{
 				return;
 			}

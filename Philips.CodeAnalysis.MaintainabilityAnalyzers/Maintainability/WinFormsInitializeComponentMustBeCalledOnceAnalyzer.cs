@@ -26,8 +26,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction : SyntaxNodeAction<ClassDeclarationSyntax>
 	{
-		private readonly TestHelper _testHelper = new();
-
 		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
@@ -97,7 +95,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If we're in a TestClass, let it go.
-			if (_testHelper.IsInTestClass(Context))
+			if (Helper.ForTests.IsInTestClass(Context))
 			{
 				return;
 			}

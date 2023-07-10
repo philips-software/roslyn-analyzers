@@ -10,14 +10,13 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class RegexNeedsTimeoutAnalyzer : DiagnosticAnalyzer
+	public class RegexNeedsTimeoutAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Regex needs a timeout";
 		public const string MessageFormat = @"When constructing a new Regex instance, provide a timeout.";
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
 		private const int CorrectConstructorArgumentCount = 3;
-		private readonly TestHelper _helper = new();
 
 		public static readonly DiagnosticDescriptor Rule = new(
 			DiagnosticId.RegexNeedsTimeout.ToId(),
@@ -26,10 +25,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ObjectCreationExpression);
 		}
 
@@ -37,7 +34,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			var creation = (ObjectCreationExpressionSyntax)context.Node;
 
-			if (_helper.IsInTestClass(context))
+			if (Helper.ForTests.IsInTestClass(context))
 			{
 				return;
 			}

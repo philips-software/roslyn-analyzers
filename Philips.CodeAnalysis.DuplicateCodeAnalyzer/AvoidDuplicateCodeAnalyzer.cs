@@ -17,7 +17,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzer
+	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Avoid Duplicate Code";
 		private const string MessageFormat = @"Duplicate shape found at {0}. Refactor logic or exempt duplication. Duplicate shape details: ""{1}""";
@@ -46,27 +46,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private const int MaxTokenCount = 200;
 		private const int MinTokenCount = 20;
 
-		private Helper _helper;
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(compilationContext =>
+			EditorConfigOptions options = InitializeEditorConfigOptions(out Diagnostic configurationError);
+			if (options.ShouldUseExceptionsFile)
 			{
-				_helper = new Helper(compilationContext.Options, compilationContext.Compilation);
-				EditorConfigOptions options = InitializeEditorConfigOptions(out Diagnostic configurationError);
-				if (options.ShouldUseExceptionsFile)
-				{
-					_helper.ForAllowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
-				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, _helper, options.ShouldGenerateExceptionsFile, configurationError);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
-			});
+				Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			}
+			var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, Helper, options.ShouldGenerateExceptionsFile, configurationError);
+			context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 		}
 
 		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";
@@ -76,11 +67,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			diagnosticError = null;
 			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
 
-			ExceptionsOptions exceptionsOptions = _helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
+			ExceptionsOptions exceptionsOptions = Helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
 			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
 			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
-			var strTokenCount = _helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"token_count");
+			var strTokenCount = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();

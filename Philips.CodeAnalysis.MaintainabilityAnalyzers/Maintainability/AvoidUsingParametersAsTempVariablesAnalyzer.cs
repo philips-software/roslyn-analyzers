@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidUsingParametersAsTempVariablesAnalyzer : DiagnosticAnalyzer
+	public class AvoidUsingParametersAsTempVariablesAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string TempTitle = @"Don't use parameters as temporary variables";
 		private const string TempMessageFormat = @"Don't use parameter {0} as temporary variable, define a local variable instead.";
@@ -28,24 +28,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: LoopDescription);
 
-		private Helper _helper;
-
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(TempRule, LoopRule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
-			{
-				_helper = new Helper(startContext.Options, startContext.Compilation);
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleAssignmentExpression);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleAssignmentExpression);
 		}
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			if (_helper.ForGeneratedCode.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
