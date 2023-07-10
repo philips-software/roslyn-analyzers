@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeForEachStatement, SyntaxKind.ForEachStatement);

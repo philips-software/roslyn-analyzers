@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 		}
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);

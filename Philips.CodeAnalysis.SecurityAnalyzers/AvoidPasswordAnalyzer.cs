@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			: base(DiagnosticId.AvoidPasswordField, Title, MessageFormat, Description, Categories.Security)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			if (ShouldAnalyzeTests || context.Compilation.GetTypeByMetadataName(MsTestMetadataReference) == null)
 			{

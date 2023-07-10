@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			: base(DiagnosticId.AvoidMultipleLambdasOnSingleLine, Title, MessageFormat, Description, Categories.Readability, isEnabled: false)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleLambdaExpression);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ParenthesizedLambdaExpression);

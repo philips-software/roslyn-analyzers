@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{ }
 
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterOperationAction(OnInvoke, OperationKind.Invocation);
 		}

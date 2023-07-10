@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.DontLockNewObject, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterOperationAction(Analyze, OperationKind.Lock);
 		}

@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.DisallowDisposeRegistration, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.AddAssignmentExpression);
 		}

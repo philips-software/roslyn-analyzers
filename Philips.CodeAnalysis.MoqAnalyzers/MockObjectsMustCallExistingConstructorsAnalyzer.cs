@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			: base(DiagnosticId.MockArgumentsMustMatchConstructor, Title, MessageFormat, Description, Categories.RuntimeFailure)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			if (context.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 			{

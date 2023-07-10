@@ -27,17 +27,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			_generatedCodeFlags = generatedCodeFlags;
 		}
 
-		public override void Initialize(AnalysisContext context)
-		{
-			base.Initialize(context);
-			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
-			context.EnableConcurrentExecution();
-		}
-
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			context.RegisterOperationAction(Analyze, OperationKind.Switch);
 			context.RegisterOperationAction(AnalyzeExpression, OperationKind.SwitchExpression);
+		}
+
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		{
+			return _generatedCodeFlags;
 		}
 
 		private void Analyze(OperationAnalysisContext operationContext)

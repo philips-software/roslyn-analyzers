@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Common
 			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
-		protected override void InitializeAnalysis(CompilationStartAnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			SyntaxKind syntaxKind = GetSyntaxKind();
 			if (syntaxKind == SyntaxKind.None)
