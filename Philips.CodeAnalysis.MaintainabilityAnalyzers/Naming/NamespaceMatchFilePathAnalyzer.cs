@@ -12,20 +12,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NamespaceMatchFilePathAnalyzer : SingleDiagnosticAnalyzer<NamespaceDeclarationSyntax, NamespaceMatchFilePathSyntaxNodeAction>
 	{
-		public AdditionalFilesHelper AdditionalFilesHelper { get; }
-
 		private const string Title = @"Namespace matches File Path";
 		private const string MessageFormat = @"Namespace and File Path must match";
 		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path and Namespace must match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
 
 		public NamespaceMatchFilePathAnalyzer()
-			: this(null)
-		{ }
-
-		public NamespaceMatchFilePathAnalyzer(AdditionalFilesHelper additionalFilesHelper)
 			: base(DiagnosticId.NamespaceMatchFilePath, Title, MessageFormat, Description, Categories.Naming)
 		{
-			AdditionalFilesHelper = additionalFilesHelper;
 		}
 	}
 

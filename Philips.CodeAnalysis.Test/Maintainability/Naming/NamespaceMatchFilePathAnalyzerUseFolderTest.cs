@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -33,9 +33,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("true");
-			return new NamespaceMatchFilePathAnalyzer(_mockAdditionalFilesHelper.Object);
+			return new NamespaceMatchFilePathAnalyzer();
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.NamespaceMatchFilePath.ToId()}.folder_in_namespace", "true");
 		}
 
 		[DataTestMethod]
