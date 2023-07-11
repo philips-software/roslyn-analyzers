@@ -76,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// Check if our parent has proper documentation.
 			var docHelper = new DocumentationHelper(nodeWithDoc);
-			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCrefs();
+			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCodeReferences();
 			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				Location loc = throwStatement.ThrowKeyword.GetLocation();

@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			// List the documented exception types.
 			var docHelper = new DocumentationHelper(Node);
-			IEnumerable<string> documentedExceptions = docHelper.GetExceptionCrefs();
+			IEnumerable<string> documentedExceptions = docHelper.GetExceptionCodeReferences();
 			var comparer = new NamespaceIgnoringComparer();
 			IEnumerable<string> remainingExceptions =
 				unhandledExceptions.Where(ex =>
