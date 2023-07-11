@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		#region Helper Analyzer
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private sealed class AvoidWritingCodeAnalyzer : CompilationSessionAnalyzer
+		private sealed class AvoidWritingCodeAnalyzer : SolutionAnalyzer
 		{
 			public AvoidWritingCodeAnalyzer()
 				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)

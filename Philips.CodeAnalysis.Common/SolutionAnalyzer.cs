@@ -7,15 +7,15 @@ using Microsoft.CodeAnalysis.Diagnostics;
 namespace Philips.CodeAnalysis.Common
 {
 	/// <summary>
-	/// Base class for <see cref="DiagnosticAnalyzer"/> which operate on the entire <see cref="Compilation"/>.
+	/// Base class for <see cref="DiagnosticAnalyzer"/> which operate on the entire solution <see cref="Compilation"/>.
 	/// </summary>
-	public abstract class CompilationSessionAnalyzer : DiagnosticAnalyzer
+	public abstract class SolutionAnalyzer : DiagnosticAnalyzer
 	{
 		public DiagnosticId DiagnosticId { get; }
 		public string Id { get; }
 		protected DiagnosticDescriptor Rule { get; }
 
-		protected CompilationSessionAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
+		protected SolutionAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
 											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
 		{
 			DiagnosticId = id;
