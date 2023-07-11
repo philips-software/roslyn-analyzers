@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Common
 			return node.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor is BaseMethodDeclarationSyntax or PropertyDeclarationSyntax or TypeDeclarationSyntax);
 		}
 
-		public DocumentationHelper(SyntaxNode node)
+		internal DocumentationHelper(SyntaxNode node)
 		{
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if (doc == default)

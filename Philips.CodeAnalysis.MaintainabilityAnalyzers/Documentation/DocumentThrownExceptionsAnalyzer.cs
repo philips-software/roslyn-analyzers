@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxNode nodeWithDoc = DocumentationHelper.FindAncestorThatCanHaveDocumentation(throwStatement);
 
 			// Check if our parent has proper documentation.
-			var docHelper = new DocumentationHelper(nodeWithDoc);
+			DocumentationHelper docHelper = Helper.ForDocumentationOf(nodeWithDoc);
 			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCodeReferences();
 			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
