@@ -27,7 +27,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			var isFirstArgumentNull = false;
 			var isFirstArgumentConstant = false;
-			var literalHelper = new LiteralHelper();
 			ArgumentListSyntax argumentList = node.ArgumentList;
 			if (argumentList.Arguments[0].Expression is LiteralExpressionSyntax arg0Literal)
 			{
@@ -37,7 +36,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isFirstArgumentConstant = literalHelper.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
+				isFirstArgumentConstant = Helper.ForLiterals.IsLiteral(argumentList.Arguments[0].Expression, semanticModel);
 			}
 
 			var isSecondArgumentNull = false;
@@ -50,7 +49,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 			else
 			{
-				isSecondArgumentConstant = literalHelper.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
+				isSecondArgumentConstant = Helper.ForLiterals.IsLiteral(argumentList.Arguments[1].Expression, semanticModel);
 			}
 
 			if (isFirstArgumentNull || isSecondArgumentNull)

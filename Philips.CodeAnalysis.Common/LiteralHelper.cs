@@ -8,6 +8,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class LiteralHelper
 	{
+		internal LiteralHelper()
+		{
+			// Hide default constructor.
+		}
+
 		public bool IsNull(ExpressionSyntax expression)
 		{
 			return expression is LiteralExpressionSyntax { Token.Text: "null" };
