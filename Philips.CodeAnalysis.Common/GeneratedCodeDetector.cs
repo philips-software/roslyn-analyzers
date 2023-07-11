@@ -9,12 +9,12 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class GeneratedCodeDetector
 	{
-		private readonly Helper _helper;
+		private readonly CodeFixHelper _helper;
 
 		private const string AttributeName = @"GeneratedCode";
 		private const string FullAttributeName = @"System.CodeDom.Compiler.GeneratedCodeAttribute";
 
-		internal GeneratedCodeDetector(Helper helper)
+		internal GeneratedCodeDetector(CodeFixHelper helper)
 		{
 			_helper = helper;
 		}

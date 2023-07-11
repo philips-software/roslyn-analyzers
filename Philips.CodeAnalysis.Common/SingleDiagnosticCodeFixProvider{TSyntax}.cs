@@ -56,5 +56,7 @@ namespace Philips.CodeAnalysis.Common
 			SyntaxToken token = root.FindToken(diagnosticSpan.Start);
 			return token.Parent?.AncestorsAndSelf().OfType<TSyntax>().FirstOrDefault();
 		}
+
+		public CodeFixHelper Helper { get; } = new CodeFixHelper();
 	}
 }

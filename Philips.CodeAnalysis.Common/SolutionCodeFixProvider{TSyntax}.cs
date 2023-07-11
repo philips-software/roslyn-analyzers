@@ -78,6 +78,8 @@ namespace Philips.CodeAnalysis.Common
 			return token.AncestorsAndSelf().OfType<TSyntax>().First();
 		}
 
+		public CodeFixHelper Helper { get; } = new CodeFixHelper();
+
 		private static TextDocument GetDocument(Project project, string fileName)
 		{
 			return project.AdditionalDocuments.FirstOrDefault(doc => doc.Name.Equals(fileName, StringComparison.Ordinal));

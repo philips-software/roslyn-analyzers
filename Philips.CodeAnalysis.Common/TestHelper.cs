@@ -8,9 +8,9 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class TestHelper
 	{
-		private readonly Helper _helper;
+		private readonly CodeFixHelper _helper;
 
-		internal TestHelper(Helper helper)
+		internal TestHelper(CodeFixHelper helper)
 		{
 			_helper = helper;
 		}

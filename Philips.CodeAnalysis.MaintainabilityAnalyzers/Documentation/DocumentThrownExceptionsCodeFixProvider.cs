@@ -36,6 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				return document;
 			}
+
 			DocumentationHelper docHelper = new(node);
 			var parts = missingExceptionTypeName.Split(',');
 			foreach (var part in parts)

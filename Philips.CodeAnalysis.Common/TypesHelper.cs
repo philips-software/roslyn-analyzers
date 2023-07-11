@@ -9,9 +9,9 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class TypesHelper
 	{
-		private readonly Helper _helper;
+		private readonly CodeFixHelper _helper;
 
-		internal TypesHelper(Helper helper)
+		internal TypesHelper(CodeFixHelper helper)
 		{
 			_helper = helper;
 		}
