@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
 		private sealed class UnknownSyntaxKindAnalyzer : SingleDiagnosticAnalyzer<CrefParameterListSyntax, UnknownSyntaxKindAnalyzer.UnknownSyntaxKindSyntaxNodeAction>
 		{
-			public UnknownSyntaxKindAnalyzer() : base(DiagnosticId.AssertAreEqual, "UnknownSyntaxKind", "", "", "")
+			public UnknownSyntaxKindAnalyzer() : base(DiagnosticId.AssertAreEqual, "UnknownSyntaxKind", "", "", Categories.MsTest)
 			{
 			}
 
@@ -33,6 +33,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task UnknownSyntaxKindThrowsException()
 		{
 			// Arrange

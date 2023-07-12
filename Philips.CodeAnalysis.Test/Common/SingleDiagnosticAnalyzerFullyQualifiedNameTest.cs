@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Common
@@ -33,6 +34,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InvalidQualifiedNameIsIgnored()
 		{
 			// Arrange
