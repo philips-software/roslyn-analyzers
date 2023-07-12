@@ -67,7 +67,6 @@ namespace Philips.CodeAnalysis.Common
 				nameof(IfStatementSyntax) => SyntaxKind.IfStatement,
 				nameof(ClassDeclarationSyntax) => SyntaxKind.ClassDeclaration,
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
-				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
 				nameof(TupleTypeSyntax) => SyntaxKind.TupleType,
 				nameof(DestructorDeclarationSyntax) => SyntaxKind.DestructorDeclaration,
 				nameof(ExpressionSyntax) => SyntaxKind.AsExpression,
