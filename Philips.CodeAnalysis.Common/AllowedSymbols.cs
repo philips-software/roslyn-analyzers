@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Common
 		/// </summary>
 		public int Count => _allowedMethods.Count + _allowedLines.Count + _allowedTypes.Count + _allowedNamespaces.Count;
 
-		public void Initialize(ImmutableArray<AdditionalText> additionalFiles, string filenameToInitialize)
+		public bool Initialize(ImmutableArray<AdditionalText> additionalFiles, string filenameToInitialize)
 		{
 			foreach (AdditionalText additionalFile in additionalFiles)
 			{
@@ -48,8 +48,11 @@ namespace Philips.CodeAnalysis.Common
 				{
 					SourceText allowedMethods = additionalFile.GetText();
 					LoadAllowedMethods(allowedMethods);
+					return true;
 				}
 			}
+
+			return false;
 		}
 
 		/// <summary>

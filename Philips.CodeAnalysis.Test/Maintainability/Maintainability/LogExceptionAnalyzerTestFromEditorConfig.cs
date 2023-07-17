@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class LogExceptionAnalyzerTestFromEditorConfig : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = "EditorTestTrace,EditorTestLog";
+		private const string ConfiguredLogMethods = "EditorTestTrace,EditorTestLog";
 
 		private const string CorrectCode = @"
 using System;

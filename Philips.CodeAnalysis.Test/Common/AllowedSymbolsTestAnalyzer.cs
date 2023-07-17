@@ -1,5 +1,7 @@
 ﻿// © 2022 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
@@ -33,7 +35,11 @@ namespace Philips.CodeAnalysis.Test.Common
 		private void AnalyzeCompilationStart(CompilationStartAnalysisContext context)
 		{
 			_helper = new Helper(context.Options, context.Compilation);
-			_helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			var hasAdditionalFile = _helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			if (!hasAdditionalFile)
+			{
+				throw new ArgumentException("AllowedFileName");
+			}
 
 			if (_shouldCheckMethods)
 			{

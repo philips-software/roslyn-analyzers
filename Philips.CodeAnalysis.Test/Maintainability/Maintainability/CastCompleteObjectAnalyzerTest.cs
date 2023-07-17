@@ -31,7 +31,7 @@ namespace CastCompleteTests {
     }
 }";
 
-		private const string WrongMulipleFields = @"
+		private const string WrongMultipleFields = @"
 namespace CastCompleteTests {
     public class Number {
         private int n;
@@ -40,39 +40,31 @@ namespace CastCompleteTests {
     }
 }";
 
-		/// <summary>
-		/// No diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectSingleField, DisplayName = nameof(CorrectSingleField)),
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// Diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongMulipleFields, DisplayName = nameof(WrongMulipleFields))]
+		[DataRow(WrongMultipleFields, DisplayName = nameof(WrongMultipleFields))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaisedAsync(string testCode)
+		public async Task WhenTestCodeIsInvalidDiagnosticIsTriggered(string testCode)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// No diagnostics expected to show up 
-		/// </summary>
 		[DataTestMethod]
-		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[DataRow("File.g")]
+		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
-			await VerifySuccessfulCompilation(WrongMulipleFields, filePath).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(WrongMultipleFields, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -33,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				return;
 			}
-			System.Collections.Generic.IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
+			IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
 
 			if (itsFields is not null && itsFields.Count() > 1 && itsFields.Any(f => f.Type.Name == convertTo.Name))
 			{

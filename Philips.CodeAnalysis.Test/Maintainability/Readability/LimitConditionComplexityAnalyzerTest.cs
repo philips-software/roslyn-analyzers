@@ -32,6 +32,20 @@ namespace ComplexConditionUnitTests {
     }
 }";
 
+		private const string CorrectTernary = @"
+using System;
+
+namespace ComplexConditionUnitTests {
+    public class Program {
+        public static void Main(string[] args) {
+            (2 == 3 && (4 == 5 || 9 == 8)) ?
+                Console.WriteLine('Hello world!') :
+                Console.WriteLine('Goodbye world!');
+            }
+        }
+    }
+}";
+
 		private const string CorrectSingle = @"
 using System;
 
@@ -58,13 +72,27 @@ namespace ComplexConditionUnitTests {
     }
 }";
 
+		private const string WrongTernary = @"
+using System;
+
+namespace ComplexConditionUnitTests {
+    public class Program {
+        public static void Main(string[] args) {
+            (3 == 4 && 5 == 6 || (7 == 9 && 8 == 1)) ?
+                Console.WriteLine('Hello world!') :
+                Console.WriteLine('Goodbye world!');
+            }
+        }
+    }
+}";
 
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(Correct, DisplayName = nameof(Correct)),
-			DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
+		[DataRow(Correct, DisplayName = nameof(Correct))]
+		[DataRow(CorrectTernary, DisplayName = nameof(CorrectTernary))]
+		[DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{
@@ -76,6 +104,7 @@ namespace ComplexConditionUnitTests {
 		/// </summary>
 		[DataTestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
+		[DataRow(WrongTernary, DisplayName = nameof(WrongTernary))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenConditionIsTooComplexDiagnosticIsTriggeredAsync(string testCode)
 		{
@@ -86,7 +115,8 @@ namespace ComplexConditionUnitTests {
 		/// No diagnostics expected to show up 
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(Wrong, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[DataRow(Wrong, "Dummy.Designer")]
+		[DataRow(Wrong, "GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
 		{

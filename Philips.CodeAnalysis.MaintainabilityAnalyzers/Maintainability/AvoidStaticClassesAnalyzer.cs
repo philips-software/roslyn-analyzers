@@ -33,7 +33,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
-			// Add standard exceptions
+
+      // Add standard exceptions
 			Helper.ForAllowedSymbols.RegisterLine(@"*.Startup");
 			Helper.ForAllowedSymbols.RegisterLine(@"*.Program");
 			Helper.ForAllowedSymbols.RegisterLine(@"*.AssemblyInitialize");
