@@ -53,15 +53,16 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			EditorConfigOptions options = InitializeEditorConfigOptions(out Diagnostic configurationError);
 			if (options.ShouldUseExceptionsFile)
 			{
-				Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
-        if (options.ShouldUseExceptionsFile)
-				{
-					_ = allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
-				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
-			});
+				_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			}
+
+			if (options.ShouldUseExceptionsFile)
+			{
+				_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			}
+			var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, Helper, options.ShouldGenerateExceptionsFile, configurationError);
+			context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 		}
 
 		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";

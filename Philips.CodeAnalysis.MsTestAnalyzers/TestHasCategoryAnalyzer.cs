@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			Helper helper = new(options, compilation);
 			IReadOnlyList<string> allowedCategories = helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
-			helper.ForAllowedSymbols.Initialize(options.AdditionalFiles, FileName);
+			_ = helper.ForAllowedSymbols.Initialize(options.AdditionalFiles, FileName);
 
 			return new TestHasAttributeCategory(helper, allowedCategories, definitions);
 		}

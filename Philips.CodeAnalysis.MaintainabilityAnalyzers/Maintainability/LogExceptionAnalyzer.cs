@@ -53,27 +53,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// </summary>
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-				Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
-        var hasAdditionalFile = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
+			var hasAdditionalFile = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
-				// Support legacy configuration via .editorconfig also.
-			  IReadOnlyList<string> methodNames = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
-				foreach (var methodName in methodNames)
-				{
-					Helper.ForAllowedSymbols.RegisterLine(methodName);
-				}
+			// Support legacy configuration via .editorconfig also.
+			IReadOnlyList<string> methodNames = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
+			foreach (var methodName in methodNames)
+			{
+				Helper.ForAllowedSymbols.RegisterLine(methodName);
+			}
 
-				var compilationAnalyzer = new CompilationAnalyzer(allowedSymbols);
+			var compilationAnalyzer = new CompilationAnalyzer(Helper);
 
-    		if (Helper.ForAllowedSymbols.Count == 0)
-		    {
-				    context.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
-			  }
-			  else
-			  {
-				    context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
-			  }
-    }
+			if (Helper.ForAllowedSymbols.Count == 0)
+			{
+				context.RegisterCompilationEndAction(compilationAnalyzer.ReportParsingError);
+			}
+			else
+			{
+				context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeCatchException, SyntaxKind.CatchClause);
+			}
+		}
 
 		private sealed class CompilationAnalyzer
 		{
