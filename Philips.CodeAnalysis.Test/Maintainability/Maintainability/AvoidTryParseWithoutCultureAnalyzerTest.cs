@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("float.TryParse(\"3.00\", out float i);")]
 		[DataRow("double.TryParse(\"3.00\", out double i);")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidTryParseWithoutCultureForValueTypesAsync(string s)
+		public async Task AvoidTryParseWithoutCultureForValueTypes(string s)
 		{
 			var code = string.Format(ClassString, s);
 			await VerifyDiagnostic(code).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("float.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out float i);")]
 		[DataRow("double.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out double i);")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoNotFlagTryParseWithCultureForValueTypesAsync(string s)
+		public async Task DoNotFlagTryParseWithCultureForValueTypes(string s)
 		{
 			var code = string.Format(ClassString, s);
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
@@ -83,7 +83,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("TestParser.TryParse(\"3\", out TestParser tp);")]
 		[DataRow("TestParser.TryParse();")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidTryParseWithoutCultureForReferenceTypesAsync(string s)
+		public async Task AvoidTryParseWithoutCultureForReferenceTypes(string s)
 		{
 			var editorCode = string.Format(ClassString, s);
 			var code = string.Concat(editorCode, TestParserDefinition);
@@ -94,7 +94,17 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("TestParser.TryParse(\"3\", NumberStyles.Any, CultureInfo.InvariantCulture, out TestParser tp);")]
 		[DataRow("TestParser.TryParse(\"3\", CultureInfo.InvariantCulture, out TestParser tp);")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoNotFlagTryParseWithCultureForReferenceTypesAsync(string s)
+		public async Task DoNotFlagTryParseWithCultureForReferenceTypes(string s)
+		{
+			var editorCode = string.Format(ClassString, s);
+			var code = string.Concat(editorCode, TestParserDefinition);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow("String.IsNullOrEmpty(String.Empty);")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DoNotFlagOtherMethods(string s)
 		{
 			var editorCode = string.Format(ClassString, s);
 			var code = string.Concat(editorCode, TestParserDefinition);

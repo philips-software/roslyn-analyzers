@@ -303,7 +303,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// No diagnostics expected to show up 
 		/// </summary>
 		[DataTestMethod]
-		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[DataRow("File.g")]
+		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
 		{
