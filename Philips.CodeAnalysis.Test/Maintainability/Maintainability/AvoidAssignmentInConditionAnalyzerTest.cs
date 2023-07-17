@@ -111,9 +111,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
-		/// <summary>
-		/// No diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = "Correct"),
@@ -123,32 +120,36 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectPropertyAssignment, DisplayName = "CorrectPropertyAssignment"),
 		 DataRow(CorrectNullCoalescing, DisplayName = "CorrectNullCoalescing")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// Diagnostics expected to show up
-		/// </summary>
 		[DataTestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaisedAsync(string testCode)
+		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
-		/// <summary>
-		/// No diagnostics expected to show up 
-		/// </summary>
 		[DataTestMethod]
-		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
+		[DataRow("File.g")]
+		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string filePath)
 		{
 			await VerifySuccessfulCompilation(Violation, filePath).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow("File.g")]
+		[DataRow("GlobalSuppressions")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredTernary(string filePath)
+		{
+			await VerifySuccessfulCompilation(ViolationTernary, filePath).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

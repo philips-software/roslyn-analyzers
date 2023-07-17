@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("result.OfType<string>().Where(x => true).SingleOrDefault();")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidUnnecessaryWhereTestAsync(string line)
+		public async Task AvoidUnnecessaryWhereTest(string line)
 		{
 			var template = @"
 using System.Linq;
@@ -56,13 +56,12 @@ class Foo
 		[DataRow("result.OfType<string>().Where(x => true).Single(x => true);")]
 		[DataRow("result.OfType<string>().Where(x => true).SingleOrDefault(x => true);")]
 		[DataRow("result.OfType<string>().Where(x => true).Contains(\"hi\");")]
-		[DataRow("result.OfType<string>().Where(x => true).Any")]
 		[DataRow("result.OfType<string>().First().Single(x => true);")]
-		[DataRow("result.OfType<string>().First.Any());)")]
+		[DataRow("result.OfType<string>().First().Any();")]
 		[DataRow("Console.WriteLine(\"ny\")")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidUnnecessaryWhereNoFindingTestAsync(string line)
+		public async Task AvoidUnnecessaryWhereNoFindingTest(string line)
 		{
 			var template = @"
 using System.Linq;

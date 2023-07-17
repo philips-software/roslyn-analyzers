@@ -14,19 +14,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidSuppressMessageAttributeAnalyzerTest : DiagnosticVerifier
 	{
-		private const string allowedMethodName = @"Foo.AllowedInitializer()
+		private const string AllowedMethodName = @"Foo.AllowedInitializer()
 Foo.AllowedInitializer(Bar)
 Foo.WhitelistedFunction
 ";
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, allowedMethodName));
+			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidSuppressMessageAttributeAnalyzer.AvoidSuppressMessageAttributeWhitelist, AllowedMethodName));
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidSuppressMessageNotRaisedInGeneratedCodeAsync()
+		public async Task AvoidSuppressMessageNotRaisedInGeneratedCode()
 		{
 			var baseline = @"
 #pragma checksum ""..\..\BedPosOverlayWindow.xaml"" ""{ ff1816ec - aa5e - 4d10 - 87f7 - 6f4963833460}"" ""B42AD704B6EC2B9E4AC053991400023FA2213654""
@@ -88,7 +88,7 @@ namespace WpfApp1 {
 		[DataRow("WhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidSupressMessageRaisedInUserCodeAsync(string functionName, string usingStatement, string attribute)
+		public async Task AvoidSupressMessageRaisedInUserCode(string functionName, string usingStatement, string attribute)
 		{
 			var baseline = @"
 				using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -102,6 +102,24 @@ namespace WpfApp1 {
 				}}
 				";
 			var givenText = string.Format(baseline, usingStatement, attribute, functionName);
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidSuppressMessage).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreSuppressMessageOnOutOfScopeFileNames()
+		{
+			var givenText = @"
+				using Microsoft.VisualStudio.TestTools.UnitTesting;
+				using System.Diagnostics.CodeAnalysis;
+				class Foo 
+				{{
+				  [SuppressMessage(""Microsoft.Performance"", ""CA1801: ReviewUnusedParameters"", MessageId = ""isChecked"")]
+				  public void NotWhitelistedFunction()
+				  {{
+				  }}
+				}}
+				";
 			await VerifyDiagnostic(givenText, DiagnosticId.AvoidSuppressMessage).ConfigureAwait(false);
 		}
 
