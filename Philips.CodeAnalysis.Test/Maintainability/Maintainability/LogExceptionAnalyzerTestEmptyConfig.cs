@@ -37,11 +37,38 @@ public class Program {
 }
 }";
 
+		private const string WrongCode = @"
+using System;
+
+namespace LogExceptionUnitTests {
+public class Program {
+    public static void Main(string[] args) {
+        try {
+            Console.WriteLine('Hello world!');
+        } catch {
+            Logging.LogVerbose('Goodbye');            
+        }
+    }
+
+    private class Log {
+        public static void LogVerbose(string message) {
+        }
+    }
+}
+}";
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenCallingLogClassDiagnosticShouldBeTriggered()
+		public async Task LogClassShouldStillBeRecognized()
 		{
-			await VerifyDiagnostic(CorrectCode, DiagnosticId.LogException).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(CorrectCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenCallingWrongClassDiagnosticShouldBeTriggered()
+		{
+			await VerifyDiagnostic(WrongCode, DiagnosticId.LogException).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
