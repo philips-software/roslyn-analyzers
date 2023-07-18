@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public virtual void Register(CompilationStartAnalysisContext compilationContext)
 		{
 			AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
-			allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
+			_ = allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
 			// Add standard exceptions
 			allowedSymbols.RegisterLine(@"*.Startup");
 			allowedSymbols.RegisterLine(@"*.Program");

@@ -82,7 +82,7 @@ namespace MultiLineConditionUnitTests
 		[DataTestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OverrideVirtualDoesNotTriggersDiagnosticsAsync(string input)
+		public async Task OverrideVirtualDoesNotTriggersDiagnostics(string input)
 		{
 
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
@@ -92,7 +92,7 @@ namespace MultiLineConditionUnitTests
 		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)),
 		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OverrideWithNewKeywordTriggersDiagnosticsAsync(string input)
+		public async Task OverrideWithNewKeywordTriggersDiagnostics(string input)
 		{
 			await VerifyDiagnostic(input, DiagnosticId.AvoidOverridingWithNewKeyword, regex: "Avoid overriding Virtual.* with the new keyword.").ConfigureAwait(false);
 		}
@@ -101,9 +101,10 @@ namespace MultiLineConditionUnitTests
 		/// No diagnostics expected to show up 
 		/// </summary>
 		[DataTestMethod]
-		[DataRow(WrongMethod, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
+		[DataRow(WrongMethod, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile-Method")]
+		[DataRow(WrongProperty, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile-Property")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}

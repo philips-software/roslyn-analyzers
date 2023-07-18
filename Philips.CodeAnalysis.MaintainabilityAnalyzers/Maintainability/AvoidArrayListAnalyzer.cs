@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,24 +22,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidArrayListSyntaxNodeAction : SyntaxNodeAction<VariableDeclarationSyntax>
 	{
 		private const string ArrayListTypeName = "System.Collections.ArrayList";
+		private static readonly NamespaceIgnoringComparer Comparer = new();
 
 		public override void Analyze()
 		{
-			if (Node.Type is not SimpleNameSyntax typeName)
-			{
-				// Full (or partial) namespace syntax, check right-most entry only.
-				if (Node.Type is QualifiedNameSyntax qualifiedName)
-				{
-					typeName = qualifiedName.Right;
-				}
-				else
-				{
-					// Some thing else is mentioned here.
-					return;
-				}
-			}
-
-			if (!typeName.Identifier.Text.Contains("ArrayList"))
+			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
+			var fullTypeName = Node.Type.GetFullName(aliases);
+			if (Comparer.Compare(fullTypeName, ArrayListTypeName) != 0)
 			{
 				return;
 			}
@@ -48,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (typeSymbol?.ToString() == ArrayListTypeName)
 			{
 				var variableName = Node.Variables.FirstOrDefault()?.Identifier.Text ?? string.Empty;
-				Location location = typeName.GetLocation();
+				Location location = Node.Type.GetLocation();
 				ReportDiagnostic(location, variableName);
 			}
 		}

@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class LogExceptionAnalyzerTest : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = @"
+		private const string ConfiguredLogMethods = @"
 *.*.TestLog
 TestTrace
 ";
@@ -124,7 +124,7 @@ public class Program {
 		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
 		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
+		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
@@ -135,7 +135,7 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(Missing, DisplayName = nameof(Missing))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggeredAsync(string testCode)
+		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
 		{
 			await VerifyDiagnostic(testCode, DiagnosticId.LogException).ConfigureAwait(false);
 		}
@@ -146,7 +146,7 @@ public class Program {
 		[DataTestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)
+		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
 		{
 			await VerifySuccessfulCompilation(testCode, filePath).ConfigureAwait(false);
 		}
@@ -161,7 +161,7 @@ public class Program {
 
 		protected override ImmutableArray<(string name, string content)> GetAdditionalTexts()
 		{
-			return base.GetAdditionalTexts().Add((LogExceptionAnalyzer.AllowedFileName, configuredLogMethods));
+			return base.GetAdditionalTexts().Add((LogExceptionAnalyzer.AllowedFileName, ConfiguredLogMethods));
 		}
 	}
 }

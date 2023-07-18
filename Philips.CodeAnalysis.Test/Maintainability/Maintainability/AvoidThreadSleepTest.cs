@@ -48,6 +48,27 @@ class Foo
 			await VerifyFix(givenText, fixedText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreLocalFunctions()
+		{
+			var givenText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
+[TestClass]
+class Foo 
+{{
+  public void Foo()
+  {{
+    void ThreadSleep(int amount)
+    {{
+    }}
+    ThreadSleep(1000);
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{

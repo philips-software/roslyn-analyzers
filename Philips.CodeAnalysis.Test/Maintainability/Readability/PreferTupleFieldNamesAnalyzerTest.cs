@@ -1,6 +1,5 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -14,12 +13,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class PreferTupleFieldNamesAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
-		#region Non-Public Properties/Methods
-
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PreferTupleFieldNamesAnalyzer();
@@ -40,16 +33,12 @@ class Foo
 			return string.Format(baseline, argument);
 		}
 
-		#endregion
-
-		#region Public Interface
-
 		[DataRow("data.Item1", false)]
 		[DataRow("data.Item2", true)]
 		[DataRow("data.num", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NamedTuplesDontCauseErrorsAsync(string argument, bool isError)
+		public async Task NamedTuplesDontCauseErrors(string argument, bool isError)
 		{
 			var source = CreateFunction(argument);
 			if (isError)
@@ -62,6 +51,30 @@ class Foo
 			}
 		}
 
-		#endregion
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task StaticFieldsAreIgnored()
+		{
+			var givenText = @"
+class Foo 
+{{
+  private static readonly (string, int num) data;
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoneTuplesAreIgnored()
+		{
+			var givenText = @"
+class Foo 
+{{
+  private static readonly int num;
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
 	}
 }
