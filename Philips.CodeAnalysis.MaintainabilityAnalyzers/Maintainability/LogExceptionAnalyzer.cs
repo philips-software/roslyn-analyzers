@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
-			var hasAdditionalFile = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
 			// Support legacy configuration via .editorconfig also.
 			IReadOnlyList<string> methodNames = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, LogMethodNames);
