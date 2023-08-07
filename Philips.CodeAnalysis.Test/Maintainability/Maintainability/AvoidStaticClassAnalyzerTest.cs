@@ -191,6 +191,14 @@ AllowedEnumeration";
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task OutOfScopeFileNames()
+		{
+			var methodHavingDiagnostic = CreateFunction("static", isExtension: true);
+			await VerifySuccessfulCompilation(methodHavingDiagnostic, "GlobalSuppressions");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidNoStaticClassesTestAsync()
 		{
 			var file = CreateFunction("");

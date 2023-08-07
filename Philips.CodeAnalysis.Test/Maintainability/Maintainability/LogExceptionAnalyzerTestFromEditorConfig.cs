@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class LogExceptionAnalyzerTestFromEditorConfig : DiagnosticVerifier
 	{
-		private const string configuredLogMethods = "EditorTestTrace,EditorTestLog";
+		private const string ConfiguredLogMethods = "EditorTestTrace,EditorTestLog";
 
 		private const string CorrectCode = @"
 using System;
@@ -60,7 +60,7 @@ public class Program {
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LogException)}.log_method_names", configuredLogMethods);
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LogException)}.log_method_names", ConfiguredLogMethods);
 		}
 	}
 }

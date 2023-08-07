@@ -1,13 +1,10 @@
-﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-#region Header
-// © 2019 Koninklijke Philips N.V.  All rights reserved.
 // Reproduction or transmission in whole or in part, in any form or by any means, 
 // electronic, mechanical or otherwise, is prohibited without the prior  written consent of 
 // the owner.
 // Author:      George.Thissell
 // Date:        February 2019
-#endregion
 
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -145,22 +142,22 @@ class ContainerControl
 ";
 		}
 
-		private async Task VerifyDiagnosticOnFirstAsync(string file)
+		private async Task VerifyDiagnosticOnFirst(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 11, column: 16).ConfigureAwait(false);
 		}
 
-		private async Task VerifyDiagnosticOnSecondAsync(string file)
+		private async Task VerifyDiagnosticOnSecond(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 15, column: 3).ConfigureAwait(false);
 		}
 
-		private async Task VerifyDiagnosticeOnFirstAndSecondAsync(string file)
+		private async Task VerifyDiagnosticeOnFirstAndSecond(string file)
 		{
 			await VerifyDiagnostic(file, 2).ConfigureAwait(false);
 		}
 
-		private async Task VerifyDiagnosticOnClassAsync(string file)
+		private async Task VerifyDiagnosticOnClass(string file)
 		{
 			await VerifyDiagnostic(file, DiagnosticId.InitializeComponentMustBeCalledOnce, line: 9, column: 22).ConfigureAwait(false);
 		}
@@ -175,21 +172,21 @@ class ContainerControl
 		[DataRow(@"InitializeComponent();", @"", false, true)]
 		[DataRow(@"", @"InitializeComponent();", false, false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzersAsync(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzers(string param1, string param2, bool shouldGenerateDiagnosticOnFirst, bool shouldGenerateDiagnosticOnSecond)
 		{
 			var code = CreateCode(param1, param2);
 
 			if (shouldGenerateDiagnosticOnFirst && !shouldGenerateDiagnosticOnSecond)
 			{
-				await VerifyDiagnosticOnFirstAsync(code).ConfigureAwait(false);
+				await VerifyDiagnosticOnFirst(code).ConfigureAwait(false);
 			}
 			else if (!shouldGenerateDiagnosticOnFirst & shouldGenerateDiagnosticOnSecond)
 			{
-				await VerifyDiagnosticOnSecondAsync(code).ConfigureAwait(false);
+				await VerifyDiagnosticOnSecond(code).ConfigureAwait(false);
 			}
 			else if (shouldGenerateDiagnosticOnFirst && shouldGenerateDiagnosticOnSecond)
 			{
-				await VerifyDiagnosticeOnFirstAndSecondAsync(code).ConfigureAwait(false);
+				await VerifyDiagnosticeOnFirstAndSecond(code).ConfigureAwait(false);
 			}
 			else
 			{
@@ -199,15 +196,15 @@ class ContainerControl
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructorsAsync()
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithOutConstructors()
 		{
 			var code = CreateCodeWithOutConstructors();
-			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
+			await VerifyDiagnosticOnClass(code).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructorsAsync()
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerWithDisjointConstructors()
 		{
 			var code = CreateCodeWithDisjointConstructors();
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
@@ -215,18 +212,76 @@ class ContainerControl
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClassAsync()
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerStaticClass()
 		{
 			var code = CreateCodeWithStaticConstructor();
-			await VerifyDiagnosticOnClassAsync(code).ConfigureAwait(false);
+			await VerifyDiagnosticOnClass(code).ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFileAsync()
+		public async Task WinFormsInitialComponentMustBeCalledOnceAnalyzerIgnoreDesignerFile()
 		{
 			var code = CreateCode(@"", @"");
 			await VerifySuccessfulCompilation(code, @"Test.Designer").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentInTestCodeIsIgnored()
+		{
+			var code = @"
+using System.Windows.Forms;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public partial class Foo : ContainerControl
+{{
+  static Foo()
+  {{
+	InitializeComponent();
+  }}
+}}
+class ContainerControl 
+{{
+  public ContainerControl()
+  {{
+	InitializeComponent();
+  }}
+}}
+
+namespace System.Windows.Forms
+{{
+[TestClass]
+class ContainerControl {{ }}
+}}
+";
+
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WinFormsInitialComponentIsIgnoredWhenNotAControl()
+		{
+			var code = @"
+public partial class Foo : ContainerControl
+{{
+  static Foo()
+  {{
+	InitializeComponent();
+  }}
+}}
+class ContainerControl 
+{{
+  public ContainerControl()
+  {{
+	InitializeComponent();
+  }}
+}}
+";
+
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		#endregion

@@ -45,10 +45,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
 			_ = cert.PrivateKey;")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidPrivateKeyPropertyOnX509CertificateAsync(string s)
+		public async Task AvoidPrivateKeyPropertyOnX509Certificate(string s)
 		{
 			var code = string.Format(ClassString, s);
 			await VerifyDiagnostic(code).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow(@"_ = new string(""Foo"").Length")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task OtherPropertyShouldBeIgnored(string s)
+		{
+			var code = string.Format(ClassString, s);
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 	}
 }
