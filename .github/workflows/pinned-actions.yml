@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # ratchet:actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # ratchet:actions/checkout@v3
         
       - name: Ensure SHA pinned actions
         uses: philips-forks/github-actions-ensure-sha-pinned-actions@925da174a054fa433bb73e55a91046e32d164966 # ratchet:philips-forks/github-actions-ensure-sha-pinned-actions@v1.1.0
