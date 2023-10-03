@@ -133,5 +133,6 @@ namespace Philips.CodeAnalysis.Common
 		RegexNeedsTimeout = 2137,
 		AvoidVoidReturn = 2138,
 		EnableDocumentationCreation = 2139,
+		PreferReadOnlyParameters = 2140,
 	}
 }

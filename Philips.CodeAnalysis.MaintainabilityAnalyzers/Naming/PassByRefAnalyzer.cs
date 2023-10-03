@@ -106,23 +106,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return true;
 			}
 
-			DataFlowAnalysis flow;
-			if (Node.Body != null)
-			{
-				if (!Node.Body.Statements.Any())
-				{
-					return false;
-				}
-
-				StatementSyntax firstStatement = Node.Body.Statements.First();
-				StatementSyntax lastStatement = Node.Body.Statements.Last();
-				flow = semanticModel.AnalyzeDataFlow(firstStatement, lastStatement);
-			}
-			else if (Node.ExpressionBody != null)
-			{
-				flow = semanticModel.AnalyzeDataFlow(Node.ExpressionBody.Expression);
-			}
-			else
+			DataFlowHelper dfHelper = new();
+			DataFlowAnalysis flow = dfHelper.GetDataFlowAnalysis(Context.SemanticModel, Node);
+			if (flow is null)
 			{
 				// No usage found.
 				return false;

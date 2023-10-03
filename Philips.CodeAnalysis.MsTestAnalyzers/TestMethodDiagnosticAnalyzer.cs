@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod);
 
-			public sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
+			public sealed override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, IReadOnlyCollection<INamedTypeSymbol> presentAttributes)
 			{
 				var isTestMethod = false;
 				var isDataTestMethod = false;

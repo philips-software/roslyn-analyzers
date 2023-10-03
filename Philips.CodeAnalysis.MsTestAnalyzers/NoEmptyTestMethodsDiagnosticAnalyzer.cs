@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public class NoEmptyTestMethodsImplementation : Implementation
 		{
-			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
+			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, IReadOnlyCollection<INamedTypeSymbol> presentAttributes)
 			{
 				if (methodDeclaration.Body == null)
 				{

@@ -9,9 +9,9 @@ namespace Philips.CodeAnalysis.Test.Helpers
 {
 	internal sealed class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 	{
-		private readonly Dictionary<string, string> _settings;
+		private readonly IReadOnlyDictionary<string, string> _settings;
 
-		public TestAnalyzerConfigOptions(Dictionary<string, string> settings)
+		public TestAnalyzerConfigOptions(IReadOnlyDictionary<string, string> settings)
 		{
 			_settings = settings ?? new Dictionary<string, string>();
 		}
@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 	{
 		private readonly TestAnalyzerConfigOptions _options;
 
-		public TestAnalyzerConfigOptionsProvider(Dictionary<string, string> settings)
+		public TestAnalyzerConfigOptionsProvider(IReadOnlyDictionary<string, string> settings)
 		{
 			_options = new TestAnalyzerConfigOptions(settings);
 		}
