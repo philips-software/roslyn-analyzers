@@ -31,34 +31,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
 				return;
 			}
-
-			//this is an error, unless the class contains an "AssemblyInitialize" within it.  If it does, it _must_ be static.
-			var hasAttributeThatMustBeStatic = CheckForStaticAttributesOnMethods(context, classDeclaration);
-			var isClassStatic = classDeclaration.Modifiers.Any(SyntaxKind.StaticKeyword);
-
-			if (hasAttributeThatMustBeStatic != isClassStatic)
-			{
-				Location location = classDeclaration.Identifier.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(Rule, location, classDeclaration.Identifier));
-			}
-		}
-
-		private bool CheckForStaticAttributesOnMethods(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax classDeclaration)
-		{
-			foreach (MethodDeclarationSyntax method in classDeclaration.Members.OfType<MethodDeclarationSyntax>())
-			{
-				if (!method.Modifiers.Any(SyntaxKind.StaticKeyword))
-				{
-					continue;
-				}
-
-				if (AttributeHelper.HasAnyAttribute(method.AttributeLists, context, MsTestFrameworkDefinitions.AssemblyInitializeAttribute, MsTestFrameworkDefinitions.AssemblyCleanupAttribute))
-				{
-					return true;
-				}
-			}
-
-			return false;
 		}
 	}
 }
