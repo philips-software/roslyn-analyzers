@@ -27,6 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("private", false)]
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
+        [DataRow("sealed", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestClassMustBePublicAsync(string modifier, bool isCorrect)
@@ -61,14 +62,15 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			}
 		}
 
-		[DataRow("", false)]
-		[DataRow("static", false)]
+		[DataRow("", true)]
+		[DataRow("static", true)]
 		[DataRow("public static", true)]
-		[DataRow("private static", false)]
-		[DataRow("private", false)]
-		[DataRow("protected", false)]
-		[DataRow("protected static", false)]
-		[DataRow("public", false)]
+		[DataRow("private static", true)]
+		[DataRow("private", true)]
+		[DataRow("protected", true)]
+		[DataRow("protected static", true)]
+		[DataRow("public", true)]
+		[DataRow("sealed", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestClassWithAssemblyInitializeMustBePublicStaticAsync(string modifier, bool isCorrect)
