@@ -29,7 +29,7 @@ class Foo
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange)}.assembly_version", ConfiguredVersion);
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.AvoidAssemblyVersionChange.ToId()}.assembly_version", ConfiguredVersion);
 		}
 
 		[TestMethod]

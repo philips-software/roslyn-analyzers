@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue)}.additional_useless_words", configuredAdditionalUselessWords);
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.XmlDocumentationShouldAddValue.ToId()}.additional_useless_words", configuredAdditionalUselessWords);
 		}
 
 		[TestMethod]

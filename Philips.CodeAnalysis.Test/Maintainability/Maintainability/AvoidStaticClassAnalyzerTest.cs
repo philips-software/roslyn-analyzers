@@ -226,9 +226,9 @@ AllowedEnumeration";
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidStaticClassesShouldWhitelistTestAsync()
 		{
-			AllowedSymbols allowedSymbols = new(null);
-			allowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
-			_ = _mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<AllowedSymbols>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(allowedSymbols, false));
+			Helper helper = new(null, null);
+			helper.ForAllowedSymbols.RegisterLine($"{KnownWhitelistClassNamespace}.{KnownWhitelistClassClassName}");
+			_ = _mock.Setup(c => c.CreateCompilationAnalyzer(It.IsAny<Helper>(), It.IsAny<bool>())).Returns(new AvoidStaticClassesCompilationAnalyzer(helper, false));
 			var file = CreateFunction("static", KnownWhitelistClassNamespace, KnownWhitelistClassClassName);
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}

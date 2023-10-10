@@ -39,8 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			TestHelper testHelper = new();
-			if (testHelper.IsInTestClass(Context))
+			if (Helper.ForTests.IsInTestClass(Context))
 			{
 				return;
 			}

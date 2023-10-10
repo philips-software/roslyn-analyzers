@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Adding such low value comments doesn't add anything to the readability and just takes longer to read.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzer
+	public class XmlDocumentationShouldAddValueAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string EmptyTitle = @"Avoid empty Summary XML comments";
 		private const string EmptyMessageFormat = @"Summary XML comments must be useful or non-existent.";
@@ -27,8 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string ValueDescription = @"Summary XML comments for classes, methods, etc. must add more information then just repeating its name.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor ValueRule = new(Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: ValueDescription);
-		private static readonly DiagnosticDescriptor EmptyRule = new(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EmptyDescription);
+		private static readonly DiagnosticDescriptor ValueRule = new(DiagnosticId.XmlDocumentationShouldAddValue.ToId(), ValueTitle, ValueMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: ValueDescription);
+		private static readonly DiagnosticDescriptor EmptyRule = new(DiagnosticId.EmptyXmlComments.ToId(), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords =
 			new(new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
@@ -36,24 +36,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(ctx =>
-			{
-				var additionalFilesHelper = new AdditionalFilesHelper(ctx.Options, ctx.Compilation);
-				var line = additionalFilesHelper.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
-				additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
-				ctx.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
-			});
+			var line = Helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
+			additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
+			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeField, SyntaxKind.FieldDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEvent, SyntaxKind.EventFieldDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEnum, SyntaxKind.EnumDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeEnumMember, SyntaxKind.EnumMemberDeclaration);
 		}
 
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)

@@ -38,14 +38,14 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		{
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only supported for Analyzers that support a single DiagnosticId");
-			await VerifyDiagnostic(source, analyzer.DiagnosticId, filenamePrefix, assemblyName, regex, line, column).ConfigureAwait(false);
+			await VerifyDiagnostic(source, analyzer.Id, filenamePrefix, assemblyName, regex, line, column).ConfigureAwait(false);
 		}
 
 		protected async Task VerifyDiagnostic(string source, DiagnosticId id, string filenamePrefix = null, string assemblyName = null, string regex = ".*", int? line = null, int? column = null)
 		{
 			var diagnosticResult = new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(id),
+				Id = id.ToId(),
 				Location = new DiagnosticResultLocation(null, line, column),
 				Message = new Regex(regex, RegexOptions.Singleline, TimeSpan.FromSeconds(1)),
 				Severity = DiagnosticSeverity.Error,
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			{
 				var diagnosticResult = new DiagnosticResult()
 				{
-					Id = analyzer.Id,
+					Id = analyzer.Id.ToId(),
 					Location = new DiagnosticResultLocation(null),
 					Message = WildcardRegex,
 					Severity = DiagnosticSeverity.Error,

@@ -19,28 +19,25 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Tests are required to have an appropriate TestCategory to allow running tests category wise.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestHasCategoryAttribute.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			AdditionalFilesHelper helper = new(options, compilation);
-			IReadOnlyList<string> allowedCategories = helper.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
-			AllowedSymbols allowedSymbols = new(compilation);
-			_ = allowedSymbols.Initialize(options.AdditionalFiles, FileName);
+			Helper helper = new(options, compilation);
+			IReadOnlyList<string> allowedCategories = helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, @"allowed_test_categories");
+			_ = helper.ForAllowedSymbols.Initialize(options.AdditionalFiles, FileName);
 
-			return new TestHasAttributeCategory(allowedSymbols, allowedCategories, definitions);
+			return new TestHasAttributeCategory(helper, allowedCategories, definitions);
 		}
 
 		public class TestHasAttributeCategory : TestMethodImplementation
 		{
-			private readonly AllowedSymbols _allowedSymbols;
 			private readonly ImmutableHashSet<string> _allowedCategories;
 
-			public TestHasAttributeCategory(AllowedSymbols allowedSymbols, IReadOnlyList<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions)
+			public TestHasAttributeCategory(Helper helper, IReadOnlyList<string> allowedCategories, MsTestAttributeDefinitions definitions) : base(definitions, helper)
 			{
-				_allowedSymbols = allowedSymbols;
 				_allowedCategories = allowedCategories.Select(cat => TrimStart(cat, "~T:")).ToImmutableHashSet();
 			}
 
@@ -50,12 +47,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (
 					context.SemanticModel.GetDeclaredSymbol(methodDeclaration) is IMethodSymbol symbol &&
-					_allowedSymbols.IsAllowed(symbol))
+					Helper.ForAllowedSymbols.IsAllowed(symbol))
 				{
 					return;
 				}
 
-				if (!AttributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out Location categoryLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					Location location = methodDeclaration.Identifier.GetLocation();
 					var diagnostic = Diagnostic.Create(Rule, location);

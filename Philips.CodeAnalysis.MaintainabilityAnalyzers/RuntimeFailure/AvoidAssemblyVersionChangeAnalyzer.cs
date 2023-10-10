@@ -16,14 +16,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private const string Category = Categories.RuntimeFailure;
 		private static readonly string Description =
 			"AssemblyVersion breaks compatibility.  If intentional, specify dotnet_code_quality." +
-			Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange) +
+			DiagnosticId.AvoidAssemblyVersionChange.ToId() +
 			".assembly_version in EditorConfig.";
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidAssemblyVersionChange.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidExpectedVersionTitle = @"The assembly_version specified in the EditorConfig is invalid.";
 		private const string InvalidExpectedVersionMessage = @"The assembly_version {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidExpectedVersionRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidAssemblyVersionChange), InvalidExpectedVersionTitle,
+		private static readonly DiagnosticDescriptor InvalidExpectedVersionRule = new(DiagnosticId.AvoidAssemblyVersionChange.ToId(), InvalidExpectedVersionTitle,
 			InvalidExpectedVersionMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidExpectedVersionRule); } }
@@ -38,8 +38,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private void Analyze(CompilationAnalysisContext context)
 		{
 			Version expectedVersion = new(@"1.0.0.0");
-			var additionalFilesHelper = new AdditionalFilesHelper(context.Options, context.Compilation);
-			var value = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
+			var helper = new Helper(context.Options, context.Compilation);
+			var value = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))
 			{
 				var isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);

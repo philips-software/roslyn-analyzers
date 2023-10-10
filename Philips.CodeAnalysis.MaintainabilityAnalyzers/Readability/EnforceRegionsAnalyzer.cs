@@ -13,7 +13,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceRegionsAnalyzer : DiagnosticAnalyzer
+	public class EnforceRegionsAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string RegionTag = "#region";
 
@@ -43,23 +43,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{ PublicInterfaceRegion, CheckMembersOfPublicInterfaceRegion }
 		};
 
-		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(Helper.ToDiagnosticId(DiagnosticId.EnforceRegions), EnforceRegionTitle,
+		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(DiagnosticId.EnforceRegions.ToId(), EnforceRegionTitle,
 			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
-		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(Helper.ToDiagnosticId(DiagnosticId.EnforceNonDuplicateRegion),
+		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
-		private static readonly DiagnosticDescriptor NonCheckedMember = new(Helper.ToDiagnosticId(DiagnosticId.NonCheckedRegionMember),
+		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
 			NonCheckedRegionMemberTitle, NonCheckedRegionMemberTitleMessageFormat, NonCheckedRegionMemberTitleCategory,
 			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
 		}
 

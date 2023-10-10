@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidUsingParametersAsTempVariablesAnalyzer : DiagnosticAnalyzer
+	public class AvoidUsingParametersAsTempVariablesAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string TempTitle = @"Don't use parameters as temporary variables";
 		private const string TempMessageFormat = @"Don't use parameter {0} as temporary variable, define a local variable instead.";
@@ -21,26 +21,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string LoopDescription = @"Don't change loop variables, this gives unexpected loop iterations. Use continue and break instead.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor TempRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidUsingParametersAsTempVariables),
+		private static readonly DiagnosticDescriptor TempRule = new(DiagnosticId.AvoidUsingParametersAsTempVariables.ToId(),
 			TempTitle, TempMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: TempDescription);
-		private static readonly DiagnosticDescriptor LoopRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidChangingLoopVariables),
+		private static readonly DiagnosticDescriptor LoopRule = new(DiagnosticId.AvoidChangingLoopVariables.ToId(),
 			LoopTitle, LoopMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false,
 			description: LoopDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(TempRule, LoopRule);
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleAssignmentExpression);
 		}
 
-		private static void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

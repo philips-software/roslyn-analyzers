@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		protected override async Task<Document> ApplyFix(Document document, TypeSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			var origTypeName = ReturnImmutableCollectionsAnalyzer.GetTypeName(node);
+			var origTypeName = properties[ReturnImmutableCollectionsAnalyzer.AnnotationsKey];
 			string newTypeName;
 			if (node is ArrayTypeSyntax arrayType)
 			{

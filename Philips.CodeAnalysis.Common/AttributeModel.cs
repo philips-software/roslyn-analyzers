@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Common
 
 		private DiagnosticDescriptor CreateRule(bool isEnabledByDefaultFlag)
 		{
-			return new DiagnosticDescriptor(Helper.ToDiagnosticId(DiagnosticId),
+			return new DiagnosticDescriptor(DiagnosticId.ToId(),
 					Title,
 					MessageFormat,
 					Category,

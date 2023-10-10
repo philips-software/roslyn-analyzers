@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(XmlDocumentationCodeFixProvider)), Shared]
 	public class XmlDocumentationCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.EmptyXmlComments), Helper.ToDiagnosticId(DiagnosticId.XmlDocumentationShouldAddValue));
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.EmptyXmlComments.ToId(), DiagnosticId.XmlDocumentationShouldAddValue.ToId());
 
 		protected override string Title => "Remove Summary";
 

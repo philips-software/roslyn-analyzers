@@ -112,7 +112,7 @@ class Foo
 			{
 				var result = new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod),
+					Id = DiagnosticId.TestClassPublicMethodShouldBeTestMethod.ToId(),
 					Message = new Regex(TestClassPublicMethodShouldBeTestMethodAnalyzer.MessageFormat),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]

@@ -11,42 +11,27 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class TestClassPublicMethodShouldBeTestMethodAnalyzer : DiagnosticAnalyzer
+	public class TestClassPublicMethodShouldBeTestMethodAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Test class public method should be a Test method";
 		public const string MessageFormat = @"Public method should either be a test method or non-public";
 		private const string Description = @"Test class cannot have a public method unless its a test method. Either change the access modifier or make it a test method";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestClassPublicMethodShouldBeTestMethod), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestClassPublicMethodShouldBeTestMethod.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
-		private readonly TestHelper _testHelper;
-		public TestClassPublicMethodShouldBeTestMethodAnalyzer()
-			: this(new TestHelper())
-		{ }
-		public TestClassPublicMethodShouldBeTestMethodAnalyzer(TestHelper testHelper)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			_testHelper = testHelper;
-		}
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.AssemblyCleanupAttribute.FullName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.AssemblyCleanupAttribute.FullName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				var definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+			var definitions = MsTestAttributeDefinitions.FromCompilation(context.Compilation);
 
-				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
-			});
+			context.RegisterSyntaxNodeAction((x) => Analyze(definitions, x), SyntaxKind.MethodDeclaration);
 		}
 
 		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context)
@@ -63,7 +48,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			if (!_testHelper.IsTestClass(classDeclaration, context))
+			if (!Helper.ForTests.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}

@@ -34,18 +34,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			_shouldCheckFieldVariables = shouldCheckFieldVariables;
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeForEachStatement, SyntaxKind.ForEachStatement);
 		}
 
 		private void AnalyzeForEachStatement(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
@@ -67,8 +64,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

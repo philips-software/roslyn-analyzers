@@ -23,21 +23,15 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			: base(DiagnosticId.MockArgumentsMustMatchConstructor, Title, MessageFormat, Description, Categories.RuntimeFailure)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(AnalyzeNewObject, SyntaxKind.ObjectCreationExpression);
-				startContext.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
-			});
+			context.RegisterSyntaxNodeAction(AnalyzeNewObject, SyntaxKind.ObjectCreationExpression);
+			context.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
 		}
 
 		private void AnalyzeInstanceCall(SyntaxNodeAnalysisContext context)

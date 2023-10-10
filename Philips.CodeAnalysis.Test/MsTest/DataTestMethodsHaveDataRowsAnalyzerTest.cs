@@ -63,7 +63,7 @@ public class Tests
 
 			await VerifyDiagnostic(code, new DiagnosticResult()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.DataTestMethodsHaveDataRows),
+				Id = DiagnosticId.DataTestMethodsHaveDataRows.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 7, null) }

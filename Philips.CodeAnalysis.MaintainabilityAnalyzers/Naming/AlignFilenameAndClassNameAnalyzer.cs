@@ -21,10 +21,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			: base(DiagnosticId.AlignFilenameAndClassName, Title, MessageFormat, Description, Categories.Naming, isEnabled: false)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxTreeAction(Analyze);
 		}
 
@@ -55,8 +53,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			{
 				return;
 			}
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

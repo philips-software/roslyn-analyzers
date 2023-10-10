@@ -17,17 +17,19 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = MessageFormat;
 		private const string Category = Categories.MsTest;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.TestMethodsMustNotBeEmpty), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustNotBeEmpty.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			return new NoEmptyTestMethodsImplementation();
+			return new NoEmptyTestMethodsImplementation(Helper);
 		}
 
 		public class NoEmptyTestMethodsImplementation : Implementation
 		{
+			public NoEmptyTestMethodsImplementation(Helper helper) : base(helper) { }
+
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
 				if (methodDeclaration.Body == null)
