@@ -21,8 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			var id = Helper.ToDiagnosticId(DiagnosticId.PositiveNaming);
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{id}.negative_words", @"pistol");
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.PositiveNaming.ToId()}.negative_words", @"pistol");
 		}
 
 		[TestMethod]
