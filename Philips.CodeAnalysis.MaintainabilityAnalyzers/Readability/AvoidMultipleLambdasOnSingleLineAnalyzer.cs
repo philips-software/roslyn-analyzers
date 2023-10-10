@@ -13,7 +13,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidMultipleLambdasOnSingleLineAnalyzer : SingleDiagnosticAnalyzer
 	{
-
 		private const string Title = @"Avoid putting multiple Lambda expressions on the same line";
 		public const string MessageFormat = Title;
 		private const string Description = @"Avoid putting multiple Lambda expressions on the same line. To improve readability, split them into separate lines.";
@@ -22,10 +21,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			: base(DiagnosticId.AvoidMultipleLambdasOnSingleLine, Title, MessageFormat, Description, Categories.Readability, isEnabled: false)
 		{ }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.SimpleLambdaExpression);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ParenthesizedLambdaExpression);
 		}

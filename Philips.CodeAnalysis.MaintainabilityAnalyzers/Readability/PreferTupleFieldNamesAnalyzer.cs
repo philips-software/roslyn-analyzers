@@ -9,31 +9,25 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreferTupleFieldNamesAnalyzer : DiagnosticAnalyzer
+	public class PreferTupleFieldNamesAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Prefer tuple field names over generic item1, item2, etc";
 		private const string MessageFormat = @"Use the name '{0}' for this field instead of '{1}'";
 		private const string Description = @"For readability use the name provided for this field, not a generic field name";
 		private const string Category = Categories.Readability;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.PreferUsingNamedTupleField), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.PreferUsingNamedTupleField.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.TupleFullyQualifiedName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TupleFullyQualifiedName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterOperationAction(AnalyzeAccess, OperationKind.FieldReference);
-			});
+			context.RegisterOperationAction(AnalyzeAccess, OperationKind.FieldReference);
 		}
 
 		private static void AnalyzeAccess(OperationAnalysisContext context)

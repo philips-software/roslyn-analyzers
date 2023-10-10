@@ -22,10 +22,10 @@ namespace Philips.CodeAnalysis.Common
 
 		public virtual ExceptionsOptions ExceptionsOptions { get; private set; } = new ExceptionsOptions();
 
-		public AdditionalFilesHelper(AnalyzerOptions options, Compilation compilation)
+		internal AdditionalFilesHelper(AnalyzerOptions options, Compilation compilation)
 		{
 			_options = options;
-			_additionalFiles = options.AdditionalFiles;
+			_additionalFiles = options?.AdditionalFiles ?? ImmutableArray<AdditionalText>.Empty;
 			_compilation = compilation;
 		}
 

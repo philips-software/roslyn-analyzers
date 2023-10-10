@@ -19,26 +19,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private static readonly List<string> NegativeWords = new(new[] { "disable", "ignore", "missing", "absent" });
 
-		private readonly TestHelper _testHelper;
-
 		public PositiveNamingAnalyzer()
-			: this(new TestHelper())
-		{ }
-
-		public PositiveNamingAnalyzer(TestHelper testHelper)
 			: base(DiagnosticId.PositiveNaming, Title, MessageFormat, Description, Categories.Naming)
 		{
-			_testHelper = testHelper;
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction((ctx) =>
-			{
-				AdditionalFilesHelper additionalFilesHelper = new(ctx.Options, ctx.Compilation);
-				var additionalWords = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"negative_words");
+				var additionalWords = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"negative_words");
 				var words = additionalWords.Split(',');
 				if (words.Any())
 				{
@@ -46,22 +34,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					NegativeWords.AddRange(filteredWords);
 				}
 
-				ctx.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
-				ctx.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
-			});
+			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
 
 		private void AnalyzeVariable(SyntaxNodeAnalysisContext context)
 		{
 			var node = (VariableDeclarationSyntax)context.Node;
 
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
 
-			if (_testHelper.IsInTestClass(context))
+			if (Helper.ForTests.IsInTestClass(context))
 			{
 				return;
 			}
@@ -82,13 +68,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var node = (PropertyDeclarationSyntax)context.Node;
 
-			GeneratedCodeDetector detector = new();
-			if (detector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
 
-			if (_testHelper.IsInTestClass(context))
+			if (Helper.ForTests.IsInTestClass(context))
 			{
 				return;
 			}

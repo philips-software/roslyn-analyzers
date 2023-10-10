@@ -37,7 +37,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
+				Id = DiagnosticId.TestHasCategoryAttribute.ToId(),
 				Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 6, expectedColumn) }
@@ -156,7 +156,7 @@ class Foo
 				var results =
 					new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute),
+						Id = DiagnosticId.TestHasCategoryAttribute.ToId(),
 						Message = new Regex(TestHasCategoryAnalyzer.MessageFormat),
 						Severity = DiagnosticSeverity.Error,
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", null, null) }
@@ -186,7 +186,7 @@ class Foo
 		}
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			var key = $@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.TestHasCategoryAttribute)}.allowed_test_categories";
+			var key = $@"dotnet_code_quality.{DiagnosticId.TestHasCategoryAttribute.ToId()}.allowed_test_categories";
 			var value = @"""UnitTest"",""ManualTest"",TestDefinitions.UnitTests,TestDefinitions.ManualTests";
 			return base.GetAdditionalAnalyzerConfigOptions().Add(key, value);
 		}

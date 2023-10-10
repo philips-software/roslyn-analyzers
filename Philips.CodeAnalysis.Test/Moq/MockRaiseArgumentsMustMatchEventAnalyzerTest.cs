@@ -68,7 +68,7 @@ public static class Bar
 				{
 					new DiagnosticResult()
 					{
-						Id= Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentsMustMatchEvent),
+						Id= DiagnosticId.MockRaiseArgumentsMustMatchEvent.ToId(),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
 					}
@@ -120,7 +120,7 @@ public static class Bar
 				var expectedErrors =
 					new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch),
+						Id = DiagnosticId.MockRaiseArgumentCountMismatch.ToId(),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
 					};

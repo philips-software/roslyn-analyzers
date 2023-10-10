@@ -24,10 +24,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			analysisContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.GotoStatement, SyntaxKind.LabeledStatement, SyntaxKind.GotoCaseStatement, SyntaxKind.GotoDefaultStatement);
 		}
 	}

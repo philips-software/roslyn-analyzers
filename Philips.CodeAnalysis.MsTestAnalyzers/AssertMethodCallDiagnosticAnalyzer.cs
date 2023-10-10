@@ -9,18 +9,8 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	public abstract class AssertMethodCallDiagnosticAnalyzer : DiagnosticAnalyzer
+	public abstract class AssertMethodCallDiagnosticAnalyzer : DiagnosticAnalyzerBase
 	{
-		protected Helper Helper { get; set; }
-
-		protected AssertMethodCallDiagnosticAnalyzer()
-			: this(new Helper())
-		{ }
-		protected AssertMethodCallDiagnosticAnalyzer(Helper helper)
-		{
-			Helper = helper;
-		}
-
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
 			var invocationExpression = (InvocationExpressionSyntax)context.Node;
@@ -45,20 +35,19 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		protected abstract IEnumerable<Diagnostic> Analyze(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, MemberAccessExpressionSyntax memberAccessExpression);
 
 
-		public sealed override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
-			});
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.InvocationExpression);
+		}
+
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		{
+			return GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics;
 		}
 	}
 }

@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceEditorConfigAnalyzer : SingleDiagnosticAnalyzer
+	public class EnforceEditorConfigAnalyzer : SolutionAnalyzer
 	{
 		private const string Title = @"Missing .editorconfig";
 		private const string MessageFormat = @"The project does not have a local .editorconfig file.";

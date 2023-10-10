@@ -57,7 +57,7 @@ var foo = 4;
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidDescriptionAttribute),
+				Id = DiagnosticId.AvoidDescriptionAttribute.ToId(),
 				Message = new Regex(TestHasDescriptionAnalyzer.MessageFormat),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

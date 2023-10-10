@@ -38,7 +38,7 @@ if(!isDone)
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -54,7 +54,7 @@ else
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -68,7 +68,7 @@ if(!isDone)
 }
 else
 	Assert.Fail();
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -98,7 +98,7 @@ try
 catch
 {
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -123,7 +123,7 @@ foreach(var foo in Array.Empty<int>())
 {
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -134,7 +134,7 @@ foreach(var foo in Array.Empty<int>())
 foreach(var foo in Array.Empty<int>())
 	Assert.Fail();
 
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -164,7 +164,7 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -179,7 +179,7 @@ foreach(var foo in Array.Empty<int>())
 
 	Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -198,7 +198,7 @@ foreach(var foo in Array.Empty<int>())
 		Assert.Fail();
 	}
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -213,7 +213,7 @@ foreach(var foo in Array.Empty<int>())
 	else
 		Assert.Fail();
 }
-", Helper.ToDiagnosticId(DiagnosticId.AssertFail)).ConfigureAwait(false);
+", DiagnosticId.AssertFail.ToId()).ConfigureAwait(false);
 		}
 		#endregion
 	}

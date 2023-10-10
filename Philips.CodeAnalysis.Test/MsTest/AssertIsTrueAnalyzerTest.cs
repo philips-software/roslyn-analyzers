@@ -214,7 +214,7 @@ Assert.IsTrue(foo.Test());
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AssertIsEqual),
+				Id = DiagnosticId.AssertIsEqual.ToId(),
 				Message = new Regex("Do not call IsTrue/IsFalse"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

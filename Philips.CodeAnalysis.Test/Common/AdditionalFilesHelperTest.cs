@@ -28,10 +28,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			var fileName = "DummyExceptions.txt";
 			var content = new[] { "ExcludedMethod", "ExcludedClass" };
 			var exceptionsFile = new TestAdditionalFile(fileName, SourceText.From(string.Join("\r\n", content)));
-			AdditionalFilesHelper helper = new(CreateOptions(null, ImmutableArray.Create<AdditionalText>(exceptionsFile)),
+			Helper helper = new(CreateOptions(null, ImmutableArray.Create<AdditionalText>(exceptionsFile)),
 				CreateCompilation());
 			// Act
-			HashSet<string> actual = helper.LoadExceptions(fileName);
+			HashSet<string> actual = helper.ForAdditionalFiles.LoadExceptions(fileName);
 			// Assert
 			CollectionAssert.AreEqual(content, actual.ToArray());
 		}
@@ -46,9 +46,9 @@ namespace Philips.CodeAnalysis.Test.Common
 			var content = new[] { "Dummy1", "Dummy2" };
 			var settings = new Dictionary<string, string> { { $"dotnet_code_quality.{diagnosticId}.{key}", string.Join(",", content) } };
 
-			AdditionalFilesHelper helper = new(CreateOptions(settings), CreateCompilation());
+			Helper helper = new(CreateOptions(settings), CreateCompilation());
 			// Act
-			IReadOnlyList<string> actual = helper.GetValuesFromEditorConfig(diagnosticId, key);
+			IReadOnlyList<string> actual = helper.ForAdditionalFiles.GetValuesFromEditorConfig(diagnosticId, key);
 			// Assert
 			CollectionAssert.AreEqual(content, actual.ToArray());
 		}
@@ -74,10 +74,9 @@ namespace Philips.CodeAnalysis.Test.Common
 				settings.Add($"dotnet_code_quality.{diagnosticId}.generate_exceptions_file", fileName);
 			}
 
-			AdditionalFilesHelper helper = new(CreateOptions(settings),
-				CreateCompilation());
+			Helper helper = new(CreateOptions(settings), CreateCompilation());
 			// Act
-			ExceptionsOptions actual = helper.LoadExceptionsOptions(diagnosticId);
+			ExceptionsOptions actual = helper.ForAdditionalFiles.LoadExceptionsOptions(diagnosticId);
 			// Assert
 			Assert.AreEqual(!shouldUse, actual.ShouldUseExceptionsFile);
 			Assert.AreEqual(shouldGenerate, actual.ShouldGenerateExceptionsFile);
@@ -92,10 +91,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			var fileName = "DummyExceptions.txt";
 			var content = new[] { "ExcludedMethod", "ExcludedClass" };
 			var exceptionsFile = new TestAdditionalFile(fileName, SourceText.From(string.Join("\r\n", content)));
-			AdditionalFilesHelper helper = new(CreateOptions(null, ImmutableArray.Create<AdditionalText>(exceptionsFile)),
+			Helper helper = new(CreateOptions(null, ImmutableArray.Create<AdditionalText>(exceptionsFile)),
 				CreateCompilation());
 			// Act
-			HashSet<string> actual = helper.InitializeExceptions(fileName, diagnosticId);
+			HashSet<string> actual = helper.ForAdditionalFiles.InitializeExceptions(fileName, diagnosticId);
 			// Assert
 			CollectionAssert.AreEqual(content, actual.ToArray());
 		}

@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MoqAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class MockRaiseArgumentsMustMatchEventAnalyzer : DiagnosticAnalyzer
+	public class MockRaiseArgumentsMustMatchEventAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Mock<T>.Raise(x => x.Event += null, sender, args) must have correct parameters";
 		private const string MessageFormatTypeMismatch = @"Parameter '{0}' ({1}) does not match expected type '{2}'";
@@ -19,25 +19,24 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		private const string Description = @"Parameter mismatch";
 		private const string Category = Categories.RuntimeFailure;
 
-		private static readonly DiagnosticDescriptor TypeMismatchRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentsMustMatchEvent), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
-		private static readonly DiagnosticDescriptor ArgumentCountRule = new(Helper.ToDiagnosticId(DiagnosticId.MockRaiseArgumentCountMismatch), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor TypeMismatchRule = new(DiagnosticId.MockRaiseArgumentsMustMatchEvent.ToId(), Title, MessageFormatTypeMismatch, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor ArgumentCountRule = new(DiagnosticId.MockRaiseArgumentCountMismatch.ToId(), Title, MessageFormatArgumentCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(TypeMismatchRule, ArgumentCountRule); } }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.MoqMetadata) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
-			});
+			context.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
+		}
+
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		{
+			return GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics;
 		}
 
 		private void AnalyzeInstanceCall(SyntaxNodeAnalysisContext context)

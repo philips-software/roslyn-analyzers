@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(DocumentThrownExceptionsCodeFixProvider)), Shared]
 	public class DocumentThrownExceptionsCodeFixProvider : SingleDiagnosticCodeFixProvider<SyntaxNode>
 	{
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId.DocumentThrownExceptions), Helper.ToDiagnosticId(DiagnosticId.DocumentUnhandledExceptions));
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.DocumentThrownExceptions.ToId(), DiagnosticId.DocumentUnhandledExceptions.ToId());
 
 		protected override string Title => "Document thrown exceptions";
 
@@ -36,7 +36,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				return document;
 			}
-			DocumentationHelper docHelper = new(node);
+
+			DocumentationHelper docHelper = Helper.ForDocumentationOf(node);
 			var parts = missingExceptionTypeName.Split(',');
 			foreach (var part in parts)
 			{

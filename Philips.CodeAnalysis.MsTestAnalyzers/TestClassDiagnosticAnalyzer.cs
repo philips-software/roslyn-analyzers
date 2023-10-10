@@ -7,24 +7,10 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	public abstract class TestClassDiagnosticAnalyzer : DiagnosticAnalyzer
+	public abstract class TestClassDiagnosticAnalyzer : DiagnosticAnalyzerBase
 	{
-		protected TestHelper TestHelper { get; private set; }
-		protected AttributeHelper AttributeHelper { get; private set; }
-
-		protected TestClassDiagnosticAnalyzer()
-			: this(new TestHelper(), new AttributeHelper())
-		{ }
-		protected TestClassDiagnosticAnalyzer(TestHelper testHelper, AttributeHelper attributeHelper)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			TestHelper = testHelper;
-			AttributeHelper = attributeHelper;
-		}
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
 		}
 
@@ -34,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		{
 			var classDeclaration = (ClassDeclarationSyntax)context.Node;
 
-			if (!TestHelper.IsTestClass(classDeclaration, context))
+			if (!Helper.ForTests.IsTestClass(classDeclaration, context))
 			{
 				return;
 			}

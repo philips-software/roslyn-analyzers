@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	/// Report when a multi line if statement does not include a block.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LimitConditionComplexityAnalyzer : DiagnosticAnalyzer
+	public class LimitConditionComplexityAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = "Limit the number of clauses in a condition";
 		private const string Message =
@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticId.LimitConditionComplexity),
+				DiagnosticId.LimitConditionComplexity.ToId(),
 				Title,
 				Message,
 				Category,
@@ -39,37 +39,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <inheritdoc cref="DiagnosticAnalyzer.SupportedDiagnostics"/>
 		/// </summary>
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
-		public int DefaultMaxOperators { get; private set; } = 4;
+
+		public static int DefaultMaxOperators { get; private set; } = 4;
 
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(
-				startContext =>
-				{
-					var additionalFiles = new AdditionalFilesHelper(
-						startContext.Options,
-						startContext.Compilation);
-					var maxStr = additionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
-					if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedMax))
-					{
-						_maxOperators = parsedMax;
-					}
-					else
-					{
-						_maxOperators = DefaultMaxOperators;
-					}
-					startContext.RegisterSyntaxNodeAction(
-						AnalyzeIfStatement,
-						SyntaxKind.IfStatement);
-					startContext.RegisterSyntaxNodeAction(
-						AnalyzeTernary,
-						SyntaxKind.ConditionalExpression);
-				});
+			var maxStr = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "max_operators");
+			if (int.TryParse(maxStr, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedMax))
+			{
+				_maxOperators = parsedMax;
+			}
+			else
+			{
+				_maxOperators = DefaultMaxOperators;
+			}
+			context.RegisterSyntaxNodeAction(
+				AnalyzeIfStatement,
+				SyntaxKind.IfStatement);
+			context.RegisterSyntaxNodeAction(
+				AnalyzeTernary,
+				SyntaxKind.ConditionalExpression);
 		}
 
 		private void AnalyzeIfStatement(SyntaxNodeAnalysisContext context)
@@ -86,8 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private void AnalyzeCondition(SyntaxNodeAnalysisContext context, ExpressionSyntax conditionNode)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

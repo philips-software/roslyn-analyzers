@@ -22,18 +22,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class ServiceContractHasOperationContractSyntaxNodeAction : SyntaxNodeAction<InterfaceDeclarationSyntax>
 	{
-		private readonly AttributeHelper _attributeHelper = new();
-
 		public override void Analyze()
 		{
-			if (!_attributeHelper.HasAttribute(Node.AttributeLists, Context, "ServiceContract", null, out _))
+			if (!Helper.ForAttributes.HasAttribute(Node.AttributeLists, Context, "ServiceContract", null, out _))
 			{
 				return;
 			}
 
 			foreach (MethodDeclarationSyntax method in Node.Members.OfType<MethodDeclarationSyntax>())
 			{
-				if (!_attributeHelper.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
+				if (!Helper.ForAttributes.HasAttribute(method.AttributeLists, Context, "OperationContract", null, out _))
 				{
 					Location location = method.Identifier.GetLocation();
 					ReportDiagnostic(location, method.Identifier);
