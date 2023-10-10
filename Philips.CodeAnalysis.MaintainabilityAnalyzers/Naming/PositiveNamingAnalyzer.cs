@@ -26,13 +26,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-				var additionalWords = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"negative_words");
-				var words = additionalWords.Split(',');
-				if (words.Any())
-				{
-					IEnumerable<string> filteredWords = words.Where(x => !string.IsNullOrWhiteSpace(x)).Select(w => w.Trim());
-					NegativeWords.AddRange(filteredWords);
-				}
+			var additionalWords = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"negative_words");
+			var words = additionalWords.Split(',');
+			if (words.Any())
+			{
+				IEnumerable<string> filteredWords = words.Where(x => !string.IsNullOrWhiteSpace(x)).Select(w => w.Trim());
+				NegativeWords.AddRange(filteredWords);
+			}
 
 			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
