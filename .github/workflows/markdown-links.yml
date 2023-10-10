@@ -9,7 +9,7 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608
       - name: Check Markdown Links
         uses: gaurav-nelson/github-action-markdown-link-check@9710f0fec812ce0a3b98bef4c9d842fc1f39d976 # ratchet:gaurav-nelson/github-action-markdown-link-check@1.0.13
         with:
