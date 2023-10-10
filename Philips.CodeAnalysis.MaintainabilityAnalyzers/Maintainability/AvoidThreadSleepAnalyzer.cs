@@ -21,17 +21,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	}
 	public class AvoidThreadSleepSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
 	{
-		private readonly AttributeHelper _attributeHelper;
-
-		public AvoidThreadSleepSyntaxNodeAction()
-			: this(new AttributeHelper())
-		{ }
-
-		public AvoidThreadSleepSyntaxNodeAction(AttributeHelper attributeHelper)
-		{
-			_attributeHelper = attributeHelper;
-		}
-
 		public override void Analyze()
 		{
 			if (Node.Expression is not MemberAccessExpressionSyntax memberAccessExpression)
@@ -46,7 +35,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{
 				var classDeclaration = (ClassDeclarationSyntax)Context.Node.Parent.Parent.Parent.Parent;
 				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (_attributeHelper.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
+				if (Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
 					Location location = Node.GetLocation();

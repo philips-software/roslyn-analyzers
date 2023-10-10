@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		{
 			return new DiagnosticResult
 			{
-				Id = Helper.ToDiagnosticId(id),
+				Id = id.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

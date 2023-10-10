@@ -22,6 +22,11 @@ namespace Philips.CodeAnalysis.Common
 			return false;
 		}
 
+		public static bool IsCallableFromOutsideClass(this MemberDeclarationSyntax method)
+		{
+			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
+		}
+
 		public static Diagnostic CreateDiagnostic(this MethodDeclarationSyntax methodDeclarationSyntax, DiagnosticDescriptor rule)
 		{
 			Location location = methodDeclarationSyntax.Identifier.GetLocation();

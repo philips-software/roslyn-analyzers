@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Common
 	/// <typeparam name="TSyntax">The <see cref="SyntaxNode"/> type to fix.</typeparam>
 	public abstract class SolutionCodeFixProvider<TSyntax> : CodeFixProvider where TSyntax : SyntaxNode
 	{
-		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(Helper.ToDiagnosticId(DiagnosticId));
+		public sealed override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.ToId());
 
 		public sealed override FixAllProvider GetFixAllProvider()
 		{
@@ -77,6 +77,8 @@ namespace Philips.CodeAnalysis.Common
 		{
 			return token.AncestorsAndSelf().OfType<TSyntax>().First();
 		}
+
+		public CodeFixHelper Helper { get; } = new CodeFixHelper();
 
 		private static TextDocument GetDocument(Project project, string fileName)
 		{

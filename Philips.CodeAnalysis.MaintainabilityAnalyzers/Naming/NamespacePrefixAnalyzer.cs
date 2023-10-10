@@ -10,7 +10,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NamespacePrefixAnalyzer : DiagnosticAnalyzer
+	public class NamespacePrefixAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string TitleForIncorrectPrefix = @"Namespace uses predefined prefix";
 		private const string MessageFormatForIncorrectPrefix = @"Namespace must use the predefined prefixes configured in the .editorconfig file";
@@ -24,8 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			AdditionalFilesHelper additionalFilesHelper = new(context.Options, context.Compilation);
-			var expectedPrefix = additionalFilesHelper.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
+			var expectedPrefix = Helper.ForAdditionalFiles.GetValueFromEditorConfig(RuleForIncorrectNamespace.Id, @"namespace_prefix");
 
 			var namespaceDeclaration = (NamespaceDeclarationSyntax)context.Node;
 			var myNamespace = namespaceDeclaration.Name.ToString();
@@ -37,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 			else if (!myNamespace.StartsWith(expectedPrefix))
 			{
-				if (Helper.IsNamespaceExempt(myNamespace))
+				if (Helper.ForNamespaces.IsNamespaceExempt(myNamespace))
 				{
 					return;
 				}
@@ -47,7 +46,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 
-		public static readonly string RuleId = Helper.ToDiagnosticId(DiagnosticId.NamespacePrefix);
+		public static readonly string RuleId = DiagnosticId.NamespacePrefix.ToId();
 
 		public static readonly DiagnosticDescriptor RuleForIncorrectNamespace = new(RuleId, TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
 		public static readonly DiagnosticDescriptor RuleForEmptyPrefix = new(RuleId, TitleForEmptyPrefix, string.Format(MessageFormatForEmptyPrefix, RuleId), Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: string.Format(DescriptionForEmptyPrefix, RuleId));
@@ -56,10 +55,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIncorrectNamespace, RuleForEmptyPrefix); } }
 
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.EnableConcurrentExecution();
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.NamespaceDeclaration);
 		}
 	}

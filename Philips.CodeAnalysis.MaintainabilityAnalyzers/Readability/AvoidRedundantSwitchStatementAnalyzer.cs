@@ -27,18 +27,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			_generatedCodeFlags = generatedCodeFlags;
 		}
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(_generatedCodeFlags);
-			context.EnableConcurrentExecution();
 			context.RegisterOperationAction(Analyze, OperationKind.Switch);
 			context.RegisterOperationAction(AnalyzeExpression, OperationKind.SwitchExpression);
 		}
 
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		{
+			return _generatedCodeFlags;
+		}
+
 		private void Analyze(OperationAnalysisContext operationContext)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(operationContext))
 			{
 				return;
 			}
@@ -61,8 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 		private void AnalyzeExpression(OperationAnalysisContext operationContext)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(operationContext))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(operationContext))
 			{
 				return;
 			}

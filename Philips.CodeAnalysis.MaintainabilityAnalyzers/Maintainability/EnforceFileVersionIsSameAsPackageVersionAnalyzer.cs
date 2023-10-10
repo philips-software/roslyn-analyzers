@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : SingleDiagnosticAnalyzer
+	public class EnforceFileVersionIsSameAsPackageVersionAnalyzer : SolutionAnalyzer
 	{
 		private const string Title = @"Ensure FileVersion is the same as PackageVersion";
 		public const string MessageFormat = @"The FileVersion ({0}) must be the same as the PackageVersion ({1}).";

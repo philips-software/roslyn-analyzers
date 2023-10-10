@@ -51,7 +51,7 @@ namespace TestMethodNameAnalyzerTest
 			{
 				var expected = new DiagnosticResult
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.TestMethodName),
+					Id = DiagnosticId.TestMethodName.ToId(),
 					Message = new Regex(expectedMessage),
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]

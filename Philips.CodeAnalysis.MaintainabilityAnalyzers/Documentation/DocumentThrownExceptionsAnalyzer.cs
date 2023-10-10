@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 	/// Analyzer that checks if the text of the XML code documentation contains a reference to each exception being thrown inside the method or property.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzer
+	public class DocumentThrownExceptionsAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string DocumentTitle = @"Document thrown exceptions";
 		private const string DocumentMessageFormat = @"Document the fact that this method can potentially throw an exception of type {0}.";
@@ -25,26 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string InformationalDescription = @"Specify context to a thrown exception, by using a constructor overload that sets the Message property.";
 		private const string Category = Categories.Documentation;
 
-		private static readonly DiagnosticDescriptor DocumentRule = new(Helper.ToDiagnosticId(DiagnosticId.DocumentThrownExceptions), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription);
-		private static readonly DiagnosticDescriptor InformationalRule = new(Helper.ToDiagnosticId(DiagnosticId.ThrowInformationalExceptions), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription);
+		private static readonly DiagnosticDescriptor DocumentRule = new(DiagnosticId.DocumentThrownExceptions.ToId(), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription);
+		private static readonly DiagnosticDescriptor InformationalRule = new(DiagnosticId.ThrowInformationalExceptions.ToId(), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
-		private readonly Helper _helper;
-
-		public DocumentThrownExceptionsAnalyzer()
-			: this(new Helper())
-		{ }
-
-		public DocumentThrownExceptionsAnalyzer(Helper helper)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			_helper = helper;
-		}
-
-		public override void Initialize(AnalysisContext context)
-		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ThrowStatement);
 		}
 
@@ -53,11 +40,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			var throwStatement = (ThrowStatementSyntax)context.Node;
 
 			string thrownExceptionName = null;
-			IReadOnlyDictionary<string, string> aliases;
+			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(throwStatement);
 			if (throwStatement.Expression is ObjectCreationExpressionSyntax exceptionCreation)
 			{
 				// Search of string arguments in the constructor invocation.
-				aliases = _helper.GetUsingAliases(throwStatement);
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
 				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
 				{
@@ -80,7 +66,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			aliases = _helper.GetUsingAliases(throwStatement);
 			if (aliases.TryGetValue(thrownExceptionName, out var aliasedName))
 			{
 				thrownExceptionName = aliasedName;
@@ -90,8 +75,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxNode nodeWithDoc = DocumentationHelper.FindAncestorThatCanHaveDocumentation(throwStatement);
 
 			// Check if our parent has proper documentation.
-			var docHelper = new DocumentationHelper(nodeWithDoc);
-			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCrefs();
+			DocumentationHelper docHelper = Helper.ForDocumentationOf(nodeWithDoc);
+			IEnumerable<string> mentionedExceptions = docHelper.GetExceptionCodeReferences();
 			if (mentionedExceptions.Any() && !mentionedExceptions.Contains(thrownExceptionName, new NamespaceIgnoringComparer()))
 			{
 				Location loc = throwStatement.ThrowKeyword.GetLocation();

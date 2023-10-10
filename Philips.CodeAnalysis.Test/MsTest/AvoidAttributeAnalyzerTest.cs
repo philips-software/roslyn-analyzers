@@ -46,7 +46,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidIgnoreAttribute),
+				Id = DiagnosticId.AvoidIgnoreAttribute.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -80,7 +80,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidOwnerAttribute),
+				Id = DiagnosticId.AvoidOwnerAttribute.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -111,7 +111,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTestInitializeMethod),
+				Id = DiagnosticId.AvoidTestInitializeMethod.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -143,7 +143,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidTestCleanupMethod),
+				Id = DiagnosticId.AvoidTestCleanupMethod.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -175,7 +175,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidClassInitializeMethod),
+				Id = DiagnosticId.AvoidClassInitializeMethod.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]
@@ -207,7 +207,7 @@ class Foo
 
 			DiagnosticResult expected = new()
 			{
-				Id = Helper.ToDiagnosticId(DiagnosticId.AvoidClassCleanupMethod),
+				Id = DiagnosticId.AvoidClassCleanupMethod.ToId(),
 				Message = new Regex(".*"),
 				Severity = DiagnosticSeverity.Error,
 				Locations = new[]

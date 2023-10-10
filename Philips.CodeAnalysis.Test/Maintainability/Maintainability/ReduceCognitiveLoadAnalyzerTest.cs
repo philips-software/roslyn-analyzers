@@ -2,10 +2,8 @@
 
 using System.Collections.Immutable;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
@@ -23,9 +21,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns("1");
-			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer();
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.ReduceCognitiveLoad.ToId()}.max_cognitive_load", "1");
 		}
 
 		[TestMethod]
@@ -475,14 +476,17 @@ class Foo
 	[TestClass]
 	public class ReduceCognitiveLoadAnalyzerInvalidInitializationTest : DiagnosticVerifier
 	{
+		private const string InvalidMaxLoad = @"1000";
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			const string InvalidMaxLoad = @"1000";
-			Mock<AdditionalFilesHelper> _mockAdditionalFilesHelper = new(new AnalyzerOptions(ImmutableArray.Create<AdditionalText>()), null);
-			_ = _mockAdditionalFilesHelper.Setup(c => c.GetValueFromEditorConfig(It.IsAny<string>(), It.IsAny<string>())).Returns(InvalidMaxLoad);
-			return new ReduceCognitiveLoadAnalyzer(_mockAdditionalFilesHelper.Object);
+			return new ReduceCognitiveLoadAnalyzer();
 		}
 
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions().Add("max_cognitive_load", InvalidMaxLoad);
+		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]

@@ -10,17 +10,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
 	public abstract class TestMethodDiagnosticAnalyzer : TestAttributeDiagnosticAnalyzer
 	{
-		protected AttributeHelper AttributeHelper { get; private set; }
-
-		protected TestMethodDiagnosticAnalyzer()
-			: this(new AttributeHelper())
-		{ }
-
-		protected TestMethodDiagnosticAnalyzer(AttributeHelper attributeHelper)
-		{
-			AttributeHelper = attributeHelper;
-		}
-
 		protected sealed override Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
 			return OnInitializeTestMethodAnalyzer(options, compilation, definitions);
@@ -31,17 +20,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public abstract class TestMethodImplementation : Implementation
 		{
-			protected AttributeHelper AttributeHelper { get; private set; }
-
 			protected MsTestAttributeDefinitions Definitions { get; }
 
-			protected TestMethodImplementation(MsTestAttributeDefinitions definitions)
-				: this(definitions, new AttributeHelper())
-			{ }
-			protected TestMethodImplementation(MsTestAttributeDefinitions definitions, AttributeHelper attributeHelper)
+			protected TestMethodImplementation(MsTestAttributeDefinitions definitions, Helper helper) : base(helper)
 			{
 				Definitions = definitions;
-				AttributeHelper = attributeHelper;
 			}
 
 			protected abstract void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod);

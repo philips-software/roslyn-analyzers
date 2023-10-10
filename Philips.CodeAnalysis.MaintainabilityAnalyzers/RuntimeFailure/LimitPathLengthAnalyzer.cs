@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 	/// See <seealso href="https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation"/>
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LimitPathLengthAnalyzer : DiagnosticAnalyzer
+	public class LimitPathLengthAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title =
 			"Path too long, make smaller to avoid $MAX_RELATIVE_PATH_LENGTH limit.";
@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticId.LimitPathLength),
+				DiagnosticId.LimitPathLength.ToId(),
 				Title,
 				Message,
 				Category,
@@ -45,11 +45,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxTreeAction(AnalyzeTree);
+		}
+
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		{
+			return GeneratedCodeAnalysisFlags.Analyze | GeneratedCodeAnalysisFlags.ReportDiagnostics;
 		}
 
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)

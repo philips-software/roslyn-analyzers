@@ -10,10 +10,16 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MsTestAnalyzers
 {
-	public abstract class TestAttributeDiagnosticAnalyzer : DiagnosticAnalyzer
+	public abstract class TestAttributeDiagnosticAnalyzer : DiagnosticAnalyzerBase
 	{
 		public abstract class Implementation
 		{
+			protected Implementation(Helper helper)
+			{
+				Helper = helper;
+			}
+			public Helper Helper { get; }
+
 			public virtual void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes) { }
 		}
 
@@ -22,29 +28,23 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected abstract Implementation OnInitializeAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions);
 
-		public sealed override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.AssertFullyQualifiedName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				var definitions = MsTestAttributeDefinitions.FromCompilation(startContext.Compilation);
+			var definitions = MsTestAttributeDefinitions.FromCompilation(context.Compilation);
 
-				Implementation implementation = OnInitializeAnalyzer(startContext.Options, startContext.Compilation, definitions);
+			Implementation implementation = OnInitializeAnalyzer(context.Options, context.Compilation, definitions);
 
-				if (implementation is null)
-				{
-					return;
-				}
+			if (implementation is null)
+			{
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction((x) => Analyze(definitions, x, implementation), SyntaxKind.MethodDeclaration);
-			});
+			context.RegisterSyntaxNodeAction((x) => Analyze(definitions, x, implementation), SyntaxKind.MethodDeclaration);
 		}
 
 		private void Analyze(MsTestAttributeDefinitions definitions, SyntaxNodeAnalysisContext context, Implementation implementation)

@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidAssertConditionalAccessAnalyzerFailTestAsync(string test)
 		{
-			await VerifyError(test, Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess)).ConfigureAwait(false);
+			await VerifyError(test, DiagnosticId.AvoidAssertConditionalAccess.ToId()).ConfigureAwait(false);
 		}
 
 
@@ -51,13 +51,13 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			{
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Id = DiagnosticId.AvoidAssertConditionalAccess.ToId(),
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				},
 				new DiagnosticResult()
 				{
-					Id = Helper.ToDiagnosticId(DiagnosticId.AvoidAssertConditionalAccess),
+					Id = DiagnosticId.AvoidAssertConditionalAccess.ToId(),
 					Severity = DiagnosticSeverity.Error,
 					Location = new DiagnosticResultLocation("Test0.cs", null, null),
 				}

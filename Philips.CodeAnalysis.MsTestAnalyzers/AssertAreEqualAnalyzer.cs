@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Assert.AreEqual(<actual>, <expected>) => Assert.AreEqual(<expected>, <actual>) and Assert.AreEqual(null, <actual>) => Assert.IsNull(<actual>).";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqual), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AssertAreEqual.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -44,8 +44,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// Assert.AreEqual is incorrectly used if the literal is the second argument (including null) or if the first argument is null
 			ArgumentListSyntax argumentList = invocationExpressionSyntax.ArgumentList;
 
-			var isArg0Literal = Helper.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
-			var isArg1Literal = Helper.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
+			var isArg0Literal = Helper.ForLiterals.IsLiteral(argumentList.Arguments[0].Expression, context.SemanticModel);
+			var isArg1Literal = Helper.ForLiterals.IsLiteral(argumentList.Arguments[1].Expression, context.SemanticModel);
 			var isArg0Null = IsNull(argumentList.Arguments[0].Expression);
 
 			if (!isArg0Literal && !isArg1Literal)
