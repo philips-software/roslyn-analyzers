@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AssertAreEqualLiteral), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AssertAreEqualLiteral.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			ArgumentSyntax actual = invocationExpressionSyntax.ArgumentList?.Arguments[1];
 
 			// We only need to check 'expected'.  Other analyzers catch any literals in the 'actual'
-			if (!IsLiteral(expected.Expression))
+			if (!Helper.ForLiterals.IsTrueOrFalse(expected.Expression))
 			{
 				return Array.Empty<Diagnostic>();
 			}
@@ -56,11 +56,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			Conversion conversion = context.SemanticModel.Compilation.ClassifyConversion(actualType.Type, expectedType.Type);
 			Location location = invocationExpressionSyntax.GetLocation();
 			return conversion.IsNullable ? Array.Empty<Diagnostic>() : (IEnumerable<Diagnostic>)(new[] { Diagnostic.Create(Rule, location) });
-		}
-
-		private bool IsLiteral(ExpressionSyntax expression)
-		{
-			return Helper.IsLiteralTrueFalse(expression);
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
+			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
 
 			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			ExceptionWalker walker = new();
@@ -50,8 +50,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 
 			// List the documented exception types.
-			var docHelper = new DocumentationHelper(Node);
-			IEnumerable<string> documentedExceptions = docHelper.GetExceptionCrefs();
+			DocumentationHelper docHelper = Helper.ForDocumentationOf(Node);
+			IEnumerable<string> documentedExceptions = docHelper.GetExceptionCodeReferences();
 			var comparer = new NamespaceIgnoringComparer();
 			IEnumerable<string> remainingExceptions =
 				unhandledExceptions.Where(ex =>

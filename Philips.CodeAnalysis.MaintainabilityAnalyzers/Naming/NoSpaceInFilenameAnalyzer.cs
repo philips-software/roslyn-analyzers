@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	/// Report on file names with spaces, as these tend to cause scripting issues.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class NoSpaceInFilenameAnalyzer : DiagnosticAnalyzer
+	public class NoSpaceInFilenameAnalyzer : DiagnosticAnalyzerBase
 	{
 		/// <summary>
 		/// Diagnostic for file names with spaces.
@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private static readonly DiagnosticDescriptor Rule =
 			new(
-				Helper.ToDiagnosticId(DiagnosticId.NoSpaceInFilename),
+				DiagnosticId.NoSpaceInFilename.ToId(),
 				Title,
 				Message,
 				Category,
@@ -43,17 +43,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
 			context.RegisterSyntaxTreeAction(AnalyzeTree);
 		}
 
 		private void AnalyzeTree(SyntaxTreeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
-			if (generatedCodeDetector.IsGeneratedCode(context))
+			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}

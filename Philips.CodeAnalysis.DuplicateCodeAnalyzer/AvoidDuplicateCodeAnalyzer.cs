@@ -17,7 +17,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzer
+	public class AvoidDuplicateCodeAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Avoid Duplicate Code";
 		private const string MessageFormat = @"Duplicate shape found at {0}. Refactor logic or exempt duplication. Duplicate shape details: ""{1}""";
@@ -26,60 +26,57 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public int DefaultDuplicateTokenThreshold { get; set; } = 100;
 
-		public static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidDuplicateCode.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
-		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidDuplicateCode), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
 
 		private const int MaxTokenCount = 200;
 		private const int MinTokenCount = 20;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidTokenCountRule); } }
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
-			context.RegisterCompilationStartAction(compilationContext =>
+			EditorConfigOptions options = InitializeEditorConfigOptions(out Diagnostic configurationError);
+			if (options.ShouldUseExceptionsFile)
 			{
-				AllowedSymbols allowedSymbols = new(compilationContext.Compilation);
-				EditorConfigOptions options = InitializeEditorConfigOptions(compilationContext.Options, compilationContext.Compilation, out Diagnostic configurationError);
-				if (options.ShouldUseExceptionsFile)
-				{
-					_ = allowedSymbols.Initialize(compilationContext.Options.AdditionalFiles, AllowedFileName);
-				}
-				var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, allowedSymbols, options.ShouldGenerateExceptionsFile, configurationError);
-				compilationContext.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
-				compilationContext.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
-			});
+				_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			}
+
+			if (options.ShouldUseExceptionsFile)
+			{
+				_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
+			}
+			var compilationAnalyzer = new CompilationAnalyzer(options.TokenCount, Helper, options.ShouldGenerateExceptionsFile, configurationError);
+			context.RegisterSyntaxNodeAction(compilationAnalyzer.AnalyzeMethod, SyntaxKind.MethodDeclaration);
+			context.RegisterCompilationEndAction(compilationAnalyzer.EndCompilationAction);
 		}
 
 		public const string AllowedFileName = @"DuplicateCode.Allowed.txt";
 
-		public virtual EditorConfigOptions InitializeEditorConfigOptions(AnalyzerOptions analyzerOptions, Compilation compilation, out Diagnostic diagnosticError)
+		public virtual EditorConfigOptions InitializeEditorConfigOptions(out Diagnostic diagnosticError)
 		{
 			diagnosticError = null;
 			EditorConfigOptions options = new(DefaultDuplicateTokenThreshold);
-			var editorConfigHelper = new AdditionalFilesHelper(analyzerOptions, compilation);
 
-			ExceptionsOptions exceptionsOptions = editorConfigHelper.LoadExceptionsOptions(Rule.Id);
+			ExceptionsOptions exceptionsOptions = Helper.ForAdditionalFiles.LoadExceptionsOptions(Rule.Id);
 			options.ShouldUseExceptionsFile = exceptionsOptions.ShouldUseExceptionsFile;
 			options.ShouldGenerateExceptionsFile = exceptionsOptions.ShouldGenerateExceptionsFile;
 
-			var strTokenCount = editorConfigHelper.GetValueFromEditorConfig(Rule.Id, @"token_count");
+			var strTokenCount = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"token_count");
 			if (!string.IsNullOrWhiteSpace(strTokenCount))
 			{
 				strTokenCount = strTokenCount.Trim();
@@ -112,13 +109,13 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly DuplicateDetector _library = new();
 			private readonly List<Diagnostic> _diagnostics = new();
 			private readonly int _duplicateTokenThreshold;
-			private readonly AllowedSymbols _allowedSymbols;
+			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
 
-			public CompilationAnalyzer(int duplicateTokenThreshold, AllowedSymbols allowed, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
+			public CompilationAnalyzer(int duplicateTokenThreshold, Helper helper, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
 				_duplicateTokenThreshold = duplicateTokenThreshold;
-				_allowedSymbols = allowed;
+				_helper = helper;
 				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
 				if (configurationError != null)
 				{
@@ -146,7 +143,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					}
 
 					IMethodSymbol methodSymbol = obj.SemanticModel.GetDeclaredSymbol(methodDeclarationSyntax);
-					if (_allowedSymbols.IsAllowed(methodSymbol))
+					if (_helper.ForAllowedSymbols.IsAllowed(methodSymbol))
 					{
 						return;
 					}

@@ -20,27 +20,25 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static readonly string DefaultTimeoutKey = "defaultTimeout";
 
-		public static DiagnosticDescriptor Rule => new(Helper.ToDiagnosticId(DiagnosticId.TestHasTimeoutAttribute), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		public static DiagnosticDescriptor Rule => new(DiagnosticId.TestHasTimeoutAttribute.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
-			var additionalFilesHelper = new AdditionalFilesHelper(options, compilation);
+			var helper = new Helper(options, compilation);
 
-			return new TestHasTimeout(definitions, additionalFilesHelper);
+			return new TestHasTimeout(definitions, helper);
 		}
 
 		private sealed class TestHasTimeout : TestMethodImplementation
 		{
-			private readonly AdditionalFilesHelper _additionalFilesHelper;
 			private readonly object _lock1 = new();
 			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new();
 
-			public TestHasTimeout(MsTestAttributeDefinitions definitions, AdditionalFilesHelper additionalFilesHelper) : base(definitions)
+			public TestHasTimeout(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{
-				_additionalFilesHelper = additionalFilesHelper;
 			}
 
 			private bool TryGetAllowedTimeouts(string category, out ImmutableList<string> values)
@@ -53,7 +51,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					}
 				}
 
-				IReadOnlyList<string> allowedTimeouts = _additionalFilesHelper.GetValuesFromEditorConfig(Rule.Id, category);
+				IReadOnlyList<string> allowedTimeouts = Helper.ForAdditionalFiles.GetValuesFromEditorConfig(Rule.Id, category);
 
 				lock (_lock1)
 				{
@@ -74,10 +72,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 
-				AttributeHelper attributeHelper = new();
-				var hasCategory = attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
+				var hasCategory = Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TestCategoryAttribute, out _, out AttributeArgumentSyntax categoryArgumentSyntax);
 
-				if (!attributeHelper.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
+				if (!Helper.ForAttributes.HasAttribute(attributeLists, context, MsTestFrameworkDefinitions.TimeoutAttribute, out Location timeoutLocation, out AttributeArgumentSyntax argumentSyntax))
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 

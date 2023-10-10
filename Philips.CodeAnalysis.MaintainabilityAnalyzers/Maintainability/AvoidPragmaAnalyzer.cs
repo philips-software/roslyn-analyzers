@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
-			var myOwnId = Helper.ToDiagnosticId(DiagnosticId.AvoidPragma);
+			var myOwnId = DiagnosticId.AvoidPragma.ToId();
 			if (Node.ErrorCodes.Where(e => e.IsKind(SyntaxKind.IdentifierName))
 									.Any(i => i.ToString().Contains(myOwnId)))
 			{

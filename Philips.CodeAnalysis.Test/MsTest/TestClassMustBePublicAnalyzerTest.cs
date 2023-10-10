@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 				{
 					await VerifyDiagnostic(text, new DiagnosticResult()
 					{
-						Id = Helper.ToDiagnosticId(DiagnosticId.TestClassesMustBePublic),
+						Id = DiagnosticId.TestClassesMustBePublic.ToId(),
 						Locations = new[] { new DiagnosticResultLocation("Test0.cs", 4, modifier.Length + 8) },
 						Message = new Regex(".*"),
 						Severity = DiagnosticSeverity.Error,

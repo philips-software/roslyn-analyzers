@@ -22,8 +22,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class PassSenderToEventHandlerSyntaxNodeAction : SyntaxNodeAction<EventFieldDeclarationSyntax>
 	{
-		private readonly Helper _helper = new();
-
 		public override void Analyze()
 		{
 			VariableDeclaratorSyntax variable = Node.Declaration.Variables.FirstOrDefault();
@@ -55,13 +53,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
 				SeparatedSyntaxList<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments;
-				if (_helper.IsLiteralNull(arguments[0].Expression))
+				if (Helper.ForLiterals.IsNull(arguments[0].Expression))
 				{
 					Location loc = arguments[0].GetLocation();
 					ReportDiagnostic(loc, eventName);
 				}
 
-				if (_helper.IsLiteralNull(arguments[1].Expression))
+				if (Helper.ForLiterals.IsNull(arguments[1].Expression))
 				{
 					Location loc = arguments[1].GetLocation();
 					ReportDiagnostic(loc, eventName);

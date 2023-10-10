@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Common
 		private readonly HashSet<INamespaceSymbol> _allowedNamespaces;
 		private readonly HashSet<string> _allowedLines;
 
-		public AllowedSymbols(Compilation compilation)
+		internal AllowedSymbols(Compilation compilation)
 		{
 			_compilation = compilation;
 			_allowedMethods = new HashSet<IMethodSymbol>();

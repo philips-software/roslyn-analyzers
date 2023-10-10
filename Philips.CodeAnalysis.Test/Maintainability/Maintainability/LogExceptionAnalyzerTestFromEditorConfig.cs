@@ -60,7 +60,7 @@ public class Program {
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.LogException)}.log_method_names", ConfiguredLogMethods);
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.LogException.ToId()}.log_method_names", ConfiguredLogMethods);
 		}
 	}
 }

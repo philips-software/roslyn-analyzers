@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
-			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{Helper.ToDiagnosticId(DiagnosticId.CopyrightPresent)}.company_name", configuredCompanyName);
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.CopyrightPresent.ToId()}.company_name", configuredCompanyName);
 		}
 
 		[DataRow(@"#region H

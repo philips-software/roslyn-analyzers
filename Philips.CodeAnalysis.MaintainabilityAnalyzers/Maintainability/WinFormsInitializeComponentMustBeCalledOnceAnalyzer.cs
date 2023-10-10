@@ -26,8 +26,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class WinFormsInitializeComponentMustBeCalledOnceSyntaxNodeAction : SyntaxNodeAction<ClassDeclarationSyntax>
 	{
-		private readonly TestHelper _testHelper = new();
-
 		private void IsInitializeComponentInConstructors(ConstructorDeclarationSyntax[] constructors)
 		{
 			if (constructors.Length == 0)
@@ -37,12 +35,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			ConstructorSyntaxHelper constructorSyntaxHelper = new();
-			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = constructorSyntaxHelper.CreateMapping(Context, constructors);
+			IReadOnlyDictionary<ConstructorDeclarationSyntax, ConstructorDeclarationSyntax> mapping = Helper.ForConstructors.CreateMapping(Context, constructors);
 
 			foreach (ConstructorDeclarationSyntax ctor in constructors)
 			{
-				IReadOnlyList<ConstructorDeclarationSyntax> chain = constructorSyntaxHelper.GetCtorChain(mapping, ctor);
+				IReadOnlyList<ConstructorDeclarationSyntax> chain = Helper.ForConstructors.GetCtorChain(mapping, ctor);
 
 				if (!IsInitializeComponentInConstructorChainOnce(chain, out var count))
 				{
@@ -97,14 +94,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// If we're in a TestClass, let it go.
-			if (_testHelper.IsInTestClass(Context))
+			if (Helper.ForTests.IsInTestClass(Context))
 			{
 				return;
 			}
 
 			// If we're not within a Control/Form, let it go.
 			INamedTypeSymbol type = Context.SemanticModel.GetDeclaredSymbol(Node);
-			if (!Helper.IsUserControl(type))
+			if (!Helper.ForTypes.IsUserControl(type))
 			{
 				return;
 			}

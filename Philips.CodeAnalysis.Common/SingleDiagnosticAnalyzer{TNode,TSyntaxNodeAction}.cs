@@ -8,7 +8,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public abstract class SingleDiagnosticAnalyzer<T, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where T : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<T>, new()
+	/// <summary>
+	/// Base class for an <see cref="DiagnosticAnalyzer"/> which uses a single <see cref="SyntaxNodeAction{SyntaxNode}"/>.
+	/// </summary>
+	public abstract class SingleDiagnosticAnalyzer<TNode, TSyntaxNodeAction> : SingleDiagnosticAnalyzer where TNode : SyntaxNode where TSyntaxNodeAction : SyntaxNodeAction<TNode>, new()
 	{
 		public string FullyQualifiedMetaDataName { get; protected set; }
 
@@ -17,35 +20,25 @@ namespace Philips.CodeAnalysis.Common
 			: base(id, title, messageFormat, description, category, severity, isEnabled)
 		{ }
 
-		/// <summary>
-		/// Boilerplate initialization for the Analyzer
-		/// </summary>
-		/// <exception cref="InvalidOperationException">When an Analyzer with a new type of SyntaxKind is added.</exception>
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-
 			SyntaxKind syntaxKind = GetSyntaxKind();
 			if (syntaxKind == SyntaxKind.None)
 			{
-				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(T)}");
+				throw new InvalidOperationException($"Update {nameof(GetSyntaxKind)} to include the SyntaxKind associated with {typeof(TNode)}");
 			}
 
-			context.RegisterCompilationStartAction(startContext =>
+			if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && context.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
 			{
-				if (!string.IsNullOrWhiteSpace(FullyQualifiedMetaDataName) && startContext.Compilation.GetTypeByMetadataName(FullyQualifiedMetaDataName) == null)
-				{
-					return;
-				}
+				return;
+			}
 
-				startContext.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
-			});
+			context.RegisterSyntaxNodeAction(StartAnalysis, syntaxKind);
 		}
 
 		private void StartAnalysis(SyntaxNodeAnalysisContext context)
 		{
-			GeneratedCodeDetector generatedCodeDetector = new();
+			GeneratedCodeDetector generatedCodeDetector = new(Helper);
 			if (generatedCodeDetector.IsGeneratedCode(context))
 			{
 				return;
@@ -54,16 +47,17 @@ namespace Philips.CodeAnalysis.Common
 			TSyntaxNodeAction syntaxNodeAction = new()
 			{
 				Context = context,
-				Node = (T)context.Node,
+				Node = (TNode)context.Node,
 				Rule = Rule,
 				Analyzer = this,
+				Helper = Helper
 			};
 			syntaxNodeAction.Analyze();
 		}
 
 		protected virtual SyntaxKind GetSyntaxKind()
 		{
-			return typeof(T).Name switch
+			return typeof(TNode).Name switch
 			{
 				nameof(CompilationUnitSyntax) => SyntaxKind.CompilationUnit,
 				nameof(MethodDeclarationSyntax) => SyntaxKind.MethodDeclaration,
@@ -73,7 +67,6 @@ namespace Philips.CodeAnalysis.Common
 				nameof(IfStatementSyntax) => SyntaxKind.IfStatement,
 				nameof(ClassDeclarationSyntax) => SyntaxKind.ClassDeclaration,
 				nameof(NamespaceDeclarationSyntax) => SyntaxKind.NamespaceDeclaration,
-				nameof(IdentifierNameSyntax) => SyntaxKind.IdentifierName,
 				nameof(TupleTypeSyntax) => SyntaxKind.TupleType,
 				nameof(DestructorDeclarationSyntax) => SyntaxKind.DestructorDeclaration,
 				nameof(ExpressionSyntax) => SyntaxKind.AsExpression,

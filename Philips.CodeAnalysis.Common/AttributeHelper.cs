@@ -11,6 +11,11 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class AttributeHelper
 	{
+		internal AttributeHelper()
+		{
+			// Hide the constructor
+		}
+
 		public bool HasAnyAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, params AttributeDefinition[] attributes)
 		{
 			return attributes.Any(x => HasAttribute(attributeLists, context, x));

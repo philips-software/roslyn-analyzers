@@ -17,16 +17,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = @"Reduce Cognitive Load of {0} to threshold of {1}";
 		private const string Description = @"This method has too many nested block statements and logical cases to consider in this method";
 
-		public AdditionalFilesHelper AdditionalFilesHelper { get; }
-
 		public ReduceCognitiveLoadAnalyzer()
-			: this(null)
-		{ }
-
-		public ReduceCognitiveLoadAnalyzer(AdditionalFilesHelper additionalFilesHelper)
 			: base(DiagnosticId.ReduceCognitiveLoad, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{
-			AdditionalFilesHelper = additionalFilesHelper;
 		}
 	}
 
@@ -79,9 +72,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			if (MaxCognitiveLoad == 0)
 			{
-				AdditionalFilesHelper additionalFilesHelper = (Analyzer as ReduceCognitiveLoadAnalyzer).AdditionalFilesHelper;
-				additionalFilesHelper ??= new AdditionalFilesHelper(Context.Options, Context.Compilation);
-				var configuredMaxCognitiveLoad = additionalFilesHelper.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
+				Helper helper = (Analyzer as ReduceCognitiveLoadAnalyzer).Helper;
+				helper ??= new Helper(Context.Options, Context.Compilation);
+				var configuredMaxCognitiveLoad = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"max_cognitive_load");
 				if (int.TryParse(configuredMaxCognitiveLoad, NumberStyles.Integer, CultureInfo.InvariantCulture, out var maxAllowedCognitiveLoad) && maxAllowedCognitiveLoad is >= 1 and <= 100)
 				{
 					MaxCognitiveLoad = maxAllowedCognitiveLoad;

@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public override void Analyze()
 		{
-			IReadOnlyDictionary<string, string> aliases = Helper.GetUsingAliases(Node);
+			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
 			var fullTypeName = Node.Type.GetFullName(aliases);
 			if (Comparer.Compare(fullTypeName, ArrayListTypeName) != 0)
 			{

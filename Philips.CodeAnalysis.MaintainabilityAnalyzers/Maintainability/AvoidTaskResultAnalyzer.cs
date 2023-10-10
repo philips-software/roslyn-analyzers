@@ -10,14 +10,14 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidTaskResultAnalyzer : DiagnosticAnalyzer
+	public class AvoidTaskResultAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Avoid Task.Result";
 		public const string MessageFormat = @"Methods may not call Result on a Task.";
 		private const string Description = @"To avoid deadlocks, methods may not call Result on a Task.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(Helper.ToDiagnosticId(DiagnosticId.AvoidTaskResult), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidTaskResult.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -25,18 +25,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string ContainingType = @"Task";
 		private const string Identifier = @"Result";
 
-		public override void Initialize(AnalysisContext context)
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-			context.EnableConcurrentExecution();
-			context.RegisterCompilationStartAction(startContext =>
+			if (context.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
 			{
-				if (startContext.Compilation.GetTypeByMetadataName(StringConstants.TaskFullyQualifiedName) == null)
-				{
-					return;
-				}
-				startContext.RegisterOperationAction(Analyze, OperationKind.PropertyReference);
-			});
+				return;
+			}
+			context.RegisterOperationAction(Analyze, OperationKind.PropertyReference);
 		}
 
 		private void Analyze(OperationAnalysisContext context)
