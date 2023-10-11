@@ -47,6 +47,13 @@ namespace PropertiesinOrderTests {
     }
 }";
 
+		private const string CorrectReadOnlyArrow = @"
+namespace PropertiesinOrderTests {
+    public class Number {
+        public int One => 1;
+    }
+}";
+
 		private const string WrongInAssignment = @"
 namespace PropertiesinOrderTests {
     public class Number {
@@ -67,7 +74,9 @@ namespace PropertiesinOrderTests {
 		 DataRow(CorrectAutoProperties, DisplayName = nameof(CorrectAutoProperties)),
 		 DataRow(CorrectInitializer, DisplayName = nameof(CorrectInitializer)),
 		 DataRow(CorrectNoSetter, DisplayName = nameof(CorrectNoSetter)),
-		 DataRow(CorrectPrivateSetter, DisplayName = nameof(CorrectPrivateSetter))]
+		 DataRow(CorrectPrivateSetter, DisplayName = nameof(CorrectPrivateSetter)),
+		 DataRow(CorrectReadOnlyArrow, DisplayName = nameof(CorrectReadOnlyArrow))
+		]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)
 		{

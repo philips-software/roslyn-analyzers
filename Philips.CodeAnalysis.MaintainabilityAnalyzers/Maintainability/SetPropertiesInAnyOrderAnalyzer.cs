@@ -40,25 +40,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			IEnumerable<string> propertiesInType = GetProperties(type);
-			IEnumerable<string> otherProperties = propertiesInType.Except(new[] { prop.Identifier.Text });
+			var propertyName = prop.Identifier.Text;
+			IEnumerable<string> propertiesInType = GetPropertieNames(type);
+			IEnumerable<string> otherProperties = propertiesInType.Except(new[] { propertyName });
 
 			if (Node.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
 			{
-				var propertyName = prop.Identifier.Text;
 				Location loc = Node.GetLocation();
 				ReportDiagnostic(loc, propertyName);
 			}
 		}
 
-		private static IEnumerable<string> GetProperties(BaseTypeDeclarationSyntax type)
+		private static IEnumerable<string> GetPropertieNames(BaseTypeDeclarationSyntax type)
 		{
 			return type.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(IsAssignable).Select(prop => prop.Identifier.Text);
 		}
 
 		private static bool IsAssignable(PropertyDeclarationSyntax property)
 		{
-			return property.Initializer != null || property.AccessorList.Accessors.Any(IsPublicSetter);
+			return property.Initializer != null || (property.AccessorList != null && property.AccessorList.Accessors.Any(IsPublicSetter));
 		}
 
 		private static bool IsPublicSetter(AccessorDeclarationSyntax accessor)
