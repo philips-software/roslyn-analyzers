@@ -51,6 +51,7 @@ namespace PropertiesinOrderTests {
 namespace PropertiesinOrderTests {
     public class Number {
         public int One => 1;
+        public int Two => 2;
     }
 }";
 
