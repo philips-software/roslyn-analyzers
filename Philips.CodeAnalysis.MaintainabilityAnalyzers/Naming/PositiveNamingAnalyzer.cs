@@ -1,5 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -16,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
 		private const string Description = MessageFormat;
 
-		private static readonly string[] negativeWords = { "disable", "ignore", "missing", "absent" };
+		private static readonly List<string> NegativeWords = new(new[] { "disable", "ignore", "missing", "absent" });
 
 		public PositiveNamingAnalyzer()
 			: base(DiagnosticId.PositiveNaming, Title, MessageFormat, Description, Categories.Naming)
@@ -25,6 +26,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
+			var additionalWords = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"negative_words");
+			var words = additionalWords.Split(',');
+			if (words.Any())
+			{
+				IEnumerable<string> filteredWords = words.Where(x => !string.IsNullOrWhiteSpace(x)).Select(w => w.Trim());
+				NegativeWords.AddRange(filteredWords);
+			}
+
 			context.RegisterSyntaxNodeAction(AnalyzeVariable, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeProperty, SyntaxKind.PropertyDeclaration);
 		}
@@ -85,7 +94,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool IsPositiveName(string name)
 		{
 			var lower = name.ToLowerInvariant();
-			return !negativeWords.Any(lower.Contains);
+			return !NegativeWords.Exists(lower.Contains);
 		}
 	}
 }
