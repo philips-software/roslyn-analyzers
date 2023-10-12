@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			var propertyName = prop.Identifier.Text;
-			IEnumerable<string> propertiesInType = GetPropertieNames(type);
+			IEnumerable<string> propertiesInType = GetPropertyNames(type);
 			IEnumerable<string> otherProperties = propertiesInType.Except(new[] { propertyName });
 
 			if (Node.Body.Statements.Any(s => ReferencesOtherProperties(s, otherProperties)))
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 		}
 
-		private static IEnumerable<string> GetPropertieNames(BaseTypeDeclarationSyntax type)
+		private static IEnumerable<string> GetPropertyNames(BaseTypeDeclarationSyntax type)
 		{
 			return type.DescendantNodes().OfType<PropertyDeclarationSyntax>().Where(IsAssignable).Select(prop => prop.Identifier.Text);
 		}
