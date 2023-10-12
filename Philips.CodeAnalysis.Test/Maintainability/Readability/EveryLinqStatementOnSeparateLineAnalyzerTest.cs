@@ -100,15 +100,57 @@ public static class Foo
 }}
 ";
 
+		private const string WrongMoqStatement = @"
+using Moq;
+public static class Foo
+{
+  var _mockProvider = new Mock<IUnderTest>();
+  public interface IUnderTest {
+    void StoreTest(TestInfo info) {
+    }
+  }
+  public class TestInfo {
+    public int Number;
+  }
+  public static void Method()
+  {
+	_mockProvider.Verify(x => x.StoreTest(It.Is<TestInfo>(c => c.Number == 42)), Times.Once);
+  }
+}
+";
+
+		private const string CorrectMoqStatement = @"
+using Moq;
+public static class Foo
+{
+  var _mockProvider = new Mock<IUnderTest>();
+  public interface IUnderTest {
+    void StoreTest(TestInfo info) {
+    }
+  }
+  public class TestInfo {
+    public int Number;
+  }
+  public static void Method()
+  {
+	_mockProvider.Verify(x =>
+		x.StoreTest(It.Is<TestInfo>(c =>
+			c.Number == 42)), Times.Once);
+  }
+}
+";
+
 		[DataTestMethod]
-		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)),
-		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
+		[DataRow(WhereOnSameLine, Correct, DisplayName = nameof(WhereOnSameLine)),
+		 DataRow(SelectOnSameLine, Correct, DisplayName = nameof(SelectOnSameLine)),
+		 DataRow(WrongMoqStatement, CorrectMoqStatement, DisplayName = nameof(WrongMoqStatement))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task MultipleStatementsOnSameLineTriggersDiagnostics(string input)
+		public async Task MultipleStatementsOnSameLineTriggersDiagnostics(string input, string fixedSource)
 		{
 			await VerifyDiagnostic(input).ConfigureAwait(false);
-			await VerifyFix(input, Correct).ConfigureAwait(false);
+			await VerifyFix(input, fixedSource).ConfigureAwait(false);
 		}
+
 
 		/// <summary>
 		/// No diagnostics expected to show up 
