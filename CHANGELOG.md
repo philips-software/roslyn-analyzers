@@ -1,3 +1,19 @@
+### [1.3.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.3.0...v1.3.1) (2023-10-25)
+
+
+### Bug Fixes
+
+* opt-in to solution-level analyzers ([#695](https://github.com/philips-software/roslyn-analyzers/issues/695)) ([95512b7](https://github.com/philips-software/roslyn-analyzers/commit/95512b70a29c16e0935b3724692afc0b9ba99e67))
+* PH2134 Support read only arrow properties ([#688](https://github.com/philips-software/roslyn-analyzers/issues/688)) ([3e4f6a9](https://github.com/philips-software/roslyn-analyzers/commit/3e4f6a9f56d3f1be63a92b08f4efffca766c8d22))
+
+
+### Build Systems
+
+* Bump actions/checkout from 3.5.3 to 4.1.1 ([#691](https://github.com/philips-software/roslyn-analyzers/issues/691)) ([ee0ec4e](https://github.com/philips-software/roslyn-analyzers/commit/ee0ec4ed7996a69173884916e7af46833a9624a8))
+* Bump github/codeql-action from 2.22.1 to 2.22.4 ([#692](https://github.com/philips-software/roslyn-analyzers/issues/692)) ([6a30815](https://github.com/philips-software/roslyn-analyzers/commit/6a30815cd6334cd37b9c96d8fede87d4d3ed5c24))
+
+
+
 ## [1.3.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.2.33...v1.3.0) (2023-10-23)
 
 
@@ -50,4 +66,3 @@
 ### Continuous Integration
 
 * Update tagversion.yml ([#626](https://github.com/philips-software/roslyn-analyzers/issues/626)) ([cd99e18](https://github.com/philips-software/roslyn-analyzers/commit/cd99e18a3683c4aef427e1296171d50fee34cdac))
-
