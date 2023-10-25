@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @".editorconfig files help enforce and configure Analyzers";
 
 		public EnforceEditorConfigAnalyzer()
-			: base(DiagnosticId.EnforceEditorConfig, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+			: base(DiagnosticId.EnforceEditorConfig, Title, MessageFormat, Description, Categories.Maintainability)
 		{ }
 
 		public override void Initialize(AnalysisContext context)
