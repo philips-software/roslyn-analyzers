@@ -14,8 +14,18 @@ namespace Philips.CodeAnalysis.Common
 		public DiagnosticId Id { get; }
 		protected DiagnosticDescriptor Rule { get; }
 
+		/// <summary>
+		/// SolutionAnalyzers typically require .globalconfig file, which may require more cognitive load, limiting adoption; therefore, opt-in rather than Opt-out.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="title"></param>
+		/// <param name="messageFormat"></param>
+		/// <param name="description"></param>
+		/// <param name="category"></param>
+		/// <param name="severity"></param>
+		/// <param name="isEnabled"></param>
 		protected SolutionAnalyzer(DiagnosticId id, string title, string messageFormat, string description, string category,
-											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = true)
+											DiagnosticSeverity severity = DiagnosticSeverity.Error, bool isEnabled = false)
 		{
 			Id = id;
 			var helpLink = id.ToHelpLinkUrl();
