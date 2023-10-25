@@ -17,7 +17,7 @@ jobs:
         language: ['csharp']
     steps:
       - name: Checkout repository
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # ratchet:actions/checkout@v3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v3
       - name: Initialize CodeQL
         uses: github/codeql-action/init@49abf0ba24d0b7953cb586944e918a0b92074c80
         with:
