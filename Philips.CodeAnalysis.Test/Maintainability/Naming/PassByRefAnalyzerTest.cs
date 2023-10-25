@@ -164,6 +164,20 @@ public class TestClass : Data
 			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MethodIsDllImport()
+		{
+			var content = $@"public class TestClass
+{{
+		[DllImport(""wpcap.dll"", CallingConvention = CallingConvention.Cdecl, EntryPoint = ""pcap_next_ex"")]
+		private static extern int PcapNextEx(IntPtr p, ref IntPtr packetheader, ref IntPtr packetdata);
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
 		[DataRow(": Foo", false)]
 		[DataRow("", true)]
 		[DataTestMethod]

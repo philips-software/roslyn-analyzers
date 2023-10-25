@@ -34,6 +34,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
+			if (Helper.ForAttributes.HasAttribute(Node.AttributeLists, Context, "DllImport", null, out _))
+			{
+				return;
+			}
+
 			foreach (ParameterSyntax parameterSyntax in Node.ParameterList.Parameters)
 			{
 				if (!parameterSyntax.Modifiers.Any(SyntaxKind.RefKeyword))
