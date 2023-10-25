@@ -637,6 +637,23 @@ class Foo
 			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentNew()
+		{
+			var content = @"
+class Meow { public static string ToString() { return ""hi"";} }
+class Foo
+{
+  public void Moo(string x) { }
+  public void MyTest() => Moo(new Meow());
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidInvocationAsArgumentCodeFixProvider();
