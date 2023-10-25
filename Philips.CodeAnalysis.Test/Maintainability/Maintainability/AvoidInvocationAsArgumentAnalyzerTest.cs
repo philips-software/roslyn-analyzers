@@ -574,6 +574,69 @@ class Foo
 			await VerifyDiagnostic(errorContent).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentObjectToString()
+		{
+			var content = @"
+class Meow { public static string ToString() { return ""hi"";} }
+class Foo
+{
+  public void Moo(string x) { }
+  public void MyTest() => Moo(Meow.ToString());
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentThisToString()
+		{
+			var content = @"
+class Foo
+{
+  public void Moo(string x) { }
+  public void MyTest() => Moo(this.ToString());
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentToString()
+		{
+			var content = @"
+class Foo
+{
+  public void Moo(string x) { }
+  public void MyTest() => Moo(ToString());
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentNameOf()
+		{
+			var content = @"
+class Foo
+{
+  public void Moo(string x) { }
+  public void MyTest() => Moo(nameof(Foo));
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new AvoidInvocationAsArgumentCodeFixProvider();
