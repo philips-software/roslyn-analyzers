@@ -51,6 +51,3 @@
 
 * Update tagversion.yml ([#626](https://github.com/philips-software/roslyn-analyzers/issues/626)) ([cd99e18](https://github.com/philips-software/roslyn-analyzers/commit/cd99e18a3683c4aef427e1296171d50fee34cdac))
 
-
-
-### [1.2.33](https://github.com/philips-software/roslyn-analyzers/compare/v0.0.0...v1.2.33) (2023-03-16)
