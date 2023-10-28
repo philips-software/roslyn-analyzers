@@ -639,6 +639,21 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidInvocationAsArgumentSizeOf()
+		{
+			var content = @"
+class Foo
+{
+  public void MyTest() => Moo(sizeof(int));
+}
+";
+
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidInvocationAsArgumentNew()
 		{
 			var content = @"
