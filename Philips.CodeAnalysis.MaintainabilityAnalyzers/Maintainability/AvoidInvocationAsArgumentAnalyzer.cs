@@ -30,13 +30,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// If it's an embedded nameof() operation, let it go.
-			if ((invocationExpressionSyntax.Expression as IdentifierNameSyntax)?.Identifier.Text == "nameof")
+			// If it's an embedded nameof() operation, or ToString(), let it go.
+			var identifierText = (invocationExpressionSyntax.Expression as IdentifierNameSyntax)?.Identifier.Text;
+			if (identifierText is "nameof" or "ToString")
 			{
 				return;
 			}
 
-			// If it's calling ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
+			// If it's calling x.ToString(), let it go. (ToStrings() cognitive load isn't excessive, and lots of violations)
 			var methodName = (invocationExpressionSyntax.Expression as MemberAccessExpressionSyntax)?.Name.Identifier.Text;
 			if (methodName is StringConstants.ToStringMethodName or StringConstants.ToArrayMethodName or StringConstants.ToListMethodName)
 			{
