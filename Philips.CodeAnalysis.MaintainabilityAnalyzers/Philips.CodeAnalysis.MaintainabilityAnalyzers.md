@@ -89,3 +89,4 @@
 | [PH2136](../Documentation/Diagnostics/PH2136.md)  | Avoid duplicate strings                      | Duplicate strings are less maintainable. |
 | [PH2138](../Documentation/Diagnostics/PH2138.md)  | Avoid void returns                           | Methods that return void are mysterious. |
 | [PH2139](../Documentation/Diagnostics/PH2139.md)  | Enable documentation creation                | Add XML documentation generation to the project file, to be able to see Diagnostics for XML documentation. |
+| [PH2140](../Documentation/Diagnostics/PH2140.md)  | Avoid enum parameters | Methods that take enums as parameters should be factored out the enum parameter it receives as either an extension method or in the relevant enum instances. |
