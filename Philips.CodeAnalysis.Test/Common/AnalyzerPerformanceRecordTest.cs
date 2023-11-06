@@ -109,6 +109,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.IsTrue(quick == quickest);
 			Assert.IsTrue(quick.Equals(quickest));
 			Assert.IsFalse(quickest == null);
+			Assert.IsFalse(null == quickest);
 			Assert.AreNotEqual(quick.GetHashCode(), quickest.GetHashCode());
 			Assert.AreEqual(0, quick.CompareTo(quickest));
 		}
@@ -127,6 +128,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.AreEqual(-1, longest.CompareTo(quickest));
 			Assert.AreEqual(1, quickest.CompareTo(longest));
 			Assert.IsTrue(longest != null);
+			Assert.IsTrue(null != longest);
 			Assert.AreNotEqual(longest.GetHashCode(), quickest.GetHashCode());
 		}
 	}
