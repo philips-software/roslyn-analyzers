@@ -9,7 +9,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidExcludeFromCodeCoverageAnalyzer : SingleDiagnosticAnalyzer<AttributeSyntax, AvoidExcludeFromCodeCoverageAnalyzerSyntaxNodeAction>
+	public class AvoidExcludeFromCodeCoverageAnalyzer : SingleDiagnosticAnalyzer<AttributeListSyntax, AvoidExcludeFromCodeCoverageAnalyzerSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid the ExcludeFromCodeCoverage attribute";
 		public const string MessageFormat = Title;
@@ -20,19 +20,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{ }
 	}
 
-	public class AvoidExcludeFromCodeCoverageAnalyzerSyntaxNodeAction : SyntaxNodeAction<AttributeSyntax>
+	public class AvoidExcludeFromCodeCoverageAnalyzerSyntaxNodeAction : SyntaxNodeAction<AttributeListSyntax>
 	{
 		private const string ExcludeFromCodeCoverageAttributeTypeName = "ExcludeFromCodeCoverage";
 		public override void Analyze()
 		{
 			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
-			if (!Node.Name.GetFullName(aliases).Contains(ExcludeFromCodeCoverageAttributeTypeName))
+			foreach (AttributeSyntax attribute in Node.Attributes)
 			{
-				return;
+				if (attribute.Name.GetFullName(aliases).Contains(ExcludeFromCodeCoverageAttributeTypeName))
+				{
+					Location location = Node.GetLocation();
+					ReportDiagnostic(location);
+				}
 			}
-
-			Location location = Node.GetLocation();
-			ReportDiagnostic(location);
 		}
 	}
 }

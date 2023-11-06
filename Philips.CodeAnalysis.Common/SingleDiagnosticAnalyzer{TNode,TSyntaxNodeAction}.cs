@@ -87,7 +87,6 @@ namespace Philips.CodeAnalysis.Common
 				nameof(InterfaceDeclarationSyntax) => SyntaxKind.InterfaceDeclaration,
 				nameof(AccessorDeclarationSyntax) => SyntaxKind.SetAccessorDeclaration,
 				nameof(CatchClauseSyntax) => SyntaxKind.CatchClause,
-				nameof(AttributeSyntax) => SyntaxKind.Attribute,
 				_ => SyntaxKind.None,
 			};
 		}
