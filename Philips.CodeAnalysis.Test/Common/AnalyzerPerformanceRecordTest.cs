@@ -77,9 +77,9 @@ namespace Philips.CodeAnalysis.Test.Common
 			AnalyzerPerformanceRecord quick = quickest;
 
 			// Assert
-			Assert.AreEqual(true, quickest > longest);
-			Assert.AreEqual(true, quickest >= longest);
-			Assert.AreEqual(true, quickest >= quick);
+			Assert.IsTrue(quickest > longest);
+			Assert.IsTrue(quickest >= longest);
+			Assert.IsTrue(quickest >= quick);
 		}
 
 		[TestMethod]
@@ -92,9 +92,9 @@ namespace Philips.CodeAnalysis.Test.Common
 			AnalyzerPerformanceRecord quick = quickest;
 
 			// Assert
-			Assert.AreEqual(true, longest < quickest);
-			Assert.AreEqual(true, longest <= quickest);
-			Assert.AreEqual(true, quickest <= quick);
+			Assert.IsTrue(longest < quickest);
+			Assert.IsTrue(longest <= quickest);
+			Assert.IsTrue(quickest <= quick);
 		}
 
 		[TestMethod]
@@ -106,9 +106,9 @@ namespace Philips.CodeAnalysis.Test.Common
 			var quick = new AnalyzerPerformanceRecord() { Time = 2 };
 
 			// Assert
-			Assert.AreEqual(true, quick == quickest);
-			Assert.AreEqual(true, quick.Equals(quickest));
-			Assert.AreEqual(false, quickest == null);
+			Assert.IsTrue(quick == quickest);
+			Assert.IsTrue(quick.Equals(quickest));
+			Assert.IsFalse(quickest == null);
 			Assert.AreNotEqual(quick.GetHashCode(), quickest.GetHashCode());
 			Assert.AreEqual(0, quick.CompareTo(quickest));
 		}
@@ -122,11 +122,11 @@ namespace Philips.CodeAnalysis.Test.Common
 			var longest = new AnalyzerPerformanceRecord() { Time = 42 };
 
 			// Assert
-			Assert.AreEqual(true, longest != quickest);
-			Assert.AreEqual(false, longest.Equals(quickest));
+			Assert.IsTrue(longest != quickest);
+			Assert.IsFalse(longest.Equals(quickest));
 			Assert.AreEqual(-1, longest.CompareTo(quickest));
 			Assert.AreEqual(1, quickest.CompareTo(longest));
-			Assert.AreEqual(true, longest != null);
+			Assert.IsTrue(longest != null);
 			Assert.AreNotEqual(longest.GetHashCode(), quickest.GetHashCode());
 		}
 	}
