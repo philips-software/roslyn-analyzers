@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -26,14 +27,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public override void Analyze()
 		{
 			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
-			foreach (AttributeSyntax attribute in Node.Attributes)
+			foreach (AttributeSyntax attribute in Node.Attributes.Where(attr => IsExcludeFromCodeCoverage(aliases, attr)))
 			{
-				if (attribute.Name.GetFullName(aliases).Contains(ExcludeFromCodeCoverageAttributeTypeName))
-				{
-					Location location = Node.GetLocation();
-					ReportDiagnostic(location);
-				}
+				Location location = Node.GetLocation();
+				ReportDiagnostic(location);
 			}
+		}
+
+		private bool IsExcludeFromCodeCoverage(IReadOnlyDictionary<string, string> aliases, AttributeSyntax attribute)
+		{
+			return attribute.Name.GetFullName(aliases).Contains(ExcludeFromCodeCoverageAttributeTypeName);
 		}
 	}
 }
