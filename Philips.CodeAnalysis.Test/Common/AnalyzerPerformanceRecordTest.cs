@@ -105,11 +105,17 @@ namespace Philips.CodeAnalysis.Test.Common
 			var quickest = new AnalyzerPerformanceRecord() { Time = 2 };
 			var quick = new AnalyzerPerformanceRecord() { Time = 2 };
 
+			// Act
+			var quickEqual = quick.Equals(quickest);
+			var quickDoubleEqual = quick == quickest;
+			var quickNull = quick == null;
+			var nullQuick = null == quick;
+
 			// Assert
-			Assert.IsTrue(quick == quickest);
-			Assert.IsTrue(quick.Equals(quickest));
-			Assert.IsFalse(quickest == null);
-			Assert.IsFalse(null == quickest);
+			Assert.IsTrue(quickDoubleEqual);
+			Assert.IsTrue(quickEqual);
+			Assert.IsFalse(quickNull);
+			Assert.IsFalse(nullQuick);
 			Assert.AreNotEqual(quick.GetHashCode(), quickest.GetHashCode());
 			Assert.AreEqual(0, quick.CompareTo(quickest));
 		}
@@ -122,13 +128,20 @@ namespace Philips.CodeAnalysis.Test.Common
 			var quickest = new AnalyzerPerformanceRecord() { Time = 2 };
 			var longest = new AnalyzerPerformanceRecord() { Time = 42 };
 
+			// Act
+			var quickEqual = longest.Equals(quickest);
+			var quickNotEqual = longest != quickest;
+			var quickNull = quickest != null;
+			var nullQuick = null != quickest;
+
+
 			// Assert
-			Assert.IsTrue(longest != quickest);
-			Assert.IsFalse(longest.Equals(quickest));
+			Assert.IsTrue(quickNotEqual);
+			Assert.IsFalse(quickEqual);
 			Assert.AreEqual(-1, longest.CompareTo(quickest));
 			Assert.AreEqual(1, quickest.CompareTo(longest));
-			Assert.IsTrue(longest != null);
-			Assert.IsTrue(null != longest);
+			Assert.IsTrue(quickNull);
+			Assert.IsTrue(nullQuick);
 			Assert.AreNotEqual(longest.GetHashCode(), quickest.GetHashCode());
 		}
 	}
