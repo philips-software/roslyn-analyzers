@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			var actual = AnalyzerPerformanceRecord.TryParse(testName, testText);
 
 			// Assert
-			Assert.AreEqual(null, actual);
+			Assert.IsNull(actual);
 		}
 
 		[TestMethod]
