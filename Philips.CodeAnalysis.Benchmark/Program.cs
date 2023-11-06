@@ -100,15 +100,15 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus1, Modulus1);
+			DuplicateDetector library = new();
+			TestDictionary(library, BaseModulus1, Modulus1);
 		}
 
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus2, Modulus2);
+			DuplicateDetector library = new();
+			TestDictionary(library, BaseModulus2, Modulus2);
 		}
 	}
 }

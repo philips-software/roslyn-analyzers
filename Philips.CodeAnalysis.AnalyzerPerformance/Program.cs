@@ -1,12 +1,13 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.Build.Logging.StructuredLogger;
+using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
 	public static class Program
 	{
-		private static readonly List<AnalyzerPerfRecord> _records = new();
+		private static readonly List<AnalyzerPerformanceRecord> Records = new();
 		private static string _filter = string.Empty;
 		private const int MaxPackageNameLength = 24;
 		private const int MaxAnalyzerNameLength = 45;
@@ -28,7 +29,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 			foreach (BaseNode node in buildRoot.Children)
 			{
-				if (node is NamedNode namedNode && namedNode.Name == @"Analyzer Summary")
+				if (node is NamedNode { Name: @"Analyzer Summary" } namedNode)
 				{
 					AnalyzePackages(namedNode);
 				}
@@ -54,11 +55,11 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			_records.Sort();
-			foreach (AnalyzerPerfRecord record in _records)
+			Records.Sort();
+			foreach (AnalyzerPerformanceRecord record in Records)
 			{
-				var package = record.Package.Length > MaxPackageNameLength ? record.Package.Substring(0, MaxPackageNameLength) + Ellipsis : record.Package;
-				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer.Substring(0, MaxAnalyzerNameLength) + Ellipsis : record.Analyzer;
+				var package = record.Package.Length > MaxPackageNameLength ? record.Package[..MaxPackageNameLength] + Ellipsis : record.Package;
+				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer[..MaxAnalyzerNameLength] + Ellipsis : record.Analyzer;
 				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 			}
 		}
@@ -69,99 +70,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				if (analyzerMessage is Item item)
 				{
-					var analyzerAndId = item.Name.Split(" ");
-					var id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
-
-					var analyzerParts = analyzerAndId[0].Split(".");
-
-					var timeParts = item.Text.Split(" ");
-					var time = double.Parse(timeParts[0]);
-					if (timeParts[1] == "s")
-					{
-						time *= 1000;
-					}
-
-					AnalyzerPerfRecord record = new()
-					{
-						Id = id,
-						Package = analyzerParts[2],
-						Analyzer = analyzerParts[analyzerParts.Length - 1],
-						DisplayTime = item.Text,
-						Time = (int)time
-					};
-					_records.Add(record);
+					var record = AnalyzerPerformanceRecord.TryParse(item.Name, item.Text);
+					Records.Add(record);
 				}
 			}
-		}
-	}
-
-	internal class AnalyzerPerfRecord : IComparable<AnalyzerPerfRecord>
-	{
-		public string Id { get; init; }
-		public string Package { get; init; }
-		public string Analyzer { get; init; }
-		public string DisplayTime { get; init; }
-		public int Time { get; init; }
-
-		public int CompareTo(AnalyzerPerfRecord other)
-		{
-			if (other == null)
-			{
-				return 1;
-			}
-			if (Time.CompareTo(other.Time) != 0)
-			{
-				return Time.CompareTo(other.Time) * -1;
-			}
-			return StringComparer.Ordinal.Compare(Id, other.Id);
-		}
-
-		public static bool operator ==(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			if (left is null)
-			{
-				return right is null;
-			}
-			return left.CompareTo(right) == 0;
-		}
-
-		public static bool operator !=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			if (left is null)
-			{
-				return right is not null;
-			}
-			return left.CompareTo(right) != 0;
-		}
-
-		public static bool operator <(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			return left.CompareTo(right) < 0;
-		}
-
-		public static bool operator >(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			return left.CompareTo(right) > 0;
-		}
-
-		public static bool operator <=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			return left.CompareTo(right) <= 0;
-		}
-
-		public static bool operator >=(AnalyzerPerfRecord left, AnalyzerPerfRecord right)
-		{
-			return left.CompareTo(right) >= 0;
-		}
-
-		public override bool Equals(object obj)
-		{
-			return this == (obj as AnalyzerPerfRecord);
-		}
-
-		public override int GetHashCode()
-		{
-			return HashCode.Combine(Id, Package, Analyzer, DisplayTime, Time);
 		}
 	}
 }
