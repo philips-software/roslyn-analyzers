@@ -12,7 +12,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
-#pragma warning disable PH2140
+#pragma warning disable PH2029,PH2140
 
 namespace Philips.CodeAnalysis.Benchmark
 {
