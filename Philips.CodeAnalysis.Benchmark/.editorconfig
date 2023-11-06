@@ -1,0 +1,8 @@
+# Inherit .editorconfig settings from higher directories
+root = true
+
+# C# files
+[*.cs]
+
+# PH2140: Exlude this project from code coverage
+dotnet_diagnostic.PH2140.severity = none
