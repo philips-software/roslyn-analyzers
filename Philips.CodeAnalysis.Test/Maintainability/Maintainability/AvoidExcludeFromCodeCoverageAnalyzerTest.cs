@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage")]
 		[DataRow(@"CodeCoverageAlias")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ExcludeFromCodeCoverageWithFullUsingTest(string test)
+		public async Task ExcludeFromCodeCoverageOnMethodTest(string test)
 		{
 			var baseline = @"
 using System.Diagnostics.CodeAnalysis;
@@ -36,17 +36,35 @@ class Foo
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
+		[DataTestMethod]
+		[DataRow(@"ExcludeFromCodeCoverage")]
+		[DataRow(@"ExcludeFromCodeCoverageAttribute")]
+		[DataRow(@"System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage")]
+		[DataRow(@"CodeCoverageAlias")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ExcludeFromCodeCoverageOnClassTest(string test)
+		{
+			var baseline = @"
+using System.Diagnostics.CodeAnalysis;
+using CodeCoverageAlias = System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage;
+[{0}]
+class Foo 
+{{
+}}
+";
+			var givenText = string.Format(baseline, test);
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
+		}
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ExcludeFromCodeCoverageAbsent()
 		{
 			var text = @"
-class Foo 
+using System;
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+class Foo : Attribute
 {{
-  public void Foo()
-  {{
-    return;
-  }}
 }}
 ";
 			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
