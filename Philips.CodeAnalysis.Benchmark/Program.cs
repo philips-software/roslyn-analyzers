@@ -12,11 +12,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
-#pragma warning disable PH2029,PH2140
-
 namespace Philips.CodeAnalysis.Benchmark
 {
-	[ExcludeFromCodeCoverage]
 	public static class Program
 	{
 		public static void Main()
@@ -25,7 +22,6 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[ExcludeFromCodeCoverage]
 	public class InputDataSet
 	{
 		public string Folder { get; set; }
@@ -37,7 +33,6 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[ExcludeFromCodeCoverage]
 	[SimpleJob(launchCount: LaunchCount, warmupCount: WarmupCount, targetCount: TargetCount)]
 	public class DuplicationDetectorBenchmark
 	{
