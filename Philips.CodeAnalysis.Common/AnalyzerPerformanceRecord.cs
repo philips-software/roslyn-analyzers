@@ -1,6 +1,7 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Globalization;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -14,7 +15,7 @@ namespace Philips.CodeAnalysis.Common
 			var analyzerParts = analyzerAndId[0].Split('.');
 
 			var timeParts = text.Split(' ');
-			if (timeParts.Length == 0 || !double.TryParse(timeParts[0], out var time))
+			if (timeParts.Length == 0 || !double.TryParse(timeParts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var time))
 			{
 				return null;
 			}
@@ -98,7 +99,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public override int GetHashCode()
 		{
-			return base.GetHashCode();
+			return GetHashCode();
 		}
 	}
 }
