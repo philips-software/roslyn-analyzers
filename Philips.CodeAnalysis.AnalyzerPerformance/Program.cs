@@ -1,11 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Build.Logging.StructuredLogger;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
-	[ExcludeFromCodeCoverage]
 	public static class Program
 	{
 		private static readonly List<AnalyzerPerfRecord> _records = new();
@@ -97,7 +95,6 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		}
 	}
 
-	[ExcludeFromCodeCoverage]
 	internal class AnalyzerPerfRecord : IComparable<AnalyzerPerfRecord>
 	{
 		public string Id { get; init; }
