@@ -33,6 +33,24 @@ namespace Philips.CodeAnalysis.Test.Common
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public void ParsedIncorrectly()
+		{
+			// Arrange
+			var expectedAnalyzer = "DummyAnalyzer";
+			var expectedId = "DummyId";
+			var expectedTime = 25.0d;
+			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\"";
+			var testText = $"{expectedTime}s";
+
+			// Act
+			var actual = AnalyzerPerformanceRecord.TryParse(testName, testText);
+
+			// Assert
+			Assert.AreEqual(null, actual);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SortsLargestTimeFirst()
 		{
 			// Arrange
@@ -90,6 +108,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Assert
 			Assert.AreEqual(true, quick == quickest);
 			Assert.AreEqual(true, quick.Equals(quickest));
+			Assert.AreEqual(false, quickest == null);
 			Assert.AreNotEqual(quick.GetHashCode(), quickest.GetHashCode());
 			Assert.AreEqual(0, quick.CompareTo(quickest));
 		}
@@ -107,6 +126,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.AreEqual(false, longest.Equals(quickest));
 			Assert.AreEqual(-1, longest.CompareTo(quickest));
 			Assert.AreEqual(1, quickest.CompareTo(longest));
+			Assert.AreEqual(true, longest != null);
 			Assert.AreNotEqual(longest.GetHashCode(), quickest.GetHashCode());
 		}
 	}
