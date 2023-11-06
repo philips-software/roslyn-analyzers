@@ -1,5 +1,5 @@
 # Inherit .editorconfig settings from higher directories
-root = true
+root = false
 
 # C# files
 [*.cs]
