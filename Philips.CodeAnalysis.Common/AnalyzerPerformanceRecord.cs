@@ -2,6 +2,7 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -99,7 +100,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public override int GetHashCode()
 		{
-			return GetHashCode();
+			return RuntimeHelpers.GetHashCode(this);
 		}
 	}
 }
