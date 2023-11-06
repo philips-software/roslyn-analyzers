@@ -18,12 +18,4 @@
     <ProjectReference Include="..\Philips.CodeAnalysis.DuplicateCodeAnalyzer\Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <EditorConfigFiles Remove=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include=".editorconfig" />
-  </ItemGroup>
-
 </Project>
