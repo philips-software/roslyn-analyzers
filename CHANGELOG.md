@@ -1,3 +1,29 @@
+## [1.4.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.3.1...v1.4.0) (2023-11-14)
+
+
+### Features
+
+* avoid excludefromcodecoverage ([#702](https://github.com/philips-software/roslyn-analyzers/issues/702)) ([50deea9](https://github.com/philips-software/roslyn-analyzers/commit/50deea9f641f0c02fb07735c51eb0d200efdab15))
+
+
+### Bug Fixes
+
+* allow PassbyRef on [DllImport] ([#698](https://github.com/philips-software/roslyn-analyzers/issues/698)) ([b8fa8c0](https://github.com/philips-software/roslyn-analyzers/commit/b8fa8c0f4a4f2497af186ec005c07ab1ff6e7b66))
+* AvoidInvocationAsArgument: exempt ToString ([#699](https://github.com/philips-software/roslyn-analyzers/issues/699)) ([ac2ab94](https://github.com/philips-software/roslyn-analyzers/commit/ac2ab94df2fd666a316bcc9bb407214f80664615))
+
+
+### Documentation
+
+* Update PH2001.md ([#706](https://github.com/philips-software/roslyn-analyzers/issues/706)) ([cf5bd07](https://github.com/philips-software/roslyn-analyzers/commit/cf5bd07a5fc79914b60724922399705d7a328d2a))
+
+
+### Build Systems
+
+* Bump amannn/action-semantic-pull-request from 5.3.0 to 5.4.0 ([#701](https://github.com/philips-software/roslyn-analyzers/issues/701)) ([e6ee95e](https://github.com/philips-software/roslyn-analyzers/commit/e6ee95e11cee9da41544093495f8be9066ca1545))
+* Bump github/codeql-action from 2.22.4 to 2.22.5 ([#700](https://github.com/philips-software/roslyn-analyzers/issues/700)) ([b471a4e](https://github.com/philips-software/roslyn-analyzers/commit/b471a4ec904c157d8161410a38b2b3d573d4703d))
+
+
+
 ### [1.3.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.3.0...v1.3.1) (2023-10-25)
 
 
