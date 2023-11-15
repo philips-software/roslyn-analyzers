@@ -139,22 +139,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					return;
 				}
 
-				if (RegionChecks.ContainsKey(regionName))
+				if (regionLocations.Remove(regionName))
 				{
-					if (regionLocations.Remove(regionName))
-					{
-						Location memberLocation = region.DirectiveNameToken.GetLocation();
-						CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
-					}
-					else
-					{
-						Location location = region.GetLocation();
-						Location memberLocation = region.DirectiveNameToken.GetLocation();
-						var lineNumber = GetMemberLineNumber(location);
+					Location memberLocation = region.DirectiveNameToken.GetLocation();
+					CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
+				}
+				else
+				{
+					Location location = region.GetLocation();
+					Location memberLocation = region.DirectiveNameToken.GetLocation();
+					var lineNumber = GetMemberLineNumber(location);
 
-						regionLocations.Add(regionName, new LocationRangeModel(memberLocation, lineNumber, lineNumber));
-						regionStartName = regionName;
-					}
+					regionLocations.Add(regionName, new LocationRangeModel(memberLocation, lineNumber, lineNumber));
+					regionStartName = regionName;
 				}
 			}
 			else
@@ -183,7 +180,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static IReadOnlyDictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = new();
-			var regionStartName = "";
+			var regionStartName = string.Empty;
 			for (var i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];

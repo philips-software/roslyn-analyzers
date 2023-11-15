@@ -201,7 +201,7 @@ class Foo
 		{
 			var givenText = @"
 class C {{
-  #region Non-Public Data Members
+  #region Some Small Region
 
   #endregion
 }}
@@ -209,6 +209,22 @@ class C {{
 			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions, regex: EnforceRegionsAnalyzer.AvoidEmptyRegionMessageFormat, line: 3, column: 4).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidRegionInsideMethod()
+		{
+			var givenText = @"
+class C {{
+  public void LongMethod() {{
+    private int i = 0;
+    #region Inside Method
+    i++;
+    #endregion
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText);
+		}
 
 		[DataTestMethod]
 		[DataRow(@"#region Constants", false)]
