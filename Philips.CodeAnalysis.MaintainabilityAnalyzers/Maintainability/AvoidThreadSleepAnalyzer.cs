@@ -35,11 +35,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			if (memberName == @"Thread" && name == @"Sleep")
 			{
 				TypeDeclarationSyntax typeDeclaration = Context.Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
-				if (typeDeclaration == null)
-				{
-					return;
-				}
-
 				SyntaxList<AttributeListSyntax> classAttributeList = typeDeclaration.AttributeLists;
 				if (!Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
