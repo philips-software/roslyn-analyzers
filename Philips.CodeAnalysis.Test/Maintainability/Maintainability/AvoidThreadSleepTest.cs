@@ -20,9 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public async Task ThreadSleepNotAvoidedTest(string test)
 		{
 			var baseline = @"
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-[TestClass]
 class Foo 
 {{
   public void Foo()
@@ -33,9 +31,7 @@ class Foo
 ";
 
 			var fixedText = @"
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-[TestClass]
 class Foo 
 {
   public void Foo()
@@ -53,15 +49,12 @@ class Foo
 		public async Task Issue704()
 		{
 			var givenText = @"
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading;
-[TestClass]
 class Foo 
 {{
   class InsideFoo {{
-    public void Foo()
-    {{
-      Thread.Sleep(1000);
+    public void Foo() {{
+      Thread.Sleep(200);
     }}
   }}
 }}
@@ -85,6 +78,25 @@ class Foo
     {{
     }}
     ThreadSleep(1000);
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreTestClasses()
+		{
+			var givenText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
+[TestClass]
+class Foo 
+{{
+  public void Foo()
+  {{
+    Thread.Sleep(1000);
   }}
 }}
 ";

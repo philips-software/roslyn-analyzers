@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 
 				SyntaxList<AttributeListSyntax> classAttributeList = typeDeclaration.AttributeLists;
-				if (Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
+				if (!Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
 					Location location = Node.GetLocation();
