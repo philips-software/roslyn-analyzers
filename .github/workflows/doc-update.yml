@@ -13,9 +13,10 @@ jobs:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
       - name: Documentation check
+        env:
+          BRANCH: ${{github.head_ref}}
+          TARGET: ${{github.base_ref}}
         run: |
-          BRANCH=${{github.head_ref}}
-          TARGET=${{github.base_ref}}
           echo "Pull request on $BRANCH to target $TARGET"
           if [[ -z "$TARGET" ]]
           then
