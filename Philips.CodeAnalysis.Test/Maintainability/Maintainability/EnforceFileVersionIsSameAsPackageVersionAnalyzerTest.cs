@@ -28,8 +28,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("1.0.0", "1.0.0-ci.1", false)]
 		[DataRow("1.1.2", "1.1.2+417ce", false)]
 		[DataRow("1.1.2", "1.1.2-beta+417ce", false)]
+		[DataRow("1.1", "1.1", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FileVersionMustBeSameAsPackageVersionAsync(string fileVersion, string packageVersion, bool hasDiagnostic)
+		public async Task FileVersionMustBeSameAsPackageVersion(string fileVersion, string packageVersion, bool hasDiagnostic)
 		{
 			var code = $@"
 using System;
@@ -60,7 +61,7 @@ class FooClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NoDiagnosticWhenNoPackageVersionAsync()
+		public async Task NoDiagnosticWhenNoPackageVersion()
 		{
 			var code = $@"
 using System;
@@ -83,7 +84,7 @@ class FooClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NoDiagnosticWhenNoFileVersionOrPackageVersionAsync()
+		public async Task NoDiagnosticWhenNoFileVersionOrPackageVersion()
 		{
 			var code = $@"
 using System;
