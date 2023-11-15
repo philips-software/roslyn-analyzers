@@ -50,6 +50,27 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task Issue704()
+		{
+			var givenText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
+[TestClass]
+class Foo 
+{{
+  class InsideFoo {{
+    public void Foo()
+    {{
+      Thread.Sleep(1000);
+    }}
+  }}
+}}
+";
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoreLocalFunctions()
 		{
 			var givenText = @"
