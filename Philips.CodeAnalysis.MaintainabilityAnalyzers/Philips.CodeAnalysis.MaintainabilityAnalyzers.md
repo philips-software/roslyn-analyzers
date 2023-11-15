@@ -90,3 +90,4 @@
 | [PH2138](../Documentation/Diagnostics/PH2138.md)  | Avoid void returns                           | Methods that return void are mysterious. |
 | [PH2139](../Documentation/Diagnostics/PH2139.md)  | Enable documentation creation                | Add XML documentation generation to the project file, to be able to see Diagnostics for XML documentation. |
 | [PH2140](../Documentation/Diagnostics/PH2140.md)  | Avoid ExcludeFromCodeCoverage attribute      | Avoid the usage of the 'ExcludeFromCodeCoverage' attribute. |
+| [PH2141](../Documentation/Diagnostics/PH2141.md)  | Avoid Empty Regions                          | Avoid writing regions that have no code inside. |
