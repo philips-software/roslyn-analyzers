@@ -240,15 +240,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// </summary>
 		private static void CheckEmptyRegion(LocationRangeModel locationRange, IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
 		{
-			var foundMemberInside = false;
-			foreach (MemberDeclarationSyntax member in members)
-			{
-				if (MemberPresentInRegion(member, locationRange))
-				{
-					foundMemberInside = true;
-					break;
-				}
-			}
+			var foundMemberInside = members.Any(m => MemberPresentInRegion(m, locationRange));
 
 			if (!foundMemberInside)
 			{
