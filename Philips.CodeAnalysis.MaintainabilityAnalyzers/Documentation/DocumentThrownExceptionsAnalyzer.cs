@@ -25,6 +25,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private const string InformationalDescription = @"Specify context to a thrown exception, by using a constructor overload that sets the Message property.";
 		private const string Category = Categories.Documentation;
 
+		private const string NotImplementedExceptionType = "NotImplementedException";
+
 		private static readonly DiagnosticDescriptor DocumentRule = new(DiagnosticId.DocumentThrownExceptions.ToId(), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription);
 		private static readonly DiagnosticDescriptor InformationalRule = new(DiagnosticId.ThrowInformationalExceptions.ToId(), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription);
 
@@ -45,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				// Search of string arguments in the constructor invocation.
 				thrownExceptionName = exceptionCreation.Type.GetFullName(aliases);
-				if (!HasStringArgument(context, exceptionCreation.ArgumentList))
+				if (!HasStringArgument(context, exceptionCreation.ArgumentList) && IsApplicableException(thrownExceptionName))
 				{
 					Location loc = exceptionCreation.GetLocation();
 					var diagnostic = Diagnostic.Create(InformationalRule, loc, thrownExceptionName);
@@ -120,6 +122,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				return context.SemanticModel.GetTypeInfo(node).Type?.Name == stringTypeName;
 			});
+		}
+
+		private bool IsApplicableException(string exceptionTypeName)
+		{
+			return !exceptionTypeName.Contains(NotImplementedExceptionType);
 		}
 	}
 }
