@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -28,13 +29,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string EnforceNonDuplicateRegionCategory = Categories.Readability;
 
 		private const string NonCheckedRegionMemberTitle = @"Members location relative to regions (Enforce Region Analyzer).";
-		public const string NonCheckedRegionMemberTitleMessageFormat = @"Member's location relative to region {0} should be verified in Enforce Regions Analyzer";
-		private const string NonCheckedRegionMemberTitleDescription = @"Member's location relative to region {0} should be verified. Implement the check in enforce region analyer";
-		private const string NonCheckedRegionMemberTitleCategory = Categories.Readability;
+		public const string NonCheckedRegionMemberMessageFormat = @"Member's location relative to region {0} should be verified in Enforce Regions Analyzer";
+		private const string NonCheckedRegionMemberDescription = @"Member's location relative to region {0} should be verified. Implement the check in enforce region analyer";
+		private const string NonCheckedRegionMemberCategory = Categories.Readability;
+
+		private const string AvoidEmptyRegionTitle = @"Avoid empty regions";
+		public const string AvoidEmptyRegionMessageFormat = @"Remove the empty region";
+		private const string AvoidEmptyRegionDescription = @"Remove the empty region";
+		private const string AvoidEmptyRegionCategory = Categories.Readability;
 
 		private const string NonPublicDataMembersRegion = "Non-Public Data Members";
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
+		private const string EmptyRegion = "Empty region";
 
 		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
@@ -49,26 +56,34 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
 		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
-			NonCheckedRegionMemberTitle, NonCheckedRegionMemberTitleMessageFormat, NonCheckedRegionMemberTitleCategory,
-			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
+			NonCheckedRegionMemberTitle, NonCheckedRegionMemberMessageFormat, NonCheckedRegionMemberCategory,
+			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberDescription);
+		private static readonly DiagnosticDescriptor AvoidEmpty = new(DiagnosticId.AvoidEmptyRegions.ToId(), AvoidEmptyRegionTitle,
+			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember, AvoidEmpty);
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 		}
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var typeDeclaration = (TypeDeclarationSyntax)context.Node;
 
 			RegionVisitor visitor = new();
 
-			visitor.Visit(classDeclaration);
+			visitor.Visit(typeDeclaration);
 
 			IReadOnlyList<DirectiveTriviaSyntax> regions = visitor.Regions;
+
+			// Region directives should come in pairs
+			if (regions.Count == 1)
+			{
+				return;
+			}
 
 			IReadOnlyDictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
 
@@ -77,10 +92,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			SyntaxList<MemberDeclarationSyntax> members = classDeclaration.Members;
+			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
+				if (!MemberPresentInRegion(typeDeclaration, pair.Value))
+				{
+					CheckEmptyRegion(pair.Value, members, context);
+				}
+
 				if (RegionChecks.TryGetValue(pair.Key, out Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool> functionToCall))
 				{
 					IReadOnlyList<MemberDeclarationSyntax> membersOfRegion = GetMembersOfRegion(members, pair.Value);
@@ -94,7 +114,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			var regionName = string.Empty;
 
-			Microsoft.CodeAnalysis.Text.TextLineCollection lines = region.GetText().Lines;
+			TextLineCollection lines = region.GetText().Lines;
 
 			if (lines.Count > 0)
 			{
@@ -129,9 +149,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					else
 					{
 						Location location = region.GetLocation();
+						Location memberLocation = region.DirectiveNameToken.GetLocation();
 						var lineNumber = GetMemberLineNumber(location);
 
-						regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
+						regionLocations.Add(regionName, new LocationRangeModel(memberLocation, lineNumber, lineNumber));
 						regionStartName = regionName;
 					}
 				}
@@ -188,11 +209,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="member"></param>
 		/// <param name="locationRange"></param>
 		/// <returns>true if member is inside the given region, else false</returns>
-		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
+		private static bool MemberPresentInRegion(SyntaxNode member, LocationRangeModel locationRange)
 		{
 			Location location = member.GetLocation();
-			var memberLocation = GetMemberLineNumber(location);
-			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
+			var memberLine = GetMemberLineNumber(location);
+			return memberLine > locationRange.StartLine && memberLine < locationRange.EndLine;
 		}
 
 		/// <summary>
@@ -218,12 +239,32 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 
 		/// <summary>
+		/// Checks whether the regions are empty, contain no statements.
+		/// </summary>
+		private static void CheckEmptyRegion(LocationRangeModel locationRange, IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
+		{
+			var foundMemberInside = false;
+			foreach (MemberDeclarationSyntax member in members)
+			{
+				if (MemberPresentInRegion(member, locationRange))
+				{
+					foundMemberInside = true;
+					break;
+				}
+			}
+
+			if (!foundMemberInside)
+			{
+				// Empty region
+				CreateDiagnostic(locationRange.Location, context, EmptyRegion, AvoidEmpty);
+			}
+		}
+
+		/// <summary>
 		/// Verify whether the given member belongs to the public interface region
 		/// If the member is of type field, then throw an error
 		/// If the member is of type method, then check if its non-public
 		/// </summary>
-		/// <param name="member"></param>
-		/// <param name="context"></param>
 		private static void VerifyMemberForPublicInterfaceRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
 			if (TryGetModifiers(member, true, out SyntaxTokenList modifiers))
