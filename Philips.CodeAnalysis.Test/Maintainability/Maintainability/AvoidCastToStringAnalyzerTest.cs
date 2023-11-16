@@ -48,5 +48,21 @@ class A
 ";
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CastToOtherTypeIsAllowed()
+		{
+			var code = @"
+class A
+{
+  public static implicit operator int(A a)
+  {
+    return 42;
+  }
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
 	}
 }
