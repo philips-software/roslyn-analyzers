@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -33,9 +34,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (memberName == @"Thread" && name == @"Sleep")
 			{
-				var classDeclaration = (ClassDeclarationSyntax)Context.Node.Parent.Parent.Parent.Parent;
-				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
+				TypeDeclarationSyntax typeDeclaration = Context.Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+				SyntaxList<AttributeListSyntax> classAttributeList = typeDeclaration!.AttributeLists;
+				if (!Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
 					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
 				{
 					Location location = Node.GetLocation();
