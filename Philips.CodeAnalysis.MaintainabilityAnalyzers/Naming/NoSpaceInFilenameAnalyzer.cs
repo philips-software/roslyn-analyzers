@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var filePath = context.Tree.FilePath;
-			if (filePath.IndexOf(' ') != -1)
+			if (filePath.Contains(" "))
 			{
 				var location = Location.Create(context.Tree, TextSpan.FromBounds(0, 0));
 				var diagnostic = Diagnostic.Create(Rule, location, filePath);

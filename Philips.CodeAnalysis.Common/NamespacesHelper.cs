@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsNamespaceExempt(string myNamespace)
 		{
 			// https://developercommunity.visualstudio.com/t/error-cs0518-predefined-type-systemruntimecompiler/1244809
-			List<string> exceptions = new() { "System.Runtime.CompilerServices" };
+			List<string> exceptions = ["System.Runtime.CompilerServices"];
 			return exceptions.Contains(myNamespace);
 		}
 

@@ -149,7 +149,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				CompilationOptions options = compilation.Options.WithSpecificDiagnosticOptions(specificOptions);
 				Compilation modified = compilation.WithOptions(options);
 
-				List<AdditionalText> additionalTextsBuilder = new();
+				List<AdditionalText> additionalTextsBuilder = [];
 				foreach (TextDocument textDocument in project.AdditionalDocuments)
 				{
 					SourceText contents = await textDocument.GetTextAsync().ConfigureAwait(false);
@@ -174,7 +174,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		private async Task<IReadOnlyList<Diagnostic>> CollectOurDiagnostics(ImmutableArray<Diagnostic> diags, IEnumerable<Document> documents)
 		{
-			List<Diagnostic> diagnostics = new();
+			List<Diagnostic> diagnostics = [];
 			foreach (Diagnostic diag in diags)
 			{
 				if (diag.Location == Location.None || diag.Location.IsInMetadata)
@@ -201,7 +201,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// </summary>
 		/// <param name="diagnostics">The list of Diagnostics to be sorted</param>
 		/// <returns>An IEnumerable containing the Diagnostics in order of Location</returns>
-		private static IEnumerable<Diagnostic> SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
+		private static Diagnostic[] SortDiagnostics(IEnumerable<Diagnostic> diagnostics)
 		{
 			return diagnostics.OrderBy(d => d.Location.SourceSpan.Start).ToArray();
 		}
@@ -216,7 +216,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="filenamePrefix">The name of the source file, without the extension</param>
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		/// <returns>A Tuple containing the Documents produced from the sources and their TextSpans if relevant</returns>
-		private IEnumerable<Document> GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
+		private Document[] GetDocuments(string[] sources, string filenamePrefix, string assemblyName)
 		{
 			Project project = CreateProject(sources, filenamePrefix, assemblyName);
 			Document[] documents = project.Documents.ToArray();
@@ -252,7 +252,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected virtual ImmutableArray<DocumentInfo> GetAdditionalDocumentInfos(ProjectId projectId)
 		{
-			List<DocumentInfo> list = new();
+			List<DocumentInfo> list = [];
 			ImmutableArray<(string name, string content)> details = GetAdditionalTexts();
 			TestTextLoader textLoader = new();
 			foreach ((var name, var content) in details)

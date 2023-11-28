@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private SourceText AddLineToSourceText(SourceText sourceText, string line)
 		{
-			List<string> list = new();
+			List<string> list = [];
 			foreach (TextLine textLine in sourceText.Lines)
 			{
 				list.Add(textLine.ToString());

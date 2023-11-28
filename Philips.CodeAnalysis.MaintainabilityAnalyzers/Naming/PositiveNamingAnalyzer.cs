@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var additionalWords = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"negative_words");
 			var words = additionalWords.Split(',');
-			if (words.Any())
+			if (words.Length != 0)
 			{
 				IEnumerable<string> filteredWords = words.Where(x => !string.IsNullOrWhiteSpace(x)).Select(w => w.Trim());
 				NegativeWords.AddRange(filteredWords);

@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			ExceptionWalker walker = new();
-			List<string> unhandledExceptions = new();
+			List<string> unhandledExceptions = [];
 			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
 				IEnumerable<string> newExceptions = walker.UnhandledFromInvocation(invocation, aliases, Context.SemanticModel);

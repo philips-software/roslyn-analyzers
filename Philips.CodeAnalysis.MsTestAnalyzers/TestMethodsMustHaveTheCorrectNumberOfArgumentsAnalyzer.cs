@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				hasAnyCustomDataSources = false;
 				hasAnyDynamicData = false;
-				dataRowParameters = new();
+				dataRowParameters = [];
 				foreach (AttributeSyntax attribute in methodDeclaration.AttributeLists.SelectMany(x => x.Attributes))
 				{
 					if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
