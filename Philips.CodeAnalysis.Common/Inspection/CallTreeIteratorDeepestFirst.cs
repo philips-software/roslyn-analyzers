@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 		public CallTreeIteratorDeepestFirst(CallTreeNode root)
 		{
 			_root = root;
-			_visited = new HashSet<CallTreeNode>();
+			_visited = [];
 			Reset();
 		}
 

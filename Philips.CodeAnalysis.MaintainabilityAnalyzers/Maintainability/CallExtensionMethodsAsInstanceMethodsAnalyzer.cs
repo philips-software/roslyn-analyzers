@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool HasMultipleCallables(int position, SemanticModel semanticModel, ImmutableArray<ISymbol> statics, IMethodSymbol currentMethod)
 		{
-			HashSet<ISymbol> didCheck = new();
+			HashSet<ISymbol> didCheck = [];
 			Queue<ISymbol> toCheck = new(statics);
 
 			var count = 0;

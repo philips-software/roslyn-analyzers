@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			IEnumerable<string> lastOpenExceptions = Array.Empty<string>();
 			foreach (CallTreeNode node in iterator)
 			{
-				HashSet<string> openExceptions = new();
+				HashSet<string> openExceptions = [];
 				if (TrySkipMethod(node, out MethodBody body) || TryGetFromCache(node, ref lastOpenExceptions))
 				{
 					continue;
@@ -173,7 +173,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private string GetFullName(ISymbol symbol)
 		{
-			List<string> namespaces = new();
+			List<string> namespaces = [];
 			INamespaceSymbol ns = symbol.ContainingNamespace;
 			while (ns != null && !string.IsNullOrEmpty(ns.Name))
 			{

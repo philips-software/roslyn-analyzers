@@ -110,7 +110,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			return new AnalyzerOptions(additionalTexts, new TestAnalyzerConfigOptionsProvider(settings));
 		}
 
-		private static Compilation CreateCompilation()
+		private static CSharpCompilation CreateCompilation()
 		{
 			var dummyText = SourceText.From("");
 			SyntaxTree tree = SyntaxFactory.ParseSyntaxTree(dummyText);

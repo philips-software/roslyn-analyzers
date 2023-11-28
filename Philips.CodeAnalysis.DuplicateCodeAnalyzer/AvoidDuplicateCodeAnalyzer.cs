@@ -107,10 +107,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private sealed class CompilationAnalyzer
 		{
 			private readonly DuplicateDetector _library = new();
-			private readonly List<Diagnostic> _diagnostics = new();
+			private readonly List<Diagnostic> _diagnostics = [];
 			private readonly int _duplicateTokenThreshold;
 			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
+			private static readonly char[] separator = new[] { ':' };
 
 			public CompilationAnalyzer(int duplicateTokenThreshold, Helper helper, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
@@ -199,7 +200,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
 			{
 				StringBuilder builder = new();
-				var lines = ex.StackTrace.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+				var lines = ex.StackTrace.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 				foreach (var line in lines)
 				{
 					if (line.StartsWith("line") && line.Length >= 8)
@@ -230,7 +231,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 			private string GetShapeDetails(SyntaxToken token)
 			{
-				List<SyntaxToken> tokens = new();
+				List<SyntaxToken> tokens = [];
 				SyntaxToken currentToken = token;
 				for (var i = 0; i < _duplicateTokenThreshold; i++)
 				{
@@ -414,7 +415,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 	public class DuplicateDetector
 	{
-		private readonly Dictionary<int, List<Evidence>> _library = new();
+		private readonly Dictionary<int, List<Evidence>> _library = [];
 		private readonly object _lock = new();
 
 		public Evidence Register(int key, Evidence value)
@@ -436,10 +437,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 
 				// New key
-				existingValues = new List<Evidence>
-				{
-					value
-				};
+				existingValues = [value];
 				_library.Add(key, existingValues);
 				return null;
 			}

@@ -171,7 +171,7 @@ public class Tests
 
 			if (dataRowParameters >= 0)
 			{
-				List<string> dataRowParametersStrings = new();
+				List<string> dataRowParametersStrings = [];
 				for (var i = 0; i < dataRowParameters; i++)
 				{
 					dataRowParametersStrings.Add(i.ToString());

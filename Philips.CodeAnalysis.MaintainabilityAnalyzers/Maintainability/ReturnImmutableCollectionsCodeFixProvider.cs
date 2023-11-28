@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string ReadonlyDictionary = "IReadOnlyDictionary";
 		private const string ReadonlyList = "IReadOnlyList";
 
-		private static readonly IReadOnlyDictionary<string, string> CollectionsMap = new Dictionary<string, string>()
+		private static readonly Dictionary<string, string> CollectionsMap = new()
 		{
 			{StringConstants.List, ReadonlyList},
 			{StringConstants.QueueClassName, ReadonlyCollection},

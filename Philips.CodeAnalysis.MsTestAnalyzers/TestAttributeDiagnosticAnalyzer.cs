@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return;
 			}
 
-			HashSet<INamedTypeSymbol> presentAttributes = new();
+			HashSet<INamedTypeSymbol> presentAttributes = [];
 			foreach (INamedTypeSymbol attribute in methodSymbol.GetAttributes().Select(attribute => attribute.AttributeClass))
 			{
 				if (definitions.NonTestMethods.Contains(attribute))

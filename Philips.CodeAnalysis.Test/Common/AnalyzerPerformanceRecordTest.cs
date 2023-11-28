@@ -56,8 +56,8 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Arrange
 			var list = new List<AnalyzerPerformanceRecord>(2)
 			{
-				new AnalyzerPerformanceRecord() { Time = 42 },
-				new AnalyzerPerformanceRecord() { Time = 2 }
+				new() { Time = 42 },
+				new() { Time = 2 }
 			};
 
 			// Act

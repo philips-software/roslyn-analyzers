@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// Types of the Generic Arguments, which themselves may be generic types
 		/// </param>
 		/// <returns>An instance of TypeSyntax from the Roslyn Model</returns>
-		private static TypeSyntax CreateGenericTypeSyntax(string identifier, params TypeSyntax[] arguments)
+		private static GenericNameSyntax CreateGenericTypeSyntax(string identifier, params TypeSyntax[] arguments)
 		{
 			System.Collections.Generic.IEnumerable<TypeSyntax> args = arguments.Select(
 				x =>

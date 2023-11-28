@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override void OnTestClass(SyntaxNodeAnalysisContext context, ClassDeclarationSyntax classDeclaration)
 		{
-			HashSet<MethodDeclarationSyntax> testMethods = new();
+			HashSet<MethodDeclarationSyntax> testMethods = [];
 			foreach (MemberDeclarationSyntax member in classDeclaration.Members)
 			{
 				if (member is not MethodDeclarationSyntax method || !Helper.ForTests.IsTestMethod(method, context))
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				_ = testMethods.Add(method);
 			}
 
-			HashSet<string> seenNames = new();
+			HashSet<string> seenNames = [];
 			foreach (SyntaxToken methodIdentifier in testMethods
 						 .Select(method => method.Identifier)
 						 .Where(id => !seenNames.Add(id.ToString())))
