@@ -66,7 +66,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 dotnet_naming_symbols.parameters.applicable_kinds = parameter
 dotnet_naming_style.camel_case.capitalization = camel_case
 dotnet_naming_rule.parameter_must_be_camel_case.symbols  = parameters
-dotnet_naming_rule.parameter_must_be_camel_case.style    = camel_case
+dotnet_naming_rule.parameter_must_be_camel_case.style = camel_case
 dotnet_naming_rule.parameter_must_be_camel_case.severity = error
 
 
@@ -88,6 +88,10 @@ dotnet_diagnostic.CA1847.severity = none
 
 # Do not facilitate static methods
 dotnet_diagnostic.CA1822.severity = none
+
+# Requested overload not present in .NET standard
+dotnet_diagnostic.CA1866.severity = none
+dotnet_diagnostic.CA1862.severity = none
 
 dotnet_diagnostic.CA1724.severity = error
 dotnet_diagnostic.CA1825.severity = error
@@ -201,4 +205,54 @@ dotnet_code_quality.PH2015.allowed_test_categories = TestDefinitions.UnitTests
 dotnet_code_quality.PH2028.company_name = Koninklijke Philips N.V.
 dotnet_code_quality.PH2075.assembly_version = 1.0.3.0
 dotnet_code_quality.PH2079.namespace_prefix = Philips.CodeAnalysis
+csharp_using_directive_placement = outside_namespace:silent
+csharp_prefer_simple_using_statement = true:suggestion
+csharp_prefer_braces = true:silent
+csharp_style_namespace_declarations = block_scoped:silent
+csharp_style_prefer_method_group_conversion = true:silent
+csharp_style_prefer_top_level_statements = true:silent
+csharp_style_prefer_primary_constructors = true:suggestion
+csharp_style_expression_bodied_methods = false:silent
+csharp_style_expression_bodied_constructors = false:silent
+csharp_style_expression_bodied_operators = false:silent
+csharp_style_expression_bodied_properties = true:silent
+csharp_style_expression_bodied_indexers = true:silent
+csharp_style_expression_bodied_accessors = true:silent
+csharp_style_expression_bodied_lambdas = true:silent
+csharp_style_expression_bodied_local_functions = false:silent
+csharp_style_throw_expression = true:suggestion
+csharp_style_prefer_null_check_over_type_check = true:suggestion
+csharp_prefer_simple_default_expression = true:suggestion
+csharp_style_prefer_local_over_anonymous_function = true:suggestion
+csharp_style_prefer_index_operator = true:suggestion
+csharp_style_prefer_range_operator = true:suggestion
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
+csharp_style_prefer_tuple_swap = true:suggestion
+csharp_style_prefer_utf8_string_literals = true:suggestion
+csharp_style_inlined_variable_declaration = true:suggestion
+csharp_style_deconstructed_variable_declaration = true:suggestion
+csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 
+
+[*.{cs,vb}]
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_auto_properties = true:silent
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_prefer_collection_expression = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = false:silent
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4
+indent_size = 4
+end_of_line = crlf

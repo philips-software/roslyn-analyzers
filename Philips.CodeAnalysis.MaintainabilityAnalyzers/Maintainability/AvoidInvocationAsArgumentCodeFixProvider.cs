@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 			else
 			{
-				List<SyntaxNode> newNodes = new() { formattedLocalDeclarationSyntax, newFullExistingExpressionSyntax };
+				List<SyntaxNode> newNodes = [formattedLocalDeclarationSyntax, newFullExistingExpressionSyntax];
 				rootNode = rootNode.ReplaceNode(fullExistingExpressionSyntax, newNodes);
 			}
 

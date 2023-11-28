@@ -28,10 +28,10 @@ namespace Philips.CodeAnalysis.Common
 		internal AllowedSymbols(Compilation compilation)
 		{
 			_compilation = compilation;
-			_allowedMethods = new HashSet<IMethodSymbol>();
-			_allowedTypes = new HashSet<ITypeSymbol>();
-			_allowedNamespaces = new HashSet<INamespaceSymbol>();
-			_allowedLines = new HashSet<string>();
+			_allowedMethods = [];
+			_allowedTypes = [];
+			_allowedNamespaces = [];
+			_allowedLines = [];
 		}
 
 		/// <summary>

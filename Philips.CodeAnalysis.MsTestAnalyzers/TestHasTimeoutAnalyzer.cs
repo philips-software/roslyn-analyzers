@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private sealed class TestHasTimeout : TestMethodImplementation
 		{
 			private readonly object _lock1 = new();
-			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = new();
+			private readonly Dictionary<string, ImmutableList<string>> _configuredTimeouts = [];
 
 			public TestHasTimeout(MsTestAttributeDefinitions definitions, Helper helper) : base(definitions, helper)
 			{
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
-					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && allowed.Any())
+					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && !allowed.IsEmpty)
 					{
 						var firstAllowedTimeout = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
@@ -110,7 +110,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
-					if (TryGetAllowedTimeouts(category, out ImmutableList<string> allowed) && allowed.Any())
+					if (TryGetAllowedTimeouts(category, out ImmutableList<string> allowed) && !allowed.IsEmpty)
 					{
 						var firstAllowed = allowed.First();
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowed);
@@ -153,7 +153,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (!timeouts.Contains(argumentString))
 				{
-					List<string> timeoutStrings = new();
+					List<string> timeoutStrings = [];
 					foreach (var timeoutString in timeouts)
 					{
 						timeoutStrings.Add($"\"{timeoutString}\"");
