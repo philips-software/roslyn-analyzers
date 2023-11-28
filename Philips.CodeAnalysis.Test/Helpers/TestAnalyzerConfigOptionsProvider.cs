@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public TestAnalyzerConfigOptions(Dictionary<string, string> settings)
 		{
-			_settings = settings ?? new Dictionary<string, string>();
+			_settings = settings ?? [];
 		}
 
 		public override bool TryGetValue(string key, [NotNullWhen(true)] out string value)

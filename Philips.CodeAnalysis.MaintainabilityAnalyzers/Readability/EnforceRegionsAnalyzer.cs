@@ -159,9 +159,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="regions">Regions found in the file</param>
 		/// <param name="context">Tha Analysis context</param>
 		/// <returns>Dictionary of region name and LocationRangeModel object</returns>
-		private static IReadOnlyDictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
+		private static Dictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
-			Dictionary<string, LocationRangeModel> regionLocations = new();
+			Dictionary<string, LocationRangeModel> regionLocations = [];
 			var regionStartName = "";
 			for (var i = 0; i < regions.Count; i++)
 			{
@@ -177,7 +177,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="members">List of members</param>
 		/// <param name="locationRange">LocationRangeModel object</param>
 		/// <returns>List of members belonging to the given region</returns>
-		private static IReadOnlyList<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
+		private static List<MemberDeclarationSyntax> GetMembersOfRegion(SyntaxList<MemberDeclarationSyntax> members, LocationRangeModel locationRange)
 		{
 			return members.Where(member => MemberPresentInRegion(member, locationRange)).ToList();
 		}

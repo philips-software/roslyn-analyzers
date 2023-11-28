@@ -108,7 +108,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return document.WithSyntaxRoot(root);
 		}
 
-		private StatementSyntax CreateAssert(ExpressionSyntax test, bool isIsTrue, ArgumentSyntax[] additionalArguments)
+		private ExpressionStatementSyntax CreateAssert(ExpressionSyntax test, bool isIsTrue, ArgumentSyntax[] additionalArguments)
 		{
 			SeparatedSyntaxList<ArgumentSyntax> newArguments = new();
 

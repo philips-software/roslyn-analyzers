@@ -36,6 +36,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
 
+		private static readonly char[] separator = new[] { ' ' };
+
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			var line = Helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
@@ -174,7 +176,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static IEnumerable<string> SplitInWords(string input)
 		{
 			var pruned = input.Replace(',', ' ').Replace('.', ' ').ToLowerInvariant();
-			return pruned.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
+			return pruned.Split(separator, StringSplitOptions.RemoveEmptyEntries).Select(w => w.TrimEnd('s'));
 		}
 	}
 }

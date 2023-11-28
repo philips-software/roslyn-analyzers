@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Common
 	public class DocumentationHelper
 	{
 		private const string ExceptionElementName = "exception";
-		private readonly List<XmlElementSyntax> _xmlElements = new();
+		private readonly List<XmlElementSyntax> _xmlElements = [];
 
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{

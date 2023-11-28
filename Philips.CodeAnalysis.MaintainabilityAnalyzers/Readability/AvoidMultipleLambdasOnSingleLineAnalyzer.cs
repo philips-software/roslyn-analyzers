@@ -57,9 +57,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc));
 		}
 
-		private static IEnumerable<LambdaExpressionSyntax> FindOtherLambdasOnSameLine(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
+		private static List<LambdaExpressionSyntax> FindOtherLambdasOnSameLine(LambdaExpressionSyntax ourLambda, IEnumerable<LambdaExpressionSyntax> lambdas)
 		{
-			List<LambdaExpressionSyntax> result = new();
+			List<LambdaExpressionSyntax> result = [];
 			var theLine = ourLambda.GetLocation().GetLineSpan().StartLinePosition.Line;
 			foreach (LambdaExpressionSyntax lambda in lambdas)
 			{

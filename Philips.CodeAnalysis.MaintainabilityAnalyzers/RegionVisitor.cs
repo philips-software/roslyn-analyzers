@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers
 {
 	public class RegionVisitor : CSharpSyntaxWalker
 	{
-		private readonly List<DirectiveTriviaSyntax> _regions = new();
+		private readonly List<DirectiveTriviaSyntax> _regions = [];
 
 		public RegionVisitor() : base(SyntaxWalkerDepth.StructuredTrivia)
 		{ }

@@ -208,7 +208,7 @@ public static class Bar
 }}
 ";
 
-			List<DiagnosticResult> diagnosticResults = new();
+			List<DiagnosticResult> diagnosticResults = [];
 
 			for (var i = 0; i < errorCount; i++)
 			{
