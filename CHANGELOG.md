@@ -1,3 +1,29 @@
+## [1.5.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.4.0...v1.5.0) (2023-12-19)
+
+
+### Features
+
+* New Analyzer to avoid cast to  ([#716](https://github.com/philips-software/roslyn-analyzers/issues/716)) ([7b3e49c](https://github.com/philips-software/roslyn-analyzers/commit/7b3e49c1ad6677ecbc6ca943c9abc0d0b63b67ae))
+
+
+### Bug Fixes
+
+* Fix all .NET 7 analyzer errors ([#721](https://github.com/philips-software/roslyn-analyzers/issues/721)) ([93a2a84](https://github.com/philips-software/roslyn-analyzers/commit/93a2a846171c4bbe041bbf2b2dc6cc11cb83a216))
+* Flexible hierarchy depth ([#714](https://github.com/philips-software/roslyn-analyzers/issues/714)) ([f1ce2dc](https://github.com/philips-software/roslyn-analyzers/commit/f1ce2dc75857b0e76f022d1734dadb1ac1314033))
+* Ignore NotImplementedException ([#712](https://github.com/philips-software/roslyn-analyzers/issues/712)) ([f227186](https://github.com/philips-software/roslyn-analyzers/commit/f227186c25d960d610cb8498982fd3d679a63c43))
+* Move environment variables to env section of yml ([#711](https://github.com/philips-software/roslyn-analyzers/issues/711)) ([7dcf076](https://github.com/philips-software/roslyn-analyzers/commit/7dcf076227030acb0316d16e090fa950a0316b15))
+* Support partial versions ([#713](https://github.com/philips-software/roslyn-analyzers/issues/713)) ([31bf11c](https://github.com/philips-software/roslyn-analyzers/commit/31bf11c12bdb40220264c2c5e66e8473ae2de54e))
+
+
+### Build Systems
+
+* Bump actions/setup-dotnet from 3.2.0 to 4.0.0 ([#724](https://github.com/philips-software/roslyn-analyzers/issues/724)) ([74e2a1a](https://github.com/philips-software/roslyn-analyzers/commit/74e2a1a826fdc8b14b7b5be375f4562a2bb799a0))
+* Bump actions/setup-java from 3.13.0 to 4.0.0 ([#723](https://github.com/philips-software/roslyn-analyzers/issues/723)) ([37aac02](https://github.com/philips-software/roslyn-analyzers/commit/37aac02acf580ce915ec215e04e0360344acc338))
+* Bump github/codeql-action from 2.22.5 to 2.22.6 ([#710](https://github.com/philips-software/roslyn-analyzers/issues/710)) ([b7a56cb](https://github.com/philips-software/roslyn-analyzers/commit/b7a56cb73ef4225df2a5586f6c601ee31a54d617))
+* Bump github/codeql-action from 2.22.6 to 2.22.8 ([#722](https://github.com/philips-software/roslyn-analyzers/issues/722)) ([7e5cc12](https://github.com/philips-software/roslyn-analyzers/commit/7e5cc12cdaa57cbe0d86142c1cf007db11e4569e))
+
+
+
 ## [1.4.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.3.1...v1.4.0) (2023-11-14)
 
 
