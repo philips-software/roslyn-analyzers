@@ -42,7 +42,7 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
       - name: Upload MaintainabilityAnalyzers Artifact
-        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v3
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4
         with:
           name: Philips.CodeAnalysis.MaintainabilityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
