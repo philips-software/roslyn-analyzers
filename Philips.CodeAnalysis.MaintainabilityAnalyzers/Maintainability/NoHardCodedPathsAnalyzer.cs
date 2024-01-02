@@ -18,10 +18,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoHardCodedPathsAnalyzer : SingleDiagnosticAnalyzer
 	{
+		private const int MaxStringLength = 1000;
 		private const string Title = @"Avoid hardcoded absolute paths";
 		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private readonly Regex WindowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private readonly Regex _windowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		public NoHardCodedPathsAnalyzer()
 			: base(DiagnosticId.NoHardcodedPaths, Title, MessageFormat, Description, Categories.Maintainability)
@@ -45,14 +46,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			//if the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
+			// If the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
 			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/'))
 			{
 				return;
 			}
 
+			// Limit to first 1000 characters, to prevent long analysis times.
+			if (pathValue.Length > MaxStringLength)
+			{
+				pathValue = pathValue.Substring(0, MaxStringLength);
+			}
+
 			// If the pattern matches the text value, report the diagnostic.
-			if (WindowsPattern.IsMatch(pathValue))
+			if (_windowsPattern.IsMatch(pathValue))
 			{
 				Location location = stringLiteralExpressionNode.GetLocation();
 				var diagnostic = Diagnostic.Create(Rule, location);
