@@ -135,5 +135,6 @@ namespace Philips.CodeAnalysis.Common
 		EnableDocumentationCreation = 2139,
 		AvoidExcludeFromCodeCoverage = 2140,
 		AvoidEmptyRegions = 2141,
+		AvoidCastToString = 2142,
 	}
 }

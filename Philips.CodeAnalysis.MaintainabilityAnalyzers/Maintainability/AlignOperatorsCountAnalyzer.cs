@@ -67,38 +67,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// </summary>
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
-			context.RegisterSyntaxNodeAction(AnalyzeStruct, SyntaxKind.StructDeclaration);
+			context.RegisterSyntaxNodeAction(AnalyzeType, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 		}
 
-		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
+		private void AnalyzeType(SyntaxNodeAnalysisContext context)
 		{
 			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
 			{
 				return;
 			}
 
-			var classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var typeDeclaration = (TypeDeclarationSyntax)context.Node;
 
 			OperatorsVisitor visitor = new();
-			visitor.Visit(classDeclaration);
+			visitor.Visit(typeDeclaration);
 
-			AnalyzeVisitor(context, visitor, classDeclaration.Identifier);
-		}
-
-		private void AnalyzeStruct(SyntaxNodeAnalysisContext context)
-		{
-			if (Helper.ForGeneratedCode.IsGeneratedCode(context))
-			{
-				return;
-			}
-
-			var structDeclaration = (StructDeclarationSyntax)context.Node;
-
-			OperatorsVisitor visitor = new();
-			visitor.Visit(structDeclaration);
-
-			AnalyzeVisitor(context, visitor, structDeclaration.Identifier);
+			AnalyzeVisitor(context, visitor, typeDeclaration.Identifier);
 		}
 
 		private void AnalyzeVisitor(SyntaxNodeAnalysisContext context, OperatorsVisitor visitor, SyntaxToken identifier)

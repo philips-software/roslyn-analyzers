@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@0ab4596768b603586c0de567f2430c30f5b0d2b0 # ratchet:actions/setup-java@v3
+        uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93 # ratchet:actions/setup-java@v3
         with:
           java-version: '17'
           distribution: temurin
@@ -18,7 +18,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2 # @v3.2.0
+        uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3 # @v4.0.0
         with:
           dotnet-version: |
             3.1.x
