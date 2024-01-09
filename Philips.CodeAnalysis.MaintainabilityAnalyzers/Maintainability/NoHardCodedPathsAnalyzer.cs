@@ -13,16 +13,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	/*
 	 * Analyzer for hardcoded absolute path. 
 	 * Reports diagnostics if an absolute path is used,
-	 * For example: c:\users\Bin\example.xml - Windows & /home/kt/abc.sql - Linux
+	 * For example: c:\users\Bin\example.xml
+	 *          or: \\server\\share\example.xml
+	 *
+	 * This Analyzer only reports diagnostics on Windows.
 	 */
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class NoHardCodedPathsAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const int MaxStringLength = 1000;
+		private const int MaxStringLength = 259;
 		private const string Title = @"Avoid hardcoded absolute paths";
 		private const string MessageFormat = Title;
 		private const string Description = Title;
-		private readonly Regex _windowsPattern = new(@"^[a-zA-Z]:\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+		private readonly Regex _windowsPattern = new(@"^(([a-zA-Z]:)|\\)\\{1,2}(((?![<>:/\\|?*]).)+((?<![ .])\\{1,2})?)*$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		public NoHardCodedPathsAnalyzer()
 			: base(DiagnosticId.NoHardcodedPaths, Title, MessageFormat, Description, Categories.Maintainability)
@@ -46,13 +49,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// If the character of the string do not match either of the characters : for windows and / for linux; no need to run regex, simply return.
-			if (!pathValue[1].Equals(':') && !pathValue[0].Equals('/'))
+			// If the character of the string do not match either of the characters : or \\ ; no need to run regex, simply return.
+			if (!pathValue.Contains(":") && !pathValue.Contains("\\"))
 			{
 				return;
 			}
 
-			// Limit to first 1000 characters, to prevent long analysis times.
+			// Limit to first MAX_PATH characters, to prevent long analysis times.
 			if (pathValue.Length > MaxStringLength)
 			{
 				pathValue = pathValue.Substring(0, MaxStringLength);
