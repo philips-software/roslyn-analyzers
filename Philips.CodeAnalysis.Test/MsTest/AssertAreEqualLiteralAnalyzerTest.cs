@@ -14,10 +14,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AssertAreEqualLiteralAnalyzerTest : AssertCodeFixVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)

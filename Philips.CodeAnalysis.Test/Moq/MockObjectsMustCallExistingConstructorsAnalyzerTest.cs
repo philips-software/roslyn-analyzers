@@ -16,10 +16,6 @@ namespace Philips.CodeAnalysis.Test.Moq
 	[TestClass]
 	public class MockObjectsMustCallExistingConstructorsAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
