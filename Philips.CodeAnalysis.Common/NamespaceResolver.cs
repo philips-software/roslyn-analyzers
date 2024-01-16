@@ -96,12 +96,12 @@ namespace Philips.CodeAnalysis.Common
 		}
 
 		/// <summary>
-		/// 
+		/// Returns true if the <paramref name="memberAccess"/> has a Type that is of the expected type and namespace.
 		/// </summary>
-		/// <param name="memberAccess"></param>
-		/// <param name="expectedNamespace"></param>
-		/// <param name="expectedType"></param>
-		/// <returns></returns>
+		/// <param name="memberAccess">Expression who's type to check.</param>
+		/// <param name="expectedNamespace">The namespace of the expected type.</param>
+		/// <param name="expectedType">The class or struct name of the expected type, excluding its namespace.</param>
+		/// <returns>True if <paramref name="memberAccess"/> might refer to the type <paramref name="expectedType"/> in namespace <paramref name="expectedNamespace"/>.</returns>
 		public bool IsOfType(MemberAccessExpressionSyntax memberAccess, string expectedNamespace, string expectedType)
 		{
 			var expectedFullName = $"{expectedNamespace}.{expectedType}";
