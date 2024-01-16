@@ -1,8 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -22,27 +20,6 @@ namespace Philips.CodeAnalysis.Common
 			}
 
 			return false;
-		}
-
-		public static string GetFullName(this TypeSyntax typeSyntax, IReadOnlyDictionary<string, string> aliases)
-		{
-			var name = string.Empty;
-			if (typeSyntax is SimpleNameSyntax simpleNameSyntax)
-			{
-				name = simpleNameSyntax.Identifier.Text;
-			}
-			else if (typeSyntax is QualifiedNameSyntax qualifiedNameSyntax)
-			{
-				var left = qualifiedNameSyntax.Left.GetFullName(aliases);
-				var right = qualifiedNameSyntax.Right.Identifier.Text;
-				name = $"{left}.{right}";
-			}
-
-			if (aliases.TryGetValue(name, out var aliased))
-			{
-				return aliased;
-			}
-			return name;
 		}
 	}
 }
