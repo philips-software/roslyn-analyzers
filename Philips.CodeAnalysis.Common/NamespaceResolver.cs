@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Common
 			if (!deAliasedName.Contains("."))
 			{
 				// Deep namespaces include shallower ones implicitly in C#.
-				if (_namespaces.Any(ns => ns.Contains(expectedNamespace)))
+				if (_namespaces.Exists(ns => ns.Contains(expectedNamespace)))
 				{
 					result = $"{expectedNamespace}.{deAliasedName}";
 				}
