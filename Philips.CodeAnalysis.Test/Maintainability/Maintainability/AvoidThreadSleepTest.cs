@@ -46,6 +46,24 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task BehindAlias()
+		{
+			var givenText = @"
+using T = System.Threading.Thread;
+class Foo 
+{{
+  class InsideFoo {{
+    public void Foo() {{
+      T.Sleep(200);
+    }}
+  }}
+}}
+";
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task Issue704()
 		{
 			var givenText = @"
