@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
+			NamespaceResolver aliases = Helper.ForNamespaces.GetUsingAliases(Node);
 
 			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			ExceptionWalker walker = new();
