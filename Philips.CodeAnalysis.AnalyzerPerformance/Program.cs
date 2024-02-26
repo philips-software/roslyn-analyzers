@@ -29,6 +29,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 			foreach (BaseNode node in buildRoot.Children)
 			{
+				Console.WriteLine($"Considering logger node: {node.Title}");
 				if (node is NamedNode { Name: @"Analyzer Summary" } namedNode)
 				{
 					AnalyzePackages(namedNode);
@@ -40,9 +41,11 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
+				Console.WriteLine($"Analyzer node: {analyzerPackageNode.Title}");
 				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder &&
 					(string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter)))
 				{
+					Console.WriteLine($"Found analyzer node match: {namedAnalyzerPackageFolder.Name}");
 					AnalyzerItems(namedAnalyzerPackageFolder);
 				}
 			}
