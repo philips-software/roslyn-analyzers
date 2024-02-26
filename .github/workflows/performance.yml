@@ -51,6 +51,7 @@ jobs:
           dotnet_diagnostic.IDE0008.severity = none
           dotnet_diagnostic.IDE0010.severity = none
           dotnet_diagnostic.IDE0025.severity = none
+          dotnet_diagnostic.IDE0028.severity = none
           dotnet_diagnostic.IDE0045.severity = none
           dotnet_diagnostic.IDE0046.severity = none
           dotnet_diagnostic.IDE0055.severity = none
@@ -63,6 +64,7 @@ jobs:
           dotnet_diagnostic.IDE0290.severity = none
           dotnet_diagnostic.IDE0300.severity = none
           dotnet_diagnostic.IDE0301.severity = none
+          dotnet_diagnostic.IDE0305.severity = none
           dotnet_diagnostic.PH2006.severity = none
           dotnet_diagnostic.PH2015.severity = none
           dotnet_diagnostic.SYSLIB1045.severity = none
