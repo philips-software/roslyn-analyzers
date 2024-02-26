@@ -19,11 +19,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			var expectedAnalyzer = "DummyAnalyzer";
 			var expectedId = "DummyId";
 			var expectedTime = 25.0d;
-			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\"";
-			var testText = $"{expectedTime} s";
+			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\" = {expectedTime} s";
 
 			// Act
-			var actual = AnalyzerPerformanceRecord.TryParse(testName, testText);
+			var actual = AnalyzerPerformanceRecord.TryParse(testName);
 
 			// Assert
 			Assert.AreEqual(expectedAnalyzer, actual.Analyzer);
@@ -39,11 +38,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			var expectedAnalyzer = "DummyAnalyzer";
 			var expectedId = "DummyId";
 			var expectedTime = 25.0d;
-			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\"";
-			var testText = $"{expectedTime}s";
+			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\" = {expectedTime}s";
 
 			// Act
-			var actual = AnalyzerPerformanceRecord.TryParse(testName, testText);
+			var actual = AnalyzerPerformanceRecord.TryParse(testName);
 
 			// Assert
 			Assert.IsNull(actual);
