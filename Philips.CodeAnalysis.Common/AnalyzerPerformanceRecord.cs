@@ -21,8 +21,6 @@ namespace Philips.CodeAnalysis.Common
 			var timePart = analyzerAndId[analyzerAndId.Length - 2];
 			var seconds = analyzerAndId[analyzerAndId.Length - 1];
 
-			Console.WriteLine($"Name: {name} ; Package: {package} ; Analyzer: {analyzer}");
-
 			if (!double.TryParse(timePart, NumberStyles.Any, CultureInfo.InvariantCulture, out var time))
 			{
 				return null;
@@ -33,7 +31,6 @@ namespace Philips.CodeAnalysis.Common
 			}
 
 			var displayTime = (time < 1000) ? $"{(int)time} ms" : $"{time / 1000} s";
-			Console.WriteLine($"id: {id} ; Package: {analyzerParts[2]} ; Analyzer: {analyzerParts[analyzerParts.Length - 1]} ; Time: {time}");
 
 			AnalyzerPerformanceRecord record = new()
 			{

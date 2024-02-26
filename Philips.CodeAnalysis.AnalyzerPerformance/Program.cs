@@ -43,12 +43,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder &&
 					(string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter)))
 				{
-					Console.WriteLine($"Found analyzer node match to measure performance for: {namedAnalyzerPackageFolder.Name}");
 					AnalyzerItems(namedAnalyzerPackageFolder);
-				}
-				else
-				{
-					Console.WriteLine($"Analyzer node which is NOT measured: {analyzerPackageNode.Title}");
 				}
 			}
 			OutputResults();
