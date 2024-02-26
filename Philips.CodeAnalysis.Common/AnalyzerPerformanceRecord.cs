@@ -2,38 +2,45 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Philips.CodeAnalysis.Common
 {
 	public sealed class AnalyzerPerformanceRecord : IComparable<AnalyzerPerformanceRecord>
 	{
-		public static AnalyzerPerformanceRecord TryParse(string name, string text)
+		public static AnalyzerPerformanceRecord TryParse(string name)
 		{
 			var analyzerAndId = name.Split(' ');
 			var id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
 
 			var analyzerParts = analyzerAndId[0].Split('.');
+			var package = analyzerParts[2];
+			var analyzer = analyzerParts.Last();
 
-			var timeParts = text.Split(' ');
-			if (timeParts.Length == 0 || !double.TryParse(timeParts[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var time))
+			var timePart = analyzerAndId[analyzerAndId.Length - 2];
+			var seconds = analyzerAndId[analyzerAndId.Length - 1];
+
+			Console.WriteLine($"Name: {name} ; Package: {package} ; Analyzer: {analyzer}");
+
+			if (!double.TryParse(timePart, NumberStyles.Any, CultureInfo.InvariantCulture, out var time))
 			{
 				return null;
 			}
-			if (timeParts[1] == "s")
+			if (seconds == "s")
 			{
 				time *= 1000;
 			}
 
-			Console.WriteLine($"Name: {name} ; Text: {text}");
-			Console.WriteLine($"id: {id} ; Package: {analyzerParts[2]} ; Analyzer: {analyzerParts[analyzerParts.Length - 1]} ; DisplayTime: {text} ; Time: {time}");
+			var displayTime = (time < 1000) ? $"{(int)time} ms" : $"{time / 1000} s";
+			Console.WriteLine($"id: {id} ; Package: {analyzerParts[2]} ; Analyzer: {analyzerParts[analyzerParts.Length - 1]} ; Time: {time}");
 
 			AnalyzerPerformanceRecord record = new()
 			{
 				Id = id,
-				Package = analyzerParts[2],
-				Analyzer = analyzerParts[analyzerParts.Length - 1],
-				DisplayTime = text,
+				Package = package,
+				Analyzer = analyzer,
+				DisplayTime = displayTime,
 				Time = (int)time
 			};
 			return record;

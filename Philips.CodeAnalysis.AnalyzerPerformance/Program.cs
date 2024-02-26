@@ -85,11 +85,9 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerMessage in namedAnalyzerPackageFolder.Children)
 			{
-				Console.WriteLine($"Consider: {analyzerMessage.Title}");
 				if (analyzerMessage is Item item)
 				{
-					Console.WriteLine($"Item: {item.Name} = {item.Text}");
-					var record = AnalyzerPerformanceRecord.TryParse(item.Name, item.Text);
+					var record = AnalyzerPerformanceRecord.TryParse(item.Title);
 					Records.Add(record);
 				}
 			}
