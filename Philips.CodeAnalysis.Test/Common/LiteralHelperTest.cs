@@ -1,4 +1,4 @@
-﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using System.Threading.Tasks;
@@ -19,19 +19,18 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 
 		[DiagnosticAnalyzer(LanguageNames.CSharp)]
-		private sealed class IsLiteralAnalyzer : DiagnosticAnalyzer
+		private sealed class IsLiteralAnalyzer : DiagnosticAnalyzerBase
 		{
 			private static readonly DiagnosticDescriptor TrueRule = new("TRUE", string.Empty, string.Empty, string.Empty, DiagnosticSeverity.Error, true);
 			private static readonly DiagnosticDescriptor FalseRule = new("FALSE", string.Empty, string.Empty, string.Empty, DiagnosticSeverity.Error, true);
 
-			public override void Initialize(AnalysisContext context)
-			{
-				context.EnableConcurrentExecution();
-				context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-				context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ExpressionStatement);
-			}
 
 			public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = ImmutableArray.Create(TrueRule, FalseRule);
+
+			protected override void InitializeCompilation(CompilationStartAnalysisContext context)
+			{
+				context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ExpressionStatement);
+			}
 
 			private void Analyze(SyntaxNodeAnalysisContext context)
 			{
@@ -39,8 +38,7 @@ namespace Philips.CodeAnalysis.Test.Common
 				ExpressionSyntax expression = statement.Expression;
 				Location loc = expression.GetLocation();
 
-				Helper helper = new();
-				context.ReportDiagnostic(helper.IsLiteral(expression, context.SemanticModel)
+				context.ReportDiagnostic(Helper.ForLiterals.IsLiteral(expression, context.SemanticModel)
 					? Diagnostic.Create(TrueRule, loc)
 					: Diagnostic.Create(FalseRule, loc));
 			}
