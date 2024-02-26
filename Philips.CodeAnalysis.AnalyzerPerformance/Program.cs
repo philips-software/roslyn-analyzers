@@ -55,16 +55,28 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			Records.Sort();
-			foreach (AnalyzerPerformanceRecord record in Records)
+			if (Records.Any())
 			{
-				if (record == null || record.Package == null || record.Analyzer == null)
+				Records.Sort();
+				foreach (AnalyzerPerformanceRecord record in Records)
 				{
-					continue;
+					if (record == null || record.Package == null || record.Analyzer == null)
+					{
+						continue;
+					}
+
+					var package = record.Package.Length > MaxPackageNameLength
+						? record.Package[..MaxPackageNameLength] + Ellipsis
+						: record.Package;
+					var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength
+						? record.Analyzer[..MaxAnalyzerNameLength] + Ellipsis
+						: record.Analyzer;
+					Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 				}
-				var package = record.Package.Length > MaxPackageNameLength ? record.Package[..MaxPackageNameLength] + Ellipsis : record.Package;
-				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer[..MaxAnalyzerNameLength] + Ellipsis : record.Analyzer;
-				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
+			}
+			else
+			{
+				Console.WriteLine("No performance data found");
 			}
 		}
 

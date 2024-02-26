@@ -25,8 +25,8 @@ namespace Philips.CodeAnalysis.Common
 				time *= 1000;
 			}
 
-			Console.Error.WriteLine($"Name: {name} ; Text: {text}");
-			Console.Error.WriteLine($"id: {id} ; Package: {analyzerParts[2]} ; Analyzer: {analyzerParts[analyzerParts.Length - 1]} ; DisplayTime: {text} ; Time: {time}");
+			Console.WriteLine($"Name: {name} ; Text: {text}");
+			Console.WriteLine($"id: {id} ; Package: {analyzerParts[2]} ; Analyzer: {analyzerParts[analyzerParts.Length - 1]} ; DisplayTime: {text} ; Time: {time}");
 
 			AnalyzerPerformanceRecord record = new()
 			{
