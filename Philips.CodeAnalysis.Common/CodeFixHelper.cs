@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public DocumentationHelper ForDocumentationOf(SyntaxNode node)
 		{
-			return new DocumentationHelper(node);
+			return new DocumentationHelper(this, node);
 		}
 	}
 }

@@ -11,25 +11,19 @@ namespace Philips.CodeAnalysis.Common
 	public class DocumentationHelper
 	{
 		private const string ExceptionElementName = "exception";
-		private readonly Helper _helper;
 		private readonly List<XmlElementSyntax> _xmlElements = [];
-
-		internal DocumentationHelper(Helper helper)
-		{
-			_helper = helper;
-		}
 
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
 			return node.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor is BaseMethodDeclarationSyntax or PropertyDeclarationSyntax or TypeDeclarationSyntax);
 		}
 
-		internal DocumentationHelper(SyntaxNode node)
+		internal DocumentationHelper(CodeFixHelper helper, SyntaxNode node)
 		{
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if (doc == default)
 			{
-				doc = _helper.ForModifiers.GetModifiers(node)[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
+				doc = helper.ForModifiers.GetModifiers(node)[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 			}
 			if (doc != default)
 			{
