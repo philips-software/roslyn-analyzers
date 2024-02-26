@@ -85,14 +85,12 @@ namespace Philips.CodeAnalysis.Common
 			SyntaxTree tree = _compilation.SyntaxTrees.First();
 			AnalyzerConfigOptions analyzerConfigOptions = _options.AnalyzerConfigOptionsProvider.GetOptions(tree);
 
-#nullable enable
 			if (analyzerConfigOptions.TryGetValue(settingKey, out var value))
 			{
-				return value == null ? string.Empty : value.ToString();
+				return value.ToString();
 			}
 
 			return string.Empty;
-#nullable disable
 		}
 
 		public virtual string GetValueFromEditorConfig(string diagnosticId, string settingKey)

@@ -69,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, SyntaxToken violation)
 		{
 			// Report the location of the nearest SyntaxNode.
-			Location loc = violation.Parent?.GetLocation();
+			Location loc = violation.Parent?.GetLocation() ?? violation.GetLocation();
 			var lineNumber = loc.GetLineSpan().StartLinePosition.Line + 1;
 			context.ReportDiagnostic(Diagnostic.Create(Rule, loc, lineNumber));
 		}
