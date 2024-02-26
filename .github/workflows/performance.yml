@@ -46,6 +46,7 @@ jobs:
           dotnet_diagnostic.CA1845.severity = none
           dotnet_diagnostic.CA1847.severity = none
           dotnet_diagnostic.CA1852.severity = none
+          dotnet_diagnostic.CA1866.severity = none
           dotnet_diagnostic.IDE0008.severity = none
           dotnet_diagnostic.IDE0010.severity = none
           dotnet_diagnostic.IDE0025.severity = none
@@ -59,6 +60,7 @@ jobs:
           dotnet_diagnostic.IDE0200.severity = none
           dotnet_diagnostic.IDE0260.severity = none
           dotnet_diagnostic.IDE0290.severity = none
+          dotnet_diagnostic.IDE0300.severity = none
           dotnet_diagnostic.PH2006.severity = none
           dotnet_diagnostic.PH2015.severity = none
           dotnet_diagnostic.SYSLIB1045.severity = none
