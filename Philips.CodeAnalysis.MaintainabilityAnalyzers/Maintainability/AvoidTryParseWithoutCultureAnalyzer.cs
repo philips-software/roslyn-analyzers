@@ -25,11 +25,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidTryParseWithoutCultureSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
 	{
 		private const string TryParseMethodName = @"TryParse";
-		private static readonly HashSet<string> CultureParameterTypes = new()
-		{
+		private static readonly HashSet<string> CultureParameterTypes =
+		[
 			@"IFormatProvider",
 			@"CultureInfo"
-		};
+		];
 
 		public override void Analyze()
 		{

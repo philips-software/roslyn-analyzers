@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Common
 		public virtual HashSet<string> InitializeExceptions(string exceptionsFile, string diagnosticId)
 		{
 			ExceptionsOptions = LoadExceptionsOptions(diagnosticId);
-			HashSet<string> exceptions = new();
+			HashSet<string> exceptions = [];
 			if (ExceptionsOptions.ShouldUseExceptionsFile)
 			{
 				exceptions = LoadExceptions(exceptionsFile);
@@ -54,12 +54,12 @@ namespace Philips.CodeAnalysis.Common
 				}
 			}
 
-			return new HashSet<string>();
+			return [];
 		}
 
 		public virtual HashSet<string> Convert(SourceText text)
 		{
-			HashSet<string> result = new();
+			HashSet<string> result = [];
 			foreach (TextLine line in text.Lines)
 			{
 				_ = result.Add(line.ToString());
@@ -106,7 +106,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns></returns>
 		public virtual IReadOnlyList<string> GetValuesFromEditorConfig(string diagnosticId, string settingKey)
 		{
-			List<string> values = new();
+			List<string> values = [];
 			var value = GetValueFromEditorConfig(diagnosticId, settingKey);
 
 			foreach (var v in value.Split(','))

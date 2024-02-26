@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -14,7 +13,6 @@ using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
 namespace Philips.CodeAnalysis.Benchmark
 {
-	[ExcludeFromCodeCoverage]
 	public static class Program
 	{
 		public static void Main()
@@ -23,7 +21,6 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[ExcludeFromCodeCoverage]
 	public class InputDataSet
 	{
 		public string Folder { get; set; }
@@ -35,7 +32,6 @@ namespace Philips.CodeAnalysis.Benchmark
 		}
 	}
 
-	[ExcludeFromCodeCoverage]
 	[SimpleJob(launchCount: LaunchCount, warmupCount: WarmupCount, targetCount: TargetCount)]
 	public class DuplicationDetectorBenchmark
 	{
@@ -104,15 +100,15 @@ namespace Philips.CodeAnalysis.Benchmark
 		[Benchmark]
 		public void OriginalHashParameters()
 		{
-			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus1, Modulus1);
+			DuplicateDetector library = new();
+			TestDictionary(library, BaseModulus1, Modulus1);
 		}
 
 		[Benchmark]
 		public void BiggerPrimes()
 		{
-			DuplicateDetector _library = new();
-			TestDictionary(_library, BaseModulus2, Modulus2);
+			DuplicateDetector library = new();
+			TestDictionary(library, BaseModulus2, Modulus2);
 		}
 	}
 }

@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 	public class AvoidInlineNewSyntaxNodeAction : SyntaxNodeAction<ObjectCreationExpressionSyntax>
 	{
-		private static readonly HashSet<string> AllowedMethods = new() { StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan" };
+		private static readonly HashSet<string> AllowedMethods = [StringConstants.ToStringMethodName, StringConstants.ToListMethodName, StringConstants.ToArrayMethodName, "AsSpan"];
 
 		public override void Analyze()
 		{

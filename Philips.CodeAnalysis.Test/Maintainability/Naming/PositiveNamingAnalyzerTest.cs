@@ -1,5 +1,6 @@
 ﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,6 +17,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new PositiveNamingAnalyzer();
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.PositiveNaming.ToId()}.negative_words", @"pistol");
 		}
 
 		[TestMethod]
@@ -46,6 +52,24 @@ class Foo
 ";
 
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AdditionalTermNegativeField()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test(int a)
+	{
+		bool pistolHandle;
+	}
+}
+";
+
+			await VerifyDiagnostic(template, DiagnosticId.PositiveNaming).ConfigureAwait(false);
 		}
 
 		[TestMethod]

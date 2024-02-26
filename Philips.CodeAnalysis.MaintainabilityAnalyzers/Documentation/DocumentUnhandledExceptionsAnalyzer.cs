@@ -34,11 +34,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				return;
 			}
 
-			IReadOnlyDictionary<string, string> aliases = Helper.ForNamespaces.GetUsingAliases(Node);
+			NamespaceResolver aliases = Helper.ForNamespaces.GetUsingAliases(Node);
 
 			IEnumerable<InvocationExpressionSyntax> invocations = Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
 			ExceptionWalker walker = new();
-			List<string> unhandledExceptions = new();
+			List<string> unhandledExceptions = [];
 			foreach (InvocationExpressionSyntax invocation in invocations)
 			{
 				IEnumerable<string> newExceptions = walker.UnhandledFromInvocation(invocation, aliases, Context.SemanticModel);

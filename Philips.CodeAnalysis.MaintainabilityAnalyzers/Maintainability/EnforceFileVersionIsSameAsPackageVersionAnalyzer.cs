@@ -63,12 +63,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private Version SetRevisionToZeroIfMissing(Version version)
 		{
-			Version sanitizedVersion = version;
-			if (version.Revision < 0)
-			{
-				sanitizedVersion = new Version(version.Major, version.Minor, version.Build, 0);
-			}
-			return sanitizedVersion;
+			var build = Math.Max(0, version.Build);
+			var revision = Math.Max(0, version.Revision);
+			return new Version(version.Major, version.Minor, build, revision);
 		}
 
 		private string RemoveVersionSuffix(string version)

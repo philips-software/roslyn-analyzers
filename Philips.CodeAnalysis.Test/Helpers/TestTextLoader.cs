@@ -10,7 +10,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 {
 	public class TestTextLoader : TextLoader
 	{
-		private readonly Dictionary<DocumentId, string> _textDocuments = new();
+		private readonly Dictionary<DocumentId, string> _textDocuments = [];
 
 		public void Register(DocumentId documentId, string content)
 		{

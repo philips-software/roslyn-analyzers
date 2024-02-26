@@ -1,7 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -28,15 +28,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			var memberName = memberAccessExpression.Expression.ToString();
-			var name = memberAccessExpression.Name.ToString();
+			NamespaceResolver resolver = Helper.ForNamespaces.GetUsingAliases(Node);
+			var name = memberAccessExpression.Name.Identifier.Text;
 
-			if (memberName == @"Thread" && name == @"Sleep")
+			if (resolver.IsOfType(memberAccessExpression, "System.Threading", "Thread") && name == @"Sleep")
 			{
-				var classDeclaration = (ClassDeclarationSyntax)Context.Node.Parent.Parent.Parent.Parent;
-				SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-				if (Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _) &&
-					(Context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is IMethodSymbol memberSymbol) && memberSymbol.ToString().StartsWith("System.Threading.Thread"))
+				TypeDeclarationSyntax typeDeclaration = Context.Node.Ancestors().OfType<TypeDeclarationSyntax>().FirstOrDefault();
+				SyntaxList<AttributeListSyntax> classAttributeList = typeDeclaration!.AttributeLists;
+				if (!Helper.ForAttributes.HasAttribute(classAttributeList, Context, MsTestFrameworkDefinitions.TestClassAttribute, out _))
 				{
 					Location location = Node.GetLocation();
 					ReportDiagnostic(location);

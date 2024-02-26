@@ -8,14 +8,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Check if documentation is updated
     steps:
-      - uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # ratchet:actions/checkout@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v3
         with:
           fetch-depth: 0  # OR "2" -> To retrieve the preceding commit.
 
       - name: Documentation check
+        env:
+          BRANCH: ${{github.head_ref}}
+          TARGET: ${{github.base_ref}}
         run: |
-          BRANCH=${{github.head_ref}}
-          TARGET=${{github.base_ref}}
           echo "Pull request on $BRANCH to target $TARGET"
           if [[ -z "$TARGET" ]]
           then

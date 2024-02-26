@@ -106,6 +106,18 @@ public class Foo
 }
 ";
 
+		private const string CorrectNotImplementedException = @"
+public class Foo
+{
+    /// <summary> Helpful text. </summary>
+    /// <exception cref=""NotImplementedException"">
+    public void MethodA(int num)
+    {
+        throw new NotImplementedException();
+    }
+}
+";
+
 		private const string WrongNoArguments = @"
 public class Foo
 {
@@ -122,10 +134,10 @@ public class Foo
 public class Foo
 {
     /// <summary> Helpful text. </summary>
-    /// <exception cref=""NotImplementedException"">
+    /// <exception cref=""ArgumentException"">
     protected override DiagnosticResult GetExpectedDiagnostic(int expectedLineNumberErrorOffset = 0, int expectedColumnErrorOffset = 0)
     {
-        throw new System.NotImplementedException();
+        throw new System.ArgumentException();
     }
 }
 ";
@@ -138,7 +150,8 @@ public class Foo
 		 DataRow(CorrectWithProperty, DisplayName = nameof(CorrectWithProperty)),
 		 DataRow(CorrectWithMethod, DisplayName = nameof(CorrectWithMethod)),
 		 DataRow(CorrectInterpolatedString, DisplayName = nameof(CorrectInterpolatedString)),
-		 DataRow(CorrectAddStatement, DisplayName = nameof(CorrectAddStatement))]
+		 DataRow(CorrectAddStatement, DisplayName = nameof(CorrectAddStatement)),
+		 DataRow(CorrectNotImplementedException, DisplayName = nameof(CorrectNotImplementedException))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)
 		{

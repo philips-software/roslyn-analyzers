@@ -14,11 +14,11 @@ namespace Philips.CodeAnalysis.Common.Inspection
 		private const int VirtualCallOpcode = 0x6F;
 		private const int NewObjectCallOpcode = 0x73;
 		private readonly List<CallTreeNode> _children;
-		private static readonly Dictionary<string, CallTreeNode> Cache = new();
+		private static readonly Dictionary<string, CallTreeNode> Cache = [];
 
 		public CallTreeNode(MethodDefinition method, CallTreeNode parent)
 		{
-			_children = new();
+			_children = [];
 			Method = method;
 			Parent = parent;
 		}

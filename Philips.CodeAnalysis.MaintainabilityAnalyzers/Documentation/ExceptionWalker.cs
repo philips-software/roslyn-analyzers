@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{ StringConstants.GetExceptionForIoErrno, new [] { StringConstants.IoException, StringConstants.FileNotFoundException, StringConstants.DirectoryNotFoundException, StringConstants.PathTooLongException, StringConstants.UnauthorizedException } }
 		};
 
-		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, IReadOnlyDictionary<string, string> aliases, SemanticModel semanticModel)
+		public IEnumerable<string> UnhandledFromInvocation(InvocationExpressionSyntax invocation, NamespaceResolver aliases, SemanticModel semanticModel)
 		{
 			IEnumerable<string> unhandledExceptions = Array.Empty<string>();
 			ISymbol invokedSymbol = semanticModel.GetSymbolInfo(invocation).Symbol;
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			IEnumerable<TryStatementSyntax> tryStatements = invocation.Ancestors().OfType<TryStatementSyntax>();
 			foreach (TryStatementSyntax tryStatement in tryStatements)
 			{
-				IEnumerable<string> handledExceptionTypes = tryStatement.Catches.Select(cat => cat.Declaration?.Type.GetFullName(aliases));
+				IEnumerable<string> handledExceptionTypes = tryStatement.Catches.Select(cat => aliases.GetDealiasedName(cat.Declaration?.Type));
 				unhandledExceptions = handledExceptionTypes.Any(ex => ex == StringConstants.SystemException) ? Array.Empty<string>() : unhandledExceptions.Except(handledExceptionTypes);
 			}
 
@@ -75,7 +75,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			IEnumerable<string> lastOpenExceptions = Array.Empty<string>();
 			foreach (CallTreeNode node in iterator)
 			{
-				HashSet<string> openExceptions = new();
+				HashSet<string> openExceptions = [];
 				if (TrySkipMethod(node, out MethodBody body) || TryGetFromCache(node, ref lastOpenExceptions))
 				{
 					continue;
@@ -173,7 +173,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private string GetFullName(ISymbol symbol)
 		{
-			List<string> namespaces = new();
+			List<string> namespaces = [];
 			INamespaceSymbol ns = symbol.ContainingNamespace;
 			while (ns != null && !string.IsNullOrEmpty(ns.Name))
 			{
