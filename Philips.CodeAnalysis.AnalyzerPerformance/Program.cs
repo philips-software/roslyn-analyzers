@@ -60,17 +60,13 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 				Records.Sort();
 				foreach (AnalyzerPerformanceRecord record in Records)
 				{
-					if (record == null || record.Package == null || record.Analyzer == null)
+					if (record == null)
 					{
 						continue;
 					}
 
-					var package = record.Package.Length > MaxPackageNameLength
-						? record.Package[..MaxPackageNameLength] + Ellipsis
-						: record.Package;
-					var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength
-						? record.Analyzer[..MaxAnalyzerNameLength] + Ellipsis
-						: record.Analyzer;
+					var package = record.Package != null ? LimitStringLength(record.Package, MaxPackageNameLength) : string.Empty;
+					var analyzer = record.Analyzer != null ? LimitStringLength(record.Analyzer, MaxAnalyzerNameLength) : string.Empty;
 					Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
 				}
 			}
@@ -90,6 +86,13 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 					Records.Add(record);
 				}
 			}
+		}
+
+		private static string LimitStringLength(string value, int maxLength)
+		{
+			return value.Length > maxLength
+				? value[..maxLength] + Ellipsis
+				: value;
 		}
 	}
 }
