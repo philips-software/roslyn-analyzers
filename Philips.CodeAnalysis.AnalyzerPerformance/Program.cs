@@ -29,7 +29,6 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 
 			foreach (BaseNode node in buildRoot.Children)
 			{
-				Console.WriteLine($"Considering logger node: {node.Title}");
 				if (node is NamedNode { Name: @"Analyzer Summary" } namedNode)
 				{
 					AnalyzePackages(namedNode);
@@ -41,12 +40,15 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerPackageNode in namedNode.Children)
 			{
-				Console.WriteLine($"Analyzer node: {analyzerPackageNode.Title}");
 				if (analyzerPackageNode is Folder namedAnalyzerPackageFolder &&
 					(string.IsNullOrEmpty(_filter) || namedAnalyzerPackageFolder.Name.Contains(_filter)))
 				{
-					Console.WriteLine($"Found analyzer node match: {namedAnalyzerPackageFolder.Name}");
+					Console.WriteLine($"Found analyzer node match to measure performance for: {namedAnalyzerPackageFolder.Name}");
 					AnalyzerItems(namedAnalyzerPackageFolder);
+				}
+				else
+				{
+					Console.WriteLine($"Analyzer node which is NOT measured: {analyzerPackageNode.Title}");
 				}
 			}
 			OutputResults();
@@ -83,8 +85,10 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 		{
 			foreach (BaseNode analyzerMessage in namedAnalyzerPackageFolder.Children)
 			{
+				Console.WriteLine($"Consider: {analyzerMessage.Title}");
 				if (analyzerMessage is Item item)
 				{
+					Console.WriteLine($"Item: {item.Name} = {item.Text}");
 					var record = AnalyzerPerformanceRecord.TryParse(item.Name, item.Text);
 					Records.Add(record);
 				}
