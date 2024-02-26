@@ -11,7 +11,13 @@ namespace Philips.CodeAnalysis.Common
 	public class DocumentationHelper
 	{
 		private const string ExceptionElementName = "exception";
+		private readonly Helper _helper;
 		private readonly List<XmlElementSyntax> _xmlElements = [];
+
+		internal DocumentationHelper(Helper helper)
+		{
+			_helper = helper;
+		}
 
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
@@ -23,18 +29,7 @@ namespace Philips.CodeAnalysis.Common
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if (doc == default)
 			{
-				if (node is MethodDeclarationSyntax method)
-				{
-					doc = method.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is PropertyDeclarationSyntax prop)
-				{
-					doc = prop.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is TypeDeclarationSyntax type)
-				{
-					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
+				doc = _helper.ForModifiers.GetModifiers(node)[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 			}
 			if (doc != default)
 			{
