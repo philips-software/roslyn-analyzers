@@ -13,6 +13,7 @@ namespace Philips.CodeAnalysis.Common
 			ForConstructors = new ConstructorSyntaxHelper();
 			ForGeneratedCode = new GeneratedCodeDetector(this);
 			ForLiterals = new LiteralHelper();
+			ForModifiers = new ModifiersHelper();
 			ForNamespaces = new NamespacesHelper();
 			ForTests = new TestHelper(this);
 			ForTypes = new TypesHelper();
@@ -28,6 +29,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public LiteralHelper ForLiterals { get; }
 
+		public ModifiersHelper ForModifiers { get; }
+
 		public NamespacesHelper ForNamespaces { get; }
 
 		public TestHelper ForTests { get; }
@@ -36,7 +39,7 @@ namespace Philips.CodeAnalysis.Common
 
 		public DocumentationHelper ForDocumentationOf(SyntaxNode node)
 		{
-			return new DocumentationHelper(node);
+			return new DocumentationHelper(this, node);
 		}
 	}
 }

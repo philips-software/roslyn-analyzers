@@ -37,10 +37,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Make sure it's part of a statement that we know how to handle.
 			// For example, we do not currently handle method expressions (ie =>)
 			StatementSyntax fullExistingExpressionSyntax = expressionNode?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<ReturnStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<IfStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<WhileStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<ReturnStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			return fullExistingExpressionSyntax == null ? null : expressionNode;
 		}

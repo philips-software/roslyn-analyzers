@@ -3,7 +3,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.Test.Helpers;
 
@@ -12,6 +11,8 @@ namespace Philips.CodeAnalysis.Test.Common
 	[TestClass]
 	public class HelperTest
 	{
+		private readonly CodeFixHelper _helper = new();
+
 		[DataTestMethod]
 		[DataRow("private static readonly", false),
 		 DataRow("private static", false),
@@ -45,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			MemberDeclarationSyntax memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
-			var isActualCallable = memberDeclaration.IsCallableFromOutsideClass();
+			var isActualCallable = _helper.ForModifiers.IsCallableFromOutsideClass(memberDeclaration);
 
 			// Assert
 			Assert.AreEqual(isExpectedCallable, isActualCallable);

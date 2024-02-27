@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 		{
 			_ = Optional(Node)
 				.Filter((m) => m.ReturnsVoid())
-				.Filter((m) => !m.IsOverridden())
+				.Filter((m) => !Helper.ForModifiers.IsOverridden(m))
 				.Select((m) => m.CreateDiagnostic(Rule))
 				.Iter(Context.ReportDiagnostic);
 		}
