@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Common
 			ForLiterals = new LiteralHelper();
 			ForNamespaces = new NamespacesHelper();
 			ForTests = new TestHelper(this);
-			ForTypes = new TypesHelper(this);
+			ForTypes = new TypesHelper();
 		}
 
 		public AssembliesHelper ForAssemblies { get; }
