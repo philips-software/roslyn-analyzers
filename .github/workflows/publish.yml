@@ -28,7 +28,7 @@ jobs:
             - 'Philips.CodeAnalysis.${{ matrix.package }}/**'
             
     - name: Download artifact
-      uses: actions/download-artifact@87c55149d96e628cc2ef7e6fc2aab372015aec85 #v4
+      uses: actions/download-artifact@8caf195ad4b1dee92908e23f56eeb0696f1dd42d #v4
       with:
         name: Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }}
 
