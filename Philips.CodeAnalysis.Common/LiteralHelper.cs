@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 			else
 			{
-				if (expression is TypeOfExpressionSyntax typeOfExpression && typeOfExpression.Type is PredefinedTypeSyntax)
+				if (expression is TypeOfExpressionSyntax { Type: PredefinedTypeSyntax })
 				{
 					// return true for typeof(<static type>)
 					return true;
