@@ -69,6 +69,24 @@ class Foo
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task IgnoreExecutingAssembly()
+		{
+			var givenText = @"
+using System.Reflection;
+[TestClass]
+class Foo 
+{{
+  public void Foo()
+  {{
+    var assembly = Assembly.GetExecutingAssembly();
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidAssemblyGetEntryAssemblyAnalyzer();
