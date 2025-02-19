@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			IReadOnlyList<DirectiveTriviaSyntax> regions = visitor.Regions;
 
-			IReadOnlyDictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
+			Dictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
 
 			if (regionLocations.Count == 0)
 			{
