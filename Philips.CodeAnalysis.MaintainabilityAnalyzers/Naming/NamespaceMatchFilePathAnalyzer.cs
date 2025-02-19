@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	{
 		private const string Title = @"Namespace matches File Path";
 		private const string MessageFormat = @"Namespace and File Path must match";
-		private const string Description = @"In order to prevent polution of namespaces, and maintainability of namespaces, the File Path and Namespace must match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
+		private const string Description = @"In order to prevent pollution of namespaces, and maintainability of namespaces, the File Path and Namespace must match. To include subfolders in the namespace, add 'dotnet_code_quality.PH2006.folder_in_namespace = true' to the .editorconfig.";
 
 		public NamespaceMatchFilePathAnalyzer()
 			: base(DiagnosticId.NamespaceMatchFilePath, Title, MessageFormat, Description, Categories.Naming)
