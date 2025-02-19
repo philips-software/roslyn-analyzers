@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
 
-		private static readonly char[] separator = new[] { ' ' };
+		private static readonly char[] separator = [' '];
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
