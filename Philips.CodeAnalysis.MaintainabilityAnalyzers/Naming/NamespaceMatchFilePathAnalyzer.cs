@@ -77,10 +77,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var folder = Path.GetDirectoryName(path);
 			var allowedNamespace = folder.Replace(Path.DirectorySeparatorChar, '.');
-			if (allowedNamespace.EndsWith("."))
-			{
-				allowedNamespace = allowedNamespace.Substring(0, allowedNamespace.Length - 1);
-			}
 			return allowedNamespace.EndsWith(ns, StringComparison.OrdinalIgnoreCase);
 		}
 
