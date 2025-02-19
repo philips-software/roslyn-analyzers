@@ -229,8 +229,8 @@ public class Foo
     /// <summary> Helpful text. </summary>
     /// <exception cref=""System.ArgumentException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
