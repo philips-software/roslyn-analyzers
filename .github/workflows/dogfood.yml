@@ -69,6 +69,6 @@ jobs:
           dotnet build ./Philips.CodeAnalysis.MoqAnalyzers/Philips.CodeAnalysis.MoqAnalyzers.csproj --configuration Debug --framework netstandard2.0 -consoleloggerparameters:NoSummary -verbosity:quiet
           dotnet build ./Philips.CodeAnalysis.MsTestAnalyzers/Philips.CodeAnalysis.MsTestAnalyzers.csproj --configuration Debug --framework netstandard2.0 -consoleloggerparameters:NoSummary -verbosity:quiet
           dotnet build ./Philips.CodeAnalysis.SecurityAnalyzers/Philips.CodeAnalysis.SecurityAnalyzers.csproj --configuration Debug --framework netstandard2.0 -consoleloggerparameters:NoSummary -verbosity:quiet
-          dotnet build ./Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj --configuration Debug --framework net7.0 -consoleloggerparameters:NoSummary -verbosity:quiet
-          dotnet build ./Philips.CodeAnalysis.Benchmark/Philips.CodeAnalysis.Benchmark.csproj --configuration Debug --framework net7.0 -consoleloggerparameters:NoSummary -verbosity:quiet
-          dotnet build ./Philips.CodeAnalysis.AnalyzerPerformance/Philips.CodeAnalysis.AnalyzerPerformance.csproj --configuration Debug --framework net7.0 -consoleloggerparameters:NoSummary -verbosity:quiet
+          dotnet build ./Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj --configuration Debug --framework net8.0 -consoleloggerparameters:NoSummary -verbosity:quiet
+          dotnet build ./Philips.CodeAnalysis.Benchmark/Philips.CodeAnalysis.Benchmark.csproj --configuration Debug --framework net8.0 -consoleloggerparameters:NoSummary -verbosity:quiet
+          dotnet build ./Philips.CodeAnalysis.AnalyzerPerformance/Philips.CodeAnalysis.AnalyzerPerformance.csproj --configuration Debug --framework net8.0 -consoleloggerparameters:NoSummary -verbosity:quiet
