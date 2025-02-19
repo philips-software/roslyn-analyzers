@@ -128,13 +128,13 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception cref=""System.ArgumentException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
     /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
@@ -159,13 +159,13 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception cref=""System.ArgumentException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
     /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
@@ -203,13 +203,13 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception cref=""System.ArgumentException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
     /// <exception cref=""System.ArgumentNullException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
@@ -228,13 +228,13 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception cref=""System.ArgumentException""></exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.ArgumentNullException""></exception>
     /// <exception cref=""System.ArgumentOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
@@ -293,11 +293,11 @@ public class Foo
     /// <exception cref=""System.ArgumentNullException"">abc</exception>
     /// <exception cref=""System.IO.PathTooLongException"">abc</exception>
     /// <exception cref=""System.IO.DirectoryNotFoundException"">abc</exception>
-    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.NotSupportedException""></exception>
+    /// <exception cref=""System.IndexOutOfRangeException""></exception>
     /// <exception cref=""System.FormatException""></exception>
-    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.OutOfMemoryException""></exception>
+    /// <exception cref=""System.Globalization.CultureNotFoundException""></exception>
     /// <exception cref=""System.Runtime.InteropServices.ExternalException""></exception>
     /// <exception cref=""System.ObjectDisposedException""></exception>
     /// <exception cref=""System.InvalidOperationException""></exception>
