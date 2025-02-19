@@ -64,8 +64,7 @@ public static class Bar
 
 			if (isError)
 			{
-				DiagnosticResult[] expectedErrors = 
-				{
+				DiagnosticResult[] expectedErrors = {
 					new()
 					{
 						Id = DiagnosticId.MockRaiseArgumentsMustMatchEvent.ToId(),
