@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			if (Records.Any())
+			if (Records.Count != 0)
 			{
 				Records.Sort();
 				foreach (AnalyzerPerformanceRecord record in Records)
