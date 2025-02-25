@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			ReportDiagnostic(location);
 		}
 
-		private static bool IsNamespacePartOfPath(string ns, string path)
+		private bool IsNamespacePartOfPath(string ns, string path)
 		{
 			var nodes = path.Split(Path.DirectorySeparatorChar);
 			for (var i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return false;
 		}
 
-		private static bool DoesFilePathEndWithNamespace(string ns, string path)
+		private bool DoesFilePathEndWithNamespace(string ns, string path)
 		{
 			var folder = Path.GetDirectoryName(path);
 			var allowedNamespace = folder.Replace(Path.DirectorySeparatorChar, '.');
