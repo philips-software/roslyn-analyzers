@@ -42,6 +42,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[DataTestMethod]
+		[DataRow("Philips.Test", "C:\\Philips.Test\\MyTest.cs")]
+		[DataRow("Philips.Test", "C:\\Philips.Test\\")]
+		[DataRow("Philips.Test.Src", "C:\\Philips.Test\\Src\\MyTest.cs")]
+		[DataRow("Philips.Test.Test", "C:\\Philips.Test\\Test\\MyTest.cs")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CorrectNamespaceNoDiagnostic(string ns, string path)
+		{
+			var sanitizedPath = path.Replace('\\', Path.DirectorySeparatorChar);
+			var code = string.Format(ClassString, ns);
+			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Production\\code\\MyTest.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Production\\MyAnalyzer.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.TestFramework\\MyHelper.cs")]

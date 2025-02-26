@@ -123,11 +123,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var indexOfDot = newNameSuffix.LastIndexOf('.');
 				if (indexOfDot != -1)
 				{
-					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1);
 				}
 
 				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() +
-								newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+								newNameSuffix.Substring(1);
 				niceName = @"resultOf" + newNameSuffix;
 			}
 

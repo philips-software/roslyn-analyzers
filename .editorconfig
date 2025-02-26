@@ -92,6 +92,7 @@ dotnet_diagnostic.CA1822.severity = none
 # Requested overload not present in .NET standard
 dotnet_diagnostic.CA1866.severity = none
 dotnet_diagnostic.CA1862.severity = none
+dotnet_diagnostic.CA1863.severity = none
 
 dotnet_diagnostic.CA1724.severity = error
 dotnet_diagnostic.CA1825.severity = error
