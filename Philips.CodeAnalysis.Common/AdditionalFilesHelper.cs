@@ -87,7 +87,7 @@ namespace Philips.CodeAnalysis.Common
 
 			if (analyzerConfigOptions.TryGetValue(settingKey, out var value))
 			{
-				return value.ToString();
+				return value;
 			}
 
 			return string.Empty;

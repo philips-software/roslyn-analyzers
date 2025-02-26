@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 			IEnumerable<IFieldSymbol> itsFields = containingType.GetMembers().OfType<IFieldSymbol>();
 
-			if (itsFields is not null && itsFields.Count() > 1 && itsFields.Any(f => f.Type.Name == convertTo.Name))
+			if (itsFields is not null && itsFields.Any(f => f.Type.Name == convertTo.Name))
 			{
 				Location loc = Node.Type.GetLocation();
 				ReportDiagnostic(loc);
