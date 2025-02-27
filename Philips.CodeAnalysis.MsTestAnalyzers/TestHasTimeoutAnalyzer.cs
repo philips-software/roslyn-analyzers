@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -81,7 +80,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
 					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && !allowed.IsEmpty)
 					{
-						var firstAllowedTimeout = allowed.First();
+						var firstAllowedTimeout = allowed[0];
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
 					}
 
@@ -112,7 +111,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 					if (TryGetAllowedTimeouts(category, out ImmutableList<string> allowed) && !allowed.IsEmpty)
 					{
-						var firstAllowed = allowed.First();
+						var firstAllowed = allowed[0];
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowed);
 					}
 

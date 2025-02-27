@@ -19,23 +19,12 @@ namespace Philips.CodeAnalysis.Common
 			return node.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor is BaseMethodDeclarationSyntax or PropertyDeclarationSyntax or TypeDeclarationSyntax);
 		}
 
-		internal DocumentationHelper(SyntaxNode node)
+		internal DocumentationHelper(CodeFixHelper helper, SyntaxNode node)
 		{
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if (doc == default)
 			{
-				if (node is MethodDeclarationSyntax method)
-				{
-					doc = method.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is PropertyDeclarationSyntax prop)
-				{
-					doc = prop.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is TypeDeclarationSyntax type)
-				{
-					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
+				doc = helper.ForModifiers.GetModifiers(node)[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 			}
 			if (doc != default)
 			{
