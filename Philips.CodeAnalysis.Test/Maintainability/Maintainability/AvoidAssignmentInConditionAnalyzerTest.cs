@@ -88,6 +88,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
+		private const string CorrectAnonymousObject = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Program {
+            public bool Main() {
+                object obj;
+                if (obj == new{ BLAH = blah1 })) {
+                    // Do nothing
+                }
+            }
+
+            private string theProperty { get; private set; }
+        }
+    }";
 
 		private const string Violation = @"
     namespace AssignmentInConditionUnitTests {
@@ -113,12 +126,13 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
-		 DataRow(Correct, DisplayName = "Correct"),
-		 DataRow(CorrectTernary, DisplayName = "CorrectTernary"),
-		 DataRow(CorrectUsing, DisplayName = "CorrectUsing"),
-		 DataRow(CorrectInitializer, DisplayName = "CorrectInitializer"),
-		 DataRow(CorrectPropertyAssignment, DisplayName = "CorrectPropertyAssignment"),
-		 DataRow(CorrectNullCoalescing, DisplayName = "CorrectNullCoalescing")]
+		 DataRow(Correct, DisplayName = nameof(Correct)),
+		 DataRow(CorrectTernary, DisplayName = nameof(CorrectTernary)),
+		 DataRow(CorrectUsing, DisplayName = nameof(CorrectUsing)),
+		 DataRow(CorrectInitializer, DisplayName = nameof(CorrectInitializer)),
+		 DataRow(CorrectPropertyAssignment, DisplayName = nameof(CorrectPropertyAssignment)),
+		 DataRow(CorrectNullCoalescing, DisplayName = nameof(CorrectNullCoalescing)),
+		 DataRow(CorrectAnonymousObject, DisplayName = nameof(CorrectAnonymousObject))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
