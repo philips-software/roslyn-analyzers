@@ -13,6 +13,7 @@ namespace Philips.CodeAnalysis.Common.Inspection
 	{
 		private readonly CallTreeNode _root;
 		private readonly HashSet<CallTreeNode> _visited;
+		private readonly object _syncRoot = new();
 
 		public CallTreeIteratorDeepestFirst(CallTreeNode root)
 		{
@@ -28,19 +29,23 @@ namespace Philips.CodeAnalysis.Common.Inspection
 			{
 				return false;
 			}
-			// Check for start status.
-			if (Current is null)
-			{
-				Current = FindDeepest(_root);
-				_ = _visited.Add(Current);
-				return true;
-			}
 
-			CallTreeNode nextSibling = Current.GetNextSibling();
-			CallTreeNode next = FindDeepest(nextSibling) ?? BackTrack();
-			Current = next;
-			_ = _visited.Add(Current);
-			return Current != null;
+			lock (_syncRoot)
+			{
+				// Check for start status.
+				if (Current is null)
+				{
+					Current = FindDeepest(_root);
+					_ = _visited.Add(Current);
+					return true;
+				}
+
+				CallTreeNode nextSibling = Current.GetNextSibling();
+				CallTreeNode next = FindDeepest(nextSibling) ?? BackTrack();
+				Current = next;
+				_ = _visited.Add(Current);
+				return Current != null;
+			}
 		}
 
 		public void Reset()
