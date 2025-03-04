@@ -37,10 +37,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Make sure it's part of a statement that we know how to handle.
 			// For example, we do not currently handle method expressions (ie =>)
 			StatementSyntax fullExistingExpressionSyntax = expressionNode?.FirstAncestorOrSelf<ExpressionStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<ReturnStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<IfStatementSyntax>();
-			fullExistingExpressionSyntax ??= expressionNode.FirstAncestorOrSelf<WhileStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<ReturnStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<LocalDeclarationStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<IfStatementSyntax>();
+			fullExistingExpressionSyntax ??= expressionNode?.FirstAncestorOrSelf<WhileStatementSyntax>();
 
 			return fullExistingExpressionSyntax == null ? null : expressionNode;
 		}
@@ -123,11 +123,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var indexOfDot = newNameSuffix.LastIndexOf('.');
 				if (indexOfDot != -1)
 				{
-					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1, newNameSuffix.Length - indexOfDot - 1);
+					newNameSuffix = newNameSuffix.Substring(indexOfDot + 1);
 				}
 
 				newNameSuffix = newNameSuffix[0].ToString().ToUpperInvariant() +
-								newNameSuffix.Substring(1, newNameSuffix.Length - 1);
+								newNameSuffix.Substring(1);
 				niceName = @"resultOf" + newNameSuffix;
 			}
 

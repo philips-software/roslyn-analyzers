@@ -24,6 +24,7 @@ namespace Philips.CodeAnalysis.Common
 		private readonly HashSet<ITypeSymbol> _allowedTypes;
 		private readonly HashSet<INamespaceSymbol> _allowedNamespaces;
 		private readonly HashSet<string> _allowedLines;
+		private readonly object _syncRoot;
 
 		internal AllowedSymbols(Compilation compilation)
 		{
@@ -32,6 +33,7 @@ namespace Philips.CodeAnalysis.Common
 			_allowedTypes = [];
 			_allowedNamespaces = [];
 			_allowedLines = [];
+			_syncRoot = new();
 		}
 
 		/// <summary>
@@ -75,7 +77,10 @@ namespace Philips.CodeAnalysis.Common
 			}
 			else
 			{
-				_ = _allowedLines.Add(line);
+				lock (_syncRoot)
+				{
+					_ = _allowedLines.Add(line);
+				}
 			}
 		}
 
@@ -98,21 +103,27 @@ namespace Philips.CodeAnalysis.Common
 		{
 			INamedTypeSymbol requestedType = requested.ContainingType;
 			INamespaceSymbol requestedNamespace = requestedType.ContainingNamespace;
-			return
-				_allowedMethods.Contains(requested) ||
-				_allowedTypes.Contains(requestedType) ||
-				_allowedNamespaces.Contains(requestedNamespace) ||
-				MatchesAnyLine(requestedNamespace, requestedType, requested);
+			lock (_syncRoot)
+			{
+				return
+					_allowedMethods.Contains(requested) ||
+					_allowedTypes.Contains(requestedType) ||
+					_allowedNamespaces.Contains(requestedNamespace) ||
+					MatchesAnyLine(requestedNamespace, requestedType, requested);
+			}
 		}
 
 		public bool IsAllowed(INamedTypeSymbol requested)
 		{
 			INamespaceSymbol requestedNamespace = requested.ContainingNamespace;
-			return
-				_allowedLines.Contains(requested.Name) ||
-				_allowedTypes.Contains(requested) ||
-				_allowedNamespaces.Contains(requestedNamespace) ||
-				MatchesAnyLine(requestedNamespace, requested, null);
+			lock (_syncRoot)
+			{
+				return
+					_allowedLines.Contains(requested.Name) ||
+					_allowedTypes.Contains(requested) ||
+					_allowedNamespaces.Contains(requestedNamespace) ||
+					MatchesAnyLine(requestedNamespace, requested, null);
+			}
 		}
 
 		/// <summary>
@@ -121,22 +132,25 @@ namespace Philips.CodeAnalysis.Common
 		/// <exception cref="InvalidDataException">When an invalid type is supplied.</exception>
 		private void RegisterSymbol(ISymbol symbol)
 		{
-			if (symbol is IMethodSymbol methodSymbol)
+			lock (_syncRoot)
 			{
-				_ = _allowedMethods.Add(methodSymbol);
-			}
-			else if (symbol is ITypeSymbol typeSymbol)
-			{
-				_ = _allowedTypes.Add(typeSymbol);
-			}
-			else if (symbol is INamespaceSymbol namespaceSymbol)
-			{
-				_ = _allowedNamespaces.Add(namespaceSymbol);
-			}
-			else
-			{
-				throw new InvalidDataException(
-					"Invalid symbol type found: " + symbol.MetadataName);
+				if (symbol is IMethodSymbol methodSymbol)
+				{
+					_ = _allowedMethods.Add(methodSymbol);
+				}
+				else if (symbol is ITypeSymbol typeSymbol)
+				{
+					_ = _allowedTypes.Add(typeSymbol);
+				}
+				else if (symbol is INamespaceSymbol namespaceSymbol)
+				{
+					_ = _allowedNamespaces.Add(namespaceSymbol);
+				}
+				else
+				{
+					throw new InvalidDataException(
+						"Invalid symbol type found: " + symbol.MetadataName);
+				}
 			}
 		}
 
@@ -144,22 +158,27 @@ namespace Philips.CodeAnalysis.Common
 		{
 			var nsName = ns.ToString();
 			var typeName = type.Name;
-			return _allowedLines.Any(line =>
+			lock (_syncRoot)
 			{
-				var parts = line.Split('.');
-				if (parts.Length == 1)
+				return _allowedLines.Any(line =>
 				{
-					return (method == null) ? line == typeName : line == method.Name;
-				}
-				else if (parts.Length == 2)
-				{
-					return (parts[0] == Wildcard) ? parts[1] == typeName : parts[0] == nsName && parts[1] == typeName;
-				}
-				else
-				{
-					return MatchesFullNamespace(parts, nsName, typeName, method);
-				}
-			});
+					var parts = line.Split('.');
+					if (parts.Length == 1)
+					{
+						return (method == null) ? line == typeName : line == method.Name;
+					}
+					else if (parts.Length == 2)
+					{
+						return (parts[0] == Wildcard)
+							? parts[1] == typeName
+							: parts[0] == nsName && parts[1] == typeName;
+					}
+					else
+					{
+						return MatchesFullNamespace(parts, nsName, typeName, method);
+					}
+				});
+			}
 		}
 
 		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)

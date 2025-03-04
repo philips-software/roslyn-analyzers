@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if (!parent.IsCallableFromOutsideClass())
+			if (!Helper.ForModifiers.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
