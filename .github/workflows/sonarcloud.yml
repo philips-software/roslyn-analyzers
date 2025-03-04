@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@387ac29b308b003ca37ba93a6cab5eb57c8f5f93 # ratchet:actions/setup-java@v3
+        uses: actions/setup-java@99b8673ff64fbf99d8d325f52d9a5bdedb8483e9 # ratchet:actions/setup-java@v3
         with:
           java-version: '17'
           distribution: temurin
@@ -22,7 +22,7 @@ jobs:
         with:
           dotnet-version: |
             3.1.x
-            7.0.x
+            8.0.x
       - name: Install Tools
         run: |
           dotnet tool update dotnet-sonarscanner --global

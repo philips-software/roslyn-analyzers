@@ -12,36 +12,29 @@ namespace Philips.CodeAnalysis.Common
 	{
 		private const string ExceptionElementName = "exception";
 		private readonly List<XmlElementSyntax> _xmlElements = [];
+		private readonly object _syncRoot = new();
 
 		public static SyntaxNode FindAncestorThatCanHaveDocumentation(SyntaxNode node)
 		{
 			return node.AncestorsAndSelf().FirstOrDefault(ancestor => ancestor is BaseMethodDeclarationSyntax or PropertyDeclarationSyntax or TypeDeclarationSyntax);
 		}
 
-		internal DocumentationHelper(SyntaxNode node)
+		internal DocumentationHelper(CodeFixHelper helper, SyntaxNode node)
 		{
 			SyntaxTrivia doc = node.GetLeadingTrivia().FirstOrDefault(IsCommentTrivia);
 			if (doc == default)
 			{
-				if (node is MethodDeclarationSyntax method)
-				{
-					doc = method.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is PropertyDeclarationSyntax prop)
-				{
-					doc = prop.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
-				else if (node is TypeDeclarationSyntax type)
-				{
-					doc = type.Modifiers[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
-				}
+				doc = helper.ForModifiers.GetModifiers(node)[0].LeadingTrivia.FirstOrDefault(IsCommentTrivia);
 			}
 			if (doc != default)
 			{
 				ExistingDocumentation = doc.GetStructure() as DocumentationCommentTriviaSyntax;
 				if (ExistingDocumentation != null)
 				{
-					_xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
+					lock (_syncRoot)
+					{
+						_xmlElements = ExistingDocumentation.ChildNodes().OfType<XmlElementSyntax>().ToList();
+					}
 				}
 			}
 		}
@@ -59,12 +52,18 @@ namespace Philips.CodeAnalysis.Common
 			XmlElementStartTagSyntax exceptionStart = SyntaxFactory.XmlElementStartTag(exceptionXmlName, attributesList);
 			XmlElementEndTagSyntax exceptionEnd = SyntaxFactory.XmlElementEndTag(exceptionXmlName);
 			XmlElementSyntax xmlException = SyntaxFactory.XmlElement(exceptionStart, exceptionEnd);
-			_xmlElements.Add(xmlException);
+			lock (_syncRoot)
+			{
+				_xmlElements.Add(xmlException);
+			}
 		}
 
 		public IEnumerable<string> GetExceptionCodeReferences()
 		{
-			return _xmlElements.Where(IsExceptionElement).Select(GetCrefAttributeValue);
+			lock (_syncRoot)
+			{
+				return _xmlElements.Where(IsExceptionElement).Select(GetCrefAttributeValue);
+			}
 		}
 
 		public DocumentationCommentTriviaSyntax CreateDocumentation()
@@ -74,12 +73,16 @@ namespace Philips.CodeAnalysis.Common
 			XmlTextSyntax endOfLine = SyntaxFactory.XmlText("\r\n");
 			DocumentationCommentTriviaSyntax comment = ExistingDocumentation;
 			var content = new List<XmlNodeSyntax>();
-			foreach (XmlElementSyntax xmlElement in _xmlElements)
+			lock (_syncRoot)
 			{
-				content.Add(startOfLine);
-				content.Add(xmlElement);
-				content.Add(endOfLine);
+				foreach (XmlElementSyntax xmlElement in _xmlElements)
+				{
+					content.Add(startOfLine);
+					content.Add(xmlElement);
+					content.Add(endOfLine);
+				}
 			}
+
 			var contentSyntax = new SyntaxList<XmlNodeSyntax>(content);
 			return comment.WithContent(contentSyntax);
 		}
