@@ -33,7 +33,6 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -51,7 +50,6 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 
@@ -70,7 +68,6 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -88,7 +85,6 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -117,7 +113,6 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -136,7 +131,6 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -155,7 +149,6 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
@@ -174,7 +167,6 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 
