@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedAbsoluteWindowsPathsAsync()
+		public async Task CatchesHardCodedAbsoluteWindowsPaths()
 		{
 			const string template = @"
 using System;
@@ -33,12 +33,11 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedAbsoluteWindowsPathWithDoubleSlashAsync()
+		public async Task CatchesHardCodedAbsoluteWindowsPathWithDoubleSlash()
 		{
 			const string template = @"
 using System;
@@ -51,13 +50,12 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedPathsRegardlessOfCaseAsync()
+		public async Task CatchesHardCodedPathsRegardlessOfCase()
 		{
 			const string template = @"
 using System;
@@ -70,12 +68,28 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedPaths2Async()
+		public async Task CatchesHardCodedPathsAsUnc()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""\\server\share\BIN\EXAMPLE.XML"";
+	}
+}
+";
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesHardCodedPathsAsAbsolute()
 		{
 			const string template = @"
 using System;
@@ -99,12 +113,11 @@ class Foo
 }
 ";
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedPathsWithSpaceAsync()
+		public async Task CatchesHardCodedPathsWithSpace()
 		{
 			const string template = @"
 using System;
@@ -118,12 +131,29 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedPathsWithSpecialCharactersAsync()
+		public async Task CatchesHardCodedPathsInLongStringLiterals()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""c:\users\test in a veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery long string literal"";
+	}
+}
+";
+
+			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CatchesHardCodedPathsWithSpecialCharacters()
 		{
 			const string template = @"
 using System;
@@ -137,13 +167,12 @@ class Foo
 ";
 
 			await VerifyDiagnostic(template, DiagnosticId.NoHardcodedPaths).ConfigureAwait(false);
-
 		}
 
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchNormalStringAsync()
+		public async Task DoesNotCatchNormalString()
 		{
 			const string template = @"
 using System;
@@ -162,7 +191,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchShortStringAsync()
+		public async Task DoesNotCatchShortString()
 		{
 			const string template = @"
 using System;
@@ -180,7 +209,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchEmptyStringAsync()
+		public async Task DoesNotCatchEmptyString()
 		{
 			const string template = @"
 using System;
@@ -198,7 +227,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchRelativePathAsync()
+		public async Task DoesNotCatchRelativePath()
 		{
 			const string template = @"
 using system;
@@ -215,7 +244,7 @@ class foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchPathsInCommentsAsync()
+		public async Task DoesNotCatchPathsInComments()
 		{
 			const string template = @"
 using System;
@@ -236,7 +265,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DoesNotCatchPathsInTestCodeAsync()
+		public async Task DoesNotCatchPathsInTestCode()
 		{
 			const string template = @"
 using System;
