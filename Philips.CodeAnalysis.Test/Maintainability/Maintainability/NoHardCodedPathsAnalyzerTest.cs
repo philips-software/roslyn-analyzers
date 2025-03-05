@@ -93,7 +93,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task CatchesHardCodedPaths2()
+		public async Task CatchesHardCodedPathsAsAbsolute()
 		{
 			const string template = @"
 using System;
