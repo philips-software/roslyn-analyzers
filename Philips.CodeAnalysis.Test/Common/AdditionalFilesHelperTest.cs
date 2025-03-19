@@ -53,6 +53,23 @@ namespace Philips.CodeAnalysis.Test.Common
 			CollectionAssert.AreEqual(content, actual.ToArray());
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void GetInvalidValueFromEditorConfigShouldReturnEmptyList()
+		{
+			// Arrange
+			var diagnosticId = "PH0000";
+			var key = "DummyKey";
+			var content = new[] { "Dummy1", "Dummy2" };
+			var settings = new Dictionary<string, string> { { $"dotnet_code_quality.invalid.{key}", string.Join(",", content) } };
+
+			Helper helper = new(CreateOptions(settings), CreateCompilation());
+			// Act
+			IReadOnlyList<string> actual = helper.ForAdditionalFiles.GetValuesFromEditorConfig(diagnosticId, key);
+			// Assert
+			Assert.AreEqual(0, actual.Count);
+		}
+
 		[DataTestMethod]
 		[DataRow(false, true)]
 		[DataRow(false, false)]

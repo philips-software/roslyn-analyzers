@@ -2,7 +2,6 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Philips.CodeAnalysis.Common
@@ -16,7 +15,7 @@ namespace Philips.CodeAnalysis.Common
 
 			var analyzerParts = analyzerAndId[0].Split('.');
 			var package = analyzerParts[2];
-			var analyzer = analyzerParts.Last();
+			var analyzer = analyzerParts[analyzerParts.Length - 1];
 
 			var timePart = analyzerAndId[analyzerAndId.Length - 2];
 			var seconds = analyzerAndId[analyzerAndId.Length - 1];

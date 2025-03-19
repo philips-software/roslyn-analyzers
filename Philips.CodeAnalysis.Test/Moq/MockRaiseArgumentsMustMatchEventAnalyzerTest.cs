@@ -64,11 +64,10 @@ public static class Bar
 
 			if (isError)
 			{
-				DiagnosticResult[] expectedErrors = new[]
-				{
-					new DiagnosticResult()
+				DiagnosticResult[] expectedErrors = {
+					new()
 					{
-						Id= DiagnosticId.MockRaiseArgumentsMustMatchEvent.ToId(),
+						Id = DiagnosticId.MockRaiseArgumentsMustMatchEvent.ToId(),
 						Location = new DiagnosticResultLocation(15),
 						Severity = DiagnosticSeverity.Error,
 					}

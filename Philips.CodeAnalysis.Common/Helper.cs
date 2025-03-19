@@ -5,16 +5,10 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Philips.CodeAnalysis.Common
 {
-	public class Helper : CodeFixHelper
+	public class Helper(AnalyzerOptions options, Compilation compilation) : CodeFixHelper
 	{
-		public Helper(AnalyzerOptions options, Compilation compilation)
-		{
-			ForAllowedSymbols = new AllowedSymbols(compilation);
-			ForAdditionalFiles = new AdditionalFilesHelper(options, compilation);
-		}
+		public AllowedSymbols ForAllowedSymbols { get; } = new AllowedSymbols(compilation);
 
-		public AllowedSymbols ForAllowedSymbols { get; }
-
-		public AdditionalFilesHelper ForAdditionalFiles { get; }
+		public AdditionalFilesHelper ForAdditionalFiles { get; } = new AdditionalFilesHelper(options, compilation);
 	}
 }

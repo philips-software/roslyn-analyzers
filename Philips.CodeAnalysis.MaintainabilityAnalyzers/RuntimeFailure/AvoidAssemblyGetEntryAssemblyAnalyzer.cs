@@ -31,9 +31,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			}
 
 			var memberAccessExpression = (MemberAccessExpressionSyntax)Node.Expression;
-			NamespaceResolver resolver = Helper.ForNamespaces.GetUsingAliases(Node);
 			var name = memberAccessExpression.Name.Identifier.Text;
-			if (resolver.IsOfType(memberAccessExpression, AssemblyNamespace, AssemblyTypeName) && name == "GetEntryAssembly")
+			if (name != "GetEntryAssembly")
+			{
+				return;
+			}
+
+			NamespaceResolver resolver = Helper.ForNamespaces.GetUsingAliases(Node);
+			if (resolver.IsOfType(memberAccessExpression, AssemblyNamespace, AssemblyTypeName))
 			{
 				Location location = memberAccessExpression.Expression.GetLocation();
 				ReportDiagnostic(location);

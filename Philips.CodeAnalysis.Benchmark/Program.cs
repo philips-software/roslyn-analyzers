@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.Benchmark
 			{
 				foreach (var dir in Array.Empty<string>())
 				{
-					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = new();
+					Dictionary<MethodDeclarationSyntax, IEnumerable<SyntaxToken>> tokens = [];
 
 					foreach (var file in Directory.EnumerateFiles(dir, "*.cs", SearchOption.AllDirectories))
 					{
