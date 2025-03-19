@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				yield break;
 			}
 
-			ArgumentSyntax[] arguments = new[] { argumentList.Arguments[0], argumentList.Arguments[1] };
+			ArgumentSyntax[] arguments = [argumentList.Arguments[0], argumentList.Arguments[1]];
 			foreach (ArgumentSyntax syntax in arguments.Where(InConditionalAccess))
 			{
 				Location location = syntax.GetLocation();

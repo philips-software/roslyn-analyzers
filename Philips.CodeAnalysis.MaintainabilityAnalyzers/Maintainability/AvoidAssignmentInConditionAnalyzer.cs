@@ -56,7 +56,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void CheckDescendantHasNoAssignment(SyntaxNodeAnalysisContext context, SyntaxNode node)
 		{
-			if (node.DescendantTokens().Any(child => child.IsKind(SyntaxKind.EqualsToken)))
+			if (
+				node.DescendantTokens().Any(child => child.IsKind(SyntaxKind.EqualsToken)) &&
+				!node.DescendantNodes().Any(node => node.IsKind(SyntaxKind.AnonymousObjectCreationExpression)))
 			{
 				Location location = node.GetLocation();
 				context.ReportDiagnostic(Diagnostic.Create(Rule, location));

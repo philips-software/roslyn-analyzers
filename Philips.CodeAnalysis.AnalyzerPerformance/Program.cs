@@ -7,7 +7,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
 	public static class Program
 	{
-		private static readonly List<AnalyzerPerformanceRecord> Records = new();
+		private static readonly List<AnalyzerPerformanceRecord> Records = [];
 		private static string _filter = string.Empty;
 		private const int MaxPackageNameLength = 24;
 		private const int MaxAnalyzerNameLength = 45;
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			if (Records.Any())
+			if (Records.Count != 0)
 			{
 				Records.Sort();
 				foreach (AnalyzerPerformanceRecord record in Records)
