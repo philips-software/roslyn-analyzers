@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using LanguageExt;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -46,13 +45,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AssertType(SyntaxNodeAnalysisContext context, TypeSyntax type, MemberDeclarationSyntax parent)
 		{
-			if (!parent.IsCallableFromOutsideClass())
+			if (!Helper.ForModifiers.IsCallableFromOutsideClass(parent))
 			{
 				// Private members are allowed to return mutable collections.
 				return;
 			}
 
-			var typeName = Helper.ForTypes.GetTypeNameWithoutGeneric(type);
+			NamespaceResolver resolver = Helper.ForNamespaces.GetUsingAliases(type);
+			var typeName = resolver.GetDealiasedName(type);
 
 			NamespaceIgnoringComparer comparer = new();
 			if (type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))

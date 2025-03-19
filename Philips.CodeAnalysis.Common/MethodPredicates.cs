@@ -8,11 +8,6 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class MethodPredicates
 	{
-		public static bool IsOverridden(this MethodDeclarationSyntax methodDeclarationSyntax)
-		{
-			return methodDeclarationSyntax.Modifiers.Any(SyntaxKind.OverrideKeyword);
-		}
-
 		public static bool ReturnsVoid(this MethodDeclarationSyntax methodDeclarationSyntax)
 		{
 			if (methodDeclarationSyntax.ReturnType is PredefinedTypeSyntax predefinedTypeSyntax)
@@ -20,11 +15,6 @@ namespace Philips.CodeAnalysis.Common
 				return predefinedTypeSyntax.Keyword.IsKind(SyntaxKind.VoidKeyword);
 			}
 			return false;
-		}
-
-		public static bool IsCallableFromOutsideClass(this MemberDeclarationSyntax method)
-		{
-			return method.Modifiers.Any(SyntaxKind.PublicKeyword) || method.Modifiers.Any(SyntaxKind.InternalKeyword) || method.Modifiers.Any(SyntaxKind.ProtectedKeyword);
 		}
 
 		public static Diagnostic CreateDiagnostic(this MethodDeclarationSyntax methodDeclarationSyntax, DiagnosticDescriptor rule)

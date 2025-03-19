@@ -136,5 +136,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidExcludeFromCodeCoverage = 2140,
 		AvoidEmptyRegions = 2141,
 		AvoidCastToString = 2142,
+		AvoidAssemblyGetEntryAssembly = 2143,
 	}
 }

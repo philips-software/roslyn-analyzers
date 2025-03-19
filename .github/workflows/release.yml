@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v3
-    - uses: dorny/paths-filter@4512585405083f25c027a35db413c2b3b9006d50 #v2.11.1
+    - uses: dorny/paths-filter@0bc4621a3135347011ad047f9ecf449bf72ce2bd #v3.0.0
       id: changes
       with:
         filters: |
@@ -30,7 +30,7 @@ jobs:
           
     - name: GitHub Tag & Release
 #      if: steps.changes.outputs.packages == 'true'
-      uses: ncipollo/release-action@6c75be85e571768fa31b40abf38de58ba0397db5 #v1.12
+      uses: ncipollo/release-action@2c591bcc8ecdcd2db72b97d6147f871fcd833ba5 #v1.14
       with:
         tag: ${{ inputs.new_tag }}
         name: Release ${{ inputs.new_tag }}

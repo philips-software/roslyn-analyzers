@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
 
-		private static readonly char[] separator = new[] { ' ' };
+		private static readonly char[] separator = [' '];
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
@@ -55,104 +55,101 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private void AnalyzeClass(SyntaxNodeAnalysisContext context)
 		{
 			var cls = context.Node as ClassDeclarationSyntax;
-			var name = cls?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => cls?.Identifier.Text);
 		}
 
 		private void AnalyzeConstructor(SyntaxNodeAnalysisContext context)
 		{
 			var constructor = context.Node as ConstructorDeclarationSyntax;
-			var name = constructor?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => constructor?.Identifier.Text);
 		}
 
 		private void AnalyzeMethod(SyntaxNodeAnalysisContext context)
 		{
 			var method = context.Node as MethodDeclarationSyntax;
-			var name = method?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => method?.Identifier.Text);
 		}
 
 		private void AnalyzeProperty(SyntaxNodeAnalysisContext context)
 		{
 			var prop = context.Node as PropertyDeclarationSyntax;
-			var name = prop?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => prop?.Identifier.Text);
 		}
 
 		private void AnalyzeField(SyntaxNodeAnalysisContext context)
 		{
 			var field = context.Node as FieldDeclarationSyntax;
-			var name = field?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => field?.Declaration.Variables.FirstOrDefault()?.Identifier.Text);
 		}
 
 		private void AnalyzeEvent(SyntaxNodeAnalysisContext context)
 		{
 			var evt = context.Node as EventFieldDeclarationSyntax;
-			var name = evt?.Declaration.Variables.FirstOrDefault()?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => evt?.Declaration.Variables.FirstOrDefault()?.Identifier.Text);
 		}
 
 		private void AnalyzeEnum(SyntaxNodeAnalysisContext context)
 		{
 			var cls = context.Node as EnumDeclarationSyntax;
-			var name = cls?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => cls?.Identifier.Text);
 		}
 
 		private void AnalyzeEnumMember(SyntaxNodeAnalysisContext context)
 		{
 			var member = context.Node as EnumMemberDeclarationSyntax;
-			var name = member?.Identifier.Text;
-			AnalyzeNamedNode(context, name);
+			AnalyzeNamedNode(context, () => member?.Identifier.Text);
 		}
 
-		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, string name)
+		private void AnalyzeNamedNode(SyntaxNodeAnalysisContext context, Func<string> nameFunc)
 		{
-			if (string.IsNullOrEmpty(name))
-			{
-				return;
-			}
-
-			var lowercaseName = name.ToLowerInvariant();
 			IEnumerable<XmlElementSyntax> xmlElements = context.Node.GetLeadingTrivia()
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
-			foreach (XmlElementSyntax xmlElement in xmlElements)
+			if (xmlElements.Any())
 			{
-				if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
+				var name = nameFunc();
+				if (string.IsNullOrEmpty(name))
 				{
-					continue;
+					return;
 				}
 
-				var content = GetContent(xmlElement);
+				var lowercaseName = name.ToLowerInvariant();
 
-				if (string.IsNullOrWhiteSpace(content))
+				foreach (XmlElementSyntax xmlElement in xmlElements)
 				{
-					Location location = xmlElement.GetLocation();
-					var diagnostic = Diagnostic.Create(EmptyRule, location);
-					context.ReportDiagnostic(diagnostic);
-					continue;
-				}
+					if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
+					{
+						continue;
+					}
 
-				// Find the 'value' in the XML documentation content by:
-				// 1. Splitting it into separate words.
-				// 2. Filtering a predefined and a configurable list of words that add no value.
-				// 3. Filter words that are part of the method name.
-				// 4. Throw a Diagnostic if no words remain. This boils down to the content only containing 'low value' words.
-				IEnumerable<string> words =
-					SplitInWords(content)
-						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
-						.Where(s => !lowercaseName.Contains(s));
+					var content = GetContent(xmlElement);
 
-				// We assume here that every remaining word adds value to the documentation text.
-				if (!words.Any())
-				{
-					var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
-					var diagnostic = Diagnostic.Create(ValueRule, loc);
-					context.ReportDiagnostic(diagnostic);
+					if (string.IsNullOrWhiteSpace(content))
+					{
+						Location location = xmlElement.GetLocation();
+						var diagnostic = Diagnostic.Create(EmptyRule, location);
+						context.ReportDiagnostic(diagnostic);
+						continue;
+					}
+
+					// Find the 'value' in the XML documentation content by:
+					// 1. Splitting it into separate words.
+					// 2. Filtering a predefined and a configurable list of words that add no value.
+					// 3. Filter words that are part of the method name.
+					// 4. Throw a Diagnostic if no words remain. This boils down to the content only containing 'low value' words.
+					IEnumerable<string> words =
+						SplitInWords(content)
+							.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
+							.Where(s => !lowercaseName.Contains(s));
+
+					// We assume here that every remaining word adds value to the documentation text.
+					if (!words.Any())
+					{
+						var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
+						var diagnostic = Diagnostic.Create(ValueRule, loc);
+						context.ReportDiagnostic(diagnostic);
+					}
 				}
 			}
 		}

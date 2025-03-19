@@ -91,4 +91,4 @@
 | [PH2139](../Documentation/Diagnostics/PH2139.md)  | Enable documentation creation                | Add XML documentation generation to the project file, to be able to see Diagnostics for XML documentation. |
 | [PH2140](../Documentation/Diagnostics/PH2140.md)  | Avoid ExcludeFromCodeCoverage attribute      | Avoid the usage of the 'ExcludeFromCodeCoverage' attribute. |
 | [PH2141](../Documentation/Diagnostics/PH2141.md)  | Avoid Empty Regions                          | Avoid writing regions that have no code inside. |
-| [PH2142](../Documentation/Diagnostics/PH2140.md)  | Avoid Casting to String                      | Avoid casting to int, use `object.ToString()` or a serialization solution instead. |
+| [PH2143](../Documentation/Diagnostics/PH2143.md)  | Avoid Assembly.GetEntryAssembly()            | Avoid using Assembly.GetEntryAssembly(), as it might give different results when your code runs under a TestRunner. |

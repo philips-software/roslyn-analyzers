@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3 # @v4.0.0
         with:
           dotnet-version: |
-            7.0.x
+            8.0.x
 
       - name: Set version
         if: ${{ inputs.new_tag }}
@@ -42,35 +42,35 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
       - name: Upload MaintainabilityAnalyzers Artifact
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
           name: Philips.CodeAnalysis.MaintainabilityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
           path: ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
 
       - name: Upload DuplicateCodeAnalyzer Artifact
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
           name: Philips.CodeAnalysis.DuplicateCodeAnalyzer-${{ inputs.new_tag }}
           retention-days: 1
           path: ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg
 
       - name: Upload MoqAnalyzers Artifact
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
           name: Philips.CodeAnalysis.MoqAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
           path: ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.nupkg
 
       - name: Upload MsTestAnalyzers Artifact
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
           name: Philips.CodeAnalysis.MsTestAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
           path: ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg
 
       - name: Upload SecurityAnalyzers Artifact
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
         with:
           name: Philips.CodeAnalysis.SecurityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1

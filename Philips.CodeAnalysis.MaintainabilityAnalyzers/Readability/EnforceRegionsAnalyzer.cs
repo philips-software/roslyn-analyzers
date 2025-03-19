@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			IReadOnlyDictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
+			Dictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
 
 			if (regionLocations.Count == 0)
 			{
@@ -259,11 +259,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (TryGetModifiers(member, true, out SyntaxTokenList modifiers))
 			{
 				Location memberLocation = member.GetLocation();
-				if (!HasAccessModifier(modifiers))
-				{
-					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
-				}
-				else if (!MemberIsPublic(modifiers))
+				if (!HasAccessModifier(modifiers) || !MemberIsPublic(modifiers))
 				{
 					CreateDiagnostic(memberLocation, context, PublicInterfaceRegion, EnforceMemberLocation);
 				}

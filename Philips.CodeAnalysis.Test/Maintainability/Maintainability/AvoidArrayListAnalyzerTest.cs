@@ -96,7 +96,7 @@ namespace AvoidArrayListTests {
 		 DataRow(WrongFieldFullNamespace, null, DisplayName = nameof(WrongFieldFullNamespace)),
 		 DataRow(WrongLocal, FixedLocal, DisplayName = nameof(WrongLocal))]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task WhenMismatchOfPlusMinusDiagnosticIsRaised(string testCode, string fixedCode)
+		public async Task WhenArrayListIsUsedDiagnosticIsRaised(string testCode, string fixedCode)
 		{
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 			if (fixedCode != null)

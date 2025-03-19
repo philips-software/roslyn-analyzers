@@ -84,7 +84,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (blockOfInterest.Statements.Contains(ourStatement))
 			{
 				statementOfInterestIndex = blockOfInterest.Statements.IndexOf(ourStatement) + offset;
-				StatementSyntax statementOfInterest = blockOfInterest.Statements.ElementAt(statementOfInterestIndex);
+				StatementSyntax statementOfInterest = blockOfInterest.Statements[statementOfInterestIndex];
 				return (statementOfInterest, statementOfInterestIndex);
 			}
 

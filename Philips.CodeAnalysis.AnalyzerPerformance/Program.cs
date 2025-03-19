@@ -7,7 +7,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 {
 	public static class Program
 	{
-		private static readonly List<AnalyzerPerformanceRecord> Records = new();
+		private static readonly List<AnalyzerPerformanceRecord> Records = [];
 		private static string _filter = string.Empty;
 		private const int MaxPackageNameLength = 24;
 		private const int MaxAnalyzerNameLength = 45;
@@ -55,12 +55,24 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			Console.WriteLine(@"| Id | Package | Analyzer | Time |");
 			Console.WriteLine(@"| -- | ------- | -------- | ---- |");
 
-			Records.Sort();
-			foreach (AnalyzerPerformanceRecord record in Records)
+			if (Records.Count != 0)
 			{
-				var package = record.Package.Length > MaxPackageNameLength ? record.Package[..MaxPackageNameLength] + Ellipsis : record.Package;
-				var analyzer = record.Analyzer.Length > MaxAnalyzerNameLength ? record.Analyzer[..MaxAnalyzerNameLength] + Ellipsis : record.Analyzer;
-				Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
+				Records.Sort();
+				foreach (AnalyzerPerformanceRecord record in Records)
+				{
+					if (record == null)
+					{
+						continue;
+					}
+
+					var package = record.Package != null ? LimitStringLength(record.Package, MaxPackageNameLength) : string.Empty;
+					var analyzer = record.Analyzer != null ? LimitStringLength(record.Analyzer, MaxAnalyzerNameLength) : string.Empty;
+					Console.WriteLine($"| {record.Id} | {package} | {analyzer} | {record.DisplayTime} |");
+				}
+			}
+			else
+			{
+				Console.WriteLine("No performance data found");
 			}
 		}
 
@@ -70,10 +82,17 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				if (analyzerMessage is Item item)
 				{
-					var record = AnalyzerPerformanceRecord.TryParse(item.Name, item.Text);
+					var record = AnalyzerPerformanceRecord.TryParse(item.Title);
 					Records.Add(record);
 				}
 			}
+		}
+
+		private static string LimitStringLength(string value, int maxLength)
+		{
+			return value.Length > maxLength
+				? value[..maxLength] + Ellipsis
+				: value;
 		}
 	}
 }

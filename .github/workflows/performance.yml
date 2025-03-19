@@ -12,7 +12,7 @@ jobs:
         uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3
         with:
           dotnet-version: |
-            7.0.x
+            8.0.x
 
       - name: Build Dogfood
         run: |
@@ -46,9 +46,12 @@ jobs:
           dotnet_diagnostic.CA1845.severity = none
           dotnet_diagnostic.CA1847.severity = none
           dotnet_diagnostic.CA1852.severity = none
+          dotnet_diagnostic.CA1862.severity = none
+          dotnet_diagnostic.CA1866.severity = none
           dotnet_diagnostic.IDE0008.severity = none
           dotnet_diagnostic.IDE0010.severity = none
           dotnet_diagnostic.IDE0025.severity = none
+          dotnet_diagnostic.IDE0028.severity = none
           dotnet_diagnostic.IDE0045.severity = none
           dotnet_diagnostic.IDE0046.severity = none
           dotnet_diagnostic.IDE0055.severity = none
@@ -57,7 +60,12 @@ jobs:
           dotnet_diagnostic.IDE0072.severity = none
           dotnet_diagnostic.IDE0130.severity = none
           dotnet_diagnostic.IDE0200.severity = none
+          dotnet_diagnostic.IDE0251.severity = none
           dotnet_diagnostic.IDE0260.severity = none
+          dotnet_diagnostic.IDE0290.severity = none
+          dotnet_diagnostic.IDE0300.severity = none
+          dotnet_diagnostic.IDE0301.severity = none
+          dotnet_diagnostic.IDE0305.severity = none
           dotnet_diagnostic.PH2006.severity = none
           dotnet_diagnostic.PH2015.severity = none
           dotnet_diagnostic.SYSLIB1045.severity = none
@@ -102,7 +110,7 @@ jobs:
         
       - name: Analyze Performance
         run: |
-          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net7.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog Philips.CodeAnalysis >> PerformanceSummary.txt
+          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net8.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog Philips.CodeAnalysis >> PerformanceSummary.txt
           cat ./PerformanceSummary.txt
           cat ./PerformanceSummary.txt >> $GITHUB_STEP_SUMMARY
 

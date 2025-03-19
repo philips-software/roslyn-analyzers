@@ -9,7 +9,7 @@ namespace Philips.CodeAnalysis.Common
 {
 	public class AssembliesHelper
 	{
-		private static readonly char[] TrimCharacters = { '/', '\\' };
+		private static readonly char[] TrimCharacters = ['/', '\\'];
 
 		internal AssembliesHelper()
 		{
