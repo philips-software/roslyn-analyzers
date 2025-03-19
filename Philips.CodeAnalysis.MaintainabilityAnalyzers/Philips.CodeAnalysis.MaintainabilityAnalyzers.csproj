@@ -123,6 +123,7 @@
 	    * Introduce PH2136: Avoid duplicate strings.
       * Introduce PH2139: Enable documentation creation.
       * Introduce PH2140: Avoid ExcludeFromCodeCoverage attribute.
+      * Introduce PH2141: Avoid Empty Regions.
       * Introduce PH2142: Avoid casting to String.
       * Introduce PH2143: Avoid Assembly.GetEntryAssembly().
     </PackageReleaseNotes>

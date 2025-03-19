@@ -195,6 +195,37 @@ class Foo
 			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegion()
+		{
+			var givenText = @"
+class C {{
+  #region Some Small Region
+
+  #endregion
+}}
+";
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions, regex: EnforceRegionsAnalyzer.AvoidEmptyRegionMessageFormat, line: 3, column: 4).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidRegionInsideMethod()
+		{
+			var givenText = @"
+class C {{
+  public void LongMethod() {{
+    private int i = 0;
+    #region Inside Method
+    i++;
+    #endregion
+  }}
+}}
+";
+			await VerifySuccessfulCompilation(givenText);
+		}
+
 		[DataTestMethod]
 		[DataRow(@"#region Constants", false)]
 		[DataRow(@"#region Public Properties/Methods", false)]
