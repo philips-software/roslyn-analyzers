@@ -11,6 +11,7 @@ namespace Philips.CodeAnalysis.Common
 	{
 		private readonly Dictionary<string, string> _aliases = [];
 		private readonly List<string> _namespaces = [];
+		private readonly object _syncRoot = new();
 
 		public NamespaceResolver(SyntaxNode node)
 		{
@@ -18,13 +19,16 @@ namespace Philips.CodeAnalysis.Common
 			foreach (UsingDirectiveSyntax child in root.DescendantNodes(n => n is not TypeDeclarationSyntax)
 				.OfType<UsingDirectiveSyntax>())
 			{
-				if (child.Alias != null)
+				lock (_syncRoot)
 				{
-					_aliases.Add(child.Alias.Name.Identifier.Text, child.Name.ToString());
-				}
-				else
-				{
-					_namespaces.Add(child.Name.ToString());
+					if (child.Alias != null)
+					{
+						_aliases.Add(child.Alias.Name.Identifier.Text, child.Name.ToString());
+					}
+					else
+					{
+						_namespaces.Add(child.Name.ToString());
+					}
 				}
 			}
 		}
@@ -45,10 +49,13 @@ namespace Philips.CodeAnalysis.Common
 			var deAliasedName = GetDealiasedName(type);
 			if (!deAliasedName.Contains("."))
 			{
-				// Deep namespaces include shallower ones implicitly in C#.
-				if (_namespaces.Exists(ns => ns.Contains(expectedNamespace)))
+				lock (_syncRoot)
 				{
-					result = $"{expectedNamespace}.{deAliasedName}";
+					// Deep namespaces include shallower ones implicitly in C#.
+					if (_namespaces.Exists(ns => ns.Contains(expectedNamespace)))
+					{
+						result = $"{expectedNamespace}.{deAliasedName}";
+					}
 				}
 			}
 			else
@@ -125,10 +132,14 @@ namespace Philips.CodeAnalysis.Common
 				name = $"{left}.{right}";
 			}
 
-			if (_aliases.TryGetValue(name, out var aliased))
+			lock (_syncRoot)
 			{
-				name = aliased;
+				if (_aliases.TryGetValue(name, out var aliased))
+				{
+					name = aliased;
+				}
 			}
+
 			return name;
 		}
 

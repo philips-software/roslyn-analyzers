@@ -111,7 +111,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			private readonly int _duplicateTokenThreshold;
 			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
-			private static readonly char[] separator = new[] { ':' };
+			private static readonly char[] separator = [':'];
 
 			public CompilationAnalyzer(int duplicateTokenThreshold, Helper helper, bool shouldGenerateExceptionsFile, Diagnostic configurationError)
 			{
