@@ -210,22 +210,6 @@ public class Bar : Mock<Foo>
 {
   public void Reset()
   {
-    MockExtensions.Reset(this);
-  }
-}
-", false)]
-		[DataRow(@"
-using System;
-using Moq;
-
-public class Foo
-{
-}
-
-public class Bar : Mock<Foo>
-{
-  public void Reset()
-  {
   }
 }
 

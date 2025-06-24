@@ -48,7 +48,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsTrue(true != false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true == false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
-		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreserveMessage(string given, string expected)
 		{

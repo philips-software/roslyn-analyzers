@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -36,7 +37,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return Array.Empty<Diagnostic>();
 			}
 
-			if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
+			ISymbol symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
+			if ((symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 			{
 				return Array.Empty<Diagnostic>();
 			}

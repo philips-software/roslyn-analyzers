@@ -40,6 +40,8 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		}
 
 
+		[DataRow("[STATestMethod]", 0, true)]
+		[DataRow("[STATestMethod]", 1, false)]
 		[DataRow("[TestMethod]", 0, true)]
 		[DataRow("[TestMethod]", 1, false)]
 		[DataRow("[DataTestMethod]", 0, true)]

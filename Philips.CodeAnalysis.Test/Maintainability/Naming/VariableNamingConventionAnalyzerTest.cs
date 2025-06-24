@@ -281,7 +281,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[DataRow("Foo", "const", true)]
-		[DataRow("Foo", "const", true)]
 		[DataRow("_Foo", "const", false)]
 		[DataRow("__foo", "const", false)]
 		[DataRow("__Foo", "const", false)]
@@ -311,9 +310,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[DataRow("int i; for(i=0;i<5;i++){}", true)]
 		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
 		[DataRow("for(var i=0;i<5;i++){}", true)]
-		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataRow("for(var _i=0;i<5;i++){}", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]

@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public void Foo() {{ }}
 }}";
 
-			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]" })
+			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]", "[STATestMethod]" })
 			{
 				var text = string.Format(code, testType, modifier);
 

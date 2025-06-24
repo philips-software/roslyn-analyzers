@@ -19,11 +19,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("i", "j", false)]
 		[DataRow("i", "str2", true)]
 		[DataRow("str1", "str2", false)]
-		[DataRow("str1", "b2", false)]
-		[DataRow("i", "b2", false)]
-		[DataRow("d1", "b2", false)]
-		[DataRow("f1", "b2", false)]
-		[DataRow("x1", "b2", false)]
+		[DataRow("str1", "b2", true)]
+		[DataRow("i", "b2", true)]
+		[DataRow("d1", "b2", true)]
+		[DataRow("f1", "b2", true)]
+		[DataRow("x1", "b2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AreEqualTypesMatchTestAsync(string arg1, string arg2, bool isError)
 		{
@@ -40,13 +40,12 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
       double d1, d2;
       float f1, f2;
       byte x1, x2;
-      boolean b1, b2;
+      bool b1, b2;
       Microsoft.VisualStudio.TestTools.UnitTesting.Assert.AreEqual({0}, {1});
     }}
   }}
 }}
 ";
-
 			var givenText = string.Format(baseline, arg1, arg2);
 			var arg1Type = GetWellKnownTypeName(arg1);
 			var arg2Type = GetWellKnownTypeName(arg2);

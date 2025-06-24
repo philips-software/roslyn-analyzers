@@ -38,7 +38,7 @@ public class Tests
 	{1} void Foo() {{ }}
 }}";
 
-			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]" })
+			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]", "[STATestMethod]" })
 			{
 				var text = string.Format(code, testType, modifier);
 
