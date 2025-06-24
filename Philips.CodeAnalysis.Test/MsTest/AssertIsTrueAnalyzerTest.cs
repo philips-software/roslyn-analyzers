@@ -166,7 +166,7 @@ int i = 50;
 		[DataRow("bool value = false; Assert.IsFalse(value)")]
 		[DataRow("Assert.IsFalse(\"foo\".Contains(\"f\"))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EnsureWeDontChangeValues(string given)
+		public async Task DontChangeValues(string given)
 		{
 			await VerifyNoChange(given).ConfigureAwait(false);
 		}

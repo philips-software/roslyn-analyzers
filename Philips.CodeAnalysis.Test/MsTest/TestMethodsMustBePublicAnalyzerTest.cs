@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("public", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustBeInTestClassAsync(string modifier, bool isCorrect)
+		public async Task MustBeInTestClassAsync(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 

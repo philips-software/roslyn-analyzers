@@ -47,7 +47,7 @@ public class DerivedDataSourceAttribute : Attribute, ITestDataSource
 		[DataRow("[DataTestMethod]", 0, true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustBeInTestClassAsync(string testType, int parameters, bool isCorrect)
+		public async Task MustBeInTestClassAsync(string testType, int parameters, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -144,7 +144,7 @@ public class Tests
 		[DynamicData(nameof(DataRowVariants), DynamicDataSourceType.Method)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustBeInTestClass2Async(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
+		public async Task MustBeInTestClass2Async(string testType, int parameters, int dataRowParameters, bool isDynamicData, bool hasDisplayName, bool isCorrect)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

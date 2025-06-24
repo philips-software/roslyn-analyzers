@@ -211,7 +211,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			}
 		}
 
-		private void CheckLine(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int actualLinePosition, int? expectedLine, string startOrEnd)
+		private void CheckLine(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int? actualLinePosition, int? expectedLine, string startOrEnd)
 		{
 			// Only check line position if there is an actual line in the real diagnostic
 			if (actualLinePosition > 0 && expectedLine.HasValue)
@@ -222,7 +222,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			}
 		}
 
-		private void CheckColumn(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int actualCharacterPosition, int? expectedColumn, string startOrEnd)
+		private void CheckColumn(DiagnosticAnalyzer analyzer, Diagnostic diagnostic, int? actualCharacterPosition, int? expectedColumn, string startOrEnd)
 		{
 			// Only check column position if there is an actual column position in the real diagnostic
 			if (actualCharacterPosition > 0 &&

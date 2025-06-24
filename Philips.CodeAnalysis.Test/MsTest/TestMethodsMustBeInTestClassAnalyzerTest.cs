@@ -56,7 +56,7 @@ public class DerivedTestMethod : TestMethod
 		[DataRow(false, "[TestClass]", "object", "abstract", "[ClassCleanup]")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustBeInTestClassAsync(bool isError, string testClassAttribute, string baseClass, string classQualifier, string testType)
+		public async Task MethodsMustBeInTestClassAsync(bool isError, string testClassAttribute, string baseClass, string classQualifier, string testType)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
