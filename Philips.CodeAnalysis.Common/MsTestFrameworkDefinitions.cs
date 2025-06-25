@@ -4,10 +4,12 @@ namespace Philips.CodeAnalysis.Common
 {
 	public static class MsTestFrameworkDefinitions
 	{
+		public static readonly AttributeDefinition StaTestClassAttribute = new MsTestAttributeDefinition("STATestClass");
 		public static readonly AttributeDefinition TestClassAttribute = new MsTestAttributeDefinition("TestClass");
 		public static readonly AttributeDefinition TestInitializeAttribute = new MsTestAttributeDefinition("TestInitialize");
 		public static readonly AttributeDefinition TestCleanupAttribute = new MsTestAttributeDefinition("TestCleanup");
 		public static readonly AttributeDefinition TestMethodAttribute = new MsTestAttributeDefinition("TestMethod");
+		public static readonly AttributeDefinition StaTestMethodAttribute = new MsTestAttributeDefinition("STATestMethod");
 		public static readonly AttributeDefinition DataTestMethodAttribute = new MsTestAttributeDefinition("DataTestMethod");
 		public static readonly AttributeDefinition ClassInitializeAttribute = new MsTestAttributeDefinition("ClassInitialize");
 		public static readonly AttributeDefinition ClassCleanupAttribute = new MsTestAttributeDefinition("ClassCleanup");

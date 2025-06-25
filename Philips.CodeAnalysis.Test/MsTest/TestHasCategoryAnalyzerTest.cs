@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
 		[DataRow(@"[Owner(""MK""), TestMethod]", 15)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeTestAsync(string test, int expectedColumn)
+		public async Task HasCategoryAttributeTestAsync(string test, int expectedColumn)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -52,7 +52,7 @@ class Foo
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeTest2Async(string category, bool isError)
+		public async Task HasCategoryAttributeTest2Async(string category, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -73,7 +73,7 @@ class Foo
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeIndirectionTestAsync(string category, bool isError)
+		public async Task HasCategoryAttributeIndirectionTestAsync(string category, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -99,7 +99,7 @@ class Foo
 		[DataRow(@"Foo1", false)]
 		[DataRow(@"Foo2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
+		public async Task HasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;

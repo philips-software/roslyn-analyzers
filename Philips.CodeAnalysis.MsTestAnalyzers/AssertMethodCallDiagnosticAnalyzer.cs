@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,7 +24,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				foreach (Diagnostic diagnostic in Analyze(context, invocationExpression, memberAccessExpression))
 				{
-					if ((context.SemanticModel.GetSymbolInfo(memberAccessExpression).Symbol is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
+					SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(memberAccessExpression);
+					ISymbol symbolInfo = symbol.Symbol ?? symbol.CandidateSymbols.FirstOrDefault();
+					if ((symbolInfo is not IMethodSymbol memberSymbol) || !memberSymbol.ToString().StartsWith(StringConstants.AssertFullyQualifiedName))
 					{
 						return;
 					}

@@ -28,13 +28,13 @@ namespace Philips.CodeAnalysis.Common
 				return false;
 			}
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return _helper.ForAttributes.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return _helper.ForAttributes.HasAnyAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, MsTestFrameworkDefinitions.StaTestClassAttribute);
 		}
 
 		public bool IsTestClass(ClassDeclarationSyntax classDeclaration, SyntaxNodeAnalysisContext context)
 		{
 			SyntaxList<AttributeListSyntax> classAttributeList = classDeclaration.AttributeLists;
-			return _helper.ForAttributes.HasAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, out _);
+			return _helper.ForAttributes.HasAnyAttribute(classAttributeList, context, MsTestFrameworkDefinitions.TestClassAttribute, MsTestFrameworkDefinitions.StaTestClassAttribute);
 		}
 
 		public bool IsTestMethod(MethodDeclarationSyntax method, SyntaxNodeAnalysisContext context)
