@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor EmptyRule = new(DiagnosticId.EmptyXmlComments.ToId(), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords =
-			new(new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" });
+			[.. new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" }];
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			var line = Helper.ForAdditionalFiles.GetValueFromEditorConfig(ValueRule.Id, @"additional_useless_words");
-			additionalUselessWords = new HashSet<string>(SplitFromConfig(line));
+			additionalUselessWords = [.. SplitFromConfig(line)];
 			context.RegisterSyntaxNodeAction(AnalyzeClass, SyntaxKind.ClassDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeConstructor, SyntaxKind.ConstructorDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);

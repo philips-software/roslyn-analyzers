@@ -102,7 +102,7 @@ public class Tests
 		[DataRow("", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustNotHaveDataRowsAsync(string arg, bool isError)
+		public async Task MustNotHaveDataRowsAsync(string arg, bool isError)
 		{
 			const string template = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
