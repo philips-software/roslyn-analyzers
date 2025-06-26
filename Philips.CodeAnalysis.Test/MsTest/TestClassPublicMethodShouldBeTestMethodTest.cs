@@ -57,6 +57,7 @@ class Foo
 		}
 
 		[DataTestMethod]
+		[DataRow(@"[STATestClass]", true)]
 		[DataRow(@"[TestClass]", true)]
 		[DataRow(@"", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -79,6 +80,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow(@"[DerivedTestMethod]", false)]
 		[DataRow(@"[TestMethod]", false)]
+		[DataRow(@"[STATestMethod]", false)]
 		[DataRow(@"[DataTestMethod]", false)]
 		[DataRow(@"[AssemblyInitialize()]", false)]
 		[DataRow(@"[TestCleanup()]", false)]
