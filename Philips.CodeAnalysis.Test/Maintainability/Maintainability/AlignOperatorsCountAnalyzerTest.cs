@@ -127,25 +127,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
-		private const string CorrectNumberOfPlusEqual = @"
-    namespace AssignmentInConditionUnitTests {
-        public class Number {
-			private int n;
-            public static Number operator +(Number num1, Number num2)
-            {
-                return num1.n + num2.n;
-            }
-            public static Number operator -(Number num1, Number num2)
-            {
-                return num1.n - num2.n;
-            }
-            public static Number operator ==(Number num1, Number num2)
-            {
-                return num1.n == num2.n;
-            }
-        }
-    }";
-
 		private const string CorrectOnlyEqual = @"
     namespace AssignmentInConditionUnitTests {
         public class Number {
@@ -273,7 +254,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectNumberOfGreaterLessThan, DisplayName = nameof(CorrectNumberOfGreaterLessThan)),
 		 DataRow(CorrectNumberOfGreaterLessThanOrEqual, DisplayName = nameof(CorrectNumberOfGreaterLessThanOrEqual)),
 		 DataRow(CorrectNumberOfRightLeftShift, DisplayName = nameof(CorrectNumberOfRightLeftShift)),
-		 DataRow(CorrectNumberOfPlusEqual, DisplayName = nameof(CorrectNumberOfPlusEqual)),
 		 DataRow(CorrectOnlyEqual, DisplayName = nameof(CorrectOnlyEqual))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggeredAsync(string testCode)

@@ -20,7 +20,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("protected", true)]
 		[DataRow("public", false)]
 		[DataRow("private", false)]
-		[DataRow("private", false)]
 		[DataRow("internal", false)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]

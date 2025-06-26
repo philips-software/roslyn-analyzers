@@ -14,7 +14,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			{
 				TestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestMethodAttribute.FullName),
 				DataTestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.DataTestMethodAttribute.FullName),
+				StaTestMethodSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.StaTestMethodAttribute.FullName),
 				TestClassSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.TestClassAttribute.FullName),
+				StaTestClassSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.StaTestClassAttribute.FullName),
 				ClassInitializeSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.ClassInitializeAttribute.FullName),
 				ClassCleanupSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.ClassCleanupAttribute.FullName),
 				AssemblyInitializeSymbol = compilation.GetTypeByMetadataName(MsTestFrameworkDefinitions.AssemblyInitializeAttribute.FullName),
@@ -45,8 +47,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private MsTestAttributeDefinitions() { }
 
+		public INamedTypeSymbol StaTestMethodSymbol { get; private set; }
 		public INamedTypeSymbol TestMethodSymbol { get; private set; }
 		public INamedTypeSymbol DataTestMethodSymbol { get; private set; }
+		public INamedTypeSymbol StaTestClassSymbol { get; private set; }
 		public INamedTypeSymbol TestClassSymbol { get; private set; }
 		public INamedTypeSymbol ClassInitializeSymbol { get; private set; }
 		public INamedTypeSymbol ClassCleanupSymbol { get; private set; }

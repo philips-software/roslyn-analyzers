@@ -96,7 +96,6 @@ Instruction i = method.Body.Instructions[0];
 		[DataTestMethod]
 		[DataRow("", "")]
 		[DataRow("y=string.Empty", "")]
-		[DataRow("", "")]
 		[DataRow("y=string.Empty", "int t2 = y.Length")]
 		[DataRow("if (y==null) int b = 0", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
