@@ -20,6 +20,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 	/// </summary>
 	public abstract partial class CodeFixVerifier : DiagnosticVerifier
 	{
+		private static readonly char[] NewLineCharacters = new[] { '\n', '\r' };
+
 		/// <summary>
 		/// Returns the codefix being tested (C#) - to be implemented in non-abstract class
 		/// </summary>
@@ -151,8 +153,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 			// After applying all of the code fixes, compare the resulting string to the inputted one
 			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
-			var actualSourceLines = actualSource.Split(Environment.NewLine);
-			var expectedSourceLines = expectedSource.Split(Environment.NewLine);
+			var actualSourceLines = actualSource.Split(NewLineCharacters, StringSplitOptions.RemoveEmptyEntries);
+			var expectedSourceLines = expectedSource.Split(NewLineCharacters, StringSplitOptions.RemoveEmptyEntries);
 			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
 			for (var i = 0; i < actualSourceLines.Length; i++)
 			{
