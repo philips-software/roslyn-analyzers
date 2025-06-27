@@ -29,17 +29,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				.FirstOrDefault(r => r.FullSpan.Contains(diagnosticSpan));
 		}
 
-		protected override async Task<Document> ApplyFix(Document document, RegionDirectiveTriviaSyntax regionNode, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, RegionDirectiveTriviaSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
 			// Find matching #endregion
-			SyntaxToken token = regionNode.ParentTrivia.Token;
+			SyntaxToken token = node.ParentTrivia.Token;
 			SyntaxTriviaList triviaList = token.LeadingTrivia;
 			var regionIndex = triviaList
 				.Select((t, i) => new { Trivia = t, Index = i })
-				.FirstOrDefault(x => x.Trivia.HasStructure && x.Trivia.GetStructure() == regionNode)?.Index ?? -1;
+				.FirstOrDefault(x => x.Trivia.HasStructure && x.Trivia.GetStructure() == node)?.Index ?? -1;
 
 			if (regionIndex == -1)
 			{
@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 
 			// Remove full lines from #region to #endregion
-			var spanStart = regionNode.GetLocation().SourceSpan.Start;
+			var spanStart = node.GetLocation().SourceSpan.Start;
 			var spanEnd = endRegion.GetLocation().SourceSpan.End;
 
 			var fullText = text.ToString();
