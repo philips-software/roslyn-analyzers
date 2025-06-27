@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(DiagnosticId.EnforceRegions.ToId(), EnforceRegionTitle,
 			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
-		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
+		private static readonly DiagnosticDescriptor EnforceNonDuplicateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
 		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
@@ -62,7 +62,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember, AvoidEmpty);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDuplicateRegion, NonCheckedMember, AvoidEmpty);
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
@@ -89,6 +89,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			// In obscure cases, the pair may start with #endregion due to mismatches
 			if (regions[0].Kind() == SyntaxKind.EndRegionDirectiveTrivia)
+			{
+				return;
+			}
+			// In nested cases, just exit
+			if (regions[1].Kind() == SyntaxKind.RegionDirectiveTrivia)
 			{
 				return;
 			}
@@ -150,7 +155,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (regionLocations.Remove(regionName))
 				{
 					Location memberLocation = region.DirectiveNameToken.GetLocation();
-					CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
+					CreateDiagnostic(memberLocation, context, regionName, EnforceNonDuplicateRegion);
 				}
 				else
 				{

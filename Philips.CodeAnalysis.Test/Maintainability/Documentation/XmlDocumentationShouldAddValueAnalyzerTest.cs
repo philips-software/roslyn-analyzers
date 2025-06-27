@@ -57,6 +57,31 @@ public class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DefaultWhiteSpaceWithBaseTest()
+		{
+			var content = $@"
+		/// <summary>
+		/// 
+		/// </summary>
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
+";
+
+			var newContent = $@"
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
+";
+
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyClassTestAsync()
 		{
 			var content = $@"
@@ -537,7 +562,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ConstructorTestAsync()
+		public async Task ConstructorTest()
 		{
 			var content = $@"
 public class Foo
@@ -550,8 +575,48 @@ public class Foo
 	}}
 }}
 ";
+			var newContent = $@"
+public class Foo
+{{
+	public Foo()
+	{{
+	}}
+}}
+";
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorWithBaseTest()
+		{
+			var content = $@"
+public class Foo : BaseClass
+{{
+	/// <summary>
+	/// Constructor
+	/// </summary>
+	public Foo()
+		: base()
+	{{
+	}}
+}}
+";
+			var newContent = $@"
+public class Foo : BaseClass
+{{
+	public Foo()
+		: base()
+	{{
+	}}
+}}
+";
+
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
+		}
+
 	}
 }
