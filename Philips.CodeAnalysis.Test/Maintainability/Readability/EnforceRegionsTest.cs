@@ -289,7 +289,7 @@ class Foo
 		[DataTestMethod]
 		[DataRow(@"Non-Public Properties/Methods")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task DupliateRegionTest(string given)
+		public async Task DuplicateRegionTest(string given)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -309,6 +309,24 @@ class Foo
 }}";
 			var givenText = string.Format(baseline, given);
 			await VerifyDiagnostic(givenText, DiagnosticId.EnforceNonDuplicateRegion, regex: EnforceRegionsAnalyzer.EnforceNonDuplicateRegionMessageFormat, line: 8, column: 3).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedRegionsTest()
+		{
+			var givenText = @"
+namespace MyNamespace {{
+	#region Dictionaries
+	#region Lists
+	public class ObjectList {{ }}
+	#endregion
+	public class StringToActionDictionary {{ }}
+	#endregion
+
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
 		private async Task VerifyError(string baseline, string given, bool isError, int line = 6, int column = 2)
