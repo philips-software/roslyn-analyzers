@@ -45,6 +45,7 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[STATestMethod]", "[STATestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\n    [Timeout(1000)]")]
 		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
@@ -56,6 +57,7 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[STATestMethod]", "[STATestMethod]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
@@ -64,6 +66,7 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[STATestMethod, TestCategory(\"foo\")]", "[STATestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
@@ -72,6 +75,7 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.CiAppropriate)]")]
@@ -82,6 +86,8 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
+		[DataRow("[DataTestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAcceptable)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.Integration)]")]

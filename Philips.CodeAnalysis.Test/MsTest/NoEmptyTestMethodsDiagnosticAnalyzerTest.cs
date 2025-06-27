@@ -33,6 +33,7 @@ public class DerivedTestMethod : TestMethodAttribute
 			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
+		[DataRow("STATestMethod")]
 		[DataRow("DerivedTestMethod")]
 		[DataRow("TestMethod")]
 		[DataRow("DataTestMethod")]

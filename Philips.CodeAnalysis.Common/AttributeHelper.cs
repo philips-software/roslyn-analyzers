@@ -26,11 +26,6 @@ namespace Philips.CodeAnalysis.Common
 			return HasAttribute(attributeLists, context, attribute.Name, attribute.FullName, out _);
 		}
 
-		public bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, AttributeDefinition attribute, out Location location)
-		{
-			return HasAttribute(attributeLists, context, attribute.Name, attribute.FullName, out location);
-		}
-
 		public bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location)
 		{
 			return HasAttribute(attributeLists, context, name, fullName, out location, out _);
