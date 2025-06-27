@@ -48,21 +48,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			TypeInfo ti1 = Context.SemanticModel.GetTypeInfo(argumentList.Arguments[0].Expression);
 			TypeInfo ti2 = Context.SemanticModel.GetTypeInfo(argumentList.Arguments[1].Expression);
 
-			// If it resolved to Are[Not]Equal<T>, then we know the types are the same.
-			if (memberSymbol.IsGenericMethod)
+			if (ti1.Type == null || ti2.Type == null)
 			{
-				if (ti1.Type == null || ti2.Type == null)
-				{
-					return;
-				}
-
-				// If Roslyn inferred a common T, but the types are clearly different, report a finding.
-				if (!SymbolEqualityComparer.Default.Equals(ti1.Type, ti2.Type))
-				{
-					Location location = Node.GetLocation();
-					ReportDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString());
-				}
-
 				return;
 			}
 
@@ -70,10 +57,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			// However, if the types differ, it will be a runtime Assert fail, so the early notice is advantageous.  The code is also clearer.
 			// Moreover, if it were AreNotEqual, that is particularly insidious, because the Assert would pass due to the type difference
 			// rather than the value difference.  Let's play it safe, and require the author to be clear.
-			if (!Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type).IsImplicit)
+			Conversion conversion1 = Context.SemanticModel.Compilation.ClassifyConversion(ti2.Type, ti1.Type);
+			Conversion conversion2 = Context.SemanticModel.Compilation.ClassifyConversion(ti1.Type, ti2.Type);
+
+			if (!conversion1.IsImplicit && !conversion2.IsImplicit)
 			{
-				Location location = Node.GetLocation();
-				ReportDiagnostic(location, ti1.Type.ToString(), ti2.Type.ToString());
+				ReportDiagnostic(Node.GetLocation(), ti1.Type.ToString(), ti2.Type.ToString());
 			}
 		}
 	}
