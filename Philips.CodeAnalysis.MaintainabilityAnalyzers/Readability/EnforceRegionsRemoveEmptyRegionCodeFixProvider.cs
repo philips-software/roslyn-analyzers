@@ -1,5 +1,4 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Linq;
@@ -80,24 +79,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var endLine = text.Lines.GetLineFromPosition(endRegionEnd).LineNumber;
 
 			// Optional: eliminate one extra blank line if both sides are blank
-			var canCollapseExtraLine = false;
 			if (startLine > 0 && endLine < text.Lines.Count - 1)
 			{
 				var lineBefore = text.Lines[startLine - 1].ToString();
 				var lineAfter = text.Lines[endLine + 1].ToString();
 				if (string.IsNullOrWhiteSpace(lineBefore) && string.IsNullOrWhiteSpace(lineAfter))
 				{
-					canCollapseExtraLine = true;
 					startLine--; // expand removal upward
 				}
 			}
 
 			var spanToRemove = TextSpan.FromBounds(
 				text.Lines[startLine].Start,
-				text.Lines[endLine].End
+				text.Lines[endLine].End + 1
 			);
 
-			SourceText newText = text.Replace(spanToRemove, canCollapseExtraLine ? Environment.NewLine : string.Empty);
+			SourceText newText = text.Replace(spanToRemove, string.Empty);
 
 			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken).ConfigureAwait(false);
 			return document.WithSyntaxRoot(newRoot);
