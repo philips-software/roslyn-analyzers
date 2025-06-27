@@ -1,0 +1,58 @@
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeFixes;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
+
+namespace Philips.CodeAnalysis.Test.Maintainability.Readability
+{
+	[TestClass]
+	public class EnforceRegionsRemoveEmptyRegionAnalyzerTest : CodeFixVerifier
+	{
+		[DataRow("#region myRegion\n#endregion")]
+		[DataRow("#region myRegion\r\n#endregion")]
+		[DataRow("#region myRegion\r\n\r\n#endregion")]
+		[DataRow("#region myRegion // comment\r\n#endregion")] // even with comment
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RemoveEmptyRegionTriggersDiagnosticAndFixes(string emptyRegionBlock)
+		{
+			var input = $@"public class Foo
+{{
+  {emptyRegionBlock}
+}}";
+
+			var expected = $@"public class Foo
+{{
+}}";
+
+			await VerifyFix(input, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithContentDoesNotTriggerDiagnostic()
+		{
+			const string input = @"public class Foo
+{
+  #region myRegion
+  int x = 5;
+  #endregion
+}";
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
+		}
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new EnforceRegionsAnalyzer();
+		}
+	}
+}
