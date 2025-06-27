@@ -46,7 +46,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return document;
 			}
 
-			var endRegionIndex = -1;
 			EndRegionDirectiveTriviaSyntax endRegion = null;
 
 			for (var i = regionIndex + 1; i < triviaList.Count; i++)
@@ -54,7 +53,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				SyntaxNode structure = triviaList[i].GetStructure();
 				if (structure is EndRegionDirectiveTriviaSyntax e)
 				{
-					endRegionIndex = i;
 					endRegion = e;
 					break;
 				}
@@ -69,14 +67,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var spanStart = node.GetLocation().SourceSpan.Start;
 			var spanEnd = endRegion.GetLocation().SourceSpan.End;
 
-			var fullText = text.ToString();
 			var lineStart = text.Lines.GetLineFromPosition(spanStart).Span.Start;
 			var lineEnd = text.Lines.GetLineFromPosition(spanEnd).Span.End;
 
 			var spanToRemove = TextSpan.FromBounds(lineStart, lineEnd);
 
-			SourceText newText = text.Replace(spanToRemove, "");
-			SyntaxNode newRoot = root.SyntaxTree.WithChangedText(newText).GetRoot(cancellationToken);
+			SourceText newText = text.Replace(spanToRemove, string.Empty);
+			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken);
 
 			return document.WithSyntaxRoot(newRoot);
 		}
