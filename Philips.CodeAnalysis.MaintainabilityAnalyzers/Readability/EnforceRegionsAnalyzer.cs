@@ -78,9 +78,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			visitor.Visit(typeDeclaration);
 
 			IReadOnlyList<DirectiveTriviaSyntax> regions = visitor.Regions;
-
+			if (regions.Count == 0)
+			{
+				return;
+			}
 			// Region directives should come in pairs
-			if (regions.Count == 1)
+			if (regions.Count % 2 == 1)
+			{
+				return;
+			}
+			// In obscure cases, the pair may start with #endregion due to mismatches
+			if (regions[0].Kind() == SyntaxKind.EndRegionDirectiveTrivia)
 			{
 				return;
 			}
@@ -181,6 +189,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = [];
 			var regionStartName = string.Empty;
+
 			for (var i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];

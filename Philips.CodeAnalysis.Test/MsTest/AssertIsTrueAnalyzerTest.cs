@@ -48,7 +48,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Assert.IsTrue(true != false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true == false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
-		[DataRow("Assert.IsFalse(true != false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreserveMessage(string given, string expected)
 		{
@@ -167,7 +166,7 @@ int i = 50;
 		[DataRow("bool value = false; Assert.IsFalse(value)")]
 		[DataRow("Assert.IsFalse(\"foo\".Contains(\"f\"))")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task EnsureWeDontChangeValues(string given)
+		public async Task DontChangeValues(string given)
 		{
 			await VerifyNoChange(given).ConfigureAwait(false);
 		}

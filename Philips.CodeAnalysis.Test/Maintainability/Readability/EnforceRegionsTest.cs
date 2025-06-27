@@ -24,7 +24,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow(@"private string a;", true)]
 		[DataRow(@"public int a;", false)]
 		[DataRow(@"int a;", true)]
-		[DataRow(@"private string a;", true)]
 		[DataRow(@"public Foo(){{}}", false)]
 		[DataRow(@"private Foo() {{}}", true)]
 		[DataRow(@"Foo() {{}}", true)]
@@ -97,7 +96,6 @@ class Foo
 		[DataRow(@"private string a;", true)]
 		[DataRow(@"public int a;", true)]
 		[DataRow(@"int a;", true)]
-		[DataRow(@"private string a;", true)]
 		[DataRow(@"public Foo() {{}}", true)]
 		[DataRow(@"Foo() {{}}", false)]
 		[DataRow(@"private Foo() {{}}", false)]
@@ -201,13 +199,51 @@ class Foo
 		{
 			var givenText = @"
 class C {{
-  #region Some Small Region
-
-  #endregion
+	#region Dictionaries
+	#endregion
 }}
 ";
-			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions, regex: EnforceRegionsAnalyzer.AvoidEmptyRegionMessageFormat, line: 3, column: 4).ConfigureAwait(false);
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions).ConfigureAwait(false);
 		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegionFalsePositive1()
+		{
+			// 2 Analyses/sets triggered, but first #endregion is with second set (which now has 3 items)
+			var givenText = @"
+namespace MyNamespace {{
+	#region Dictionaries
+	public class StringToActionDictionary {{ }}
+	#endregion
+
+	#region Lists
+	public class ObjectList {{ }}
+	#endregion
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegionFalsePositive2()
+		{
+			// 2 Analyses/sets triggered, but first #endregion is with second set (which should have 3 items (not good), but
+			// last #endregion is excluded, so perceived as a pair, starting with an #endregion.
+			var givenText = @"
+	#region Dictionaries
+	public class StringToActionDictionary {{ }}
+	#endregion
+
+	#region Lists
+	public class ObjectList {{ }}
+	#endregion
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]

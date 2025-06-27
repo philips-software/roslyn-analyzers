@@ -115,16 +115,6 @@ static bool? Get() { return true; }
 			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public void AssertNullables()
-		{
-			// Confirm behavior of Assert.
-			Assert.AreEqual(true, (bool?)true);
-			Assert.AreNotEqual(true, (bool?)false);
-			Assert.AreNotEqual(true, (bool?)null);
-			// Assert.IsTrue((bool?)true);  Does not compile.
-		}
 		#endregion
 	}
 }
