@@ -16,6 +16,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public class AssertAreEqualTypesMatchAnalyzerTest : DiagnosticVerifier
 	{
 		[DataTestMethod]
+		[DataRow("i", "d1", false)]
+		[DataRow("d1", "i", false)]
 		[DataRow("i", "j", false)]
 		[DataRow("i", "str2", true)]
 		[DataRow("str1", "str2", false)]
