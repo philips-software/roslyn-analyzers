@@ -1,3 +1,19 @@
+### [1.6.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.0...v1.6.1) (2025-06-27)
+
+
+### Bug Fixes
+
+* Assert.AreEqual type matching too strict ([#808](https://github.com/philips-software/roslyn-analyzers/issues/808)) ([c1663ec](https://github.com/philips-software/roslyn-analyzers/commit/c1663ece2fa5d77bd3b77d732e91954d87b39096))
+* Empty region false positives ([#807](https://github.com/philips-software/roslyn-analyzers/issues/807)) ([77eca7e](https://github.com/philips-software/roslyn-analyzers/commit/77eca7e14d924624f266d728a53f5dabab3c00c1))
+* support codefixer for empty region ([#809](https://github.com/philips-software/roslyn-analyzers/issues/809)) ([489188c](https://github.com/philips-software/roslyn-analyzers/commit/489188c402c93686856e3347caa942db8511e16c))
+
+
+### Code Refactoring
+
+* sonarqube findings ([#810](https://github.com/philips-software/roslyn-analyzers/issues/810)) ([d927eaa](https://github.com/philips-software/roslyn-analyzers/commit/d927eaa3fbf132bcb77362b77b3871dc7896436c))
+
+
+
 ## [1.6.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.5.0...v1.6.0) (2025-06-25)
 
 
