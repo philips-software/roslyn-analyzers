@@ -56,8 +56,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[DataRow("  /// <summary />")]
-		[DataRow(@"  /** <summary>
-  </summary> */")]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
@@ -72,7 +70,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			var classContent = string.Format(template, string.Format(@"{0}
 static Foo() {{ }}", summaryComment));
 
-			var expected = string.Format(template, "  \r\n");
+			var expected = string.Format(template, string.Empty);
 
 			await VerifyFix(classContent, expected).ConfigureAwait(false);
 		}

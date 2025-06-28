@@ -45,11 +45,11 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
-		[DataRow("[STATestMethod]", "[STATestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\n    [Timeout(1000)]")]
-		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n    [Timeout(TestTimeouts.CiAppropriate)]")]
+		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\r\n    [Timeout(1000)]")]
+		[DataRow("[DataTestMethod]", "[DataTestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\r\n    [Timeout(TestTimeouts.CiAppropriate)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
 		{
@@ -57,8 +57,8 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
-		[DataRow("[STATestMethod]", "[STATestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
+		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
 		{
@@ -66,8 +66,8 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
-		[DataRow("[STATestMethod, TestCategory(\"foo\")]", "[STATestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
+		[DataRow("[STATestMethod, TestCategory(\"foo\")]", "[STATestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
 		{

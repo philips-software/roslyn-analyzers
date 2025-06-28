@@ -163,6 +163,7 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception>
+
     /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
@@ -172,54 +173,54 @@ public class Foo
 ";
 
 		private const string WrongEmptyCref = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string FixedEmptyCref = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""""></exception>
-    /// <exception cref=""ArgumentException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""""></exception>
+			/// <exception cref=""ArgumentException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string WrongType = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""InvalidOperationException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""InvalidOperationException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string FixedWrongType = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""InvalidOperationException""></exception>
-	/// <exception cref=""ArgumentException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""InvalidOperationException""></exception>
+			/// <exception cref=""ArgumentException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string WrongInProperty = @"
 public class Foo
