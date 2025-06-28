@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var lineStart = text.Lines.GetLineFromPosition(spanStart).Span.Start;
 			var lineEnd = text.Lines.GetLineFromPosition(spanEnd).Span.End;
 
-			var spanToRemove = TextSpan.FromBounds(lineStart, lineEnd);
+			var spanToRemove = TextSpan.FromBounds(lineStart, lineEnd + 1);
 
 			SourceText newText = text.Replace(spanToRemove, string.Empty);
 			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken);
