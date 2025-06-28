@@ -34,6 +34,25 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithExtraNewLinesAreReduced()
+		{
+			const string input = @"public class Foo
+{
+
+  #region myRegion
+  #endregion
+
+}";
+			const string expected = @"public class Foo
+{
+
+}";
+			await VerifyFix(input, expected).ConfigureAwait(false);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionWithContentDoesNotTriggerDiagnostic()
 		{
 			const string input = @"public class Foo

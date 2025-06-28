@@ -34,47 +34,69 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
-			// Find matching #endregion
+			// Defensive: node must be attached to a valid token
 			SyntaxToken token = node.ParentTrivia.Token;
+			if (token.RawKind == 0)
+			{
+				return document;
+			}
+
+			// Find matching #endregion
 			SyntaxTriviaList triviaList = token.LeadingTrivia;
 			var regionIndex = triviaList
 				.Select((t, i) => new { Trivia = t, Index = i })
 				.FirstOrDefault(x => x.Trivia.HasStructure && x.Trivia.GetStructure() == node)?.Index ?? -1;
 
-			if (regionIndex == -1)
+			if (regionIndex < 0)
 			{
 				return document;
 			}
 
 			EndRegionDirectiveTriviaSyntax endRegion = null;
+			var endRegionIndex = -1;
 
 			for (var i = regionIndex + 1; i < triviaList.Count; i++)
 			{
 				SyntaxNode structure = triviaList[i].GetStructure();
-				if (structure is EndRegionDirectiveTriviaSyntax e)
+				if (structure is EndRegionDirectiveTriviaSyntax end)
 				{
-					endRegion = e;
+					endRegion = end;
+					endRegionIndex = i;
 					break;
 				}
 			}
 
-			if (endRegion == null)
+			if (endRegion == null || endRegionIndex <= regionIndex)
 			{
 				return document;
 			}
 
-			// Remove full lines from #region to #endregion
-			var spanStart = node.GetLocation().SourceSpan.Start;
-			var spanEnd = endRegion.GetLocation().SourceSpan.End;
+			// Compute line spans to remove
+			var regionStart = node.GetLocation().SourceSpan.Start;
+			var endRegionEnd = endRegion.GetLocation().SourceSpan.End;
 
-			var lineStart = text.Lines.GetLineFromPosition(spanStart).Span.Start;
-			var lineEnd = text.Lines.GetLineFromPosition(spanEnd).Span.End;
+			var startLine = text.Lines.GetLineFromPosition(regionStart).LineNumber;
+			var endLine = text.Lines.GetLineFromPosition(endRegionEnd).LineNumber;
 
-			var spanToRemove = TextSpan.FromBounds(lineStart, lineEnd + 1);
+			// Optional: eliminate one extra blank line if both sides are blank
+			if (startLine > 0 && endLine < text.Lines.Count - 1)
+			{
+				var lineBefore = text.Lines[startLine - 1].ToString();
+				var lineAfter = text.Lines[endLine + 1].ToString();
+				if (string.IsNullOrWhiteSpace(lineBefore) && string.IsNullOrWhiteSpace(lineAfter))
+				{
+					startLine--; // expand removal upward
+				}
+			}
+
+			var spanToRemove = TextSpan.FromBounds(
+				text.Lines[startLine].Start,
+				text.Lines[endLine].End + 1
+			);
 
 			SourceText newText = text.Replace(spanToRemove, string.Empty);
-			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken);
 
+			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken).ConfigureAwait(false);
 			return document.WithSyntaxRoot(newRoot);
 		}
 	}

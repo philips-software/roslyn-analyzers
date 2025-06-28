@@ -55,6 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
+			// Failing on "\\" is a little excessive
+			if (pathValue == @"\\")
+			{
+				return;
+			}
+
 			// Limit to first MAX_PATH characters, to prevent long analysis times.
 			if (pathValue.Length > MaxStringLength)
 			{
