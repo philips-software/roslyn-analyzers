@@ -14,6 +14,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	{
 		[DataRow("#region myRegion\n#endregion")]
 		[DataRow("#region myRegion\r\n#endregion")]
+		[DataRow("#region myRegion\r\n#endregion // My comment")]
+		[DataRow("#region myRegion // My comment \r\n#endregion // My comment")]
+		[DataRow("#region myRegion // My comment \r\n#endregion       ")]
 		[DataRow("#region myRegion\r\n\r\n#endregion")]
 		[DataRow("#region myRegion // comment\r\n#endregion")] // even with comment
 		[DataTestMethod]
@@ -46,6 +49,19 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			const string expected = @"public class Foo
 {
 
+}";
+			await VerifyFix(input, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptyRegionOnFirstLine()
+		{
+			const string input = @"#region Copyright
+  #endregion
+  public class Foo {}
+}";
+			const string expected = @"public class Foo {}
 }";
 			await VerifyFix(input, expected).ConfigureAwait(false);
 		}

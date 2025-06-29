@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 		[DataTestMethod]
-		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\n      Assert.IsTrue(true)")]
+		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\r\n      Assert.IsTrue(true)")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CanBreakDownCompoundStatements(string given, string expected)
 		{
@@ -75,8 +75,8 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 		[DataTestMethod]
-		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\n      Assert.IsTrue(true, \"blah\")")]
-		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
+		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\r\n      Assert.IsTrue(true, \"blah\")")]
+		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\r\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreserveCompoundMessages(string given, string expected)
 		{
