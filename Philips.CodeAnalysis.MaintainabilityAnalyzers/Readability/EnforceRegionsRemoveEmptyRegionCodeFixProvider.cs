@@ -34,14 +34,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
 
-			// Defensive: node must be attached to a valid token
 			SyntaxToken token = node.ParentTrivia.Token;
 			if (token.RawKind == 0)
 			{
 				return document;
 			}
 
-			// Find matching #endregion
 			SyntaxTriviaList triviaList = token.LeadingTrivia;
 			var regionIndex = triviaList
 				.Select((t, i) => new { Trivia = t, Index = i })
@@ -71,31 +69,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return document;
 			}
 
-			// Compute line spans to remove
 			var regionStart = node.GetLocation().SourceSpan.Start;
-			var endRegionEnd = endRegion.GetLocation().SourceSpan.End;
+			var regionEnd = endRegion.GetLocation().SourceSpan.End;
 
-			var startLine = text.Lines.GetLineFromPosition(regionStart).LineNumber;
-			var endLine = text.Lines.GetLineFromPosition(endRegionEnd).LineNumber;
+			TextLine startLine = text.Lines.GetLineFromPosition(regionStart);
+			TextLine endLine = text.Lines.GetLineFromPosition(regionEnd);
 
-			// Optional: eliminate one extra blank line if both sides are blank
-			if (startLine > 0 && endLine < text.Lines.Count - 1)
-			{
-				var lineBefore = text.Lines[startLine - 1].ToString();
-				var lineAfter = text.Lines[endLine + 1].ToString();
-				if (string.IsNullOrWhiteSpace(lineBefore) && string.IsNullOrWhiteSpace(lineAfter))
-				{
-					startLine--; // expand removal upward
-				}
-			}
+			var blankLineAbove = startLine.LineNumber > 0 && string.IsNullOrWhiteSpace(text.Lines[startLine.LineNumber - 1].ToString());
+			var blankLineBelow = endLine.LineNumber < text.Lines.Count - 1 && string.IsNullOrWhiteSpace(text.Lines[endLine.LineNumber + 1].ToString());
+
+			var actualStartLine = blankLineAbove && blankLineBelow ? startLine.LineNumber - 1 : startLine.LineNumber;
 
 			var spanToRemove = TextSpan.FromBounds(
-				text.Lines[startLine].Start,
-				text.Lines[endLine].End + 1
+				text.Lines[actualStartLine].Start,
+				endLine.SpanIncludingLineBreak.End
 			);
 
 			SourceText newText = text.Replace(spanToRemove, string.Empty);
-
 			SyntaxNode newRoot = await root.SyntaxTree.WithChangedText(newText).GetRootAsync(cancellationToken).ConfigureAwait(false);
 			return document.WithSyntaxRoot(newRoot);
 		}

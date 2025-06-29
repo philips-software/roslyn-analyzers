@@ -149,16 +149,28 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			var diagnosticIdString = string.Join(", ", analyzerDiagnostics.Select(diag => diag.Id));
 			Assert.IsTrue(shouldAllowNewCompilerDiagnostics || !analyzerDiagnostics.Any(), $@"After applying the fix, there still exists {numberOfDiagnostics} diagnostic(s): {diagnosticIdString}");
 
-			// After applying all of the code fixes, compare the resulting string to the inputted one
 			var actualSource = await GetStringFromDocument(document).ConfigureAwait(false);
-			var actualSourceLines = actualSource.Split(Environment.NewLine);
-			var expectedSourceLines = expectedSource.Split(Environment.NewLine);
+
+			// Normalize line endings to ensure consistent line counting across platforms
+			actualSource = NormalizeLineEndings(actualSource);
+			expectedSource = NormalizeLineEndings(expectedSource);
+
+			// After applying all of the code fixes, compare the resulting string to the inputted one
+			var actualSourceLines = actualSource.Split('\n');
+			var expectedSourceLines = expectedSource.Split('\n');
 			Assert.AreEqual(expectedSourceLines.Length, actualSourceLines.Length, @"The result's line code differs from the expected result's line code.");
 			for (var i = 0; i < actualSourceLines.Length; i++)
 			{
 				// Trimming the lines, to ignore indentation differences.
 				Assert.AreEqual(expectedSourceLines[i].Trim(), actualSourceLines[i].Trim(), $"Source line {i}");
 			}
+		}
+
+		private string NormalizeLineEndings(string input)
+		{
+			return input
+				.Replace("\r\n", "\n")
+				.Replace("\r", "\n");
 		}
 
 		[TestMethod]
