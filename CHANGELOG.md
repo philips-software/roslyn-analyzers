@@ -1,3 +1,29 @@
+### [1.6.2](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.1...v1.6.2) (2025-06-29)
+
+
+### Bug Fixes
+
+* bail on nested regions ([#813](https://github.com/philips-software/roslyn-analyzers/issues/813)) ([b18c528](https://github.com/philips-software/roslyn-analyzers/commit/b18c52830d21422c5b4485054e9007f9bdfc60fe))
+* FixAll for Empty Region throws exception ([#815](https://github.com/philips-software/roslyn-analyzers/issues/815)) ([becd0dc](https://github.com/philips-software/roslyn-analyzers/commit/becd0dcd120eacbf328be44d9dc842a2ea9eb560))
+* PH2080 allow double backslash ([#814](https://github.com/philips-software/roslyn-analyzers/issues/814)) ([279f0f0](https://github.com/philips-software/roslyn-analyzers/commit/279f0f01c3c895b1e8dbb623b018cad1feb046c0))
+
+
+### Code Refactoring
+
+* CodeFixVerifier more strict with newlines ([#817](https://github.com/philips-software/roslyn-analyzers/issues/817)) ([be03316](https://github.com/philips-software/roslyn-analyzers/commit/be033168f62b6658f02c06b3b867b1c276b2531a))
+* update low-risk dependency updates ([#816](https://github.com/philips-software/roslyn-analyzers/issues/816)) ([66c3abb](https://github.com/philips-software/roslyn-analyzers/commit/66c3abb96c0ac31aacd890ad00000c77f65442dc))
+
+
+### Build Systems
+
+* Bump actions/setup-dotnet from 4.0.0 to 4.3.1 ([#803](https://github.com/philips-software/roslyn-analyzers/issues/803)) ([3468f45](https://github.com/philips-software/roslyn-analyzers/commit/3468f45bf34d6a1475d5e797056570dc83f6fa78))
+* Bump actions/setup-java from 4.2.1 to 4.7.1 ([#804](https://github.com/philips-software/roslyn-analyzers/issues/804)) ([f24e27e](https://github.com/philips-software/roslyn-analyzers/commit/f24e27e04a348875d32d324d448da5d52b313fd8))
+* Bump amannn/action-semantic-pull-request from 5.4.0 to 5.5.3 ([#790](https://github.com/philips-software/roslyn-analyzers/issues/790)) ([6c06610](https://github.com/philips-software/roslyn-analyzers/commit/6c0661061722557f64cc9b10bbf35a9b78fa619f))
+* Bump dorny/paths-filter from 3.0.0 to 3.0.2 ([#787](https://github.com/philips-software/roslyn-analyzers/issues/787)) ([2777215](https://github.com/philips-software/roslyn-analyzers/commit/27772153111a18777b2c2a7e8392cc250b317efe))
+* Bump github/codeql-action from 3.28.15 to 3.29.0 ([#805](https://github.com/philips-software/roslyn-analyzers/issues/805)) ([59a2e58](https://github.com/philips-software/roslyn-analyzers/commit/59a2e582f36eebc8f2c82490848ca4f242e29816))
+
+
+
 ### [1.6.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.0...v1.6.1) (2025-06-27)
 
 
