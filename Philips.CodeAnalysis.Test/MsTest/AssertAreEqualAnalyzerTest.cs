@@ -36,6 +36,18 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNullStringNoError()
+		{
+			var test = @"
+  string json = ""test"";
+  Assert.AreEqual(""null"", json);
+";
+			await VerifyNoError(test);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckDefaultBehaviorAsync()
 		{
 			await VerifyNoError(@"

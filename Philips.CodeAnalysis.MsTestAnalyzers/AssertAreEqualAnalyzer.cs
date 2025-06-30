@@ -66,10 +66,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			return new[] { diagnostic };
 		}
 
-
 		private bool IsNull(ExpressionSyntax expression)
 		{
-			return expression.ToString().Contains("null");
+			return expression is LiteralExpressionSyntax literal &&
+				   literal.IsKind(SyntaxKind.NullLiteralExpression);
 		}
 	}
 }
