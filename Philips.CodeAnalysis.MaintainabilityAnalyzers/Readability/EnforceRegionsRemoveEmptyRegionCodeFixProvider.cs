@@ -31,15 +31,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		protected override async Task<Document> ApplyFix(Document document, RegionDirectiveTriviaSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-
-			SyntaxToken token = node.ParentTrivia.Token;
-			if (token.RawKind == 0)
+			if (node is null || node.ParentTrivia.Token.RawKind == 0)
 			{
 				return document;
 			}
 
+			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
+
+			SyntaxToken token = node.ParentTrivia.Token;
 			SyntaxTriviaList triviaList = token.LeadingTrivia;
 			var regionIndex = triviaList
 				.Select((t, i) => new { Trivia = t, Index = i })
