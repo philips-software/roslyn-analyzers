@@ -12,10 +12,10 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DebugType>portable</DebugType>
     <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
-		<IsPackable>true</IsPackable>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<IncludeSource>true</IncludeSource>
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>

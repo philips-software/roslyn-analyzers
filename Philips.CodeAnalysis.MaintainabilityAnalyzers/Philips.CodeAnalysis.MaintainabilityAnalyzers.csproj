@@ -33,7 +33,7 @@
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/39734771</PackageIconUrl>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Description>Roslyn Diagnostic Analyzers for helping maintainability or readability of C# code</Description>
-    <Copyright>© 2019-2023 Koninklijke Philips N.V.</Copyright>
+    <Copyright>© 2019-2025 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
@@ -53,7 +53,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
-	</ItemGroup>
+  </ItemGroup>
   
   <ItemGroup>
     <None Include="..\packageicon.png" Pack="true" PackagePath="\" />

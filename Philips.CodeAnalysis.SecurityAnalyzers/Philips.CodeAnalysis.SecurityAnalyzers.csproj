@@ -10,12 +10,12 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ReportAnalyzer>true</ReportAnalyzer>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<DebugType>portable</DebugType>
-		<IsRoslynAnalyzer>true</IsRoslynAnalyzer>
-		<IsPackable>true</IsPackable>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<IncludeSource>true</IncludeSource>
+    <DebugType>portable</DebugType>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
@@ -36,7 +36,7 @@
 		1.0: Initial version
 		* Introduce PH3136: Regex needs timeout.
 	</PackageReleaseNotes>
-    <Copyright>© 2021-2022 Koninklijke Philips N.V.</Copyright>
+    <Copyright>© 2021-2025 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Security Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
