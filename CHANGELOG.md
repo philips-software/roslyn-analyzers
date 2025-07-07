@@ -1,3 +1,25 @@
+### [1.6.3](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.2...v1.6.3) (2025-07-07)
+
+
+### Bug Fixes
+
+* Assert.AreEqual(null, myVar) ([#822](https://github.com/philips-software/roslyn-analyzers/issues/822)) ([d161fa7](https://github.com/philips-software/roslyn-analyzers/commit/d161fa7a024ff989e38cfd41118d9224c67ce366))
+* Avoid Empty Region ApplyFix exception ([#827](https://github.com/philips-software/roslyn-analyzers/issues/827)) ([cce92f6](https://github.com/philips-software/roslyn-analyzers/commit/cce92f60ac1007b901b79e3cebb63cf21874be41))
+
+
+### Continuous Integration
+
+* snupkg ([#825](https://github.com/philips-software/roslyn-analyzers/issues/825)) ([69ec992](https://github.com/philips-software/roslyn-analyzers/commit/69ec9921f2d291de37dacbdc6e492fbc0cd7f6dd))
+
+
+### Build Systems
+
+* Bump github/codeql-action from 3.29.0 to 3.29.1 ([#819](https://github.com/philips-software/roslyn-analyzers/issues/819)) ([dd2ef14](https://github.com/philips-software/roslyn-analyzers/commit/dd2ef14c4efd7fa90c8745d42cc040dcf4dcd6c9))
+* Bump github/codeql-action from 3.29.1 to 3.29.2 ([#824](https://github.com/philips-software/roslyn-analyzers/issues/824)) ([d1af3b3](https://github.com/philips-software/roslyn-analyzers/commit/d1af3b3e4f3b7a9ba3fc84117fd4ac7fd18e764c))
+* Bump ncipollo/release-action from 1.16.0 to 1.18.0 ([#820](https://github.com/philips-software/roslyn-analyzers/issues/820)) ([2eda139](https://github.com/philips-software/roslyn-analyzers/commit/2eda139c9108abecbf2dfa67be31a602a338f7b7))
+
+
+
 ### [1.6.2](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.1...v1.6.2) (2025-06-29)
 
 
