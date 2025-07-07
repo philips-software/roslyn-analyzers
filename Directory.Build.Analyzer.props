@@ -18,7 +18,7 @@
     <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
     <PackageReleaseNotes>See Changelog</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
-    <Copyright>© 2019-2025 Koninklijke Philips N.V.</Copyright>
+    <Copyright>Â©2019-2025 Koninklijke Philips N.V.</Copyright>
     <Authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</Authors>
     <Company>Philips</Company>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
