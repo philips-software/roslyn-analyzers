@@ -10,6 +10,14 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ReportAnalyzer>true</ReportAnalyzer>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DebugType>portable</DebugType>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <IsPackable>true</IsPackable>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,11 +36,15 @@
 		1.0: Initial version
 		* Introduce PH3136: Regex needs timeout.
 	</PackageReleaseNotes>
-    <Copyright>© 2021-2022 Koninklijke Philips N.V.</Copyright>
+    <Copyright>© 2021-2025 Koninklijke Philips N.V.</Copyright>
     <PackageTags>CSharp Security Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <DevelopmentDependency>true</DevelopmentDependency>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(GITHUB_ACTIONS)' == 'true' ">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,12 +54,14 @@
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
     <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
   </ItemGroup>
