@@ -20,16 +20,17 @@ Consult the following for details on the available rules:
 ## Getting Started
 
 Add the rules using Visual Studio's Package Manager, locating these packages on nuget.org.  Rules are generally enabled by default.  Use the .editorconfig file to enable or disable each of them and set their severity level as desired.
+Some rules (e.g., Avoid Duplicate Code, Avoid Static Classes) support configuration and whitelisting - again via the .editorconfig.
 
-Enabling a new rule on a legacy codebase can be daunting.  Some rules (e.g., Avoid Duplicate Code, Avoid Static Classes) support configuration and whitelisting - again via the .editorconfig.
+## Debugging
+
+Published packages include .snupkg and SourceLink. This allows symbol loading, stack traces with line numbers on exceptions, and "Go to Definition" support. However, breakpoints and step-through debugging are flaky on published Release builds (especially with Analyzers in general), due to optimizations and inlining. 
+
+For symbols and stack traces, launch a second instance of Visual Studio, attach the debugger to your primary development instance, and Load Symbols via Debug -> Windows -> Modules, and right-clicking on the Analyzer.
 
 ## Visual Studio 2019/2022 Support
 
 These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with Visual Studio 2019 16.6.
-
-## Still on Visual Studio 2017?
-
-If you are still working with Visual Studio 2017, use the 1.0.x versions of the analyzers.
 
 ## CI/CD
 [Learn more](./cicd.md) about the CI/CD pipeline.

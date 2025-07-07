@@ -46,33 +46,43 @@ jobs:
         with:
           name: Philips.CodeAnalysis.MaintainabilityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
-          path: ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
+          path: |
+            ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg
+            ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.snupkg
 
       - name: Upload DuplicateCodeAnalyzer Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Philips.CodeAnalysis.DuplicateCodeAnalyzer-${{ inputs.new_tag }}
           retention-days: 1
-          path: ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg
+          path: |
+            ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg
+            ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.snupkg
 
       - name: Upload MoqAnalyzers Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Philips.CodeAnalysis.MoqAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
-          path: ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.nupkg
+          path: |
+            ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.nupkg
+            ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.snupkg
 
       - name: Upload MsTestAnalyzers Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Philips.CodeAnalysis.MsTestAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
-          path: ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg
+          path: |
+            ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg
+            ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.snupkg
 
       - name: Upload SecurityAnalyzers Artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Philips.CodeAnalysis.SecurityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
-          path: ./Packages/Philips.CodeAnalysis.SecurityAnalyzers.*.nupkg
+          path: |
+            ./Packages/Philips.CodeAnalysis.SecurityAnalyzers.*.nupkg
+            ./Packages/Philips.CodeAnalysis.SecurityAnalyzers.*.snupkg
     
