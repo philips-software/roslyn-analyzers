@@ -87,15 +87,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				return;
 			}
-			// In obscure cases, the pair may start with #endregion due to mismatches
-			if (regions[0].Kind() == SyntaxKind.EndRegionDirectiveTrivia)
+
+			// If pair is malformed (eg. #region followed by #region), bail out
+			for (var i = 0; i < regions.Count; i += 2)
 			{
-				return;
-			}
-			// In nested cases, just exit
-			if (regions[1].Kind() == SyntaxKind.RegionDirectiveTrivia)
-			{
-				return;
+				DirectiveTriviaSyntax start = regions[i];
+				DirectiveTriviaSyntax end = regions[i + 1];
+
+				if (start.IsKind(SyntaxKind.EndRegionDirectiveTrivia) || end.IsKind(SyntaxKind.RegionDirectiveTrivia))
+				{
+					return;
+				}
 			}
 
 			Dictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
