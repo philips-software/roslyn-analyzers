@@ -6,6 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{587845EE-5F8F-4E49-B140-B970758F8A49}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Directory.Build.Analyzer.props = Directory.Build.Analyzer.props
+		Directory.Build.Common.props = Directory.Build.Common.props
 		.github\workflows\dotnetcore.yml = .github\workflows\dotnetcore.yml
 		README.md = README.md
 	EndProjectSection
