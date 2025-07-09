@@ -69,6 +69,31 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedRegionDoesNotTriggerEmptyRegion()
+		{
+			const string input = @"
+	public class MyClass
+	{
+		#region R1
+		private void Foo1() { }
+		#endregion
+
+		#region R2
+
+		#region R3
+		private void Foo2() { }
+		#endregion
+
+		#endregion
+	}
+";
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionWithContentDoesNotTriggerDiagnostic()
 		{
 			const string input = @"public class Foo
