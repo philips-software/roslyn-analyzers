@@ -152,7 +152,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			// Check each variable declarator for initialization
-			foreach (var variable in variableDeclaration.Variables)
+			foreach (VariableDeclaratorSyntax variable in variableDeclaration.Variables)
 			{
 				if (variable.Initializer?.Value != null)
 				{
@@ -166,17 +166,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 							ITypeSymbol mockedClass = constructedType.TypeArguments[0];
 
 							// Get argument list - handle both explicit and implicit object creation
-							ArgumentListSyntax argumentList = null;
-							if (variable.Initializer.Value is ObjectCreationExpressionSyntax objectCreation)
-							{
-								argumentList = objectCreation.ArgumentList;
-							}
-							else
-							{
-								// For implicit object creation, try to get ArgumentList using reflection
-								var argumentListProperty = variable.Initializer.Value.GetType().GetProperty("ArgumentList");
-								argumentList = argumentListProperty?.GetValue(variable.Initializer.Value) as ArgumentListSyntax;
-							}
+							ArgumentListSyntax argumentList = variable.Initializer.Value is ObjectCreationExpressionSyntax objectCreation
+								? objectCreation.ArgumentList
+								: variable.Initializer.Value.GetType().GetProperty("ArgumentList")?.GetValue(variable.Initializer.Value) as ArgumentListSyntax;
 
 							VerifyMockAttempt(context, mockedClass, argumentList, true);
 						}
