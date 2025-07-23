@@ -2,7 +2,6 @@
 
 using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -101,12 +100,17 @@ namespace Philips.CodeAnalysis.Common
 
 		public override bool Equals(object obj)
 		{
-			return this == (obj as AnalyzerPerformanceRecord);
+			return obj is AnalyzerPerformanceRecord other && CompareTo(other) == 0;
 		}
 
 		public override int GetHashCode()
 		{
-			return RuntimeHelpers.GetHashCode(this);
+			var hash = 17;
+			hash = (hash * 23) + (Id?.GetHashCode() ?? 0);
+			hash = (hash * 23) + (Package?.GetHashCode() ?? 0);
+			hash = (hash * 23) + (Analyzer?.GetHashCode() ?? 0);
+			hash = (hash * 23) + Time.GetHashCode();
+			return hash;
 		}
 	}
 }
