@@ -31,7 +31,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			context.RegisterSyntaxNodeAction(AnalyzeNewObject, SyntaxKind.ObjectCreationExpression);
-			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
 		}
 
@@ -122,59 +121,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			ITypeSymbol mockedClass = typeSymbol.TypeArguments[0];
 
 			VerifyMockAttempt(context, mockedClass, objectCreationExpressionSyntax.ArgumentList, true);
-		}
-
-		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
-		{
-			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
-
-			// Quick string check before expensive semantic model operations
-			if (variableDeclaration.Type is not GenericNameSyntax genericNameSyntax)
-			{
-				return;
-			}
-
-			if (genericNameSyntax.Identifier.ValueText != MockName)
-			{
-				return;
-			}
-
-			// Check if the variable type is Mock<T>
-			TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(variableDeclaration.Type);
-			if (typeInfo.Type is not INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
-			{
-				return;
-			}
-
-			if (namedTypeSymbol.Name != MockName)
-			{
-				return;
-			}
-
-			// Check each variable declarator for initialization
-			foreach (VariableDeclaratorSyntax variable in variableDeclaration.Variables)
-			{
-				if (variable.Initializer?.Value != null)
-				{
-					// Check if the initializer is calling a Mock constructor
-					SymbolInfo initializerSymbol = context.SemanticModel.GetSymbolInfo(variable.Initializer.Value);
-					if (initializerSymbol.Symbol is IMethodSymbol { MethodKind: MethodKind.Constructor } mockConstructorMethod)
-					{
-						if (mockConstructorMethod.ReceiverType is INamedTypeSymbol { IsGenericType: true } constructedType &&
-							constructedType.Name == MockName)
-						{
-							ITypeSymbol mockedClass = constructedType.TypeArguments[0];
-
-							// Get argument list - handle both explicit and implicit object creation
-							ArgumentListSyntax argumentList = variable.Initializer.Value is ObjectCreationExpressionSyntax objectCreation
-								? objectCreation.ArgumentList
-								: variable.Initializer.Value.GetType().GetProperty("ArgumentList")?.GetValue(variable.Initializer.Value) as ArgumentListSyntax;
-
-							VerifyMockAttempt(context, mockedClass, argumentList, true);
-						}
-					}
-				}
-			}
 		}
 
 		private bool IsFirstArgumentMockBehavior(SyntaxNodeAnalysisContext context, ArgumentListSyntax argumentList)
