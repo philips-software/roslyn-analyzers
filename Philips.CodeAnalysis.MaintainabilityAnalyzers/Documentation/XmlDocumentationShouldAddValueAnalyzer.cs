@@ -106,6 +106,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
+			
 			if (xmlElements.Any())
 			{
 				var name = nameFunc();
@@ -115,6 +116,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				}
 
 				var lowercaseName = name.ToLowerInvariant();
+
+				// Check if there are meaningful non-summary elements that add value
+				var hasUsefulNonSummaryElements = HasUsefulNonSummaryElements(xmlElements, lowercaseName);
 
 				foreach (XmlElementSyntax xmlElement in xmlElements)
 				{
@@ -127,6 +131,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 					if (string.IsNullOrWhiteSpace(content))
 					{
+						// If there are useful non-summary elements, don't report empty summary as an error
+						if (hasUsefulNonSummaryElements)
+						{
+							continue;
+						}
+
 						Location location = xmlElement.GetLocation();
 						var diagnostic = Diagnostic.Create(EmptyRule, location);
 						context.ReportDiagnostic(diagnostic);
@@ -146,6 +156,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 					// We assume here that every remaining word adds value to the documentation text.
 					if (!words.Any())
 					{
+						// If there are useful non-summary elements, don't report useless summary as an error
+						if (hasUsefulNonSummaryElements)
+						{
+							continue;
+						}
+
 						var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
 						var diagnostic = Diagnostic.Create(ValueRule, loc);
 						context.ReportDiagnostic(diagnostic);
@@ -163,6 +179,57 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Replace("\n", Space)
 				.Replace("\t", Space)
 				.Replace("///", string.Empty);
+		}
+
+		/// <summary>
+		/// Checks if there are any non-summary XML documentation elements that contain meaningful content.
+		/// Elements like param, returns, exception, etc. are considered if they have useful information.
+		/// </summary>
+		/// <param name="xmlElements">All XML documentation elements</param>
+		/// <param name="lowercaseName">The lowercase name of the documented element</param>
+		/// <returns>True if there are meaningful non-summary elements, false otherwise</returns>
+		private bool HasUsefulNonSummaryElements(IEnumerable<XmlElementSyntax> xmlElements, string lowercaseName)
+		{
+			var meaningfulElements = new[] { "param", "returns", "exception", "remarks", "example", "value" };
+
+			foreach (XmlElementSyntax xmlElement in xmlElements)
+			{
+				var tagName = xmlElement.StartTag.Name.LocalName.Text;
+
+				// Skip summary elements as we're looking for non-summary content
+				if (tagName == "summary")
+				{
+					continue;
+				}
+
+				// Check if this is a meaningful element type
+				if (!meaningfulElements.Contains(tagName))
+				{
+					continue;
+				}
+
+				var content = GetContent(xmlElement);
+
+				// If content is empty or whitespace, skip
+				if (string.IsNullOrWhiteSpace(content))
+				{
+					continue;
+				}
+
+				// Apply the same value analysis as for summary content
+				IEnumerable<string> words =
+					SplitInWords(content)
+						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
+						.Where(s => !lowercaseName.Contains(s));
+
+				// If there are meaningful words, this element adds value
+				if (words.Any())
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private static IEnumerable<string> SplitFromConfig(string line)
