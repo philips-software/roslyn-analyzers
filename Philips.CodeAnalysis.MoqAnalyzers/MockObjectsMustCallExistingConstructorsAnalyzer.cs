@@ -128,6 +128,17 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
+			// Quick string check before expensive semantic model operations
+			if (variableDeclaration.Type is not GenericNameSyntax genericNameSyntax)
+			{
+				return;
+			}
+
+			if (genericNameSyntax.Identifier.ValueText != MockName)
+			{
+				return;
+			}
+
 			// Check if the variable type is Mock<T>
 			TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(variableDeclaration.Type);
 			if (typeInfo.Type is not INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)

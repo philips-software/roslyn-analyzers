@@ -501,7 +501,7 @@ public static class Bar
 		[DataRow("1, 2", true)]
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ConstructorsMustExistViaNewMockInferredAsync(string arguments, bool isError)
+		public async Task ConstructorsMustExistViaNewMockInferred(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
