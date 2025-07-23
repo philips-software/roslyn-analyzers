@@ -116,8 +116,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				var lowercaseName = name.ToLowerInvariant();
 
-				// Check if there are meaningful non-summary elements that add value
-				var hasUsefulNonSummaryElements = HasUsefulNonSummaryElements(xmlElements, lowercaseName);
+				// Check if there are meaningful non-summary elements
+				var hasUsefulNonSummaryElements = HasUsefulNonSummaryElements(xmlElements,
+					lowercaseName);
+
+				// If there are useful non-summary elements, skip summary diagnostics
+				if (hasUsefulNonSummaryElements)
+				{
+					return;
+				}
 
 				foreach (XmlElementSyntax xmlElement in xmlElements)
 				{
@@ -130,12 +137,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 					if (string.IsNullOrWhiteSpace(content))
 					{
-						// If there are useful non-summary elements, don't report empty summary as an error
-						if (hasUsefulNonSummaryElements)
-						{
-							continue;
-						}
-
 						Location location = xmlElement.GetLocation();
 						var diagnostic = Diagnostic.Create(EmptyRule, location);
 						context.ReportDiagnostic(diagnostic);
@@ -152,15 +153,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 							.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
 							.Where(s => !lowercaseName.Contains(s));
 
-					// We assume here that every remaining word adds value to the documentation text.
+					// Every remaining word adds value to the documentation.
 					if (!words.Any())
 					{
-						// If there are useful non-summary elements, don't report useless summary as an error
-						if (hasUsefulNonSummaryElements)
-						{
-							continue;
-						}
-
 						var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
 						var diagnostic = Diagnostic.Create(ValueRule, loc);
 						context.ReportDiagnostic(diagnostic);
