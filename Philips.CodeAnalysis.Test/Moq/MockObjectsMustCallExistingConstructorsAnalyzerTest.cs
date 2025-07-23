@@ -532,7 +532,7 @@ public static class Bar
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AnalyzeVariableDeclaration_ShouldIgnoreNonMockTypes()
+		public async Task VariableDeclarationIgnoresNonMockTypesAsync()
 		{
 			const string code = @"
 using System.Collections.Generic;
@@ -555,7 +555,7 @@ public static class Bar
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AnalyzeVariableDeclaration_ShouldIgnoreMockWithoutInitializer()
+		public async Task VariableDeclarationIgnoresMockWithoutInitializerAsync()
 		{
 			const string code = @"
 using Moq;
@@ -580,7 +580,7 @@ public static class Bar
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AnalyzeVariableDeclaration_ShouldIgnoreNonConstructorInitializers()
+		public async Task VariableDeclarationIgnoresNonConstructorInitializersAsync()
 		{
 			const string code = @"
 using Moq;
@@ -610,11 +610,11 @@ public static class Bar
 		}
 
 		[DataRow("bool arg", true)]  // Wrong argument type
-		[DataRow("string wrongType", true)]  // Wrong argument type  
+		[DataRow("string wrongType", true)]  // Wrong argument type
 		[DataRow("int validArg", false)]  // Valid argument type
 		[DataTestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AnalyzeVariableDeclaration_ShouldCheckArgumentTypes(string arguments, bool isError)
+		public async Task VariableDeclarationChecksArgumentTypesAsync(string arguments, bool isError)
 		{
 			const string template = @"
 using Moq;
