@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -35,7 +36,7 @@ namespace ForLoopTests {
         public void Method() {
             var list = new List<int> { 1, 2, 3 };
             for (var index = list.Count - 1; index >= 0; index--) {
-                // This will miss element at index 0
+                // Process element at index
             }
         }
     }
@@ -45,7 +46,9 @@ namespace ForLoopTests {
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixChangesGreaterThanToGreaterThanOrEqual()
 		{
-			await VerifyDiagnosticAndFix(TestCode, FixedCode).ConfigureAwait(false);
+			await VerifyDiagnostic(TestCode, DiagnosticId.AvoidIncorrectForLoopCondition).ConfigureAwait(false);
+
+			await VerifyFix(TestCode, FixedCode).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()
@@ -57,5 +60,6 @@ namespace ForLoopTests {
 		{
 			return new AvoidIncorrectForLoopConditionAnalyzer();
 		}
+
 	}
 }
