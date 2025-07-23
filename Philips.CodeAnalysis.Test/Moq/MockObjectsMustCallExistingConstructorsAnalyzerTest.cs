@@ -530,6 +530,123 @@ public static class Bar
 			}
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnalyzeVariableDeclaration_ShouldIgnoreNonMockTypes()
+		{
+			const string code = @"
+using System.Collections.Generic;
+public static class Bar
+{
+	public static void Method()
+	{
+		// Should ignore non-generic types
+		string nonGeneric = ""test"";
+		
+		// Should ignore generic non-Mock types
+		List<string> genericNonMock = new();
+		
+		// Should ignore var declarations of non-Mock types  
+		var implicitNonMock = new List<int>();
+	}
+}";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnalyzeVariableDeclaration_ShouldIgnoreMockWithoutInitializer()
+		{
+			const string code = @"
+using Moq;
+public class Mockable
+{
+	public Mockable() { }
+}
+
+public static class Bar
+{
+	public static void Method()
+	{
+		// Should ignore Mock variables without initializers
+		Mock<Mockable> uninitializedMock;
+		
+		// Should ignore null assignments
+		Mock<Mockable> nullMock = null;
+	}
+}";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnalyzeVariableDeclaration_ShouldIgnoreNonConstructorInitializers()
+		{
+			const string code = @"
+using Moq;
+public class Mockable
+{
+	public Mockable() { }
+}
+
+public static class Bar
+{
+	public static void Method()
+	{
+		// Should ignore Mock variables initialized from method calls
+		Mock<Mockable> methodMock = CreateMock();
+		
+		// Should ignore Mock variables initialized from existing variables
+		Mock<Mockable> existingMock = new Mock<Mockable>();
+		Mock<Mockable> assignedMock = existingMock;
+	}
+	
+	private static Mock<Mockable> CreateMock()
+	{
+		return new Mock<Mockable>();
+	}
+}";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[DataRow("bool arg", true)]  // Wrong argument type
+		[DataRow("string wrongType", true)]  // Wrong argument type  
+		[DataRow("int validArg", false)]  // Valid argument type
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnalyzeVariableDeclaration_ShouldCheckArgumentTypes(string arguments, bool isError)
+		{
+			const string template = @"
+using Moq;
+public class MockableWithInt
+{{
+	public MockableWithInt() {{ }}
+	public MockableWithInt(int value) {{ }}
+}}
+
+public static class Bar
+{{
+	public static void Method()
+	{{
+		bool arg = true;
+		string wrongType = ""test"";
+		int validArg = 42;
+		
+		Mock<MockableWithInt> m = new({0});
+	}}
+}}";
+
+			var code = string.Format(template, arguments);
+			if (isError)
+			{
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
+		}
+
 		#endregion
 	}
 }
