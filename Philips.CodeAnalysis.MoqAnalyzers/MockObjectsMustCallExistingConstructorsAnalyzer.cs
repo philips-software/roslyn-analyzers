@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			context.RegisterSyntaxNodeAction(AnalyzeNewObject, SyntaxKind.ObjectCreationExpression);
-			context.RegisterSyntaxNodeAction(AnalyzeImplicitNewObject, SyntaxKind.ImplicitObjectCreationExpression);
+			context.RegisterSyntaxNodeAction(AnalyzeVariableDeclaration, SyntaxKind.VariableDeclaration);
 			context.RegisterSyntaxNodeAction(AnalyzeInstanceCall, SyntaxKind.InvocationExpression);
 		}
 
@@ -96,7 +96,16 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		{
 			var objectCreationExpressionSyntax = (ObjectCreationExpressionSyntax)context.Node;
 
-			// Get the semantic information first - this works for both explicit and inferred types
+			if (objectCreationExpressionSyntax.Type is not GenericNameSyntax genericNameSyntax)
+			{
+				return;
+			}
+
+			if (genericNameSyntax.Identifier.ValueText != MockName)
+			{
+				return;
+			}
+
 			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(objectCreationExpressionSyntax);
 
 			if (symbolInfo.Symbol is not IMethodSymbol mockConstructorMethod)
@@ -104,13 +113,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol { IsGenericType: true } typeSymbol)
-			{
-				return;
-			}
 
-			// Check if this is actually a Mock<T> constructor
-			if (typeSymbol.Name != MockName)
+			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol { IsGenericType: true } typeSymbol)
 			{
 				return;
 			}
@@ -120,32 +124,54 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			VerifyMockAttempt(context, mockedClass, objectCreationExpressionSyntax.ArgumentList, true);
 		}
 
-		private void AnalyzeImplicitNewObject(SyntaxNodeAnalysisContext context)
+		private void AnalyzeVariableDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			var implicitObjectCreationExpressionSyntax = (ImplicitObjectCreationExpressionSyntax)context.Node;
+			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
 
-			// Get the semantic information to determine the constructed type
-			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(implicitObjectCreationExpressionSyntax);
-
-			if (symbolInfo.Symbol is not IMethodSymbol mockConstructorMethod)
+			// Check if the variable type is Mock<T>
+			TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(variableDeclaration.Type);
+			if (typeInfo.Type is not INamedTypeSymbol { IsGenericType: true } namedTypeSymbol)
 			{
 				return;
 			}
 
-			if (mockConstructorMethod.ReceiverType is not INamedTypeSymbol { IsGenericType: true } typeSymbol)
+			if (namedTypeSymbol.Name != MockName)
 			{
 				return;
 			}
 
-			// Check if this is actually a Mock<T> constructor
-			if (typeSymbol.Name != MockName)
+			// Check each variable declarator for initialization
+			foreach (var variable in variableDeclaration.Variables)
 			{
-				return;
+				if (variable.Initializer?.Value != null)
+				{
+					// Check if the initializer is calling a Mock constructor
+					SymbolInfo initializerSymbol = context.SemanticModel.GetSymbolInfo(variable.Initializer.Value);
+					if (initializerSymbol.Symbol is IMethodSymbol { MethodKind: MethodKind.Constructor } mockConstructorMethod)
+					{
+						if (mockConstructorMethod.ReceiverType is INamedTypeSymbol { IsGenericType: true } constructedType &&
+							constructedType.Name == MockName)
+						{
+							ITypeSymbol mockedClass = constructedType.TypeArguments[0];
+
+							// Get argument list - handle both explicit and implicit object creation
+							ArgumentListSyntax argumentList = null;
+							if (variable.Initializer.Value is ObjectCreationExpressionSyntax objectCreation)
+							{
+								argumentList = objectCreation.ArgumentList;
+							}
+							else
+							{
+								// For implicit object creation, try to get ArgumentList using reflection
+								var argumentListProperty = variable.Initializer.Value.GetType().GetProperty("ArgumentList");
+								argumentList = argumentListProperty?.GetValue(variable.Initializer.Value) as ArgumentListSyntax;
+							}
+
+							VerifyMockAttempt(context, mockedClass, argumentList, true);
+						}
+					}
+				}
 			}
-
-			ITypeSymbol mockedClass = typeSymbol.TypeArguments[0];
-
-			VerifyMockAttempt(context, mockedClass, implicitObjectCreationExpressionSyntax.ArgumentList, true);
 		}
 
 		private bool IsFirstArgumentMockBehavior(SyntaxNodeAnalysisContext context, ArgumentListSyntax argumentList)
