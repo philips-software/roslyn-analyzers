@@ -496,6 +496,40 @@ public static class Bar
 			}
 		}
 
+		[DataRow("", false)]
+		[DataRow("MockBehavior.Default", false)]
+		[DataRow("1, 2", true)]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorsMustExistViaNewMockInferredAsync(string arguments, bool isError)
+		{
+			const string template = @"
+using Moq;
+public class Mockable
+{{
+	public Mockable() {{ }}
+}}
+
+public static class Bar
+{{
+	public static void Method()
+	{{
+		Mock<Mockable> m = new({0});
+	}}
+}}
+";
+
+			var code = string.Format(template, arguments);
+			if (isError)
+			{
+				await VerifyDiagnostic(code, DiagnosticId.MockArgumentsMustMatchConstructor).ConfigureAwait(false);
+			}
+			else
+			{
+				await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+			}
+		}
+
 		#endregion
 	}
 }

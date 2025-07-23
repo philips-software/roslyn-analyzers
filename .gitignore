@@ -22,6 +22,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# Package artifacts
+Packages/
+
 # Visual Studio 2015 cache/options directory
 .vs/
 .vscode/
