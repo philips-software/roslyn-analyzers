@@ -106,7 +106,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				.Select(i => i.GetStructure())
 				.OfType<DocumentationCommentTriviaSyntax>()
 				.SelectMany(n => n.ChildNodes().OfType<XmlElementSyntax>());
-			
 			if (xmlElements.Any())
 			{
 				var name = nameFunc();
@@ -170,17 +169,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 		}
 
-		private static string GetContent(XmlElementSyntax xmlElement)
-		{
-			const string Space = " ";
-			return xmlElement.Content.ToString()
-				.Replace("\r", string.Empty)
-				.Replace("/", Space)
-				.Replace("\n", Space)
-				.Replace("\t", Space)
-				.Replace("///", string.Empty);
-		}
-
 		/// <summary>
 		/// Checks if there are any non-summary XML documentation elements that contain meaningful content.
 		/// Elements like param, returns, exception, etc. are considered if they have useful information.
@@ -230,6 +218,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			}
 
 			return false;
+		}
+
+		private static string GetContent(XmlElementSyntax xmlElement)
+		{
+			const string Space = " ";
+			return xmlElement.Content.ToString()
+				.Replace("\r", string.Empty)
+				.Replace("/", Space)
+				.Replace("\n", Space)
+				.Replace("\t", Space)
+				.Replace("///", string.Empty);
 		}
 
 		private static IEnumerable<string> SplitFromConfig(string line)
