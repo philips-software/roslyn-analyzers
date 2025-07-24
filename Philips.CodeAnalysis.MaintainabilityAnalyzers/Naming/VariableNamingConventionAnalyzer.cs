@@ -134,6 +134,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		{
 			var name = identifier.ValueText;
 
+			// Variables named exactly "_" should be avoided as they can be confused with discards
+			if (name == "_")
+			{
+				return false;
+			}
+
 			return validator.IsMatch(name);
 		}
 	}
