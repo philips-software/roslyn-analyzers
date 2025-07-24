@@ -368,5 +368,34 @@ class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MultipleAsExpressionsInSameBlockShouldNotTriggerFalsePositiveAsync()
+		{
+			var testCode = @"
+class SomeKindOfModel
+{{
+	public bool IsValid {{ get; set; }}
+}}
+
+class Foo 
+{{
+	public void TestMethod(object aModel, object anOldModel)
+	{{
+		var model = aModel as SomeKindOfModel;
+		var oldModel = anOldModel as SomeKindOfModel;
+		if (oldModel != null && oldModel.IsValid) {{
+			// some code
+		}}            
+		if (model != null && model.IsValid) {{
+			// some code
+		}}
+	}}
+}}
+";
+			// This should not produce any diagnostics since both variables are properly null-checked
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
 	}
 }

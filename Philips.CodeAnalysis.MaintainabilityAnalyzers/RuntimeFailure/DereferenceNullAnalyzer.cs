@@ -176,6 +176,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			var isOurSymbolReadOrWritten = OurSymbolIsReadOrWritten(model, firstStatementOfAnalysis, lastStatementOfAnalysis, ourSymbol);
 			if (!isOurSymbolReadOrWritten)
 			{
+				StatementSyntax usageStatement = identifierNameSyntax.Ancestors().OfType<StatementSyntax>().First();
+				if (usageStatement is IfStatementSyntax ifStmt && HasNullCheck(ifStmt.Condition))
+				{
+					return;
+				}
+
 				Report(identifierNameSyntax);
 			}
 		}
