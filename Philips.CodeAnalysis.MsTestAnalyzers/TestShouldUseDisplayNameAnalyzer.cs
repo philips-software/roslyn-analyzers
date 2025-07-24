@@ -47,9 +47,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			private void CheckDataTestMethodForDisplayName(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration)
 			{
 				// Check for DataRow attributes with comments but no DisplayName
-				foreach (var attributeList in methodDeclaration.AttributeLists)
+				foreach (AttributeListSyntax attributeList in methodDeclaration.AttributeLists)
 				{
-					foreach (var attribute in attributeList.Attributes)
+					foreach (AttributeSyntax attribute in attributeList.Attributes)
 					{
 						if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
 						{
@@ -91,8 +91,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			private string GetTrailingComment(AttributeSyntax attribute)
 			{
-				var token = attribute.GetLastToken();
-				var trivia = token.TrailingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
+				SyntaxToken token = attribute.GetLastToken();
+				SyntaxTrivia trivia = token.TrailingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
 
 				if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
 				{
@@ -104,10 +104,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			private string GetLeadingComment(MethodDeclarationSyntax methodDeclaration)
 			{
-				var leadingTrivia = methodDeclaration.GetLeadingTrivia();
+				SyntaxTriviaList leadingTrivia = methodDeclaration.GetLeadingTrivia();
 
 				// Look for single-line comment immediately before the method
-				var comment = leadingTrivia.LastOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
+				SyntaxTrivia comment = leadingTrivia.LastOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
 				if (comment.IsKind(SyntaxKind.SingleLineCommentTrivia))
 				{
 					return ExtractCommentText(comment.ToString());
