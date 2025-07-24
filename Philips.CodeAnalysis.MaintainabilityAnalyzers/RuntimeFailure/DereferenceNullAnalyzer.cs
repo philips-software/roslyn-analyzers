@@ -127,9 +127,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool HasNullCheck(ExpressionSyntax condition)
 		{
 			var conditionAsString = condition.ToString();
-			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
+			if (conditionAsString.Contains(@".HasValue"))
 			{
 				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
+				return true;
+			}
+			if (conditionAsString.Contains(@"null"))
+			{
+				// If it contains a dot before null, it's likely a property access, not a direct null check
+				// For example: "assignedCell.Value == null" doesn't protect against assignedCell being null
+				if (conditionAsString.Contains(@".") && !conditionAsString.Contains(@".HasValue"))
+				{
+					return false;
+				}
+				// This appears to be a direct null check like "assignedCell == null"
 				return true;
 			}
 

@@ -378,19 +378,12 @@ class DataGridViewTextBoxCell
   public object Value {{ get; set; }}
 }}
 
-class Row 
-{{
-  public DataGridViewTextBoxCell[] Cells {{ get; set; }}
-}}
-
 class Foo 
 {{
-  private int _colAssignedValue = 0;
-  
   public void Foo()
   {{
-    var row = new Row();
-    DataGridViewTextBoxCell assignedCell = row.Cells[_colAssignedValue] as DataGridViewTextBoxCell;
+    object obj = new DataGridViewTextBoxCell();
+    DataGridViewTextBoxCell assignedCell = obj as DataGridViewTextBoxCell;
     if (assignedCell.Value == null)
     {{
       assignedCell.Value = string.Empty;
