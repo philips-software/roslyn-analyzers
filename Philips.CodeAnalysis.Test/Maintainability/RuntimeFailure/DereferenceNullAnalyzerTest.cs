@@ -368,5 +368,38 @@ class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionPropertyCheckNotVariableCheckTestAsync()
+		{
+			var testCode = @"
+class DataGridViewTextBoxCell 
+{{
+  public object Value {{ get; set; }}
+}}
+
+class Row 
+{{
+  public DataGridViewTextBoxCell[] Cells {{ get; set; }}
+}}
+
+class Foo 
+{{
+  private int _colAssignedValue = 0;
+  
+  public void Foo()
+  {{
+    var row = new Row();
+    DataGridViewTextBoxCell assignedCell = row.Cells[_colAssignedValue] as DataGridViewTextBoxCell;
+    if (assignedCell.Value == null)
+    {{
+      assignedCell.Value = string.Empty;
+    }}
+  }}
+}}
+";
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
+
 	}
 }
