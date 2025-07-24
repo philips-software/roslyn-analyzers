@@ -116,12 +116,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				var lowercaseName = name.ToLowerInvariant();
 
-				// Check if there are meaningful non-summary elements
-				var hasUsefulNonSummaryElements = HasUsefulNonSummaryElements(xmlElements,
-					lowercaseName);
-
 				// If there are useful non-summary elements, skip summary diagnostics
-				if (hasUsefulNonSummaryElements)
+				if (HasUsefulNonSummaryElements(xmlElements, lowercaseName))
 				{
 					return;
 				}
