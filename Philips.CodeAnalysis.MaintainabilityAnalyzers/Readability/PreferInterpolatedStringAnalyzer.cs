@@ -1,86 +1,121 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class PreferInterpolatedStringAnalyzer : SingleDiagnosticAnalyzer<InvocationExpressionSyntax, PreferInterpolatedStringSyntaxNodeAction>
+	public class PreferInterpolatedStringAnalyzer : DiagnosticAnalyzerBase
 	{
 		private const string Title = @"Prefer interpolated strings over string.Format";
 		private const string MessageFormat = @"Replace string.Format with interpolated string for better readability";
 		private const string Description = @"Interpolated strings are more readable and less error prone than string.Format";
 
-		public PreferInterpolatedStringAnalyzer()
-			: base(DiagnosticId.PreferInterpolatedString, Title, MessageFormat, Description, Categories.Readability)
-		{ }
-	}
+		private const string Category = Categories.Readability;
 
-	public class PreferInterpolatedStringSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
-	{
-		public override void Analyze()
+		private static readonly DiagnosticDescriptor Rule = new(
+			DiagnosticId.PreferInterpolatedString.ToId(),
+			Title,
+			MessageFormat,
+			Category,
+			DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: Description);
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			if (!IsStringFormatCall())
+			context.RegisterOperationAction(OnInvocation, OperationKind.Invocation);
+		}
+
+		private void OnInvocation(OperationAnalysisContext operationContext)
+		{
+			var invocation = (IInvocationOperation)operationContext.Operation;
+
+			if (!IsStringFormatMethod(invocation.TargetMethod))
 			{
 				return;
 			}
 
-			if (!CanConvertToInterpolatedString())
+			if (!CanConvertToInterpolatedString(invocation))
 			{
 				return;
 			}
 
-			Location location = Node.GetLocation();
-			ReportDiagnostic(location);
+			Location location = invocation.Syntax.GetLocation();
+			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
 		}
 
-		private bool IsStringFormatCall()
+		private bool IsStringFormatMethod(IMethodSymbol targetMethod)
 		{
-			if (Node.Expression is not MemberAccessExpressionSyntax memberAccess)
-			{
-				return false;
-			}
-
-			if (memberAccess.Name.Identifier.Text != "Format")
-			{
-				return false;
-			}
-
-			if (memberAccess.Expression is not IdentifierNameSyntax identifier)
-			{
-				return false;
-			}
-
-			return identifier.Identifier.Text == "string";
+			return targetMethod.Name == "Format" &&
+				   targetMethod.ContainingType != null &&
+				   targetMethod.ContainingType.SpecialType == SpecialType.System_String;
 		}
 
-		private bool CanConvertToInterpolatedString()
+		private bool CanConvertToInterpolatedString(IInvocationOperation invocation)
 		{
-			if (Node.ArgumentList.Arguments.Count < 1)
+			if (invocation.Arguments.Length < 1)
 			{
 				return false;
 			}
 
-			ArgumentSyntax formatArgument = Node.ArgumentList.Arguments[0];
-			if (formatArgument.Expression is not LiteralExpressionSyntax literal ||
-				!literal.Token.IsKind(SyntaxKind.StringLiteralToken))
+			IOperation formatStringArgument = invocation.Arguments[0].Value;
+
+			// Only support literal format strings for now
+			if (formatStringArgument.Kind != OperationKind.Literal ||
+				formatStringArgument.Type?.SpecialType != SpecialType.System_String)
 			{
 				return false;
 			}
 
-			var formatString = literal.Token.ValueText;
+			var formatString = (string)formatStringArgument.ConstantValue.Value;
 
 			// Don't suggest conversion for format strings with format specifiers
 			if (formatString.Contains(":"))
 			{
 				return false;
+/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
+Before:
 			}
 
-			return true;
+			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
+			// and there are corresponding arguments
+After:
+			}
+
+			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
+			// and there are corresponding arguments
+*/
+
+			}
+
+			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
+			// and there are corresponding arguments
+			var hasPlaceholders = formatString.Contains("{") && formatString.Contains("}");
+			if (!hasPlaceholders)
+			{
+				return false;
+/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
+Before:
+			}
+
+			// Make sure we have arguments beyond the format string
+After:
+			}
+
+			// Make sure we have arguments beyond the format string
+*/
+
+			}
+
+			// Make sure we have arguments beyond the format string
+			return invocation.Arguments.Length > 1;
 		}
 	}
 }
