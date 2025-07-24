@@ -618,5 +618,130 @@ public class Foo : BaseClass
 			await VerifyFix(content, newContent);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulParamShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""value"">The meaningful parameter description that provides useful information.</param>
+	public void Foo(int value)
+	{{
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UselessSummaryWithUsefulParamShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary>Foo</summary>
+	/// <param name=""value"">The meaningful parameter description that provides useful information.</param>
+	public void Foo(int value)
+	{{
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulReturnsShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <returns>A meaningful return value description that provides useful information.</returns>
+	public int Foo()
+	{{
+		return 42;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulExceptionShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <exception cref=""System.ArgumentNullException"">Thrown when argument is null and operation cannot proceed.</exception>
+	public void Foo(string arg)
+	{{
+		if (arg == null) throw new System.ArgumentNullException(nameof(arg));
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithMultipleUsefulElementsShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""input"">The input value to process with specific business logic.</param>
+	/// <returns>A processed result based on the input with additional computation.</returns>
+	/// <exception cref=""System.ArgumentException"">Thrown when input is invalid for processing.</exception>
+	public int ProcessValue(string input)
+	{{
+		if (string.IsNullOrEmpty(input)) throw new System.ArgumentException(""Invalid input"");
+		return input.Length * 2;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUselessParamShouldStillTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""foo"">foo</param>
+	public void Foo(int foo)
+	{{
+	}}
+}}
+";
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UselessSummaryWithUselessParamShouldTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary>Foo</summary>
+	/// <param name=""foo"">foo</param>
+	public void Foo(int foo)
+	{{
+	}}
+}}
+";
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+		}
+
 	}
 }
