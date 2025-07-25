@@ -26,14 +26,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Look for interpolated string expressions
 			foreach (InterpolatedStringContentSyntax content in Node.Contents)
 			{
-				if (content is InterpolationSyntax interpolation)
+				if (content is InterpolationSyntax interpolation && ContainsStringJoinCall(interpolation.Expression))
 				{
-					// Check if the interpolation contains a string.Join call
-					if (ContainsStringJoinCall(interpolation.Expression))
-					{
-						Location location = interpolation.GetLocation();
-						ReportDiagnostic(location);
-					}
+					Location location = interpolation.GetLocation();
+					ReportDiagnostic(location);
 				}
 			}
 		}
