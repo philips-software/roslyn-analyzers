@@ -15,6 +15,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string MessageFormat = @"Replace string.Format with interpolated string for better readability";
 		private const string Description = @"Interpolated strings are more readable and less error prone than string.Format";
 
+		private const string UnnecessaryTitle = @"Unnecessary call to string.Format";
+		private const string UnnecessaryMessageFormat = @"Remove unnecessary call to string.Format";
+		private const string UnnecessaryDescription = @"string.Format calls with no placeholders are unnecessary";
+
 		private const string Category = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor Rule = new(
@@ -26,7 +30,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			isEnabledByDefault: true,
 			description: Description);
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		private static readonly DiagnosticDescriptor UnnecessaryRule = new(
+			DiagnosticId.PreferInterpolatedString.ToId(),
+			UnnecessaryTitle,
+			UnnecessaryMessageFormat,
+			Category,
+			DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: UnnecessaryDescription);
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, UnnecessaryRule);
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
@@ -42,13 +55,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			if (!CanConvertToInterpolatedString(invocation))
+			if (!CanConvertToInterpolatedString(invocation, out bool isUnnecessary))
 			{
 				return;
 			}
 
 			Location location = invocation.Syntax.GetLocation();
-			operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
+			
+			if (isUnnecessary)
+			{
+				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
+			}
+			else
+			{
+				operationContext.ReportDiagnostic(Diagnostic.Create(Rule, location));
+			}
 		}
 
 		private bool IsStringFormatMethod(IMethodSymbol targetMethod)
@@ -58,8 +79,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				   targetMethod.ContainingType.SpecialType == SpecialType.System_String;
 		}
 
-		private bool CanConvertToInterpolatedString(IInvocationOperation invocation)
+		private bool CanConvertToInterpolatedString(IInvocationOperation invocation, out bool isUnnecessary)
 		{
+			isUnnecessary = false;
+			
 			if (invocation.Arguments.Length < 1)
 			{
 				return false;
@@ -85,7 +108,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			
 			if (placeholderCount == 0)
 			{
-				return false;
+				// No placeholders - this is an unnecessary string.Format call
+				isUnnecessary = true;
+				return true;
 			}
 
 			return invocation.Arguments.Length > 1;

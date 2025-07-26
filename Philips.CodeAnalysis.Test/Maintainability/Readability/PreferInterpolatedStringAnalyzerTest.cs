@@ -37,7 +37,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NoWarningForStringWithoutPlaceholders()
+		public async Task DetectUnnecessaryStringFormatWithoutPlaceholders()
 		{
 			const string input = @"
 class Foo
@@ -48,7 +48,7 @@ class Foo
 	}
 }";
 
-			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+			await VerifyDiagnostic(input, DiagnosticId.PreferInterpolatedString).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -84,6 +84,55 @@ class Foo
 }";
 
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForEscapedBraces()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		string name = ""World"";
+		string str = string.Format(""Hello {{static text}} {0}"", name);
+	}
+}";
+
+			await VerifyDiagnostic(input, DiagnosticId.PreferInterpolatedString).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForOnlyEscapedBraces()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		string str = string.Format(""Hello {{static text}} no placeholders"");
+	}
+}";
+
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DetectUnnecessaryStringFormat()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		string str = string.Format(""Simple string with no placeholders"");
+	}
+}";
+
+			await VerifyDiagnostic(input, DiagnosticId.PreferInterpolatedString).ConfigureAwait(false);
 		}
 	}
 }
