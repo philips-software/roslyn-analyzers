@@ -129,14 +129,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			var conditionAsString = condition.ToString();
 			if (conditionAsString.Contains(@".HasValue"))
 			{
-				// HasValue is a valid null check. Don't be too picky to minimize false positives
+				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
 				return true;
 			}
 			if (conditionAsString.Contains(@"null"))
 			{
-				// Reject simple property null checks like "obj.Value == null" which don't protect obj
-				// Allow compound conditions like "obj != null && obj.Value == null"
-				if (conditionAsString.Contains(@".") && !conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||"))
+				// Only reject simple property null checks like "obj.Value == null" without compound logic
+				if (!conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||") && 
+					conditionAsString.Contains(@".") && 
+					(conditionAsString.Contains(@"== null") || conditionAsString.Contains(@"!= null")))
 				{
 					return false;
 				}
