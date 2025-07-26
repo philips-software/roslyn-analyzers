@@ -127,9 +127,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool HasNullCheck(ExpressionSyntax condition)
 		{
 			var conditionAsString = condition.ToString();
-			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
+			if (conditionAsString.Contains(@".HasValue"))
 			{
 				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
+				return true;
+			}
+			if (conditionAsString.Contains(@"null"))
+			{
+				// Only reject simple property null checks like "obj.Value == null" without compound logic
+				if (!conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||") &&
+					conditionAsString.Contains(@".") &&
+					(conditionAsString.Contains(@"== null") || conditionAsString.Contains(@"!= null")))
+				{
+					return false;
+				}
 				return true;
 			}
 
