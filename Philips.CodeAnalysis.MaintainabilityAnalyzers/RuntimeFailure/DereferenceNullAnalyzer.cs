@@ -135,8 +135,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			if (conditionAsString.Contains(@"null"))
 			{
 				// Only reject simple property null checks like "obj.Value == null" without compound logic
-				if (!conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||") && 
-					conditionAsString.Contains(@".") && 
+				if (!conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||") &&
+					conditionAsString.Contains(@".") &&
 					(conditionAsString.Contains(@"== null") || conditionAsString.Contains(@"!= null")))
 				{
 					return false;
