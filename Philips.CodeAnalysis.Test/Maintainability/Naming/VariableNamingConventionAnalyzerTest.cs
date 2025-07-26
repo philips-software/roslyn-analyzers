@@ -416,35 +416,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			await VerifySuccessfulCompilation(givenText, "GlobalSuppressions").ConfigureAwait(false);
 		}
 
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task VariableNamedExactlyUnderscoreShouldFail()
-		{
-			var givenText = @"class Foo 
-{{
-    private void Bar()
-    {{
-        byte[] _ = ExtractData(reader);
-    }}
-
-    private byte[] ExtractData(object reader) => new byte[0];
-}}
-";
-			await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldNamedExactlyUnderscoreShouldFail()
-		{
-			var givenText = @"class Foo 
-{{
-    private byte[] _ = new byte[0];
-}}
-";
-			await VerifyDiagnostic(givenText, DiagnosticId.VariableNamingConventions).ConfigureAwait(false);
-		}
-
 		#endregion
 	}
 }
