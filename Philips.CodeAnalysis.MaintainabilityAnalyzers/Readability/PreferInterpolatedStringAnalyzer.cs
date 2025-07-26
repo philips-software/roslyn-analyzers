@@ -1,4 +1,4 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -7,6 +7,15 @@ using Microsoft.CodeAnalysis.Operations;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
+/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
+Before:
+{
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+After:
+{
+	[DiagnosticAnalyzer(LanguageNames.CSharp)]
+*/
+
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PreferInterpolatedStringAnalyzer : DiagnosticAnalyzerBase
@@ -18,13 +27,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string Category = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor Rule = new(
-			DiagnosticId.PreferInterpolatedString.ToId(),
-			Title,
-			MessageFormat,
-			Category,
-			DiagnosticSeverity.Error,
-			isEnabledByDefault: true,
-			description: Description);
+		DiagnosticId.PreferInterpolatedString.ToId(),
+		Title,
+		MessageFormat,
+		Category,
+		DiagnosticSeverity.Error,
+		isEnabledByDefault: true,
+		description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -54,8 +63,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private bool IsStringFormatMethod(IMethodSymbol targetMethod)
 		{
 			return targetMethod.Name == "Format" &&
-				   targetMethod.ContainingType != null &&
-				   targetMethod.ContainingType.SpecialType == SpecialType.System_String;
+			   targetMethod.ContainingType != null &&
+			   targetMethod.ContainingType.SpecialType == SpecialType.System_String;
 		}
 
 		private bool CanConvertToInterpolatedString(IInvocationOperation invocation)
@@ -67,55 +76,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			IOperation formatStringArgument = invocation.Arguments[0].Value;
 
-			// Only support literal format strings for now
 			if (formatStringArgument.Kind != OperationKind.Literal ||
-				formatStringArgument.Type?.SpecialType != SpecialType.System_String)
+			formatStringArgument.Type?.SpecialType != SpecialType.System_String)
 			{
 				return false;
 			}
 
 			var formatString = (string)formatStringArgument.ConstantValue.Value;
 
-			// Don't suggest conversion for format strings with format specifiers
 			if (formatString.Contains(":"))
 			{
 				return false;
-/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
-Before:
 			}
 
-			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
-			// and there are corresponding arguments
-After:
-			}
-
-			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
-			// and there are corresponding arguments
-*/
-
-			}
-
-			// Only suggest conversion if there are placeholders like {0}, {1}, etc.
-			// and there are corresponding arguments
 			var hasPlaceholders = formatString.Contains("{") && formatString.Contains("}");
 			if (!hasPlaceholders)
 			{
 				return false;
+			}
+
+			
 /* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
 Before:
-			}
-
-			// Make sure we have arguments beyond the format string
+return invocation.Arguments.Length > 1;
+}
+}
 After:
-			}
-
-			// Make sure we have arguments beyond the format string
+return invocation.Arguments.Length > 1;
+		}
+	}
 */
-
-			}
-
-			// Make sure we have arguments beyond the format string
-			return invocation.Arguments.Length > 1;
+return invocation.Arguments.Length > 1;
 		}
 	}
 }
