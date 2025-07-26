@@ -129,18 +129,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			var conditionAsString = condition.ToString();
 			if (conditionAsString.Contains(@".HasValue"))
 			{
-				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
+				// HasValue is a valid null check. Don't be too picky to minimize false positives
 				return true;
 			}
 			if (conditionAsString.Contains(@"null"))
 			{
-				// If it contains a dot before null, it's likely a property access, not a direct null check
-				// For example: "assignedCell.Value == null" doesn't protect against assignedCell being null
-				if (conditionAsString.Contains(@".") && !conditionAsString.Contains(@".HasValue"))
+				// Reject simple property null checks like "obj.Value == null" which don't protect obj
+				// Allow compound conditions like "obj != null && obj.Value == null"
+				if (conditionAsString.Contains(@".") && !conditionAsString.Contains(@"&&") && !conditionAsString.Contains(@"||"))
 				{
 					return false;
 				}
-				// This appears to be a direct null check like "assignedCell == null"
 				return true;
 			}
 
