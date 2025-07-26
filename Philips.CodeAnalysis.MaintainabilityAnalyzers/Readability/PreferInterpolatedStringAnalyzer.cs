@@ -80,13 +80,72 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return false;
 			}
 
-			var hasPlaceholders = formatString.Contains("{") && formatString.Contains("}");
-			if (!hasPlaceholders)
+			// Parse the format string to find actual placeholders, ignoring escaped braces
+			var placeholderCount = CountFormatPlaceholders(formatString);
+			
+			if (placeholderCount == 0)
 			{
 				return false;
 			}
 
 			return invocation.Arguments.Length > 1;
+		}
+
+		private int CountFormatPlaceholders(string formatString)
+		{
+			var placeholderCount = 0;
+			var i = 0;
+
+			while (i < formatString.Length)
+			{
+				if (formatString[i] == '{')
+				{
+					if (i + 1 < formatString.Length && formatString[i + 1] == '{')
+					{
+						// Escaped brace {{, skip both characters
+						i += 2;
+						continue;
+					}
+
+					// Look for closing brace
+					var j = i + 1;
+					while (j < formatString.Length && formatString[j] != '}')
+					{
+						j++;
+					}
+
+					if (j < formatString.Length && formatString[j] == '}')
+					{
+						// Found valid placeholder, check if it's a simple numeric placeholder
+						var content = formatString.Substring(i + 1, j - i - 1);
+						if (int.TryParse(content.Trim(), out _))
+						{
+							placeholderCount++;
+						}
+						i = j + 1;
+					}
+					else
+					{
+						i++;
+					}
+				}
+				else if (formatString[i] == '}')
+				{
+					if (i + 1 < formatString.Length && formatString[i + 1] == '}')
+					{
+						// Escaped brace }}, skip both characters
+						i += 2;
+						continue;
+					}
+					i++;
+				}
+				else
+				{
+					i++;
+				}
+			}
+
+			return placeholderCount;
 		}
 	}
 }
