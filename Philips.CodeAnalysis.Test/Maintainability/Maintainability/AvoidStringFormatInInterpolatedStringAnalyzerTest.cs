@@ -10,27 +10,27 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidStringJoinInInterpolatedStringAnalyzerTest : DiagnosticVerifier
+	public class AvoidStringFormatInInterpolatedStringAnalyzerTest : DiagnosticVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new AvoidStringJoinInInterpolatedStringAnalyzer();
+			return new AvoidStringFormatInInterpolatedStringAnalyzer();
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task StringJoinInInterpolatedStringTriggersWarning()
+		public async Task StringFormatInInterpolatedStringTriggersWarning()
 		{
 			var code = @"
 using System;
-using System.Collections.Generic;
 
 class Test
 {
 	public void Method()
 	{
-		var items = new List<string> { ""a"", ""b"", ""c"" };
-		var result = $""Items: {string.Join("", "", items)}"";
+		var firstName = ""John"";
+		var lastName = ""Doe"";
+		var result = $""Hello {string.Format(""{0} {1}"", firstName, lastName)}"";
 	}
 }
 ";
@@ -39,20 +39,18 @@ class Test
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task StringJoinWithEnvironmentNewLineTriggersWarning()
+		public async Task StringFormatWithMultipleArgumentsTriggersWarning()
 		{
 			var code = @"
 using System;
-using System.Collections.Generic;
 
 class Test
 {
-	public string CommandType { get; set; }
-	public List<string> ReasonList { get; set; }
-	
-	public string Method()
+	public void Method()
 	{
-		return $@""{CommandType}  Reasons:{string.Join(Environment.NewLine, ReasonList)}"";
+		var name = ""John"";
+		var age = 30;
+		var result = $""User info: {string.Format(""Name: {0}, Age: {1}"", name, age)}"";
 	}
 }
 ";
@@ -61,18 +59,38 @@ class Test
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task InterpolatedStringWithoutStringJoinIsOk()
+		public async Task InterpolatedStringWithoutStringFormatIsOk()
 		{
 			var code = @"
 using System;
-using System.Collections.Generic;
 
 class Test
 {
 	public void Method()
 	{
-		var items = new List<string> { ""a"", ""b"", ""c"" };
-		var result = $""Items: {items.Count}"";
+		var firstName = ""John"";
+		var lastName = ""Doe"";
+		var result = $""Hello {firstName} {lastName}"";
+	}
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task StringFormatOutsideInterpolatedStringIsOk()
+		{
+			var code = @"
+using System;
+
+class Test
+{
+	public void Method()
+	{
+		var firstName = ""John"";
+		var lastName = ""Doe"";
+		var result = string.Format(""Hello {0} {1}"", firstName, lastName);
 	}
 }
 ";
