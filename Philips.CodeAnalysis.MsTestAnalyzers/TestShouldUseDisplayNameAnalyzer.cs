@@ -103,17 +103,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			private string GetLeadingComment(MethodDeclarationSyntax methodDeclaration)
-/* Unmerged change from project 'Philips.CodeAnalysis.MsTestAnalyzers(netstandard2.0)'
-Before:
-				SyntaxTriviaList leadingTrivia = methodDeclaration.GetLeadingTrivia();
-
-				// Look for single-line comment immediately before the method
-After:
-				SyntaxTriviaList leadingTrivia = methodDeclaration.GetLeadingTrivia();
-
-				// Look for single-line comment immediately before the method
-*/
-
 			{
 				SyntaxTriviaList leadingTrivia = methodDeclaration.GetLeadingTrivia();
 
@@ -132,17 +121,6 @@ After:
 				if (string.IsNullOrWhiteSpace(commentTrivia))
 				{
 					return string.Empty;
-/* Unmerged change from project 'Philips.CodeAnalysis.MsTestAnalyzers(netstandard2.0)'
-Before:
-				}
-
-				// Remove // and trim whitespace
-After:
-				}
-
-				// Remove // and trim whitespace
-*/
-
 				}
 
 				// Remove // and trim whitespace
@@ -150,17 +128,6 @@ After:
 				if (text.StartsWith("//"))
 				{
 					text = text.Substring(2).Trim();
-/* Unmerged change from project 'Philips.CodeAnalysis.MsTestAnalyzers(netstandard2.0)'
-Before:
-				}
-
-				// Only consider meaningful comments (more than just a few characters)
-After:
-				}
-
-				// Only consider meaningful comments (more than just a few characters)
-*/
-
 				}
 
 				// Only consider meaningful comments (more than just a few characters)
