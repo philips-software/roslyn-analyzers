@@ -9,6 +9,7 @@
   <PropertyGroup>
     <Description>Roslyn Diagnostic Analyzers for helping maintainability or readability of C# code</Description>
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
+    <PackageReleaseNotes>Added PH2144: AvoidIncorrectForLoopCondition analyzer to detect backwards for-loop boundary check issues</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
