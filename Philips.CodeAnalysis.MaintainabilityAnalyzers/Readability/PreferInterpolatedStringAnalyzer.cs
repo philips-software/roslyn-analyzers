@@ -55,13 +55,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			if (!CanConvertToInterpolatedString(invocation, out bool isUnnecessary))
+			if (!CanConvertToInterpolatedString(invocation, out var isUnnecessary))
 			{
 				return;
 			}
 
 			Location location = invocation.Syntax.GetLocation();
-			
 			if (isUnnecessary)
 			{
 				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
@@ -82,7 +81,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private bool CanConvertToInterpolatedString(IInvocationOperation invocation, out bool isUnnecessary)
 		{
 			isUnnecessary = false;
-			
 			if (invocation.Arguments.Length < 1)
 			{
 				return false;
@@ -105,12 +103,22 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			// Parse the format string to find actual placeholders, ignoring escaped braces
 			var placeholderCount = CountFormatPlaceholders(formatString);
-			
+			var hasAnyBraces = formatString.Contains("{") || formatString.Contains("}");
+
 			if (placeholderCount == 0)
 			{
-				// No placeholders - this is an unnecessary string.Format call
-				isUnnecessary = true;
-				return true;
+				// Only flag as unnecessary if there are no braces at all
+				// If there are escaped braces, string.Format is needed to produce literal braces
+				if (!hasAnyBraces)
+				{
+					isUnnecessary = true;
+					return true;
+				}
+				else
+				{
+					// Has escaped braces but no placeholders - don't suggest conversion
+					return false;
+				}
 			}
 
 			return invocation.Arguments.Length > 1;
@@ -173,4 +181,4 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return placeholderCount;
 		}
 	}
-}
+}
