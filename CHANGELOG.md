@@ -1,3 +1,18 @@
+### [1.6.4](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.3...v1.6.4) (2025-07-28)
+
+
+### Bug Fixes
+
+* enforce regions false positives ([#830](https://github.com/philips-software/roslyn-analyzers/issues/830)) ([320a5a6](https://github.com/philips-software/roslyn-analyzers/commit/320a5a6f0b27ce746e6627347c3c8f9ac13a2cd8))
+* Fix PH2101 false positive when multiple 'as' expressions exist in same block ([#833](https://github.com/philips-software/roslyn-analyzers/issues/833)) ([d88f603](https://github.com/philips-software/roslyn-analyzers/commit/d88f603f7d5b4ff8b4993c80237e5b9ac4c704a3))
+
+
+### Build Systems
+
+* Bump github/codeql-action from 3.29.2 to 3.29.4 ([#837](https://github.com/philips-software/roslyn-analyzers/issues/837)) ([b85fb0a](https://github.com/philips-software/roslyn-analyzers/commit/b85fb0af3866a9c4dab6e232973b2e8d0de86ef5))
+
+
+
 ### [1.6.3](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.2...v1.6.3) (2025-07-07)
 
 
