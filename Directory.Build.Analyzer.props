@@ -14,7 +14,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageIcon>packageicon.png</PackageIcon>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/39734771</PackageIconUrl>
-    <PackageLicenseUrl>https://github.com/philips-software/roslyn-analyzers/blob/main/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
     <PackageReleaseNotes>See Changelog</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
@@ -48,6 +49,7 @@
     <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
