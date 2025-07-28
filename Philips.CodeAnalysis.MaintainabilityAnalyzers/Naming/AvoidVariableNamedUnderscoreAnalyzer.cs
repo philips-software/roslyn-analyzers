@@ -1,5 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+#pragma warning disable IDE0055 // Fix formatting
+
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -97,7 +99,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a variable declaration (out int _)
+			// Check if it's a variable declaration
 			if (argument.Expression is DeclarationExpressionSyntax declaration)
 			{
 				if (declaration.Designation is SingleVariableDesignationSyntax variable)
@@ -109,6 +111,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 					Location location = variable.Identifier.GetLocation();
 					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+					context.ReportDiagnostic(diagnostic);
+				}
+				else if (declaration.Designation is DiscardDesignationSyntax discard)
+				{
+					Location location = discard.UnderscoreToken.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location, discard.UnderscoreToken.ValueText);
 					context.ReportDiagnostic(diagnostic);
 				}
 			}
