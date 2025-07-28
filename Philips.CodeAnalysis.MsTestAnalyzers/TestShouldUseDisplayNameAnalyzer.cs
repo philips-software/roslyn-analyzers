@@ -131,12 +131,13 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 
 				// Only consider meaningful comments (more than just a few characters)
-				if (text.Length > 5)
+				if (text.Length <= 5)
 				{
-					return text;
+					return string.Empty;
 				}
 
-				return string.Empty;
+				// Temporarily disable filtering to debug
+				return text;
 			}
 		}
 	}
