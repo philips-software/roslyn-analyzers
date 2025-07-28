@@ -116,8 +116,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				var lowercaseName = name.ToLowerInvariant();
 
-				// If there are useful non-summary elements, skip summary diagnostics
-				if (HasUsefulNonSummaryElements(xmlElements, lowercaseName))
+				// If any element contains useful information, skip all diagnostics
+				if (HasUsefulElements(xmlElements, lowercaseName))
 				{
 					return;
 				}
@@ -161,25 +161,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		}
 
 		/// <summary>
-		/// Checks if there are any non-summary XML documentation elements that contain meaningful content.
-		/// Elements like param, returns, exception, etc. are considered if they have useful information.
+		/// Checks if there are any XML documentation elements that contain meaningful content.
+		/// Elements like summary, param, returns, exception, etc. are considered if they have useful information.
 		/// </summary>
 		/// <param name="xmlElements">All XML documentation elements</param>
 		/// <param name="lowercaseName">The lowercase name of the documented element</param>
-		/// <returns>True if there are meaningful non-summary elements, false otherwise</returns>
-		private bool HasUsefulNonSummaryElements(IEnumerable<XmlElementSyntax> xmlElements, string lowercaseName)
+		/// <returns>True if there are meaningful elements, false otherwise</returns>
+		private bool HasUsefulElements(IEnumerable<XmlElementSyntax> xmlElements, string lowercaseName)
 		{
-			var meaningfulElements = new[] { "param", "returns", "exception", "remarks", "example", "value" };
+			var meaningfulElements = new[] { "summary", "param", "returns", "exception", "remarks", "example", "value" };
 
 			foreach (XmlElementSyntax xmlElement in xmlElements)
 			{
 				var tagName = xmlElement.StartTag.Name.LocalName.Text;
-
-				// Skip summary elements as we're looking for non-summary content
-				if (tagName == "summary")
-				{
-					continue;
-				}
 
 				// Check if this is a meaningful element type
 				if (!meaningfulElements.Contains(tagName))
