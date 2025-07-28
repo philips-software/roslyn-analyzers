@@ -388,8 +388,8 @@ class DataGridViewTextBoxCell
 }}
 ";
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
-    }
-    
+		}
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MultipleAsExpressionsInSameBlockShouldNotTriggerFalsePositiveAsync()
