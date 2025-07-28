@@ -139,23 +139,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 						continue;
 					}
 
-					// Find the 'value' in the XML documentation content by:
-					// 1. Splitting it into separate words.
-					// 2. Filtering a predefined and a configurable list of words that add no value.
-					// 3. Filter words that are part of the method name.
-					// 4. Throw a Diagnostic if no words remain. This boils down to the content only containing 'low value' words.
-					IEnumerable<string> words =
-						SplitInWords(content)
-							.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
-							.Where(s => !lowercaseName.Contains(s));
-
-					// Every remaining word adds value to the documentation.
-					if (!words.Any())
-					{
-						var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
-						var diagnostic = Diagnostic.Create(ValueRule, loc);
-						context.ReportDiagnostic(diagnostic);
-					}
+					// Summary already evaluated by HasUsefulElements
+					var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
+					var valueDiagnostic = Diagnostic.Create(ValueRule, loc);
+					context.ReportDiagnostic(valueDiagnostic);
 				}
 			}
 		}
