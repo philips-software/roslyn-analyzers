@@ -138,5 +138,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidCastToString = 2142,
 		AvoidAssemblyGetEntryAssembly = 2143,
 		AvoidIncorrectForLoopCondition = 2144,
+		AvoidStringFormatInInterpolatedString = 2145,
 	}
 }
