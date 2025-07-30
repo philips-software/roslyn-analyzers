@@ -61,7 +61,7 @@ public class Tests
 			var parameterListString = string.Empty;
 			for (var i = 0; i < parameters; i++)
 			{
-				parameterListString = string.Format("{0}, int p{1}", parameterListString, i);
+				parameterListString = $"{parameterListString}, int p{i}";
 			}
 
 			if (isCorrect)
@@ -118,7 +118,7 @@ public class Tests
 			var parameterListString = string.Empty;
 			for (var i = 0; i < parameters; i++)
 			{
-				parameterListString = string.Format("{0}, int p{1}", parameterListString, i);
+				parameterListString = $"{parameterListString}, int p{i}";
 			}
 
 
