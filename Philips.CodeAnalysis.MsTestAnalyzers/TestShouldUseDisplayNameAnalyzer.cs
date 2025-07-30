@@ -136,7 +136,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return string.Empty;
 				}
 
-				// Temporarily disable filtering to debug
 				return text;
 			}
 		}
