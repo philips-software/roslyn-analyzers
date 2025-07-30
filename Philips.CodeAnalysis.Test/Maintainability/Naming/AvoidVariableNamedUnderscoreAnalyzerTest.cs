@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming;
+using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
 
 namespace Philips.CodeAnalysis.Test.Maintainability.Naming
@@ -18,6 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNamedUnderscoreShouldFlag()
 		{
 			var test = @"
@@ -35,6 +37,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ForEachVariableNamedUnderscoreShouldFlag()
 		{
 			var test = @"
@@ -56,6 +59,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OutParameterNamedUnderscoreShouldFlag()
 		{
 			var test = @"
@@ -78,6 +82,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ForLoopVariableNamedUnderscoreShouldFlag()
 		{
 			var test = @"
@@ -97,6 +102,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task UsingStatementVariableNamedUnderscoreShouldFlag()
 		{
 			var test = @"
@@ -117,6 +123,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValidVariableNamesShouldNotFlag()
 		{
 			var test = @"
@@ -136,6 +143,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task VariableStartingWithUnderscoreShouldNotFlag()
 		{
 			var test = @"
@@ -155,6 +163,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNamedUnderscoreShouldNotFlag()
 		{
 			var test = @"
@@ -169,6 +178,7 @@ class TestClass
 		}
 
 		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task InParameterNamedUnderscoreShouldNotFlag()
 		{
 			var test = @"
