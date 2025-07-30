@@ -111,7 +111,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		public override async Task<CodeAction> GetFixAsync(FixAllContext fixAllContext)
 		{
 			var diagnosticsToFix = new List<KeyValuePair<Project, ImmutableArray<Diagnostic>>>();
-			var titleFormat = "Add all duplications in {0} {1} to the exceptions list";
 			string title = null;
 			switch (fixAllContext.Scope)
 			{
@@ -119,7 +118,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					{
 						ImmutableArray<Diagnostic> diagnostics = await fixAllContext.GetDocumentDiagnosticsAsync(fixAllContext.Document).ConfigureAwait(false);
 						diagnosticsToFix.Add(new KeyValuePair<Project, ImmutableArray<Diagnostic>>(fixAllContext.Project, diagnostics));
-						title = string.Format(titleFormat, "document", fixAllContext.Document.Name);
+						title = $"Add all duplications in document {fixAllContext.Document.Name} to the exceptions list";
 						break;
 					}
 				case FixAllScope.Project:
@@ -127,7 +126,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 						Project project = fixAllContext.Project;
 						ImmutableArray<Diagnostic> diagnostics = await fixAllContext.GetAllDiagnosticsAsync(project).ConfigureAwait(false);
 						diagnosticsToFix.Add(new KeyValuePair<Project, ImmutableArray<Diagnostic>>(fixAllContext.Project, diagnostics));
-						title = string.Format(titleFormat, "project", fixAllContext.Project.Name);
+						title = $"Add all duplications in project {fixAllContext.Project.Name} to the exceptions list";
 						break;
 					}
 				case FixAllScope.Solution:
