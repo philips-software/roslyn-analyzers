@@ -148,41 +148,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		}
 
 		/// <summary>
-		/// Checks if there are any XML documentation elements that contain meaningful content.
+		/// Checks if there are any XML documentation elements that have useful content.
 		/// Elements like summary, param, returns, exception, etc. are considered if they have useful information.
 		/// </summary>
 		/// <param name="xmlElements">All XML documentation elements</param>
 		/// <param name="lowercaseName">The lowercase name of the documented element</param>
-		/// <returns>True if there are meaningful elements, false otherwise</returns>
+		/// <returns>True if there are elements with useful content, false otherwise</returns>
 		private bool HasUsefulElements(IEnumerable<XmlElementSyntax> xmlElements, string lowercaseName)
 		{
-			var meaningfulElements = new[] { "summary", "param", "returns", "exception", "remarks", "example", "value" };
+			var xmlDocElements = new[] { "summary", "param", "returns", "exception", "remarks", "example", "value" };
 
 			foreach (XmlElementSyntax xmlElement in xmlElements)
 			{
 				var tagName = xmlElement.StartTag.Name.LocalName.Text;
-
-				// Check if this is a meaningful element type
-				if (!meaningfulElements.Contains(tagName))
+				if (!xmlDocElements.Contains(tagName))
 				{
 					continue;
 				}
 
 				var content = GetContent(xmlElement);
 
-				// If content is empty or whitespace, skip
 				if (string.IsNullOrWhiteSpace(content))
 				{
 					continue;
 				}
 
-				// Apply the same value analysis as for summary content
 				IEnumerable<string> words =
 					SplitInWords(content)
 						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
 						.Where(s => !lowercaseName.Contains(s));
 
-				// If there are meaningful words, this element adds value
+				// If there are remaining words, assume this element has useful content
 				if (words.Any())
 				{
 					return true;
