@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Globalization;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -151,7 +152,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					{
 						// Found valid placeholder, check if it's a simple numeric placeholder
 						var content = formatString.Substring(i + 1, j - i - 1);
-						if (int.TryParse(content.Trim(), out _))
+						if (int.TryParse(content.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
 						{
 							placeholderCount++;
 						}
