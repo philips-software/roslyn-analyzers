@@ -1,4 +1,4 @@
-// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
