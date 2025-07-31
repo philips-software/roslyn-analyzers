@@ -140,6 +140,17 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return string.Empty;
 				}
 
+				// Filter out boilerplate comment patterns
+				var upperText = text.ToUpperInvariant();
+				if (upperText.StartsWith("TODO") || 
+					upperText.StartsWith("FIXME") ||
+					upperText.StartsWith("HACK") ||
+					upperText.StartsWith("NOTE") ||
+					upperText.StartsWith("BUG"))
+				{
+					return string.Empty;
+				}
+
 				return text;
 			}
 		}

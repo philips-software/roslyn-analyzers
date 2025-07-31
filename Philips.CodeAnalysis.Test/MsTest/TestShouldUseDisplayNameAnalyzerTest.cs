@@ -1,6 +1,7 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -177,7 +178,23 @@ public class TestClass
 	public void TestAddition(int a, int b) { }
 }";
 
-			await VerifyDiagnostic(testCode, DiagnosticId.UseDisplayNameOrDescription).ConfigureAwait(false);
+			DiagnosticResult[] expected = new[]
+			{
+				new DiagnosticResult()
+				{
+					Id = DiagnosticId.UseDisplayNameOrDescription.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", 8, 3),
+					Severity = DiagnosticSeverity.Error,
+				},
+				new DiagnosticResult()
+				{
+					Id = DiagnosticId.UseDisplayNameOrDescription.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", 9, 3),
+					Severity = DiagnosticSeverity.Error,
+				}
+			};
+
+			await VerifyDiagnostic(testCode, expected).ConfigureAwait(false);
 		}
 	}
 }
