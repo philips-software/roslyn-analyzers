@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Using DisplayName parameter for DataRow attributes or Description attribute for test methods makes test purpose more visible in test runners and provides better documentation.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.UseDisplayNameOrDescription.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.UseDisplayNameOrDescription.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -91,12 +91,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			private string GetTrailingComment(AttributeSyntax attribute)
 			{
-				SyntaxToken token = attribute.GetLastToken();
-				SyntaxTrivia trivia = token.TrailingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
-
-				if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+				// Look for the parent AttributeListSyntax to get the closing bracket
+				if (attribute.Parent is AttributeListSyntax attributeList)
 				{
-					return ExtractCommentText(trivia.ToString());
+					SyntaxToken closeBracketToken = attributeList.CloseBracketToken;
+					SyntaxTrivia trivia = closeBracketToken.TrailingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia));
+
+					if (trivia.IsKind(SyntaxKind.SingleLineCommentTrivia))
+					{
+						return ExtractCommentText(trivia.ToString());
+					}
 				}
 
 				return string.Empty;

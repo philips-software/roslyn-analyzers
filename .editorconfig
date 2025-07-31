@@ -112,8 +112,8 @@ dotnet_diagnostic.CS7035.severity = none
 # We do not need compile-time generated RegExs in Unit Tests. We'll prefer code readability.
 dotnet_diagnostic.SYSLIB1045.severity = none
 
-# Disable PH2146 analyzer in dogfood builds as it's meant to suggest improvements for test code
-dotnet_diagnostic.PH2146.severity = none
+# Enable PH2146 analyzer as suggestion level for dogfood builds
+dotnet_diagnostic.PH2146.severity = suggestion
 
 dotnet_diagnostic.IDE0001.severity = error
 dotnet_diagnostic.IDE0002.severity = error

@@ -74,7 +74,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodWithCommentButNoDescriptionShouldTriggerDiagnostic()
+		public async Task MethodWithCommentButNoDescriptionShouldTriggerDiagnostic()
 		{
 			const string testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -92,7 +92,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodWithDescriptionShouldNotTriggerDiagnostic()
+		public async Task MethodWithDescriptionShouldNotTriggerDiagnostic()
 		{
 			const string testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -110,7 +110,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodWithoutCommentShouldNotTriggerDiagnostic()
+		public async Task MethodWithoutCommentShouldNotTriggerDiagnostic()
 		{
 			const string testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -127,7 +127,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodWithShortCommentShouldNotTriggerDiagnostic()
+		public async Task MethodWithShortCommentShouldNotTriggerDiagnostic()
 		{
 			const string testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -145,7 +145,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodWithBoilerplateCommentShouldNotTriggerDiagnostic()
+		public async Task MethodWithBoilerplateCommentShouldNotTriggerDiagnostic()
 		{
 			const string testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
