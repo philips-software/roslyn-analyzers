@@ -198,5 +198,40 @@ class TestClass
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ProperDiscardShouldNotFlag()
+		{
+			var test = @"
+using System;
+using System.Collections.Generic;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		var dictionary = new Dictionary<string, int>();
+		dictionary.TryGetValue(""key"", out _);  // This is a proper discard, should not be flagged
+		
+		// Other valid discard patterns  
+		TryParseHelper(""123"", out _);
+		GetValue(out _);
+	}
+
+	private bool TryParseHelper(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+	
+	private void GetValue(out string value)
+	{
+		value = ""test"";
+	}
+}";
+
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
 	}
 }

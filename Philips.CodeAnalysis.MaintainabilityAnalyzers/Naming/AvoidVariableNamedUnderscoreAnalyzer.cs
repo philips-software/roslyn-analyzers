@@ -56,10 +56,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			var variableDeclaration = (VariableDeclarationSyntax)context.Node;
-			SyntaxKind parentKind = variableDeclaration.Parent.Kind();
-			if (parentKind is not SyntaxKind.ForStatement and
-				not SyntaxKind.UsingStatement and
-				not SyntaxKind.LocalDeclarationStatement)
+			if (variableDeclaration.Parent is not (ForStatementSyntax or UsingStatementSyntax or LocalDeclarationStatementSyntax))
 			{
 				return;
 			}
@@ -71,7 +68,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				Location location = variableDeclaration.GetLocation();
+				CSharpSyntaxNode violation = variableDeclaration;
+				Location location = violation.GetLocation();
 				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
@@ -115,4 +113,4 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 	}
-}
+}
