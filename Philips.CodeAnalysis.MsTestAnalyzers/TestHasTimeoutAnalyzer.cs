@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				if (!TryExtractAttributeArgument(context, argumentSyntax, out var timeoutString, out int _))
+				if (!TryExtractAttributeArgument<int>(context, argumentSyntax, out var timeoutString, out _))
 				{
 					return;
 				}
