@@ -33,7 +33,6 @@ namespace Philips.CodeAnalysis.Common
 		VariableNamingConventions = 2030,
 		AvoidTryParseWithoutCulture = 2031,
 		AvoidEmptyTypeInitializer = 2032,
-		DataTestMethodsHaveDataRows = 2033,
 		TestMethodsMustBeInTestClass = 2034,
 		TestMethodsMustHaveTheCorrectNumberOfArguments = 2035,
 		TestMethodsMustBePublic = 2036,
