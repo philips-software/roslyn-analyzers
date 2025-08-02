@@ -23,11 +23,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.DataTestMethodsHaveDataRows.ToId(),
-												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+												Title, MessageFormatMismatchedCount, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 		private static readonly DiagnosticDescriptor RuleShouldBeTestMethod = new(DiagnosticId.DataTestMethodsHaveDataRows.ToId(),
-												Title, MessageFormatIsDataTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+												Title, MessageFormatIsDataTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 		private static readonly DiagnosticDescriptor RuleShouldBeDataTestMethod = new(DiagnosticId.DataTestMethodsHaveDataRows.ToId(),
-												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+												Title, MessageFormatIsTestMethod, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
