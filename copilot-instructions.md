@@ -11,7 +11,7 @@ All code must strictly follow the formatting rules defined in the [.editorconfig
 * **Encoding**: UTF-8 with BOM for C# files
 * **Braces**: New line before all braces (`csharp_new_line_before_open_brace = all`)
 * **Spacing**: Specific spacing rules around operators, keywords, and punctuation
-* **Naming**: Parameters must be camelCase (enforced as error)
+* **Naming**: Parameters must be camelCase
 
 Ensure your code follows these rules before submitting. The build will fail if formatting requirements are not met.
 
@@ -45,6 +45,8 @@ All pull request titles must follow [Conventional Commits](https://www.conventio
 * `docs: Update analyzer documentation`
 * `refactor: Simplify analyzer registration logic`
 * `test: Add coverage for edge case scenarios`
+* `chore: Miscellaneous cleanup not changing behavior`
+* `ci: Change to pipeline`
 
 **Invalid example**: `"Fix PH2147: Create new analyzer to avoid variables named exactly "_""`
 **Valid example**: `"fix: Create new analyzer PH2147 to avoid variables named exactly "_""`
@@ -54,7 +56,6 @@ All pull request titles must follow [Conventional Commits](https://www.conventio
 Roslyn analyzers run during compilation and must be performant. Follow these guidelines:
 
 * **String comparisons first**: Always perform inexpensive string comparisons of identifiers before loading the semantic model
-* **Minimize semantic model usage**: Only call `GetSemanticModel()` when absolutely necessary
 * **Cache expensive operations**: Store results of costly computations when possible
 * **Early returns**: Exit analysis methods as soon as you determine no issues exist
 * **Avoid regex in hot paths**: Use string methods over regular expressions for simple patterns
@@ -78,7 +79,7 @@ if (symbol.Name != "_")
 
 All analyzers must have corresponding documentation files in the [Documentation](./Documentation/) folder:
 
-* Create or update relevant documentation files (e.g., `Maintainability.md`, `Security.md`)
+* Create or update relevant documentation files (e.g., `Maintainability.md`)
 * Include rule descriptions, examples of violations, and correct usage
 * Follow the existing documentation format and style
 * Link to documentation from the main README.md if adding new analyzer categories
