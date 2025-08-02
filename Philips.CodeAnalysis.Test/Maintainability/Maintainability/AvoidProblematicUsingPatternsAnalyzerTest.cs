@@ -176,4 +176,4 @@ class TestClass
 			return new AvoidProblematicUsingPatternsAnalyzer();
 		}
 	}
-}
+}
