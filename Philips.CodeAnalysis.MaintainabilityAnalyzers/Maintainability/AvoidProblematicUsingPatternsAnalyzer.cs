@@ -78,8 +78,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return true;
 				}
 
-				// Also flag local variables and parameters
-				if (symbolInfo.Symbol is ILocalSymbol or IParameterSymbol)
+				if (symbolInfo.Symbol is ILocalSymbol)
 				{
 					return true;
 				}
