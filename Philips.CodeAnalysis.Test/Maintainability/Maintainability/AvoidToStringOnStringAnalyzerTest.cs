@@ -33,7 +33,7 @@ class TestClass
 	public void TestMethod()
 	{
 		string str = ""hello"";
-		string result = str.ToString();
+		System.Console.WriteLine(str.ToString());
 	}
 }";
 
@@ -43,7 +43,7 @@ class TestClass
 	public void TestMethod()
 	{
 		string str = ""hello"";
-		string result = str;
+		System.Console.WriteLine(str);
 	}
 }";
 
@@ -60,7 +60,7 @@ class TestClass
 {
 	public void TestMethod()
 	{
-		string result = ""hello"".ToString();
+		System.Console.WriteLine(""hello"".ToString());
 	}
 }";
 
@@ -69,7 +69,7 @@ class TestClass
 {
 	public void TestMethod()
 	{
-		string result = ""hello"";
+		System.Console.WriteLine(""hello"");
 	}
 }";
 
@@ -86,7 +86,7 @@ class TestClass
 {
 	public void TestMethod()
 	{
-		string result = (""hello"" + ""world"").ToString();
+		System.Console.WriteLine((""hello"" + ""world"").ToString());
 	}
 }";
 
@@ -95,7 +95,7 @@ class TestClass
 {
 	public void TestMethod()
 	{
-		string result = (""hello"" + ""world"");
+		System.Console.WriteLine((""hello"" + ""world""));
 	}
 }";
 
@@ -151,7 +151,7 @@ class TestClass
 	
 	public void TestMethod()
 	{
-		string result = MyString.ToString();
+		System.Console.WriteLine(MyString.ToString());
 	}
 }";
 
@@ -162,7 +162,7 @@ class TestClass
 	
 	public void TestMethod()
 	{
-		string result = MyString;
+		System.Console.WriteLine(MyString);
 	}
 }";
 
@@ -181,7 +181,7 @@ class TestClass
 	
 	public void TestMethod()
 	{
-		string result = GetString().ToString();
+		System.Console.WriteLine(GetString().ToString());
 	}
 }";
 
@@ -192,7 +192,7 @@ class TestClass
 	
 	public void TestMethod()
 	{
-		string result = GetString();
+		System.Console.WriteLine(GetString());
 	}
 }";
 

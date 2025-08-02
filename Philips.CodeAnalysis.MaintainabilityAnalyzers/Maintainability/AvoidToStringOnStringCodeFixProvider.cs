@@ -1,4 +1,4 @@
-﻿// © 2021 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using System.Composition;
@@ -6,14 +6,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidToStringOnStringCodeFixProvider)), Shared]
 	public class AvoidToStringOnStringCodeFixProvider : SingleDiagnosticCodeFixProvider<InvocationExpressionSyntax>
 	{
