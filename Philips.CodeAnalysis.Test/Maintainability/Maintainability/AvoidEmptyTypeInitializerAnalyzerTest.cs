@@ -67,8 +67,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
   #endregion
 }}
 ";
-			var classContent = string.Format(template, string.Format(@"{0}
-static Foo() {{ }}", summaryComment));
+			var classContent = string.Format(template, $@"{summaryComment}
+static Foo() {{ }}");
 
 			var expected = string.Format(template, string.Empty);
 
