@@ -1,4 +1,4 @@
-﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -66,12 +66,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			if (expression is IdentifierNameSyntax identifier)
 			{
-				var name = identifier.Identifier.ValueText;
-				if (name.StartsWith("_"))
-				{
-					return true;
-				}
-
 				SymbolInfo symbolInfo = Context.SemanticModel.GetSymbolInfo(identifier);
 				if (symbolInfo.Symbol is IFieldSymbol)
 				{
