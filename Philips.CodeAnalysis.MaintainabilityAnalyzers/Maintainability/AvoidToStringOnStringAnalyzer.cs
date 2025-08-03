@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Calling ToString() on an expression that is already of type string is redundant and should be removed.";
 
 		public AvoidToStringOnStringAnalyzer()
-			: base(DiagnosticId.AvoidToStringOnString, Title, MessageFormat, Description, Categories.Maintainability)
+			: base(DiagnosticId.AvoidToStringOnString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 
