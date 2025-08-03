@@ -211,7 +211,3 @@ If you have questions about the migration or need help with specific scenarios, 
 1. Check the [Microsoft MSTest Analyzers documentation](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/overview)
 2. Review individual rule documentation linked in the mapping table above
 3. Open an issue in this repository for Philips-specific questions
-
----
-
-*This migration guide was created in response to Microsoft releasing official MSTest analyzers that provide equivalent or superior functionality to many Philips analyzer rules.*
