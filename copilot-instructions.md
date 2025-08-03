@@ -92,12 +92,13 @@ When creating a new analyzer, follow this workflow to ensure proper integration 
 
 ### Diagnostic ID Assignment
 * **Choose the next available diagnostic ID**: Review the [DiagnosticId.cs](./Philips.CodeAnalysis.Common/DiagnosticId.cs) file to find the highest existing ID and increment by 1
-* **Check open PRs**: Consider other open pull requests to avoid multiple PRs claiming the same diagnostic ID
+* **Check open PRs manually**: Consider other open pull requests to avoid multiple PRs claiming the same diagnostic ID (Note: AI tools cannot automatically check open PRs, so manual verification is required)
 * **Current highest ID**: As of this writing, the highest ID is `2145`, so new analyzers should start from `2146`
 
 ### Initial Configuration
 * **Set "Enabled By Default" to No**: Always set `isEnabledByDefault: false` in the `DiagnosticDescriptor` constructor
 * **Rationale**: This allows manual testing in production environments before enabling the analyzer by default
+* **Copyright header**: When creating new files, always use the current year in the copyright header: `// © YYYY Koninklijke Philips N.V. See License.md in the project root for license information.`
 
 Example:
 ```csharp
