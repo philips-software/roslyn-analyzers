@@ -42,8 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			CSharpSyntaxNode violation = foreachStatement;
-			Location location = violation.GetLocation();
+			Location location = foreachStatement.GetLocation();
 			var diagnostic = Diagnostic.Create(Rule, location, foreachStatement.Identifier.ValueText);
 			context.ReportDiagnostic(diagnostic);
 		}
@@ -68,8 +67,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					continue;
 				}
 
-				CSharpSyntaxNode violation = variableDeclaration;
-				Location location = violation.GetLocation();
+				Location location = variableDeclaration.GetLocation();
 				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
 				context.ReportDiagnostic(diagnostic);
 			}
