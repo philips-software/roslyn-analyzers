@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			MessageFormat,
 			Category,
 			DiagnosticSeverity.Error,
-			isEnabledByDefault: true,
+			isEnabledByDefault: false,
 			description: Description);
 
 		private static readonly DiagnosticDescriptor UnnecessaryRule = new(
@@ -37,7 +37,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			UnnecessaryMessageFormat,
 			Category,
 			DiagnosticSeverity.Error,
-			isEnabledByDefault: true,
+			isEnabledByDefault: false,
 			description: UnnecessaryDescription);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule, UnnecessaryRule);
