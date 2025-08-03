@@ -86,6 +86,34 @@ All analyzers must have corresponding documentation files in the [Documentation]
 
 Refer to existing documentation files for format and style guidelines.
 
+## Creating New Analyzers
+
+When creating a new analyzer, follow this workflow to ensure proper integration and testing:
+
+### Diagnostic ID Assignment
+* **Choose the next available diagnostic ID**: Review the [DiagnosticId.cs](./Philips.CodeAnalysis.Common/DiagnosticId.cs) file to find the highest existing ID and increment by 1
+* **Check open PRs**: Consider other open pull requests to avoid multiple PRs claiming the same diagnostic ID
+* **Current highest ID**: As of this writing, the highest ID is `2145`, so new analyzers should start from `2146`
+
+### Initial Configuration
+* **Set "Enabled By Default" to No**: Always set `isEnabledByDefault: false` in the `DiagnosticDescriptor` constructor
+* **Rationale**: This allows manual testing in production environments before enabling the analyzer by default
+
+Example:
+```csharp
+public static readonly DiagnosticDescriptor Rule = new(
+    DiagnosticId.YourNewRule.ToId(),
+    Title, MessageFormat, Category,
+    DiagnosticSeverity.Warning, isEnabledByDefault: false, description: Description);
+```
+
+### CodeFixer Workflow
+* **Initial submission**: A CodeFixer need not be created initially with the analyzer
+* **Subsequent development**: If the analyzer is tested successfully, a subsequent issue will be filed to create a CodeFixer
+* **Final enablement**: Only after both the analyzer and CodeFixer are tested successfully may "Enabled by Default" be set to `true` in another issue
+
+This phased approach ensures thorough testing and validation before full deployment.
+
 ## Additional Guidelines
 
 * **Test coverage**: Include comprehensive tests for new analyzers and bug fixes
@@ -93,4 +121,4 @@ Refer to existing documentation files for format and style guidelines.
 * **Rule IDs**: Follow the existing numbering scheme for new analyzer rules
 * **Backwards compatibility**: Ensure changes don't break existing analyzer behavior unless intentionally fixing bugs
 
-Following these guidelines will help ensure your contributions integrate smoothly with the existing codebase and maintain the high quality standards of the project.
+Following these guidelines will help ensure your contributions integrate smoothely with the existing codebase and maintain the high quality standards of the project.
