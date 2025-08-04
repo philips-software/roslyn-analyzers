@@ -1,4 +1,4 @@
-// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -9,7 +9,8 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AvoidStringFormatInInterpolatedStringAnalyzer : SingleDiagnosticAnalyzer<InterpolatedStringExpressionSyntax, AvoidStringFormatInInterpolatedStringSyntaxNodeAction>
+	public class AvoidStringFormatInInterpolatedStringAnalyzer : SingleDiagnosticAnalyzer<InterpolatedStringExpressionSyntax,
+		AvoidStringFormatInInterpolatedStringSyntaxNodeAction>
 	{
 		private const string Title = @"Avoid string.Format in interpolated string";
 		private const string MessageFormat = @"Consider simplifying string.Format usage in interpolated string";
