@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			var expectedResult = new DiagnosticResult() { Id = "AD0001", Location = new DiagnosticResultLocation(-1) };
 			// Act
 			// Assert
-			AssertFailedException actualException = await Assert.ThrowsExceptionAsync<AssertFailedException>(
+			AssertFailedException actualException = await Assert.ThrowsExactlyAsync<AssertFailedException>(
 				() => VerifyDiagnostic("public class A {}", expectedResult));
 			StringAssert.Contains(actualException.Message, "SyntaxKind");
 		}

@@ -2,7 +2,7 @@
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
-	public class AssertCodeHelper
+	internal sealed class AssertCodeHelper
 	{
 		private static readonly string TestTemplate = @"
 using System;

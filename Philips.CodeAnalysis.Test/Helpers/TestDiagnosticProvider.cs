@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
-	public class TestDiagnosticProvider : FixAllContext.DiagnosticProvider
+	internal sealed class TestDiagnosticProvider : FixAllContext.DiagnosticProvider
 	{
 		private readonly IEnumerable<Diagnostic> _diagnostics;
 
