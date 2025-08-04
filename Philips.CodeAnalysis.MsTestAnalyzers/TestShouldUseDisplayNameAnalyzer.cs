@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"Using DisplayName parameter for DataRow attributes or Description attribute for test methods makes test purpose more visible in test runners and provides better documentation.";
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.UseDisplayNameOrDescription.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.UseDisplayNameOrDescription.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -142,7 +142,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				// Filter out boilerplate comment patterns
 				var upperText = text.ToUpperInvariant();
-				if (upperText.StartsWith("TODO") || 
+				if (upperText.StartsWith("TODO") ||
 					upperText.StartsWith("FIXME") ||
 					upperText.StartsWith("HACK") ||
 					upperText.StartsWith("NOTE") ||
