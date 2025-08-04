@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
-	public class TestAdditionalFile : AdditionalText
+	internal sealed class TestAdditionalFile : AdditionalText
 	{
 		private readonly SourceText _text;
 

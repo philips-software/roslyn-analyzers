@@ -49,7 +49,7 @@ Foo.WhitelistedFunction";
 			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Solution));
 		}
 
-		public class SumHashCalculator : RollingHashCalculator<TokenInfo>
+		internal sealed class SumHashCalculator : RollingHashCalculator<TokenInfo>
 		{
 			public SumHashCalculator(int maxItems)
 				: base(maxItems)
