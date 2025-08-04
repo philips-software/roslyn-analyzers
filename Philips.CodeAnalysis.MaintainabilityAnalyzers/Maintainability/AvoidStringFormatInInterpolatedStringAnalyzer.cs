@@ -1,6 +1,7 @@
 // © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -17,6 +18,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public AvoidStringFormatInInterpolatedStringAnalyzer()
 			: base(DiagnosticId.AvoidStringFormatInInterpolatedString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
+
+		protected override SyntaxKind GetSyntaxKind()
+		{
+			return SyntaxKind.InterpolatedStringExpression;
+		}
 	}
 
 	public class AvoidStringFormatInInterpolatedStringSyntaxNodeAction : SyntaxNodeAction<InterpolatedStringExpressionSyntax>
