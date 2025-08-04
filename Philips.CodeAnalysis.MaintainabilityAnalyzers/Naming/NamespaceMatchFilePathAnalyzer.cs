@@ -63,7 +63,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool IsNamespacePartOfPath(string ns, string path)
 		{
 			var nodes = path.Split(Path.DirectorySeparatorChar);
-			for (var i = nodes.Length - 2; i > 0; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
+			for (var i = nodes.Length - 2; i >= 1; i--)  // Exclude file.cs (i.e., the end) and the drive (i.e., the start).  Start from back to succeed quickly.
 			{
 				if (string.Equals(nodes[i], ns, StringComparison.OrdinalIgnoreCase))
 				{

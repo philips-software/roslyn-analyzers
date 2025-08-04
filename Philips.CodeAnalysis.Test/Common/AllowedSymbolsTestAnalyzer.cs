@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	/// The analyzer reports a <see cref="Diagnostic"/> on each of its AllowedSymbols. In production analyzers the allowed symbols is used reciprocally.
 	/// </summary>
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class AllowedSymbolsTestAnalyzer : SolutionAnalyzer
+	internal sealed class AllowedSymbolsTestAnalyzer : SolutionAnalyzer
 	{
 		public const string AllowedFileName = "AllowedSymbolsTest.Allowed.txt";
 

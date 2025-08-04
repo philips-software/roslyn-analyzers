@@ -8,7 +8,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
-	public class TestTextLoader : TextLoader
+	internal sealed class TestTextLoader : TextLoader
 	{
 		private readonly Dictionary<DocumentId, string> _textDocuments = [];
 
