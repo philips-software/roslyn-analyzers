@@ -1,16 +1,7 @@
 ## ⚠️ Important Notice: Microsoft's Official MSTest Analyzers
 
-**Microsoft now provides official MSTest analyzers** that cover most of the functionality provided by these Philips analyzers. We recommend reviewing the [MSTest Migration Guide](../Documentation/MSTest-Migration-Guide.md) to understand the overlap and consider migrating to Microsoft's official analyzers for overlapping rules.
-
-**Key Benefits of Microsoft's Official Analyzers:**
-- Official support and maintenance by the MSTest team
-- More comprehensive coverage (46+ rules vs 30 Philips rules)  
-- Better integration with MSTest framework
-- Active development with new MSTest features
-- Extensive documentation and code fixes
-
+**Microsoft now provides official MSTest analyzers** that cover most of the functionality provided by these Philips analyzers. 
 **Migration Recommendation:** Use Microsoft's official analyzers for overlapping functionality and keep only Philips-specific rules that provide unique value (like PH2000, PH2012, PH2015, etc.).
-
 📖 **[Read the Migration Guide](../Documentation/MSTest-Migration-Guide.md)** for detailed mapping and migration steps.
 
 ---
@@ -35,9 +26,7 @@
 | [PH2017](../Documentation/Diagnostics/PH2017.md)  | Avoid ClassInitialize attribute                      | This attribute is unnecessary in the C# programming language. They circumvent TestTimeouts, allowing for slower Test Runs.  They can contribute to non-deterministic test execution order, resulting complications while debugging. | ✅ **Use [MSTEST0010](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0010)** |
 | [PH2018](../Documentation/Diagnostics/PH2018.md)  | Avoid ClassCleanup attribute                         | This attribute is unnecessary in the C# programming language. They circumvent TestTimeouts, allowing for slower Test Runs.  They can contribute to non-deterministic test execution order, resulting complications while debugging. | ✅ **Use [MSTEST0011](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0011)** |
 | [PH2019](../Documentation/Diagnostics/PH2019.md)  | Avoid TestCleanup attribute                          | This attribute is unnecessary in the C# programming language. They circumvent TestTimeouts, allowing for slower Test Runs.  They can contribute to non-deterministic test execution order, resulting complications while debugging. | ✅ **Use [MSTEST0009](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0009)** |
-| [PH2033](../Documentation/Diagnostics/PH2033.md)  | DataTestMethod requires DataRows                     | DataTestMethods must have at least 1 DataRow.  TestMethods must not have any DataRows. | ✅ **Use [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014)** |
 | [PH2034](../Documentation/Diagnostics/PH2034.md)  | TestMethod requires TestClass                        | TestMethods not inside a TestClass are not executed.  They are dead code. | ✅ **Use [MSTEST0030](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0030)** |
-| [PH2035](../Documentation/Diagnostics/PH2035.md)  | DataTestMethod requires correct parameter count      | DataTestMethods must have the same number of parameters of the DataRows, TestMethods should have no arguments. | ⚠️ **Consider [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014)** |
 | [PH2036](../Documentation/Diagnostics/PH2036.md)  | TestMethod is public                                 | TestMethods must be public.                                  | ✅ **Use [MSTEST0003](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0003)** |
 | [PH2037](../Documentation/Diagnostics/PH2037.md)  | TestMethods and DataTestMethods require unique names | TestMethods and DataTestMethods require unique names.        | ⚠️ **Consider [MSTEST0003](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0003)** |
 | [PH2038](../Documentation/Diagnostics/PH2038.md)  | TestClass is public                                  | TestClass must be public.                                    | ✅ **Use [MSTEST0002](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0002)** |
