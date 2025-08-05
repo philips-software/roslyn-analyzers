@@ -34,7 +34,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidTryParseWithoutCulture = 2031,
 		AvoidEmptyTypeInitializer = 2032,
 		TestMethodsMustBeInTestClass = 2034,
-		TestMethodsMustHaveTheCorrectNumberOfArguments = 2035,
 		TestMethodsMustBePublic = 2036,
 		TestMethodsMustHaveUniqueNames = 2037,
 		TestClassesMustBePublic = 2038,
@@ -139,5 +138,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidIncorrectForLoopCondition = 2144,
 		AvoidStringFormatInInterpolatedString = 2145,
 		AvoidToStringOnString = 2146,
+		AvoidVariableNamedUnderscore = 2147,
 	}
 }
