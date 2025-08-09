@@ -2,11 +2,11 @@
 
 The "Philips MsTest" category of diagnostics suggests ways to improve your test code using the MsTest framework.
 
-These provide guidelines to writing test code that runs reliably and correctly. This in turn improve the quality of your code.
+These provide guidelines to writing test code that runs reliably and correctly. This in turn improves the quality of your code.
 
 ## ⚠️ Important: Microsoft's Official MSTest Analyzers Available
 
-Microsoft now provides **official MSTest analyzers** that cover most functionality of the Philips MSTest analyzers. We **strongly recommend migrating** to Microsoft's official analyzers for overlapping functionality. See the [Migration Guide](#migration-guide) below for details.
+Microsoft now provides **official MSTest analyzers** that cover most functionality of the Philips MSTest analyzers. We **recommend migrating** to Microsoft's official analyzers for overlapping functionality. See the [Migration Guide](#migration-guide) below for details.
 
 ---
 
@@ -22,7 +22,6 @@ Microsoft's official MSTest analyzers are available via the `MSTest.Analyzers` N
 
 **We recommend migrating to Microsoft's official MSTest analyzers** for all overlapping functionality. Microsoft's analyzers are:
 - Officially supported and maintained by the MSTest team
-- More comprehensive with 46+ rules vs Philips' 30 rules
 - Better integrated with the MSTest framework
 - Actively updated with new MSTest features
 - Include extensive documentation and code fixes
@@ -72,10 +71,10 @@ These rules provide functionality not available in Microsoft's official analyzer
 | [PH2000](../Documentation/Diagnostics/PH2000.md) | Avoid test method prefix | 📌 **Keep if naming convention is important** |
 | [PH2010](../Documentation/Diagnostics/PH2010.md) | Avoid unnecessary parentheses | 📌 **Keep if style preference matters** (Note: Generic IDE rule [IDE0047](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/ide0047-ide0048) also available) |
 | [PH2011](../Documentation/Diagnostics/PH2011.md) | Description attribute usage | 📌 **Keep if using Description attributes** |
-| [PH2012](../Documentation/Diagnostics/PH2012.md) | TestTimeout required | 📌 **Keep if timeout enforcement is needed** |
+| [PH2012](../Documentation/Diagnostics/PH2012.md) | TestTimeout required | 📌 **Keep if timeout enforcement is desired** |
 | [PH2014](../Documentation/Diagnostics/PH2014.md) | Avoid Owner attribute | 📌 **Keep if avoiding Owner attributes** |
-| [PH2015](../Documentation/Diagnostics/PH2015.md) | Required Categories attribute | 📌 **Keep if category enforcement is needed** |
-| [PH2041](../Documentation/Diagnostics/PH2041.md) | Avoid MS Fakes | 📌 **Keep if enforcing Moq over MS Fakes** |
+| [PH2015](../Documentation/Diagnostics/PH2015.md) | Required Categories attribute | 📌 **Keep if category enforcement is desired** |
+| [PH2041](../Documentation/Diagnostics/PH2041.md) | Avoid MS Fakes | 📌 **Keep if using something like Moq rather than MS Fakes** |
 
 ### Additional Microsoft Rules
 
@@ -128,7 +127,7 @@ dotnet_diagnostic.PH2055.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2056.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2076.severity = none  # Consider MSTEST0025 instead
 
-# Enable all Microsoft MSTest rules as error (except MSTEST0019)
+# Enable most Microsoft MSTest rules as error
 dotnet_diagnostic.MSTEST0001.severity = error
 dotnet_diagnostic.MSTEST0002.severity = error
 dotnet_diagnostic.MSTEST0003.severity = error
@@ -181,29 +180,10 @@ dotnet_diagnostic.MSTEST0049.severity = error
 dotnet_diagnostic.MSTEST0050.severity = error
 
 # Keep Philips-specific rules as needed
-dotnet_diagnostic.PH2000.severity = suggestion  # Test method naming
-dotnet_diagnostic.PH2012.severity = warning     # Test timeout required
-dotnet_diagnostic.PH2015.severity = warning     # Required categories
+dotnet_diagnostic.PH2000.severity = error  # Test method naming
+dotnet_diagnostic.PH2012.severity = error     # Test timeout required
+dotnet_diagnostic.PH2015.severity = error     # Required categories
 ```
-
-### 3. Consider Removing Philips MSTest Package
-
-Once migration is complete and you've verified the Microsoft analyzers work for your needs, consider removing the Philips package if you don't find sufficient value from the remaining rules:
-
-```xml
-<!-- Remove this when ready -->
-<PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers" Version="1.0.0" PrivateAssets="all" />
-```
-
-## Benefits of Migration
-
-1. **Official Support**: Backed by the MSTest team at Microsoft
-2. **Better Integration**: Designed specifically for MSTest framework
-3. **More Comprehensive**: 46+ rules vs 30 Philips rules
-4. **Active Development**: Regular updates with new MSTest features
-5. **Extensive Documentation**: Each rule has detailed documentation
-6. **Code Fixes**: Many rules include automatic code fixes
-7. **Future-Proof**: Will evolve with MSTest framework
 
 ## Questions or Issues?
 
