@@ -11,18 +11,21 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
-	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(AvoidStringFormatInInterpolatedStringCodeFixProvider)), Shared]
-	public class AvoidStringFormatInInterpolatedStringCodeFixProvider : SingleDiagnosticCodeFixProvider<InterpolationSyntax>
+	[ExportCodeFixProvider(LanguageNames.CSharp,
+		Name = nameof(AvoidStringFormatInInterpolatedStringCodeFixProvider)), Shared]
+	public class AvoidStringFormatInInterpolatedStringCodeFixProvider :
+		SingleDiagnosticCodeFixProvider<InterpolationSyntax>
 	{
-		protected override string Title => "Simplify string.Format in interpolated string";
+		protected override string Title => "Remove redundant string.Format call";
 
-		protected override DiagnosticId DiagnosticId => DiagnosticId.AvoidStringFormatInInterpolatedString;
+		protected override DiagnosticId DiagnosticId =>
+			DiagnosticId.AvoidStringFormatInInterpolatedString;
 
 		protected override Task<Document> ApplyFix(Document document, InterpolationSyntax node,
 			ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			// TODO: Implement the actual logic to convert string.Format to direct interpolation
-			// For now, just return the document unchanged
+			// TODO: Implement string.Format conversion logic
+			// For now, return unchanged
 			return Task.FromResult(document);
 		}
 	}
