@@ -43,8 +43,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
 				// Check if method has both DataRow and TestMethod/DataTestMethod attributes
-				var hasDataRow = presentAttributes.Contains(_definitions.DataRowSymbol);
-				var hasTestMethod = presentAttributes.Any(attr =>
+				bool hasDataRow = presentAttributes.Contains(_definitions.DataRowSymbol);
+				bool hasTestMethod = presentAttributes.Any(attr =>
 					attr.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 					attr.IsDerivedFrom(_definitions.DataTestMethodSymbol));
 
@@ -55,20 +55,20 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				// Check the order of attributes in the syntax
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
-				var testMethodPosition = -1;
-				var hasDataRowAfterTestMethod = false;
+				int testMethodPosition = -1;
+				bool hasDataRowAfterTestMethod = false;
 
-				for (var listIndex = 0; listIndex < attributeLists.Count; listIndex++)
+				for (int listIndex = 0; listIndex < attributeLists.Count; listIndex++)
 				{
 					AttributeListSyntax attributeList = attributeLists[listIndex];
-					for (var attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
+					for (int attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
 					{
 						AttributeSyntax attribute = attributeList.Attributes[attrIndex];
 						INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
 
 						if (attributeSymbol != null)
 						{
-							var currentPosition = listIndex * 1000 + attrIndex;
+							int currentPosition = (listIndex * 1000) + attrIndex;
 							
 							if (attributeSymbol.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 								attributeSymbol.IsDerivedFrom(_definitions.DataTestMethodSymbol))
@@ -81,7 +81,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 							else if (SymbolEqualityComparer.Default.Equals(attributeSymbol, _definitions.DataRowSymbol))
 							{
 								// If we've seen a TestMethod and this DataRow comes after it
-								if (testMethodPosition != -1 && currentPosition > testMethodPosition)
+								if ((testMethodPosition != -1) && (currentPosition > testMethodPosition))
 								{
 									hasDataRowAfterTestMethod = true;
 									break;

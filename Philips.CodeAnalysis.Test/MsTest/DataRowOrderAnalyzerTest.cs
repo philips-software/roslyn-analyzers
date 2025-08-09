@@ -1,6 +1,6 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-#pragma warning disable IDE0055, CA1707
+#pragma warning disable IDE0055
 
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
@@ -19,6 +19,17 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new DataRowOrderAnalyzer();
+		}
+
+		private static DiagnosticResult CreateExpectedResult(int line, int column)
+		{
+			return new DiagnosticResult
+			{
+				Id = DiagnosticId.DataRowOrderInTestMethod.ToId(),
+				Severity = DiagnosticSeverity.Warning,
+				Location = new DiagnosticResultLocation(null, line, column),
+				Message = new System.Text.RegularExpressions.Regex(".*")
+			};
 		}
 
 		[TestMethod]
@@ -59,15 +70,7 @@ public class Tests
 	public void TestMethod1(int x, int y) { }
 }";
 
-			var expected = new DiagnosticResult
-			{
-				Id = DiagnosticId.DataRowOrderInTestMethod.ToId(),
-				Severity = DiagnosticSeverity.Warning,
-				Location = new DiagnosticResultLocation(null, 9, 14),
-				Message = new System.Text.RegularExpressions.Regex(".*")
-			};
-
-			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(code, CreateExpectedResult(9, 14)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -144,15 +147,7 @@ public class Tests
 	public void TestMethod1(int x, int y) { }
 }";
 
-			var expected = new DiagnosticResult
-			{
-				Id = DiagnosticId.DataRowOrderInTestMethod.ToId(),
-				Severity = DiagnosticSeverity.Warning,
-				Location = new DiagnosticResultLocation(null, 11, 14),
-				Message = new System.Text.RegularExpressions.Regex(".*")
-			};
-
-			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(code, CreateExpectedResult(11, 14)).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -191,15 +186,7 @@ public class Tests
 	public void TestMethod1(int x, int y) { }
 }";
 
-			var expected = new DiagnosticResult
-			{
-				Id = DiagnosticId.DataRowOrderInTestMethod.ToId(),
-				Severity = DiagnosticSeverity.Warning,
-				Location = new DiagnosticResultLocation(null, 10, 14),
-				Message = new System.Text.RegularExpressions.Regex(".*")
-			};
-
-			await VerifyDiagnostic(code, expected).ConfigureAwait(false);
+			await VerifyDiagnostic(code, CreateExpectedResult(10, 14)).ConfigureAwait(false);
 		}
 	}
 }
