@@ -127,13 +127,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		private bool HasNullCheck(ExpressionSyntax condition)
 		{
 			var conditionAsString = condition.ToString();
-			if (conditionAsString.Contains(@"null") || conditionAsString.Contains(@".HasValue"))
+
+			// .HasValue checks are always valid null checks for nullable types
+			if (conditionAsString.Contains(@".HasValue"))
 			{
-				// There's a null check of some kind in some order. Don't be too picky, just let it go to minimize risk of a false positive
 				return true;
 			}
 
-			return false;
+			if (!conditionAsString.Contains(@"null"))
+			{
+				return false;
+			}
+
+			// For property access patterns, we need to be more careful
+			// Property null checks like "obj.Property == null" don't protect against obj being null
+			if (conditionAsString.Contains(@"."))
+			{
+				// Allow compound conditions that may include proper null checks
+				if (conditionAsString.Contains(@"&&") || conditionAsString.Contains(@"||"))
+				{
+					return true;
+				}
+
+				// Reject simple property null checks like "obj.Property == null"
+				if (conditionAsString.Contains(@"== null") || conditionAsString.Contains(@"!= null"))
+				{
+					return false;
+				}
+			}
+
+			// All other null checks are considered valid
+			return true;
 		}
 
 		public override void Analyze()
