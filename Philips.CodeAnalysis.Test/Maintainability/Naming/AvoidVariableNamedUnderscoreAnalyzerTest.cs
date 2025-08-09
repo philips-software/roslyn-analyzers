@@ -60,7 +60,7 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OutParameterNamedUnderscoreShouldFlag()
+		public async Task OutParameterNamedUnderscoreShouldNotFlag()
 		{
 			var test = @"
 using System;
@@ -78,7 +78,7 @@ class TestClass
 	}
 }";
 
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVariableNamedUnderscore).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -228,6 +228,46 @@ class TestClass
 	private void GetValue(out string value)
 	{
 		value = ""test"";
+	}
+}";
+
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TypedDiscardShouldNotFlag()
+		{
+			var test = @"
+using System;
+using System.Net;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		string adapterToFind = ""eth0"";
+		MyNetwork myNetwork = new MyNetwork();
+		
+		// This is a typed discard used for overload resolution - should not be flagged
+		myNetwork.GetIpV4(adapterToFind, out IPAddress addr, out _, out string _);
+	}
+}
+
+class MyNetwork
+{
+	public void GetIpV4(string adapter, out IPAddress addr, out int mask, out string gateway)
+	{
+		addr = IPAddress.Parse(""192.168.1.1"");
+		mask = 24;
+		gateway = ""192.168.1.1"";
+	}
+	
+	public void GetIpV4(string adapter, out IPAddress addr, out int mask, out byte[] gateway)
+	{
+		addr = IPAddress.Parse(""192.168.1.1"");
+		mask = 24;
+		gateway = new byte[] { 192, 168, 1, 1 };
 	}
 }";
 

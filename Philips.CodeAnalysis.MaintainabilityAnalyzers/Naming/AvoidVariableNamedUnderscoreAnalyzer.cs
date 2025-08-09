@@ -102,13 +102,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
 					context.ReportDiagnostic(diagnostic);
 				}
-				else if (declaration.Designation is DiscardDesignationSyntax discard)
-				{
-					Location location = discard.UnderscoreToken.GetLocation();
-					var diagnostic = Diagnostic.Create(Rule, location, discard.UnderscoreToken.ValueText);
-					context.ReportDiagnostic(diagnostic);
-				}
+				// Note: DiscardDesignationSyntax represents proper discards (e.g., "out _" or "out string _")
+				// and should not be flagged, so we don't handle this case.
 			}
 		}
 	}
-}
+}
