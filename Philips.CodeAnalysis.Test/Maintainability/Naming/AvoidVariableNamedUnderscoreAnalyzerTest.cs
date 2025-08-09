@@ -60,7 +60,7 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OutParameterNamedUnderscoreShouldFlag()
+		public async Task OutParameterNamedUnderscoreShouldNotFlag()
 		{
 			var test = @"
 using System;
@@ -78,7 +78,7 @@ class TestClass
 	}
 }";
 
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVariableNamedUnderscore).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 
 		[TestMethod]
