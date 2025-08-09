@@ -134,7 +134,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				return true;
 			}
 
-			// If there's no null comparison, there's no null check
 			if (!conditionAsString.Contains(@"null"))
 			{
 				return false;
