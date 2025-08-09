@@ -18,8 +18,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 
 		private const string TitleForEmptyPrefix = @"Specify the namespace prefix in the .editorconfig file";
-		private const string MessageFormatForEmptyPrefix = @"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.{0}.namespace_prefix = [OrganizationName].[ProductName]";
-		private const string DescriptionForEmptyPrefix = MessageFormatForEmptyPrefix;
 		private const string Category = Categories.Naming;
 
 		private void Analyze(SyntaxNodeAnalysisContext context)
@@ -49,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		public static readonly string RuleId = DiagnosticId.NamespacePrefix.ToId();
 
 		public static readonly DiagnosticDescriptor RuleForIncorrectNamespace = new(RuleId, TitleForIncorrectPrefix, MessageFormatForIncorrectPrefix, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: DescriptionForIncorrectPrefix);
-		public static readonly DiagnosticDescriptor RuleForEmptyPrefix = new(RuleId, TitleForEmptyPrefix, string.Format(MessageFormatForEmptyPrefix, RuleId), Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: string.Format(DescriptionForEmptyPrefix, RuleId));
+		public static readonly DiagnosticDescriptor RuleForEmptyPrefix = new(RuleId, TitleForEmptyPrefix, $"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.{RuleId}.namespace_prefix = [OrganizationName].[ProductName]", Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: $"Please specify the namespace prefix in the .editorconfig file Eg. dotnet_code_quality.{RuleId}.namespace_prefix = [OrganizationName].[ProductName]");
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(RuleForIncorrectNamespace, RuleForEmptyPrefix); } }
