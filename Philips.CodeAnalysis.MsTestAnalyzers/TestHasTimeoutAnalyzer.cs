@@ -128,6 +128,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				if (data.Symbol == null)
 				{
+					Optional<object> constantValue = context.SemanticModel.GetConstantValue(argumentSyntax.Expression);
+					if (constantValue.HasValue && constantValue.Value is T literalValue)
+					{
+						value = literalValue;
+						return true;
+					}
 					value = default;
 					return false;
 				}

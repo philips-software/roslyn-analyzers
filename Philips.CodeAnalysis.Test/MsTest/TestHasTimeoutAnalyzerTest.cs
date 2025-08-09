@@ -86,6 +86,16 @@ class TestDefinitions
 		}
 
 		[DataTestMethod]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(1234)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(5678)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(9999)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeWithLiteralIntegerShouldTriggerAsync(string methodAttributes)
+		{
+			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
 		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[DataTestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
