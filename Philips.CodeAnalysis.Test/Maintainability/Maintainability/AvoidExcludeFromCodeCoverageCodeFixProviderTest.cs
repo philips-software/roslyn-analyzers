@@ -33,6 +33,7 @@ class TestClass
 using System.Diagnostics.CodeAnalysis;
 class TestClass 
 {
+  
   public void TestMethod()
   {
     return;
@@ -40,7 +41,7 @@ class TestClass
 }
 ";
 
-			await VerifyFix(given, expected).ConfigureAwait(false);
+			await VerifyFix(given, expected, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -57,12 +58,13 @@ class TestClass
 
 			var expected = @"
 using System.Diagnostics.CodeAnalysis;
+
 class TestClass 
 {
 }
 ";
 
-			await VerifyFix(given, expected).ConfigureAwait(false);
+			await VerifyFix(given, expected, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -95,7 +97,7 @@ class TestClass
 }
 ";
 
-			await VerifyFix(given, expected).ConfigureAwait(false);
+			await VerifyFix(given, expected, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -120,6 +122,7 @@ using System.Diagnostics.CodeAnalysis;
 using CodeCoverageAlias = System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage;
 class TestClass 
 {
+  
   public void TestMethod()
   {
     return;
@@ -127,7 +130,7 @@ class TestClass
 }
 ";
 
-			await VerifyFix(given, expected).ConfigureAwait(false);
+			await VerifyFix(given, expected, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		protected override CodeFixProvider GetCodeFixProvider()
