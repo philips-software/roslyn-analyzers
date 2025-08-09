@@ -28,5 +28,5 @@
 | [PH2059](../Documentation/Diagnostics/PH2059.md)  | Public Method should be TestMethod                   | Public methods inside a TestClass should either be a test method or non-public. |
 | [PH2076](../Documentation/Diagnostics/PH2076.md)  | Assert.Fail alternatives                             | Assert.Fail should not be used if an alternative is more appropriate |
 | [PH2095](../Documentation/Diagnostics/PH2095.md)  | TestMethods must return void/Task for async methods  | TestMethods must return Task if they are async methods, or void if not |
-| [PH2148](../Documentation/Diagnostics/PH2148.md)  | Order DataRow attribute above TestMethod for unit tests | DataRow attributes should be consistently ordered above TestMethod/DataTestMethod attributes on test methods |
+| [PH2152](../Documentation/Diagnostics/PH2152.md)  | Order DataRow attribute above TestMethod for unit tests | DataRow attributes should be consistently ordered above TestMethod/DataTestMethod attributes on test methods |
 

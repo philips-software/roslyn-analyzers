@@ -1,7 +1,5 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-#pragma warning disable IDE0055, IDE0048, IDE0007, IDE0008
-
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -21,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.DataRowOrderInTestMethod.ToId(),
-												Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+												Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: false, description: Description);
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
@@ -43,8 +41,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
 				// Check if method has both DataRow and TestMethod/DataTestMethod attributes
-				bool hasDataRow = presentAttributes.Contains(_definitions.DataRowSymbol);
-				bool hasTestMethod = presentAttributes.Any(attr =>
+				var hasDataRow = presentAttributes.Contains(_definitions.DataRowSymbol);
+				var hasTestMethod = presentAttributes.Any(attr =>
 					attr.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 					attr.IsDerivedFrom(_definitions.DataTestMethodSymbol));
 
@@ -55,21 +53,21 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 				// Check the order of attributes in the syntax
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
-				int testMethodPosition = -1;
-				bool hasDataRowAfterTestMethod = false;
+				var testMethodPosition = -1;
+				var hasDataRowAfterTestMethod = false;
 
-				for (int listIndex = 0; listIndex < attributeLists.Count; listIndex++)
+				for (var listIndex = 0; listIndex < attributeLists.Count; listIndex++)
 				{
 					AttributeListSyntax attributeList = attributeLists[listIndex];
-					for (int attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
+					for (var attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
 					{
 						AttributeSyntax attribute = attributeList.Attributes[attrIndex];
 						INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
 
 						if (attributeSymbol != null)
 						{
-							int currentPosition = (listIndex * 1000) + attrIndex;
-							
+							var currentPosition = (listIndex * 1000) + attrIndex;
+
 							if (attributeSymbol.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 								attributeSymbol.IsDerivedFrom(_definitions.DataTestMethodSymbol))
 							{
@@ -81,7 +79,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 							else if (SymbolEqualityComparer.Default.Equals(attributeSymbol, _definitions.DataRowSymbol))
 							{
 								// If we've seen a TestMethod and this DataRow comes after it
-								if ((testMethodPosition != -1) && (currentPosition > testMethodPosition))
+								if (testMethodPosition != -1 && currentPosition > testMethodPosition)
 								{
 									hasDataRowAfterTestMethod = true;
 									break;
@@ -89,7 +87,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 							}
 						}
 					}
-					
+
 					if (hasDataRowAfterTestMethod)
 					{
 						break;
