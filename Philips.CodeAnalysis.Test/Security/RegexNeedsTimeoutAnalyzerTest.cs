@@ -49,8 +49,8 @@ namespace RegexNeedsTimeoutTest
 
 		[DataTestMethod]
 		// TODO: Figure out why implicit names are not found.
-		//[DataRow(@"("".*"", RegexOptions.Compiled)")]
-		//[DataRow(@"("".*"")")]
+		[DataRow(@"("".*"", RegexOptions.Compiled)")]
+		[DataRow(@"("".*"")")]
 		[DataRow(@"Regex("".*"", RegexOptions.Compiled)")]
 		[DataRow(@"Regex("".*"")")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled)")]

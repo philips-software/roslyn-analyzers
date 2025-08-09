@@ -39,18 +39,31 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			// Bail out early.
-			TypeSyntax typeSyntax = creation.Type;
-			if (!typeSyntax.ToString().Contains("Regex"))
-			{
-				return;
+			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+/* Unmerged change from project 'Philips.CodeAnalysis.SecurityAnalyzers(netstandard2.0)'
+Before:
 			}
 
-			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
+			// Debug: Log what type we found
+			System.Diagnostics.Debug.WriteLine($"Found type: {typeSymbol}");
+
+			// Double check if the is a Regex constructor.
+After:
+			}
+
+			// Debug: Log what type we found
+			System.Diagnostics.Debug.WriteLine($"Found type: {typeSymbol}");
+
+			// Double check if the is a Regex constructor.
+*/
+
 			if (typeSymbol == null)
 			{
 				return;
 			}
+
+			// Debug: Log what type we found
+			System.Diagnostics.Debug.WriteLine($"Found type: {typeSymbol}");
 
 			// Double check if the is a Regex constructor.
 			if (typeSymbol.ToString() != "System.Text.RegularExpressions.Regex")
