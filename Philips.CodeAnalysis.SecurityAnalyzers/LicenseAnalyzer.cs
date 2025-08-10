@@ -1,4 +1,4 @@
-﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -10,9 +10,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LicenseAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const string Title = @"Avoid Unlicensed Packages";
-		public const string MessageFormat = @"Package '{0}' has unknown or restricted license. Consider adding to Allowed.Licenses.txt if license is acceptable.";
-		private const string Description = @"Packages with unknown, commercial, or restricted licenses should be reviewed before use to ensure compliance with project requirements.";
+		private const string Title = @"Avoid Packages with Unacceptable Licenses";
+		public const string MessageFormat = @"Package '{0}' has an unacceptable license. Consider adding to Allowed.Licenses.txt if license is acceptable.";
+		private const string Description = @"Packages with unacceptable licenses (e.g., copyleft licenses like GPL) should be reviewed before use to ensure compliance with project requirements.";
 
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
 
