@@ -1,4 +1,4 @@
-﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Calling ToString() when the result is assigned to a discard variable or used as a standalone expression statement is unnecessary and should be removed.";
 
 		public AvoidUnusedToStringAnalyzer()
-			: base(DiagnosticId.AvoidUnusedToString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: true)
+			: base(DiagnosticId.AvoidUnusedToString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
 

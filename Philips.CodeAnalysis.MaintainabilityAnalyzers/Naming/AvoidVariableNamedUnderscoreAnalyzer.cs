@@ -111,4 +111,4 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 		}
 	}
-}
+}
