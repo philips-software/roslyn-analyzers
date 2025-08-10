@@ -156,4 +156,4 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			return outParameterTypes.Count > 1;
 		}
 	}
-}
+}
