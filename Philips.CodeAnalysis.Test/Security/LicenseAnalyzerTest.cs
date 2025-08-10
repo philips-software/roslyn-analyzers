@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Security
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LicenseAnalyzer_SuccessfulCompilation_NoError()
+		public async Task LicenseAnalyzerSuccessfulCompilationNoErrorAsync()
 		{
 			const string testCode = @"
 class Foo 
@@ -35,7 +35,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task LicenseAnalyzer_WithAdditionalFile_CustomLicensesAllowed()
+		public async Task LicenseAnalyzerWithAdditionalFileCustomLicensesAllowedAsync()
 		{
 			const string testCode = @"
 class Foo 
