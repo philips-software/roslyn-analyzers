@@ -1,0 +1,57 @@
+// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
+using Philips.CodeAnalysis.SecurityAnalyzers;
+using Philips.CodeAnalysis.Test.Helpers;
+using Philips.CodeAnalysis.Test.Verifiers;
+
+namespace Philips.CodeAnalysis.Test.Security
+{
+	[TestClass]
+	public class LicenseAnalyzerTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new LicenseAnalyzer();
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzer_SuccessfulCompilation_NoError()
+		{
+			const string testCode = @"
+class Foo 
+{
+  public void DoSomething()
+  {
+    var x = 1;
+  }
+}
+";
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzer_WithAdditionalFile_CustomLicensesAllowed()
+		{
+			const string testCode = @"
+class Foo 
+{
+  public void DoSomething()
+  {
+    var x = 1;
+  }
+}
+";
+			const string additionalFileContent = @"CustomLicense
+ProprietaryLicense
+";
+
+			await VerifySuccessfulCompilation(testCode, additionalFileContent, LicenseAnalyzer.AllowedLicensesFileName).ConfigureAwait(false);
+		}
+	}
+}
