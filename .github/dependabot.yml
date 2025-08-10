@@ -9,4 +9,6 @@ updates:
     registries: "*"
     schedule:
       interval: "daily"
+    ignore:
+      - dependency-name: "Microsoft.CodeAnalysis*"
       
