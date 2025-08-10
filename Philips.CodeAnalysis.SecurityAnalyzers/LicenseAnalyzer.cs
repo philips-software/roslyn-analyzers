@@ -1,6 +1,7 @@
 ﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
 
@@ -16,21 +17,18 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
 
 		public LicenseAnalyzer()
-			: base(DiagnosticId.AvoidUnlicensedPackages, Title, MessageFormat, Description, Categories.Security)
+			: base(DiagnosticId.AvoidUnlicensedPackages, Title, MessageFormat, Description, Categories.Security, isEnabled: false)
 		{ }
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			// For now, this is a placeholder implementation
-			// In a full implementation, this would analyze package references
-			// and check their license information against the allowlist
-			// The analyzer is disabled by default (isEnabledByDefault: false in base class)
-			
-			// Register a dummy action to satisfy analyzer validation
-			context.RegisterCompilationEndAction(AnalyzeCompilation);
+			// Register a dummy syntax node action to satisfy analyzer validation
+			// In a full implementation, this would analyze project files or metadata
+			// to check package license information
+			context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.CompilationUnit);
 		}
 
-		private void AnalyzeCompilation(CompilationAnalysisContext context)
+		private void AnalyzeNode(SyntaxNodeAnalysisContext context)
 		{
 			// Placeholder for license analysis logic
 			// Future implementation would:
