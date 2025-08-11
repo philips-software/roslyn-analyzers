@@ -48,6 +48,29 @@ class Foo
 ";
 			const string additionalFileContent = @"CustomLicense
 ProprietaryLicense
+# This is a comment and should be ignored
+GPL-3.0
+";
+
+			await VerifySuccessfulCompilation(testCode, additionalFileContent, LicenseAnalyzer.AllowedLicensesFileName).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithEmptyAdditionalFileAsync()
+		{
+			const string testCode = @"
+class Foo 
+{
+  public void DoSomething()
+  {
+    var x = 1;
+  }
+}
+";
+			const string additionalFileContent = @"
+# Only comments and empty lines
+
 ";
 
 			await VerifySuccessfulCompilation(testCode, additionalFileContent, LicenseAnalyzer.AllowedLicensesFileName).ConfigureAwait(false);
