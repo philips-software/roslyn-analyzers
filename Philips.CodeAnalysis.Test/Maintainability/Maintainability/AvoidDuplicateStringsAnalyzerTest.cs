@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -49,7 +50,24 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			var code = GetLargeFileContents("Test1").ToString();
-			return base.GetAdditionalSourceCode().Add(("Test1.cs", code));
+			ImmutableArray<(string name, string content)> result = base.GetAdditionalSourceCode().Add(("Test1.cs", code));
+
+			// Add additional test case for cross-file testing
+			var additionalCode = @"
+using System;
+namespace TestCase2
+{
+    public class Class2
+    {
+        public void Method2()
+        {
+            // Different context, but same string
+            Console.WriteLine(""Waiting to connect to server..."");
+        }
+    }
+}
+";
+			return result.Add(("Test2.cs", additionalCode));
 		}
 
 		[TestMethod]
@@ -119,6 +137,57 @@ namespace DuplicateStringsTest {{
 		{
 			var testCode = CreateTestCode(literal, literal, isClass);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringFalsePositiveTest()
+		{
+			// Test case to reproduce the issue where analyzer reports false positive
+			// when string appears only once but claims it's on a different line
+			var code = @"
+using System;
+
+namespace TestCase
+{
+    public class ServerConnection
+    {
+        public void ConnectToServer()
+        {
+            // This is around line 165 in the original issue
+            // No string literal here
+            var someVariable = 42;
+            
+            // This is around line 169 where the string actually appears
+            Console.WriteLine(""Waiting to connect to server..."");
+        }
+    }
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringCrossFileIssueTest()
+		{
+			// Test case to check if the issue occurs with cross-file analysis
+			// The analyzer uses a shared ConcurrentDictionary across all files
+			var mainCode = @"
+using System;
+namespace TestCase1
+{
+    public class Class1
+    {
+        public void Method1()
+        {
+            Console.WriteLine(""Waiting to connect to server..."");
+        }
+    }
+}
+";
+
+			await VerifyDiagnostic(mainCode, DiagnosticId.AvoidDuplicateStrings).ConfigureAwait(false);
 		}
 
 		private string CreateTestCode(string literal1, string literal2, bool isClass)
