@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -118,7 +119,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 
 				// Parse the placeholder
-				if (int.TryParse(match.Groups[1].Value, out var argIndex) && argIndex < arguments.Length)
+				if (int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var argIndex) && argIndex < arguments.Length)
 				{
 					ExpressionSyntax expression = arguments[argIndex].Expression;
 					InterpolationSyntax interpolation;
