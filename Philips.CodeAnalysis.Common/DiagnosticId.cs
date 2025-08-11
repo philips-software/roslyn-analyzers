@@ -140,5 +140,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidToStringOnString = 2146,
 		AvoidVariableNamedUnderscore = 2147,
 		DataRowOrderInTestMethod = 2152,
+		AvoidUnusedToString = 2153,
 	}
 }
