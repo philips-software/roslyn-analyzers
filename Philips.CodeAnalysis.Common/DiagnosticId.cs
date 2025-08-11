@@ -137,7 +137,10 @@ namespace Philips.CodeAnalysis.Common
 		AvoidAssemblyGetEntryAssembly = 2143,
 		AvoidIncorrectForLoopCondition = 2144,
 		AvoidStringFormatInInterpolatedString = 2145,
-		UseDisplayNameOrDescription = 2150,
+		AvoidToStringOnString = 2146,
 		AvoidVariableNamedUnderscore = 2147,
+		UseDisplayNameOrDescription = 2150,
+		AvoidTodoComments = 2151,
+		AvoidUnusedToString = 2153,
 	}
 }
