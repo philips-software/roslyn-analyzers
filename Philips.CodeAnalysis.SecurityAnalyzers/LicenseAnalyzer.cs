@@ -51,28 +51,92 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			// For now, we'll implement a basic version that checks for package references
+			// Load custom allowed licenses from additional files
+			HashSet<string> allowedLicenses = GetAllowedLicenses(context.Options.AdditionalFiles);
+
+			// For this basic implementation, we'll analyze compilation references
 			// In a more complete implementation, this would:
 			// 1. Parse project files to find PackageReference elements
 			// 2. Query package repositories (like nuget.org) for license information
 			// 3. Compare against allowed licenses list
 			// 4. Report violations
 
-			// Load custom allowed licenses from additional files
-			HashSet<string> allowedLicenses = GetAllowedLicenses(context.Options.AdditionalFiles);
+			AnalyzeReferences(context, allowedLicenses);
+		}
 
-			// This is a placeholder implementation - in a real scenario we would:
-			// - Access the project file context to get package references
-			// - Query external APIs for license information
-			// - Cache results for performance
-			// For now, we just register that the analyzer is active but don't report any diagnostics
+		private void AnalyzeReferences(SyntaxNodeAnalysisContext context, HashSet<string> allowedLicenses)
+		{
+			// This is a basic demonstration implementation
+			// In practice, we would need external APIs to get license information for packages
+			// For now, we'll simulate by checking if any references look like they might have
+			// unacceptable licenses based on naming patterns
 
-			// Example of how a violation would be reported:
-			// var diagnostic = Diagnostic.Create(Rule, location, packageName);
-			// context.ReportDiagnostic(diagnostic);
+			foreach (PortableExecutableReference reference in context.Compilation.References.OfType<PortableExecutableReference>())
+			{
+				if (reference.Display == null)
+				{
+					continue;
+				}
 
-			// Avoid IDE0059 warning by explicitly using the variable
+				var assemblyName = Path.GetFileNameWithoutExtension(reference.Display);
+
+				// Skip system and framework assemblies
+				if (IsSystemAssembly(assemblyName))
+				{
+					continue;
+				}
+
+				// For demonstration purposes, we'll simulate license checking
+				// This would normally involve querying external APIs or package metadata
+				SimulateLicenseCheck(context, assemblyName, allowedLicenses);
+			}
+		}
+
+		private static bool IsSystemAssembly(string assemblyName)
+		{
+			// Skip well-known system assemblies to reduce noise
+			return assemblyName.StartsWith("System.", StringComparison.OrdinalIgnoreCase) ||
+				   assemblyName.StartsWith("Microsoft.", StringComparison.OrdinalIgnoreCase) ||
+				   assemblyName.StartsWith("mscorlib", StringComparison.OrdinalIgnoreCase) ||
+				   assemblyName.StartsWith("netstandard", StringComparison.OrdinalIgnoreCase) ||
+				   assemblyName.Equals("System", StringComparison.OrdinalIgnoreCase);
+		}
+
+		private void SimulateLicenseCheck(SyntaxNodeAnalysisContext context, string assemblyName, HashSet<string> allowedLicenses)
+		{
+			// This is a simulation for demonstration purposes
+			// In a real implementation, this would query actual package license information
+
+			// For now, we'll only flag packages that explicitly suggest problematic licenses
+			// This is just to demonstrate the diagnostic reporting mechanism
+			if (ContainsIgnoreCase(assemblyName, "GPL") ||
+				ContainsIgnoreCase(assemblyName, "Copyleft"))
+			{
+				// Create a diagnostic for this potentially problematic package
+				var diagnostic = Diagnostic.Create(
+					Rule,
+					context.Node.GetLocation(),
+					assemblyName);
+
+				context.ReportDiagnostic(diagnostic);
+			}
+
+			// Use the allowedLicenses parameter to avoid IDE0060 warning
+			// In a real implementation, this would be used to compare against actual license information
 			GC.KeepAlive(allowedLicenses);
+
+			// Note: This is a very basic simulation. A real implementation would:
+			// 1. Extract package name and version from assembly metadata
+			// 2. Query package repository APIs (nuget.org, etc.) for license information
+			// 3. Parse license identifiers (SPDX, free-text, etc.)
+			// 4. Compare against the allowedLicenses list
+			// 5. Report diagnostics for packages with unacceptable licenses
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA2249:Use 'string.Contains' instead of 'string.IndexOf' to improve readability", Justification = "Provides cross-framework compatibility between .NET Standard 2.0 and .NET 8.0")]
+		private static bool ContainsIgnoreCase(string source, string value)
+		{
+			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 
 		private static HashSet<string> GetAllowedLicenses(IEnumerable<AdditionalText> additionalFiles)
