@@ -40,21 +40,31 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			public override void OnTestAttributeMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, HashSet<INamedTypeSymbol> presentAttributes)
 			{
-				// Check if method has both DataRow and TestMethod/DataTestMethod attributes
-				var hasDataRow = presentAttributes.Contains(_definitions.DataRowSymbol);
-				var hasTestMethod = presentAttributes.Any(attr =>
-					attr.IsDerivedFrom(_definitions.TestMethodSymbol) ||
-					attr.IsDerivedFrom(_definitions.DataTestMethodSymbol));
-
-				if (!hasDataRow || !hasTestMethod)
+				if (!HasRequiredAttributes(presentAttributes))
 				{
 					return;
 				}
 
-				// Check the order of attributes in the syntax
+				// Check if DataRow comes after TestMethod
+				if (HasDataRowAfterTestMethod(context, methodDeclaration))
+				{
+					Location location = methodDeclaration.Identifier.GetLocation();
+					context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
+				}
+			}
+
+			private bool HasRequiredAttributes(HashSet<INamedTypeSymbol> presentAttributes)
+			{
+				return presentAttributes.Contains(_definitions.DataRowSymbol) &&
+					presentAttributes.Any(attr =>
+						attr.IsDerivedFrom(_definitions.TestMethodSymbol) ||
+						attr.IsDerivedFrom(_definitions.DataTestMethodSymbol));
+			}
+
+			private bool HasDataRowAfterTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration)
+			{
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
-				var testMethodPosition = -1;
-				var hasDataRowAfterTestMethod = false;
+				(int listIndex, int attrIndex)? testMethodPosition = null;
 
 				for (var listIndex = 0; listIndex < attributeLists.Count; listIndex++)
 				{
@@ -66,40 +76,22 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 						if (attributeSymbol != null)
 						{
-							var currentPosition = (listIndex * 1000) + attrIndex;
+							(int listIndex, int attrIndex) currentPosition = (listIndex, attrIndex);
 
 							if (attributeSymbol.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 								attributeSymbol.IsDerivedFrom(_definitions.DataTestMethodSymbol))
 							{
-								if (testMethodPosition == -1)
-								{
-									testMethodPosition = currentPosition;
-								}
+								testMethodPosition ??= currentPosition;
 							}
-							else if (SymbolEqualityComparer.Default.Equals(attributeSymbol, _definitions.DataRowSymbol))
+							else if (SymbolEqualityComparer.Default.Equals(attributeSymbol, _definitions.DataRowSymbol) &&
+								testMethodPosition != null && currentPosition.CompareTo(testMethodPosition.Value) > 0)
 							{
-								// If we've seen a TestMethod and this DataRow comes after it
-								if (testMethodPosition != -1 && currentPosition > testMethodPosition)
-								{
-									hasDataRowAfterTestMethod = true;
-									break;
-								}
+								return true;
 							}
 						}
 					}
-
-					if (hasDataRowAfterTestMethod)
-					{
-						break;
-					}
 				}
-
-				// If DataRow comes after TestMethod, report diagnostic
-				if (hasDataRowAfterTestMethod)
-				{
-					Location location = methodDeclaration.Identifier.GetLocation();
-					context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
-				}
+				return false;
 			}
 		}
 	}
