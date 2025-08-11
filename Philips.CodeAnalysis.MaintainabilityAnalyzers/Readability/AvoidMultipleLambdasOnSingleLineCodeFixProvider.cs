@@ -48,12 +48,48 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				lastToken = lastToken.GetNextToken();
 				oldNode = lastToken.Parent;
 			}
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
+
+			// Calculate basic indentation to ensure proper formatting even if Formatter.Annotation fails
+			var indentation = GetIndentationForNode(oldNode);
+
+			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia
+				.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine))
+				.Add(SyntaxFactory.Whitespace(indentation));
 
 			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 			root = root.ReplaceNode(oldNode, newNode);
 
 			return document.WithSyntaxRoot(root);
+		}
+
+		private string GetIndentationForNode(SyntaxNode node)
+		{
+			// Find the line that contains the node
+			var lineStart = node.GetLocation().SourceSpan.Start;
+			SyntaxTree syntaxTree = node.SyntaxTree;
+			SourceText text = syntaxTree.GetText();
+			TextLine line = text.Lines.GetLineFromPosition(lineStart);
+
+			// Extract the existing indentation from the line
+			var lineText = line.ToString();
+			var indentationLength = 0;
+
+			foreach (var c in lineText)
+			{
+				if (c is '\t' or ' ')
+				{
+					indentationLength++;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			var baseIndentation = lineText.Substring(0, indentationLength);
+
+			// Add one tab for the continuation line
+			return baseIndentation + "\t";
 		}
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
