@@ -139,6 +139,7 @@ namespace Philips.CodeAnalysis.Common
 		AvoidStringFormatInInterpolatedString = 2145,
 		AvoidToStringOnString = 2146,
 		AvoidVariableNamedUnderscore = 2147,
+		AvoidTodoComments = 2151,
 		AvoidUnusedToString = 2153,
 		AvoidUnlicensedPackages = 2155,
 	}
