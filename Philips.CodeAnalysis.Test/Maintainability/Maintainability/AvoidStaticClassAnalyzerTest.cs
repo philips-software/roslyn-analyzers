@@ -150,6 +150,96 @@ AllowedEnumeration";
 			await Verify(testClass);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesTestTimeoutsScenarioTestAsync()
+		{
+			var testClass = @"
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+		public const bool IsDebuggingTests = false;
+		public const int CiAppropriate = 200;
+		public const int CiAcceptable = 1200;
+	}
+}";
+
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesTestTimeoutsWithPreprocessorDirectivesTestAsync()
+		{
+			var testClass = @"
+// Uncomment to run tests locally in a debugger.
+//#define DEBUGGING_TESTS
+
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+#if DEBUGGING_TESTS
+		public const bool IsDebuggingTests = true;
+		public const int CiAppropriate = int.MaxValue;
+		public const int CiAcceptable = int.MaxValue;
+		public const int Integration = int.MaxValue;
+		public const int Nightly = int.MaxValue;
+		public const int Smoke = int.MaxValue;
+#else
+		public const bool IsDebuggingTests = false;
+
+#if BUILDSERVER
+		public const int CiAppropriate = 1100;
+		public const int CiAcceptable = 2200;
+#else
+		public const int CiAppropriate = 200;
+		public const int CiAcceptable = 1200;
+#endif
+#endif
+	}
+}";
+
+			await VerifySuccessfulCompilation(testClass).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesShouldTriggerWithNonConstFieldTestAsync()
+		{
+			var testClass = @"
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+		public const bool IsDebuggingTests = false;
+		public const int CiAppropriate = 200;
+		public static int CiAcceptable = 1200; // This should trigger the analyzer
+	}
+}";
+
+			await VerifyDiagnostic(testClass, DiagnosticId.AvoidStaticClasses, line: 4, column: -1).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesWithConstFieldsAndPropertiesTestAsync()
+		{
+			var testClass = @"
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+		public const bool IsDebuggingTests = false;
+		public const int CiAppropriate = 200;
+		public static int CiAcceptable { get; } = 1200; // This should trigger the analyzer
+	}
+}";
+
+			await VerifyDiagnostic(testClass, DiagnosticId.AvoidStaticClasses, line: 4, column: -1).ConfigureAwait(false);
+		}
+
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
