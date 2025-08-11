@@ -75,5 +75,22 @@ class Foo
 
 			await VerifySuccessfulCompilation(testCode, additionalFileContent, LicenseAnalyzer.AllowedLicensesFileName).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithMissingAssetsFileAsync()
+		{
+			// Test that analyzer doesn't crash when project.assets.json is not available
+			const string testCode = @"
+class Foo 
+{
+  public void DoSomething()
+  {
+    var x = 1;
+  }
+}
+";
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
 	}
 }
