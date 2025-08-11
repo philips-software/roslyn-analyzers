@@ -370,6 +370,28 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionPropertyCheckNotVariableCheckTestAsync()
+		{
+			var testCode = @"
+class DataGridViewTextBoxCell 
+{{
+  public object Value {{ get; set; }}
+  public void Foo()
+  {{
+    object obj = new DataGridViewTextBoxCell();
+    DataGridViewTextBoxCell assignedCell = obj as DataGridViewTextBoxCell;
+    if (assignedCell.Value == null)
+    {{
+      assignedCell.Value = string.Empty;
+    }}
+  }}
+}}
+";
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MultipleAsExpressionsInSameBlockShouldNotTriggerFalsePositiveAsync()
 		{
 			var testCode = @"
@@ -396,6 +418,5 @@ class Foo
 			// This should not produce any diagnostics since both variables are properly null-checked
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
-
 	}
 }

@@ -48,6 +48,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow("typeof(bool)", false),
 		 DataRow("typeof(System.DateTime)", false),
 		 DataRow("null", true),
+		 DataRow("\"null\"", false),
 		 DataRow("a", false),
 		 DataRow("int.MaxValue", false),
 		 DataRow("1d", false)]

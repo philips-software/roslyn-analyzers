@@ -15,7 +15,8 @@ namespace Philips.CodeAnalysis.Common
 
 		public bool IsNull(ExpressionSyntax expression)
 		{
-			return expression is LiteralExpressionSyntax { Token.Text: "null" };
+			return expression is LiteralExpressionSyntax literal &&
+				   literal.IsKind(SyntaxKind.NullLiteralExpression);
 		}
 
 		public bool IsLiteral(ExpressionSyntax expression, SemanticModel semanticModel)
