@@ -35,6 +35,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			// 1. Load allowed licenses from AdditionalFiles (Allowed.Licenses.txt)
 			// 2. Analyze package references for license information
 			// 3. Report diagnostics for packages with restricted licenses
+
+			// This is a placeholder to avoid an empty statement block.
+			_ = context.Node;
 		}
 	}
 }
