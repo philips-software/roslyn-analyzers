@@ -88,8 +88,28 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			var baseIndentation = lineText.Substring(0, indentationLength);
 
-			// Add one tab for the continuation line
-			return baseIndentation + "\t";
+			// Determine the continuation indentation style based on existing indentation
+			var continuationIndent = GetContinuationIndent(baseIndentation);
+			return baseIndentation + continuationIndent;
+		}
+
+		private string GetContinuationIndent(string baseIndentation)
+		{
+			// If base indentation contains tabs, use a tab for continuation
+			if (baseIndentation.Contains('\t'))
+			{
+				return "\t";
+			}
+
+			// If base indentation is all spaces, add one level of space indentation
+			// Default to 4 spaces (as per .editorconfig indent_size = 4)
+			if (baseIndentation.All(c => c == ' '))
+			{
+				return "    "; // 4 spaces for one level of indentation
+			}
+
+			// Default fallback to tab (project preference from .editorconfig)
+			return "\t";
 		}
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
