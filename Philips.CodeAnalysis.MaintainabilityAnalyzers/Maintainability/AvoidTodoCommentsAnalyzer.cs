@@ -1,5 +1,6 @@
-// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -18,15 +19,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public AvoidTodoCommentsAnalyzer()
 			: base(DiagnosticId.AvoidTodoComments, Title, MessageFormat, Description, Categories.Maintainability)
-		{
-		}
+		{ }
 	}
 
 	public class AvoidTodoCommentsSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
 		public override void Analyze()
 		{
-			System.Collections.Generic.IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia()
+			IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia()
 				.Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) ||
 								 trivia.IsKind(SyntaxKind.MultiLineCommentTrivia));
 
