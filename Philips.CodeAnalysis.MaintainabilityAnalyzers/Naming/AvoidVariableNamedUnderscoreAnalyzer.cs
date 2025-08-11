@@ -60,15 +60,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
+			foreach (var identifier in variableDeclaration.Variables.Select(variable => variable.Identifier.ValueText))
 			{
-				if (identifier.ValueText != "_")
+				if (identifier != "_")
 				{
 					continue;
 				}
 
 				Location location = variableDeclaration.GetLocation();
-				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
+				var diagnostic = Diagnostic.Create(Rule, location, identifier);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -89,26 +89,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			// Check if it's a variable declaration
-			if (argument.Expression is DeclarationExpressionSyntax declaration)
+			if (argument.Expression is DeclarationExpressionSyntax declaration &&
+				declaration.Designation is SingleVariableDesignationSyntax variable)
 			{
-				if (declaration.Designation is SingleVariableDesignationSyntax variable)
+				if (variable.Identifier.ValueText != "_")
 				{
-					if (variable.Identifier.ValueText != "_")
-					{
-						return;
-					}
-
-					// This is a typed discard (e.g., out int _)
-					// Only flag if the type is not needed for overload resolution
-					if (!IsTypedDiscardNecessaryForOverloadResolution(context, argument))
-					{
-						Location location = variable.Identifier.GetLocation();
-						var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
-						context.ReportDiagnostic(diagnostic);
-					}
+					return;
 				}
-				// Note: We don't flag DiscardDesignationSyntax (anonymous discards like "out _")
-				// as they are the preferred form and should not be flagged
+
+				Location location = variable.Identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+				context.ReportDiagnostic(diagnostic);
+				// Note: DiscardDesignationSyntax represents proper discards (e.g., "out _" or "out string _")
+				// and should not be flagged, so we don't handle this case.
 			}
 		}
 

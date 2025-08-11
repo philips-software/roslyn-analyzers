@@ -61,7 +61,7 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OutParameterNamedUnderscoreShouldFlag()
+		public async Task OutParameterNamedUnderscoreShouldNotFlag()
 		{
 			var test = @"
 using System;
@@ -79,7 +79,7 @@ class TestClass
 	}
 }";
 
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVariableNamedUnderscore).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -237,105 +237,38 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task UnnecessaryTypedDiscardShouldFlag()
+		public async Task TypedDiscardShouldNotFlag()
 		{
 			var test = @"
 using System;
+using System.Net;
 
 class TestClass
 {
 	public void TestMethod()
 	{
-		// Typed discard when anonymous discard would work
-		GetValue(out string _);
-		TryParseHelper(""123"", out int _);
+		string adapterToFind = ""eth0"";
+		MyNetwork myNetwork = new MyNetwork();
+		
+		// This is a typed discard used for overload resolution - should not be flagged
+		myNetwork.GetIpV4(adapterToFind, out IPAddress addr, out _, out string _);
 	}
+}
 
-	private void GetValue(out string value)
+class MyNetwork
+{
+	public void GetIpV4(string adapter, out IPAddress addr, out int mask, out string gateway)
 	{
-		value = ""test"";
+		addr = IPAddress.Parse(""192.168.1.1"");
+		mask = 24;
+		gateway = ""192.168.1.1"";
 	}
 	
-	private bool TryParseHelper(string input, out int result)
+	public void GetIpV4(string adapter, out IPAddress addr, out int mask, out byte[] gateway)
 	{
-		result = 42;
-		return true;
-	}
-}";
-
-			DiagnosticResult[] expected = new[]
-			{
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidVariableNamedUnderscore.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 9, 23),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				},
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidVariableNamedUnderscore.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 10, 33),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				}
-			};
-
-			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NecessaryTypedDiscardForOverloadResolutionShouldNotFlag()
-		{
-			var test = @"
-using System;
-
-class TestClass
-{
-	public void TestMethod()
-	{
-		// These typed discards are needed for overload resolution
-		Parse(""123"", out int _);    // Disambiguates from Parse(string, out string)
-		Parse(""test"", out string _); // Disambiguates from Parse(string, out int)
-	}
-
-	private bool Parse(string input, out int result)
-	{
-		result = 42;
-		return true;
-	}
-	
-	private bool Parse(string input, out string result)
-	{
-		result = input;
-		return true;
-	}
-}";
-
-			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TypedDiscardWithGenericOverloadsShouldNotFlag()
-		{
-			var test = @"
-using System;
-
-class TestClass
-{
-	public void TestMethod()
-	{
-		// These typed discards are needed for generic overload resolution
-		TryGetValue(""key"", out int _);
-		TryGetValue(""key"", out string _);
-	}
-
-	private bool TryGetValue<T>(string key, out T value)
-	{
-		value = default(T);
-		return true;
+		addr = IPAddress.Parse(""192.168.1.1"");
+		mask = 24;
+		gateway = new byte[] { 192, 168, 1, 1 };
 	}
 }";
 
