@@ -1,0 +1,21 @@
+Analyzer Name,Project,Diagnostic ID,Lines,Viability Score,Priority,Estimated Effort,Implementation Approach,Status
+NoProtectedFieldsAnalyzer,MaintainabilityAnalyzers,PH2070,37,9,IMMEDIATE,1-2 hours,Modifier replacement,Not Implemented
+AvoidThrowingUnexpectedExceptionsAnalyzer,MaintainabilityAnalyzers,PH2122,113,8,IMMEDIATE,1-2 hours,Exception handling,Not Implemented
+AvoidMagicNumbersAnalyzer,MaintainabilityAnalyzers,PH2118,113,7,IMMEDIATE,2-4 hours,Extract constants,Not Implemented
+AvoidVoidReturnAnalyzer,MaintainabilityAnalyzers,PH2138,36,7,IMMEDIATE,1-2 hours,Return type change,Not Implemented
+NoRegionsInMethodAnalyzer,MaintainabilityAnalyzers,PH2081,44,7,IMMEDIATE,1-2 hours,Directive removal,Not Implemented
+SetPropertiesInAnyOrderAnalyzer,MaintainabilityAnalyzers,PH2134,77,7,IMMEDIATE,2-3 hours,Property reordering,Not Implemented
+AvoidPublicMemberVariableAnalyzer,MaintainabilityAnalyzers,PH2047,50,7,IMMEDIATE,1-2 hours,Field to property,Not Implemented
+WinFormsInitializeComponentMustBeCalledOnceAnalyzer,MaintainabilityAnalyzers,PH2042,114,6,HIGH,3-4 hours,Method call addition,Not Implemented
+VariableNamingConventionAnalyzer,MaintainabilityAnalyzers,PH2030,141,5,MEDIUM,4-6 hours,Variable renaming,Not Implemented
+PreventUseOfGotoAnalyzer,MaintainabilityAnalyzers,PH2068,33,5,MEDIUM,4-8 hours,Control flow restructure,Not Implemented
+LimitConditionComplexityAnalyzer,MaintainabilityAnalyzers,PH2092,103,5,MEDIUM,6-8 hours,Condition extraction,Not Implemented
+CastCompleteObjectAnalyzer,MaintainabilityAnalyzers,PH2119,46,5,MEDIUM,3-5 hours,Cast replacement,Not Implemented
+LockObjectsMustBeReadonlyAnalyzer,MaintainabilityAnalyzers,PH2066,40,5,MEDIUM,2-4 hours,Readonly modifier,Not Implemented
+OrderPropertyAccessorsAnalyzer,MaintainabilityAnalyzers,PH2085,61,4,LOW,3-5 hours,Accessor reordering,Not Implemented
+CopyrightPresentAnalyzer,MaintainabilityAnalyzers,PH2028,101,4,LOW,2-4 hours,Header insertion,Not Implemented
+NamespaceMatchFilePathAnalyzer,MaintainabilityAnalyzers,PH2006,96,3,LOW,4-6 hours,Namespace renaming,Not Implemented
+NamespaceMatchAssemblyNameAnalyzer,MaintainabilityAnalyzers,PH2135,59,3,LOW,3-5 hours,Namespace alignment,Not Implemented
+NamespacePrefixAnalyzer,MaintainabilityAnalyzers,PH2079,64,2,LOW,4-6 hours,Namespace prefix,Not Implemented
+NoSpaceInFilenameAnalyzer,MaintainabilityAnalyzers,PH2087,68,2,LOW,2-3 hours,Filename suggestion,Not Implemented
+UnmanagedObjectsNeedDisposingAnalyzer,MaintainabilityAnalyzers,PH2133,72,2,LOW,5-8 hours,Using statement addition,Not Implemented
