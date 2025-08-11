@@ -39,14 +39,18 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			// Bail out early.
-			TypeSyntax typeSyntax = creation.Type;
-			if (!typeSyntax.ToString().Contains("Regex"))
+			TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(creation);
+			ITypeSymbol typeSymbol = typeInfo.Type;
+			var usedConvertedType = false;
+
+			// For implicit constructors like new (".*"), Type might be a tuple (?, ?) but ConvertedType has the actual type
+			// Only use ConvertedType if Type is null or appears to be an incomplete/invalid type
+			if (typeSymbol == null || typeSymbol.ToString().Contains("?"))
 			{
-				return;
+				typeSymbol = typeInfo.ConvertedType;
+				usedConvertedType = true;
 			}
 
-			ITypeSymbol typeSymbol = context.SemanticModel.GetTypeInfo(creation).Type;
 			if (typeSymbol == null)
 			{
 				return;
@@ -58,19 +62,31 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
+			// Skip incomplete implicit constructor nodes that have no arguments but are resolved via ConvertedType
+			// These appear to be parser artifacts and the real analysis happens on the complete nodes
+			if (usedConvertedType && creation.ArgumentList?.Arguments.Count == 0)
+			{
+				return;
+			}
+
+			AnalyzeCreation(context, creation.ArgumentList);
+		}
+
+		private void AnalyzeCreation(SyntaxNodeAnalysisContext context, ArgumentListSyntax argumentList)
+		{
 			// We require to use the constructor with the Timeout argument.
-			if (creation.ArgumentList is not { Arguments.Count: not CorrectConstructorArgumentCount })
+			if (argumentList is not { Arguments.Count: not CorrectConstructorArgumentCount })
 			{
 				return;
 			}
 
 			// NET7 has RegexOptions.NonBacktracking, which we also accept.
-			if (creation.ArgumentList.ToString().Contains("NonBacktracking"))
+			if (argumentList.ToString().Contains("NonBacktracking"))
 			{
 				return;
 			}
 
-			Location location = creation.ArgumentList.GetLocation();
+			Location location = argumentList.GetLocation();
 			var diagnostic = Diagnostic.Create(Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}
