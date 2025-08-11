@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -14,11 +15,16 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Security
 {
 	[TestClass]
-	public class AvoidPkcsPaddingWithRsaEncryptionAnalyzerTest : DiagnosticVerifier
+	public class AvoidPkcsPaddingWithRsaEncryptionAnalyzerTest : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidPkcsPaddingWithRsaEncryptionAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidPkcsPaddingWithRsaEncryptionCodeFixProvider();
 		}
 
 		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
@@ -106,6 +112,28 @@ public class Foo
 }
 ";
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+		}
+
+		[DataTestMethod]
+		[DataRow(
+			@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);",
+			@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);")]
+		[DataRow(
+			@"byte[] decrypted = rsa.Decrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);",
+			@"byte[] decrypted = rsa.Decrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);")]
+		[DataRow(
+			@"RSAEncryptionPadding padding = RSAEncryptionPadding.Pkcs1;",
+			@"RSAEncryptionPadding padding = RSAEncryptionPadding.OaepSHA256;")]
+		[DataRow(
+			@"var padding = RSAEncryptionPadding.Pkcs1;",
+			@"var padding = RSAEncryptionPadding.OaepSHA256;")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CodeFixShouldReplaceWithOaepSHA256Async(string originalCode, string expectedCode)
+		{
+			var originalSource = string.Format(GetTemplate(), originalCode);
+			var expectedSource = string.Format(GetTemplate(), expectedCode);
+
+			await VerifyFix(originalSource, expectedSource).ConfigureAwait(false);
 		}
 	}
 }
