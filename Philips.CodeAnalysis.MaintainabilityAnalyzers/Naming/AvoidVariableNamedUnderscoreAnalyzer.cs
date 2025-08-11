@@ -60,15 +60,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			foreach (SyntaxToken identifier in variableDeclaration.Variables.Select(variable => variable.Identifier))
+			foreach (var identifier in variableDeclaration.Variables.Select(variable => variable.Identifier.ValueText))
 			{
-				if (identifier.ValueText != "_")
+				if (identifier != "_")
 				{
 					continue;
 				}
 
 				Location location = variableDeclaration.GetLocation();
-				var diagnostic = Diagnostic.Create(Rule, location, identifier.ValueText);
+				var diagnostic = Diagnostic.Create(Rule, location, identifier);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
@@ -89,25 +89,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			// Check if it's a variable declaration
-			if (argument.Expression is DeclarationExpressionSyntax declaration)
+			if (argument.Expression is DeclarationExpressionSyntax declaration &&
+				declaration.Designation is SingleVariableDesignationSyntax variable)
 			{
-				if (declaration.Designation is SingleVariableDesignationSyntax variable)
+				if (variable.Identifier.ValueText != "_")
 				{
-					if (variable.Identifier.ValueText != "_")
-					{
-						return;
-					}
+					return;
+				}
 
-					Location location = variable.Identifier.GetLocation();
-					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
-					context.ReportDiagnostic(diagnostic);
-				}
-				else if (declaration.Designation is DiscardDesignationSyntax discard)
-				{
-					Location location = discard.UnderscoreToken.GetLocation();
-					var diagnostic = Diagnostic.Create(Rule, location, discard.UnderscoreToken.ValueText);
-					context.ReportDiagnostic(diagnostic);
-				}
+				Location location = variable.Identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+				context.ReportDiagnostic(diagnostic);
+				// Note: DiscardDesignationSyntax represents proper discards (e.g., "out _" or "out string _")
+				// and should not be flagged, so we don't handle this case.
 			}
 		}
 	}
