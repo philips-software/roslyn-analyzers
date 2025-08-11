@@ -240,6 +240,45 @@ namespace xyz
 			await VerifyDiagnostic(testClass, DiagnosticId.AvoidStaticClasses, line: 4, column: -1).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesWithConstFieldsAndConstructorTestAsync()
+		{
+			var testClass = @"
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+		public const bool IsDebuggingTests = false;
+		public const int CiAppropriate = 200;
+		
+		static TestTimeouts() { } // This should trigger the analyzer
+	}
+}";
+
+			await VerifyDiagnostic(testClass, DiagnosticId.AvoidStaticClasses, line: 4, column: -1).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidStaticClassesWithConstFieldsAndEventTestAsync()
+		{
+			var testClass = @"
+using System;
+namespace xyz
+{
+	internal static class TestTimeouts
+	{
+		public const bool IsDebuggingTests = false;
+		public const int CiAppropriate = 200;
+		
+		public static event Action SomeEvent; // This should trigger the analyzer
+	}
+}";
+
+			await VerifyDiagnostic(testClass, DiagnosticId.AvoidStaticClasses, line: 5, column: -1).ConfigureAwait(false);
+		}
+
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
