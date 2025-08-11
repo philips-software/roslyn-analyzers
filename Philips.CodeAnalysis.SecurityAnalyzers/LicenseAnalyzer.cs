@@ -198,6 +198,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If we can't write cache, just continue without caching
+				return;
 			}
 		}
 
@@ -321,6 +322,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If we can't parse the nuspec, return null
+				return null;
 			}
 
 			return null;
@@ -334,23 +336,23 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// Common license URL patterns - use IndexOf for .NET Standard 2.0 compatibility
-			if (ContainsIgnoreCase(licenseUrl, "mit"))
+			if (HasSubstringIgnoreCase(licenseUrl, "mit"))
 			{
 				return "MIT";
 			}
-			if (ContainsIgnoreCase(licenseUrl, "apache"))
+			if (HasSubstringIgnoreCase(licenseUrl, "apache"))
 			{
 				return "Apache-2.0";
 			}
-			if (ContainsIgnoreCase(licenseUrl, "bsd"))
+			if (HasSubstringIgnoreCase(licenseUrl, "bsd"))
 			{
 				return "BSD";
 			}
-			if (ContainsIgnoreCase(licenseUrl, "gpl"))
+			if (HasSubstringIgnoreCase(licenseUrl, "gpl"))
 			{
 				return "GPL";
 			}
-			if (ContainsIgnoreCase(licenseUrl, "lgpl"))
+			if (HasSubstringIgnoreCase(licenseUrl, "lgpl"))
 			{
 				return "LGPL";
 			}
@@ -359,10 +361,12 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return licenseUrl;
 		}
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA2249:Use 'string.Contains' instead of 'string.IndexOf' to improve readability", Justification = "Provides cross-framework compatibility between .NET Standard 2.0 and .NET 8.0")]
-		private static bool ContainsIgnoreCase(string source, string value)
+		private static bool HasSubstringIgnoreCase(string source, string value)
 		{
-			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) >= 0;
+#pragma warning disable CA2249 // Use IndexOf for cross-framework compatibility
+			// Use IndexOf for compatibility across all target frameworks
+			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) != -1;
+#pragma warning restore CA2249
 		}
 
 		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
