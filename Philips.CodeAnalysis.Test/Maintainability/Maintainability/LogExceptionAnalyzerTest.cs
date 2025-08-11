@@ -97,6 +97,31 @@ public class Program {
 }
 }";
 
+		private const string CorrectILoggerError = @"
+using System;
+
+namespace LogExceptionUnitTests {
+public class SdcForwarderService {
+    private readonly ILogger _logger;
+
+    public SdcForwarderService(ILogger logger) {
+        _logger = logger;
+    }
+
+    public void TestMethod() {
+        try {
+            Console.WriteLine('Hello world!');
+        } catch (Exception ex) {
+            _logger.LogError(ex, ""Error while processing SDC subscription from {0}"", ""destination"");
+        }
+    }
+}
+
+public interface ILogger {
+    void LogError(Exception ex, string message, string destination);
+}
+}";
+
 		private const string Missing = @"
 using System;
 
@@ -122,7 +147,8 @@ public class Program {
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectLogClass, DisplayName = nameof(CorrectLogClass)),
 		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
-		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer))]
+		 DataRow(CorrectVerboseTracer, DisplayName = nameof(CorrectVerboseTracer)),
+		 DataRow(CorrectILoggerError, DisplayName = nameof(CorrectILoggerError))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{

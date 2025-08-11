@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// </summary>
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
+			Helper.ForAllowedSymbols.RegisterLine("*Log*");
 			_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
 			// Support legacy configuration via .editorconfig also.
@@ -112,10 +112,36 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
 				var isLoggingMethod = false;
-				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
+				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
 				{
-					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
+					// Get the symbol for the member access expression 
+					ISymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
+					INamedTypeSymbol typeSymbol = null;
+
+					// Handle different symbol types to get the actual type
+					switch (memberSymbol)
+					{
+						case IFieldSymbol fieldSymbol:
+							typeSymbol = fieldSymbol.Type as INamedTypeSymbol;
+							break;
+						case IPropertySymbol propertySymbol:
+							typeSymbol = propertySymbol.Type as INamedTypeSymbol;
+							break;
+						case ILocalSymbol localSymbol:
+							typeSymbol = localSymbol.Type as INamedTypeSymbol;
+							break;
+						case IParameterSymbol parameterSymbol:
+							typeSymbol = parameterSymbol.Type as INamedTypeSymbol;
+							break;
+						case INamedTypeSymbol namedTypeSymbol:
+							typeSymbol = namedTypeSymbol;
+							break;
+					}
+
+					if (typeSymbol != null)
+					{
+						isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
+					}
 				}
 
 				return isLoggingMethod;

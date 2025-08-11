@@ -165,13 +165,13 @@ namespace Philips.CodeAnalysis.Common
 					var parts = line.Split('.');
 					if (parts.Length == 1)
 					{
-						return (method == null) ? line == typeName : line == method.Name;
+						return (method == null) ? MatchesPattern(line, typeName) : MatchesPattern(line, method.Name);
 					}
 					else if (parts.Length == 2)
 					{
 						return (parts[0] == Wildcard)
-							? parts[1] == typeName
-							: parts[0] == nsName && parts[1] == typeName;
+							? MatchesPattern(parts[1], typeName)
+							: parts[0] == nsName && MatchesPattern(parts[1], typeName);
 					}
 					else
 					{
@@ -203,15 +203,60 @@ namespace Philips.CodeAnalysis.Common
 
 			if (parts[typeIndex] != Wildcard)
 			{
-				isMatch &= parts[typeIndex] == typeName;
+				isMatch &= MatchesPattern(parts[typeIndex], typeName);
 			}
 
 			if (method != null && parts[methodIndex] != Wildcard)
 			{
-				isMatch &= parts[methodIndex] == methodName;
+				isMatch &= MatchesPattern(parts[methodIndex], methodName);
 			}
 
 			return isMatch;
+		}
+
+		/// <summary>
+		/// Matches a pattern against a target string, supporting wildcards at the beginning and end.
+		/// </summary>
+		/// <param name="pattern">The pattern to match, which may contain wildcards (*)</param>
+		/// <param name="target">The target string to match against</param>
+		/// <returns>True if the pattern matches the target</returns>
+		private static bool MatchesPattern(string pattern, string target)
+		{
+			if (pattern == Wildcard)
+			{
+				return true;
+			}
+
+			if (pattern == target)
+			{
+				return true;
+			}
+
+			// Handle patterns with wildcards
+			if (pattern.Contains(Wildcard))
+			{
+				// Simple wildcard matching - supports * at start, end, or both
+				if (pattern.StartsWith(Wildcard) && pattern.EndsWith(Wildcard))
+				{
+					// *substring* - contains
+					var substring = pattern.Substring(1, pattern.Length - 2);
+					return target.Contains(substring);
+				}
+				else if (pattern.StartsWith(Wildcard))
+				{
+					// *suffix - ends with
+					var suffix = pattern.Substring(1);
+					return target.EndsWith(suffix);
+				}
+				else if (pattern.EndsWith(Wildcard))
+				{
+					// prefix* - starts with
+					var prefix = pattern.Substring(0, pattern.Length - 1);
+					return target.StartsWith(prefix);
+				}
+			}
+
+			return false;
 		}
 
 
