@@ -147,10 +147,38 @@ public static class Foo
 }
 ";
 
+		private const string WrongWithIndentationIssue = @"
+using System.Collections.Generic;
+using System.Linq;
+
+public static class Foo
+{
+  public static void Method<TKey>(Dictionary<TKey, object> dict, System.Func<object, bool> predicate)
+  {
+			List<TKey> items = dict.Where((kvp) => predicate(kvp.Value)).Select((kvp) => kvp.Key).ToList();
+  }
+}
+";
+
+		private const string CorrectWithProperIndentation = @"
+using System.Collections.Generic;
+using System.Linq;
+
+public static class Foo
+{
+  public static void Method<TKey>(Dictionary<TKey, object> dict, System.Func<object, bool> predicate)
+  {
+			List<TKey> items = dict.Where((kvp) => predicate(kvp.Value))
+				.Select((kvp) => kvp.Key).ToList();
+  }
+}
+";
+
 		[DataTestMethod]
 		[DataRow(WrongMultiple, CorrectMultiple, DisplayName = nameof(WrongMultiple)),
 		 DataRow(WrongDistinct, CorrectDistinct, DisplayName = nameof(WrongDistinct)),
-		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized))]
+		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized)),
+		 DataRow(WrongWithIndentationIssue, CorrectWithProperIndentation, DisplayName = nameof(WrongWithIndentationIssue))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
