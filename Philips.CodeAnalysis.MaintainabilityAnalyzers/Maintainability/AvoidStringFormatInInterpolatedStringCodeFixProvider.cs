@@ -62,6 +62,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			invocation = inv;
 
+			// Quick syntactic check for "Format" method name before expensive semantic analysis
+			if (!IsFormatMethodSyntactically(invocation))
+			{
+				return false;
+			}
+
 			// Extract format string and arguments
 			if (invocation.ArgumentList.Arguments.Count < 1)
 			{
@@ -80,12 +86,21 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return true;
 		}
 
+		private static bool IsFormatMethodSyntactically(InvocationExpressionSyntax invocation)
+		{
+			return invocation.Expression switch
+			{
+				MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.ValueText == "Format",
+				IdentifierNameSyntax identifier => identifier.Identifier.ValueText == "Format",
+				_ => false
+			};
+		}
+
 		private async Task<bool> IsStringFormatInvocation(Document document, InvocationExpressionSyntax invocation, CancellationToken cancellationToken)
 		{
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(invocation, cancellationToken);
 			return symbolInfo.Symbol is IMethodSymbol methodSymbol &&
-				   methodSymbol.Name == "Format" &&
 				   methodSymbol.ContainingType?.SpecialType == SpecialType.System_String;
 		}
 
