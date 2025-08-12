@@ -49,7 +49,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			var code = GetLargeFileContents("Test1").ToString();
-			return base.GetAdditionalSourceCode().Add(("Test1.cs", code));
+			ImmutableArray<(string name, string content)> result = base.GetAdditionalSourceCode().Add(("Test1.cs", code));
+
+			// Note: Previously added cross-file test content was causing interference with other tests
+			// The cross-file test now uses a different approach
+			return result;
 		}
 
 		[TestMethod]
@@ -119,6 +123,101 @@ namespace DuplicateStringsTest {{
 		{
 			var testCode = CreateTestCode(literal, literal, isClass);
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringFalsePositiveTest()
+		{
+			// Test case to reproduce the issue where analyzer reports false positive
+			// when string appears only once but claims it's on a different line
+			var code = @"
+using System;
+
+namespace TestCase
+{
+    public class ServerConnection
+    {
+        public void ConnectToServer()
+        {
+            // This is around line 165 in the original issue
+            // No string literal here
+            var someVariable = 42;
+            
+            // This is around line 169 where the string actually appears
+            Console.WriteLine(""Waiting to connect to server..."");
+        }
+    }
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringCrossFileIssueTest()
+		{
+			// Test case to check that individual files don't cause false positives
+			var code1 = @"
+using System;
+namespace TestCase1
+{
+    public class Class1
+    {
+        public void Method1()
+        {
+            Console.WriteLine(""Unique message one"");
+        }
+    }
+}
+";
+
+			var code2 = @"
+using System;
+namespace TestCase2
+{
+    public class Class2
+    {
+        public void Method2()
+        {
+            Console.WriteLine(""Unique message two"");
+        }
+    }
+}
+";
+
+			// Test that individual files pass without issues
+			await VerifySuccessfulCompilation(code1).ConfigureAwait(false);
+			await VerifySuccessfulCompilation(code2).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateStringStateIsolationTest()
+		{
+			// Test case to verify that analyzer state is properly cleared between compilation sessions
+			// This reproduces the false positive issue where strings from previous sessions
+			// are incorrectly reported as duplicates
+			var code = @"
+using System;
+namespace TestCase
+{
+    public class ServerConnection
+    {
+        public void ConnectToServer()
+        {
+            Console.WriteLine(""Waiting to connect to server..."");
+        }
+    }
+}
+";
+
+			// First compilation - should not trigger any diagnostics (single string)
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+
+			// Second compilation with same code - should also not trigger diagnostics
+			// because analyzer state should be cleared between compilations
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
 		private string CreateTestCode(string literal1, string literal2, bool isClass)

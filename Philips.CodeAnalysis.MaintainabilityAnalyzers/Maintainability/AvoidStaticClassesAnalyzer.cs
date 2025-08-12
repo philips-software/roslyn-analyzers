@@ -74,9 +74,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			// If the class only contains const and static readonly fields, let it go
-			if (!classDeclarationSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>().Any() &&
-				classDeclarationSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().All(IsConstant))
+			// If the class only contains const and static readonly fields, and no executable members, let it go
+			if (OnlyContainsConstantFieldsAndNoExecutableMembers(classDeclarationSyntax))
 			{
 				return;
 			}
@@ -107,6 +106,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			Location location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
 			var diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
+		}
+
+		private static bool OnlyContainsConstantFieldsAndNoExecutableMembers(ClassDeclarationSyntax classDeclarationSyntax)
+		{
+			// Check if there are any executable members (methods, properties, constructors, events, indexers)
+			if (classDeclarationSyntax.DescendantNodes().OfType<MethodDeclarationSyntax>().Any() ||
+				classDeclarationSyntax.DescendantNodes().OfType<PropertyDeclarationSyntax>().Any() ||
+				classDeclarationSyntax.DescendantNodes().OfType<ConstructorDeclarationSyntax>().Any() ||
+				classDeclarationSyntax.DescendantNodes().OfType<EventDeclarationSyntax>().Any() ||
+				classDeclarationSyntax.DescendantNodes().OfType<EventFieldDeclarationSyntax>().Any() ||
+				classDeclarationSyntax.DescendantNodes().OfType<IndexerDeclarationSyntax>().Any())
+			{
+				return false;
+			}
+
+			// Check if all fields are constant (const or static readonly)
+			return classDeclarationSyntax.DescendantNodes().OfType<FieldDeclarationSyntax>().All(IsConstant);
 		}
 
 		private static bool IsConstant(FieldDeclarationSyntax field)
