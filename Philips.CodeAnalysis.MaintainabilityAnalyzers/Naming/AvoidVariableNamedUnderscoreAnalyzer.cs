@@ -88,15 +88,120 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// ALWAYS flag typed discards for testing
+			// Check if it's a variable declaration
 			if (argument.Expression is DeclarationExpressionSyntax declaration &&
-				declaration.Designation is SingleVariableDesignationSyntax variable &&
-				variable.Identifier.ValueText == "_")
+				declaration.Designation is SingleVariableDesignationSyntax variable)
 			{
-				Location location = variable.Identifier.GetLocation();
-				var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
-				context.ReportDiagnostic(diagnostic);
+				if (variable.Identifier.ValueText != "_")
+				{
+					return;
+				}
+
+				// This is a typed discard (e.g., out int _)
+				// Only flag if the type is not needed for overload resolution
+				if (!IsTypedDiscardNecessaryForOverloadResolution(context, argument))
+				{
+					Location location = variable.Identifier.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
+			// Note: We don't flag DiscardDesignationSyntax (anonymous discards like "out _")
+			// as they are the preferred form and should not be flagged
+		}
+
+		private bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
+		{
+			// Find the method call containing this argument
+			SyntaxNode current = argument.Parent;
+			while (current is not null and not InvocationExpressionSyntax)
+			{
+				current = current.Parent;
+			}
+
+			if (current is not InvocationExpressionSyntax invocation)
+			{
+				return false; // Can't find method call, allow the flag (be conservative)
+			}
+
+			// Get semantic information about the method
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
+			if (symbolInfo.Symbol is not IMethodSymbol method)
+			{
+				return false; // Can't resolve method, allow the flag
+			}
+
+			// Get the argument position
+			var argumentIndex = invocation.ArgumentList.Arguments.IndexOf(argument);
+			if (argumentIndex < 0 || argumentIndex >= method.Parameters.Length)
+			{
+				return false; // Invalid position, allow the flag
+			}
+
+			// Get all methods with the same name in the same type
+			INamedTypeSymbol containingType = method.ContainingType;
+			System.Collections.Generic.IEnumerable<IMethodSymbol> methodsWithSameName = containingType.GetMembers(method.Name).OfType<IMethodSymbol>();
+
+			// Check if there are multiple overloads with different out parameter types at this position
+			var outParameterTypes = methodsWithSameName
+				.Where(m => argumentIndex < m.Parameters.Length)
+				.Where(m => m.Parameters[argumentIndex].RefKind == RefKind.Out)
+				.Select(m => m.Parameters[argumentIndex].Type.ToDisplayString())
+				.Distinct()
+				.ToList();
+
+			// If there are multiple different out parameter types, the typed discard might be necessary
+			return outParameterTypes.Count > 1;
+		}
+
+		private bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
+		{
+			// Find the method call containing this argument
+			SyntaxNode current = argument.Parent;
+			while (current is not null and not InvocationExpressionSyntax)
+			{
+				current = current.Parent;
+			}
+
+			if (current is not InvocationExpressionSyntax invocation)
+			{
+				// Debug: Can't find method call, allow the flag (be conservative)
+				return false;
+			}
+
+			// Get semantic information about the method
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
+			if (symbolInfo.Symbol is not IMethodSymbol method)
+			{
+				// Debug: Can't resolve method, allow the flag
+				return false;
+			}
+
+			// Get the argument position
+			var argumentIndex = invocation.ArgumentList.Arguments.IndexOf(argument);
+			if (argumentIndex < 0 || argumentIndex >= method.Parameters.Length)
+			{
+				// Debug: Invalid position, allow the flag
+				return false;
+			}
+
+			// Get all methods with the same name in the same type
+			INamedTypeSymbol containingType = method.ContainingType;
+			System.Collections.Generic.IEnumerable<IMethodSymbol> methodsWithSameName = containingType.GetMembers(method.Name).OfType<IMethodSymbol>();
+
+			// Check if there are multiple overloads with different out parameter types at this position
+			var outParameterTypes = methodsWithSameName
+				.Where(m => argumentIndex < m.Parameters.Length)
+				.Where(m => m.Parameters[argumentIndex].RefKind == RefKind.Out)
+				.Select(m => m.Parameters[argumentIndex].Type.ToDisplayString())
+				.Distinct()
+				.ToList();
+
+			// If there are multiple different out parameter types, the typed discard might be necessary
+			var result = outParameterTypes.Count > 1;
+
+			// Debug: For now, always return false to test basic functionality
+			return false;
 		}
 	}
 }
