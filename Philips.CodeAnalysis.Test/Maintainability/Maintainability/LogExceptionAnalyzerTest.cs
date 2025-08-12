@@ -101,10 +101,10 @@ public class Program {
 using System;
 
 namespace LogExceptionUnitTests {
-public class SdcForwarderService {
+public class MyService {
     private readonly ILogger _logger;
 
-    public SdcForwarderService(ILogger logger) {
+    public MyService(ILogger logger) {
         _logger = logger;
     }
 
@@ -112,7 +112,7 @@ public class SdcForwarderService {
         try {
             Console.WriteLine('Hello world!');
         } catch (Exception ex) {
-            _logger.LogError(ex, ""Error while processing SDC subscription from {0}"", ""destination"");
+            _logger.LogError(ex, ""Error while processing subscription from {0}"", ""destination"");
         }
     }
 }

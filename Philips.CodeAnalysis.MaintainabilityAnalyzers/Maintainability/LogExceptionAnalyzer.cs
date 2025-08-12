@@ -116,27 +116,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				{
 					// Get the symbol for the member access expression 
 					ISymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
-					INamedTypeSymbol typeSymbol = null;
 
-					// Handle different symbol types to get the actual type
-					switch (memberSymbol)
-					{
-						case IFieldSymbol fieldSymbol:
-							typeSymbol = fieldSymbol.Type as INamedTypeSymbol;
-							break;
-						case IPropertySymbol propertySymbol:
-							typeSymbol = propertySymbol.Type as INamedTypeSymbol;
-							break;
-						case ILocalSymbol localSymbol:
-							typeSymbol = localSymbol.Type as INamedTypeSymbol;
-							break;
-						case IParameterSymbol parameterSymbol:
-							typeSymbol = parameterSymbol.Type as INamedTypeSymbol;
-							break;
-						case INamedTypeSymbol namedTypeSymbol:
-							typeSymbol = namedTypeSymbol;
-							break;
-					}
+					// Use TypesHelper to get the actual type symbol
+					INamedTypeSymbol typeSymbol = new TypesHelper().GetTypeSymbol(memberSymbol);
 
 					if (typeSymbol != null)
 					{
