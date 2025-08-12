@@ -142,5 +142,6 @@ namespace Philips.CodeAnalysis.Common
 		UseDisplayNameOrDescription = 2150,
 		AvoidTodoComments = 2151,
 		AvoidUnusedToString = 2153,
+		AvoidUnlicensedPackages = 2155,
 	}
 }

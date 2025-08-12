@@ -24,6 +24,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public ConcurrentDictionary<string, Location> UsedLiterals { get; } = new();
 
+		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
+		{
+			// Clear the dictionary at the start of each compilation to prevent
+			// false positives from previous compilation sessions
+			UsedLiterals.Clear();
+			base.InitializeCompilation(context);
+		}
+
 		protected override SyntaxKind GetSyntaxKind()
 		{
 			return SyntaxKind.StringLiteralExpression;

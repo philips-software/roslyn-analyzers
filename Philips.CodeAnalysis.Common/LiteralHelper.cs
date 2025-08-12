@@ -64,6 +64,26 @@ namespace Philips.CodeAnalysis.Common
 			};
 		}
 
+		public bool TryGetLiteralValue<T>(ExpressionSyntax expression, SemanticModel semanticModel, out T value)
+		{
+			Optional<object> constantValue = semanticModel.GetConstantValue(expression);
+			if (constantValue.HasValue)
+			{
+				if (constantValue.Value is T literalValue)
+				{
+					value = literalValue;
+					return true;
+				}
+				// Handle the case where Value is null and T can accept null
+				if (constantValue.Value is null && default(T) is null)
+				{
+					value = default;
+					return true;
+				}
+			}
+			value = default;
+			return false;
+		}
 
 	}
 }
