@@ -37,7 +37,11 @@ jobs:
       run: |
         echo "New Tag:  ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
         echo "New Version:  ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
-        printf '%s\n' 'Changelog:' "${{ steps.tag_version.outputs.changelog }}"
+        echo "Changelog:"
+        echo "${{ steps.tag_version.outputs.changelog }}"
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "${{ steps.tag_version.outputs.changelog }}" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
