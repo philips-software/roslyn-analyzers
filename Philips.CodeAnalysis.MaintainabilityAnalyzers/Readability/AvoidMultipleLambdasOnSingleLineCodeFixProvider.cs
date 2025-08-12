@@ -72,19 +72,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			// Extract the existing indentation from the line
 			var lineText = line.ToString();
-			var indentationLength = 0;
-
-			foreach (var c in lineText)
-			{
-				if (c is '\t' or ' ')
-				{
-					indentationLength++;
-				}
-				else
-				{
-					break;
-				}
-			}
+			var trimmedText = lineText.TrimStart('\t', ' ');
+			var indentationLength = lineText.Length - trimmedText.Length;
 
 			var baseIndentation = lineText.Substring(0, indentationLength);
 
@@ -101,15 +90,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return "\t";
 			}
 
-			// If base indentation is all spaces, add one level of space indentation
-			// Default to 4 spaces (as per .editorconfig indent_size = 4)
-			if (baseIndentation.All(c => c == ' '))
-			{
-				return "    "; // 4 spaces for one level of indentation
-			}
-
-			// Default fallback to tab (project preference from .editorconfig)
-			return "\t";
+			// For space-based indentation, use 4 spaces (matching this project's .editorconfig)
+			// Note: Ideally this would be retrieved from EditorConfig via Roslyn APIs,
+			// but CodeFixProviders have limited access to formatting options
+			return "    ";
 		}
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
