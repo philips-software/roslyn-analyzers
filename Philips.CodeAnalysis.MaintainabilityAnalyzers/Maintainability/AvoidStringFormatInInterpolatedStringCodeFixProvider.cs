@@ -1,5 +1,6 @@
 // © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Composition;
@@ -31,50 +32,77 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken);
 
-			// Get the string.Format invocation from the interpolation
-			if (node.Expression is not InvocationExpressionSyntax invocation)
+			// Validate and extract string.Format information
+			if (!TryExtractStringFormatInfo(node, out InvocationExpressionSyntax invocation, out var formatString, out ArgumentSyntax[] arguments))
 			{
 				return document;
 			}
 
 			// Verify this is actually a string.Format call
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(invocation, cancellationToken);
-			if (symbolInfo.Symbol is not IMethodSymbol methodSymbol ||
-				methodSymbol.Name != "Format" ||
-				methodSymbol.ContainingType?.SpecialType != SpecialType.System_String)
+			if (!await IsStringFormatInvocation(document, invocation, cancellationToken))
 			{
 				return document;
 			}
 
+			// Find the parent interpolated string and apply the transformation
+			return await ApplyInterpolatedStringTransformation(document, root, node, formatString, arguments);
+		}
+
+		private bool TryExtractStringFormatInfo(InterpolationSyntax node, out InvocationExpressionSyntax invocation, out string formatString, out ArgumentSyntax[] arguments)
+		{
+			invocation = null;
+			formatString = null;
+			arguments = null;
+
+			// Get the string.Format invocation from the interpolation
+			if (node.Expression is not InvocationExpressionSyntax inv)
+			{
+				return false;
+			}
+
+			invocation = inv;
+
 			// Extract format string and arguments
 			if (invocation.ArgumentList.Arguments.Count < 1)
 			{
-				return document;
+				return false;
 			}
 
 			ArgumentSyntax formatArgument = invocation.ArgumentList.Arguments[0];
 			if (formatArgument.Expression is not LiteralExpressionSyntax formatLiteral ||
 				!formatLiteral.Token.IsKind(SyntaxKind.StringLiteralToken))
 			{
-				return document;
+				return false;
 			}
 
-			var formatString = formatLiteral.Token.ValueText;
-			ArgumentSyntax[] arguments = invocation.ArgumentList.Arguments.Skip(1).ToArray();
+			formatString = formatLiteral.Token.ValueText;
+			arguments = invocation.ArgumentList.Arguments.Skip(1).ToArray();
+			return true;
+		}
 
+		private async Task<bool> IsStringFormatInvocation(Document document, InvocationExpressionSyntax invocation, CancellationToken cancellationToken)
+		{
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(invocation, cancellationToken);
+			return symbolInfo.Symbol is IMethodSymbol methodSymbol &&
+				   methodSymbol.Name == "Format" &&
+				   methodSymbol.ContainingType?.SpecialType == SpecialType.System_String;
+		}
+
+		private Task<Document> ApplyInterpolatedStringTransformation(Document document, SyntaxNode root, InterpolationSyntax node, string formatString, ArgumentSyntax[] arguments)
+		{
 			// Find the parent interpolated string
 			InterpolatedStringExpressionSyntax interpolatedString = node.FirstAncestorOrSelf<InterpolatedStringExpressionSyntax>();
 			if (interpolatedString == null)
 			{
-				return document;
+				return Task.FromResult(document);
 			}
 
 			// Convert the string.Format to interpolated content
 			List<InterpolatedStringContentSyntax> newContents = ConvertStringFormatToInterpolatedContents(formatString, arguments);
-			if (newContents == null)
+			if (newContents.Count == 0)
 			{
-				return document;
+				return Task.FromResult(document);
 			}
 
 			// Replace the interpolation node with the new contents in the parent interpolated string
@@ -82,7 +110,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			var index = currentContents.IndexOf(node);
 			if (index == -1)
 			{
-				return document;
+				return Task.FromResult(document);
 			}
 
 			// Remove the current interpolation and insert the new contents
@@ -95,13 +123,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Replace in the syntax tree
 			root = root.ReplaceNode(interpolatedString, newInterpolatedString);
 
-			return document.WithSyntaxRoot(root);
+			return Task.FromResult(document.WithSyntaxRoot(root));
 		}
 
 		private List<InterpolatedStringContentSyntax> ConvertStringFormatToInterpolatedContents(string formatString, ArgumentSyntax[] arguments)
 		{
 			var result = new List<InterpolatedStringContentSyntax>();
-			var placeholderPattern = new Regex(@"\{(\d+)(?::([^}]*))?\}");
+			var placeholderPattern = new Regex(@"\{(\d+)(?::([^}]*))?\}",
+				RegexOptions.None, TimeSpan.FromSeconds(1));
 			var lastIndex = 0;
 
 			foreach (Match match in placeholderPattern.Matches(formatString))
@@ -112,7 +141,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					var textContent = formatString.Substring(lastIndex, match.Index - lastIndex);
 					if (!string.IsNullOrEmpty(textContent))
 					{
-						SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.InterpolatedStringTextToken,
+						SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
+							SyntaxKind.InterpolatedStringTextToken,
 							textContent, textContent, SyntaxTriviaList.Empty);
 						result.Add(SyntaxFactory.InterpolatedStringText(textToken));
 					}
@@ -142,8 +172,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 				else
 				{
-					// Invalid placeholder - shouldn't happen with valid string.Format, but handle gracefully
-					return null;
+					// Invalid placeholder - return empty collection instead of null for graceful handling
+					return [];
 				}
 
 				lastIndex = match.Index + match.Length;
@@ -155,7 +185,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				var remainingText = formatString.Substring(lastIndex);
 				if (!string.IsNullOrEmpty(remainingText))
 				{
-					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.InterpolatedStringTextToken,
+					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
+						SyntaxKind.InterpolatedStringTextToken,
 						remainingText, remainingText, SyntaxTriviaList.Empty);
 					result.Add(SyntaxFactory.InterpolatedStringText(textToken));
 				}
