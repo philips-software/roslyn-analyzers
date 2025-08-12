@@ -118,7 +118,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					ISymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
 
 					// Use TypesHelper to get the actual type symbol
-					INamedTypeSymbol typeSymbol = new TypesHelper().GetTypeSymbol(memberSymbol);
+					var typesHelper = new TypesHelper();
+					INamedTypeSymbol typeSymbol = typesHelper.GetTypeSymbol(memberSymbol);
 
 					if (typeSymbol != null)
 					{

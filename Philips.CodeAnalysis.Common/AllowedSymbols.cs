@@ -222,41 +222,21 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns>True if the pattern matches the target</returns>
 		private static bool MatchesPattern(string pattern, string target)
 		{
-			if (pattern == Wildcard)
+			if (pattern == Wildcard || pattern == target)
 			{
 				return true;
 			}
 
-			if (pattern == target)
-			{
-				return true;
-			}
+			var starts = pattern.StartsWith(Wildcard);
+			var ends = pattern.EndsWith(Wildcard);
 
-			// Handle patterns with wildcards
-			if (pattern.Contains(Wildcard))
+			return (starts, ends) switch
 			{
-				// Simple wildcard matching - supports * at start, end, or both
-				if (pattern.StartsWith(Wildcard) && pattern.EndsWith(Wildcard))
-				{
-					// *substring* - contains
-					var substring = pattern.Substring(1, pattern.Length - 2);
-					return target.Contains(substring);
-				}
-				else if (pattern.StartsWith(Wildcard))
-				{
-					// *suffix - ends with
-					var suffix = pattern.Substring(1);
-					return target.EndsWith(suffix);
-				}
-				else if (pattern.EndsWith(Wildcard))
-				{
-					// prefix* - starts with
-					var prefix = pattern.Substring(0, pattern.Length - 1);
-					return target.StartsWith(prefix);
-				}
-			}
-
-			return false;
+				(true, true) => target.Contains(pattern.Substring(1, pattern.Length - 2)),
+				(true, false) => target.EndsWith(pattern.Substring(1)),
+				(false, true) => target.StartsWith(pattern.Substring(0, pattern.Length - 1)),
+				_ => false
+			};
 		}
 
 
