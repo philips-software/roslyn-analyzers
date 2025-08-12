@@ -88,19 +88,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a variable declaration
+			// ALWAYS flag typed discards for testing
 			if (argument.Expression is DeclarationExpressionSyntax declaration &&
-				declaration.Designation is SingleVariableDesignationSyntax variable)
+				declaration.Designation is SingleVariableDesignationSyntax variable &&
+				variable.Identifier.ValueText == "_")
 			{
-				if (variable.Identifier.ValueText != "_")
-				{
-					return;
-				}
-
-				// Don't flag typed discards - they are legitimate C# language features
-				// Typed discards like "out string _" are proper C# syntax and should not be flagged
-				// Note: DiscardDesignationSyntax represents anonymous discards (e.g., "out _")
-				// and should not be flagged, so we don't handle this case.
+				Location location = variable.Identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+				context.ReportDiagnostic(diagnostic);
 			}
 		}
 	}
