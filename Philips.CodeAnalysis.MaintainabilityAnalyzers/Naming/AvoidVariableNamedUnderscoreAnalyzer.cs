@@ -88,15 +88,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a variable declaration
+			// Check if it's a variable declaration with identifier "_"
 			if (argument.Expression is DeclarationExpressionSyntax declaration &&
-				declaration.Designation is SingleVariableDesignationSyntax variable)
+				declaration.Designation is SingleVariableDesignationSyntax variable &&
+				variable.Identifier.ValueText == "_")
 			{
-				if (variable.Identifier.ValueText != "_")
-				{
-					return;
-				}
-
 				// This is a typed discard (e.g., out int _)
 				// Only flag if the type is not needed for overload resolution
 				if (!IsTypedDiscardNecessaryForOverloadResolution(context, argument))
@@ -105,7 +101,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
 					context.ReportDiagnostic(diagnostic);
 				}
+				return;
 			}
+
+			// Check if it's a simple identifier named "_" (original functionality)
+			if (argument.Expression is IdentifierNameSyntax identifier &&
+				identifier.Identifier.ValueText == "_")
+			{
+				Location location = identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, identifier.Identifier.ValueText);
+				context.ReportDiagnostic(diagnostic);
+			}
+
 			// Note: We don't flag DiscardDesignationSyntax (anonymous discards like "out _")
 			// as they are the preferred form and should not be flagged
 		}
