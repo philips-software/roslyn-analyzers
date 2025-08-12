@@ -49,52 +49,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				oldNode = lastToken.Parent;
 			}
 
-			// Calculate basic indentation to ensure proper formatting even if Formatter.Annotation fails
-			var indentation = GetIndentationForNode(oldNode);
+			// Use the simpler approach: let Roslyn's formatter handle indentation automatically
+			SyntaxNode newNode = oldNode.WithTrailingTrivia(
+				lastToken.TrailingTrivia.Add(SyntaxFactory.ElasticCarriageReturnLineFeed)
+			).WithAdditionalAnnotations(Formatter.Annotation);
 
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia
-				.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine))
-				.Add(SyntaxFactory.Whitespace(indentation));
-
-			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
 			root = root.ReplaceNode(oldNode, newNode);
+			Document newDocument = document.WithSyntaxRoot(root);
 
-			return document.WithSyntaxRoot(root);
+			// Let Roslyn format the entire document to ensure proper indentation
+			return await Formatter.FormatAsync(newDocument, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
 
-		private string GetIndentationForNode(SyntaxNode node)
-		{
-			// Find the line that contains the node
-			var lineStart = node.GetLocation().SourceSpan.Start;
-			SyntaxTree syntaxTree = node.SyntaxTree;
-			SourceText text = syntaxTree.GetText();
-			TextLine line = text.Lines.GetLineFromPosition(lineStart);
 
-			// Extract the existing indentation from the line
-			var lineText = line.ToString();
-			var trimmedText = lineText.TrimStart('\t', ' ');
-			var indentationLength = lineText.Length - trimmedText.Length;
-
-			var baseIndentation = lineText.Substring(0, indentationLength);
-
-			// Determine the continuation indentation style based on existing indentation
-			var continuationIndent = GetContinuationIndent(baseIndentation);
-			return baseIndentation + continuationIndent;
-		}
-
-		private string GetContinuationIndent(string baseIndentation)
-		{
-			// If base indentation contains tabs, use a tab for continuation
-			if (baseIndentation.Contains('\t'))
-			{
-				return "\t";
-			}
-
-			// For space-based indentation, use 4 spaces (matching this project's .editorconfig)
-			// Note: Ideally this would be retrieved from EditorConfig via Roslyn APIs,
-			// but CodeFixProviders have limited access to formatting options
-			return "    ";
-		}
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
 		{
