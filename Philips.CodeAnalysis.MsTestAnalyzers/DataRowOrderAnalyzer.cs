@@ -45,8 +45,11 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				// Check if DataRow comes after TestMethod
-				if (HasDataRowAfterTestMethod(context, methodDeclaration))
+				// Check if DataRow comes after TestMethod using the generic AttributeHelper method
+				INamedTypeSymbol[] dataRowAttributes = { _definitions.DataRowSymbol };
+				INamedTypeSymbol[] testMethodAttributes = { _definitions.TestMethodSymbol, _definitions.DataTestMethodSymbol };
+
+				if (Helper.AttributeHelper.HasAttributeAfterOther(methodDeclaration.AttributeLists, context, dataRowAttributes, testMethodAttributes))
 				{
 					Location location = methodDeclaration.Identifier.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location, methodDeclaration.Identifier));
@@ -59,39 +62,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					presentAttributes.Any(attr =>
 						attr.IsDerivedFrom(_definitions.TestMethodSymbol) ||
 						attr.IsDerivedFrom(_definitions.DataTestMethodSymbol));
-			}
-
-			private bool HasDataRowAfterTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration)
-			{
-				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
-				(int listIndex, int attrIndex)? testMethodPosition = null;
-
-				for (var listIndex = 0; listIndex < attributeLists.Count; listIndex++)
-				{
-					AttributeListSyntax attributeList = attributeLists[listIndex];
-					for (var attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
-					{
-						AttributeSyntax attribute = attributeList.Attributes[attrIndex];
-						INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
-
-						if (attributeSymbol != null)
-						{
-							(int listIndex, int attrIndex) currentPosition = (listIndex, attrIndex);
-
-							if (attributeSymbol.IsDerivedFrom(_definitions.TestMethodSymbol) ||
-								attributeSymbol.IsDerivedFrom(_definitions.DataTestMethodSymbol))
-							{
-								testMethodPosition ??= currentPosition;
-							}
-							else if (SymbolEqualityComparer.Default.Equals(attributeSymbol, _definitions.DataRowSymbol) &&
-								testMethodPosition != null && currentPosition.CompareTo(testMethodPosition.Value) > 0)
-							{
-								return true;
-							}
-						}
-					}
-				}
-				return false;
 			}
 		}
 	}
