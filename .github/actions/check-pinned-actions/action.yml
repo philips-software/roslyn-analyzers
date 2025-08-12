@@ -1,0 +1,15 @@
+name: 'Check Pinned Actions (Fixed)'
+description: 'Ensure that GitHub Actions are pinned to full length commit SHAs with support for local workflows'
+author: 'Philips (based on zgosalvez/github-actions-ensure-sha-pinned-actions)'
+inputs:
+  allowlist:
+    description: 'The list of owners or repositories that will be ignored and will not throw an error. Each entry must be on a new line. Optional. Default: `` (deny all)'
+    required: false
+    default: ''
+  dry_run:
+    description: 'Set to `true` to show warnings instead of failing. Optional. Default: `false` (fail on any error)'
+    required: false
+    default: 'false'
+runs:
+  using: 'node20'
+  main: 'index.js'
