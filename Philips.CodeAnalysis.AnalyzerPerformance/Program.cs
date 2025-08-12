@@ -1,5 +1,6 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using Microsoft.Build.Logging.StructuredLogger;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.AnalyzerPerformance
@@ -81,7 +82,7 @@ namespace Philips.CodeAnalysis.AnalyzerPerformance
 			{
 				if (analyzerMessage is Item item)
 				{
-					AnalyzerPerformanceRecord record = AnalyzerPerformanceRecord.TryParse(item.Title);
+					var record = AnalyzerPerformanceRecord.TryParse(item.Title);
 					Records.Add(record);
 				}
 			}
