@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			var memberAccess = (MemberAccessExpressionSyntax)context.Node;
 
 			// Check for RSAEncryptionPadding.Pkcs1
-			if (IsRsaEncryptionPaddingPkcs1(memberAccess, context.SemanticModel))
+			if (IsRsaEncryptionPaddingPkcs1(memberAccess))
 			{
 				Location location = memberAccess.GetLocation();
 				var diagnostic = Diagnostic.Create(Rule, location);
@@ -52,28 +52,24 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			Analyze(context);
 		}
 
-		private static bool IsRsaEncryptionPaddingPkcs1(MemberAccessExpressionSyntax memberAccess, SemanticModel semanticModel)
+		private static bool IsRsaEncryptionPaddingPkcs1(MemberAccessExpressionSyntax memberAccess)
 		{
-			// Early bailout - check string content first
-			if (!memberAccess.ToString().Contains("Pkcs1"))
-			{
-				return false;
-			}
-
 			// Check if it's accessing Pkcs1 member
 			if (memberAccess.Name.Identifier.ValueText != "Pkcs1")
 			{
 				return false;
 			}
 
-			// Check if the expression is RSAEncryptionPadding
-			SymbolInfo symbolInfo = semanticModel.GetSymbolInfo(memberAccess.Expression);
-			if (symbolInfo.Symbol is INamedTypeSymbol typeSymbol)
+			// Fast path: check for fully qualified usage
+			var expressionText = memberAccess.Expression.ToString();
+			if (expressionText == "System.Security.Cryptography.RSAEncryptionPadding")
 			{
-				return typeSymbol.ToString() == "System.Security.Cryptography.RSAEncryptionPadding";
+				return true;
 			}
 
-			return false;
+			// Use NamespaceResolver to check if the expression is RSAEncryptionPadding (for using statements)
+			var namespaceResolver = new NamespaceResolver(memberAccess);
+			return namespaceResolver.IsOfType(memberAccess, "System.Security.Cryptography", "RSAEncryptionPadding");
 		}
 	}
 }
