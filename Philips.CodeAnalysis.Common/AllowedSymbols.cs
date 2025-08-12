@@ -181,7 +181,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
-		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
+		private bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
 		{
 			var methodName = method?.Name;
 			var isMatch = true;
@@ -220,7 +220,7 @@ namespace Philips.CodeAnalysis.Common
 		/// <param name="pattern">The pattern to match, which may contain wildcards (*)</param>
 		/// <param name="target">The target string to match against</param>
 		/// <returns>True if the pattern matches the target</returns>
-		private static bool MatchesPattern(string pattern, string target)
+		private bool MatchesPattern(string pattern, string target)
 		{
 			if (pattern == Wildcard || pattern == target)
 			{
