@@ -88,23 +88,33 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a variable declaration with identifier "_"
+			// Check if it's a typed discard (e.g., out int _)
 			if (argument.Expression is DeclarationExpressionSyntax declaration &&
-				declaration.Designation is SingleVariableDesignationSyntax variable &&
-				variable.Identifier.ValueText == "_")
+				declaration.Designation is DiscardDesignationSyntax discard)
 			{
 				// This is a typed discard (e.g., out int _)
 				// Only flag if the type is not needed for overload resolution
 				if (!IsTypedDiscardNecessaryForOverloadResolution(context, argument))
 				{
-					Location location = variable.Identifier.GetLocation();
-					var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+					Location location = discard.GetLocation();
+					var diagnostic = Diagnostic.Create(Rule, location, "_");
 					context.ReportDiagnostic(diagnostic);
 				}
 				return;
 			}
 
-			// Check if it's a simple identifier named "_" (original functionality)
+			// Check if it's a variable declaration with identifier "_" (for original functionality)
+			if (argument.Expression is DeclarationExpressionSyntax declaration2 &&
+				declaration2.Designation is SingleVariableDesignationSyntax variable &&
+				variable.Identifier.ValueText == "_")
+			{
+				Location location = variable.Identifier.GetLocation();
+				var diagnostic = Diagnostic.Create(Rule, location, variable.Identifier.ValueText);
+				context.ReportDiagnostic(diagnostic);
+				return;
+			}
+
+			// Check if it's a simple identifier named "_" (for original functionality)
 			if (argument.Expression is IdentifierNameSyntax identifier &&
 				identifier.Identifier.ValueText == "_")
 			{
@@ -114,7 +124,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			}
 
 			// Note: We don't flag DiscardDesignationSyntax (anonymous discards like "out _")
-			// as they are the preferred form and should not be flagged
+			// when they are IdentifierNameSyntax, as they are the preferred form
 		}
 
 		private bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
