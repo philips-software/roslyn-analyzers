@@ -121,6 +121,34 @@ namespace Philips.CodeAnalysis.Common
 		{
 			return IsAttribute(attribute, context, MsTestFrameworkDefinitions.DataRowAttribute, out _, out _);
 		}
+
+		public bool TryExtractAttributeArgument<T>(AttributeArgumentSyntax argumentSyntax, SyntaxNodeAnalysisContext context, out string argumentString, out T value)
+		{
+			argumentString = argumentSyntax.Expression.ToString();
+
+			SymbolInfo data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
+
+			if (data.Symbol == null)
+			{
+				var helper = new LiteralHelper();
+				if (helper.TryGetLiteralValue(argumentSyntax.Expression, context.SemanticModel, out T literalValue))
+				{
+					value = literalValue;
+					return true;
+				}
+				value = default;
+				return false;
+			}
+
+			if (data.Symbol is IFieldSymbol field && field.HasConstantValue && field.Type.Name == typeof(T).Name)
+			{
+				value = (T)field.ConstantValue;
+				return true;
+			}
+
+			value = default;
+			return false;
+		}
 	}
 }
 
