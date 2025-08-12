@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = "public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 			var testMethodAttribute = new AttributeDefinition("TestMethod", "Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute");
 
 			// Act
@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = "[TestMethod] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
 			// Test name-only matching (fullName = null bypasses semantic model check)
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = "[TestMethod] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
 			// Test name-only matching (fullName = null bypasses semantic model check)
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = "[TestMethod] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 			AttributeSyntax attribute = memberDeclaration.AttributeLists.First().Attributes.First();
 
 			// Act
@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = "[TestMethod] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 			AttributeSyntax attribute = memberDeclaration.AttributeLists.First().Attributes.First();
 
 			// Act
@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = @"[TestCategory(""Unit"")] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 
 			// Act
 			// Test name-only matching - when fullName is null, argument extraction is not performed
@@ -120,7 +120,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			// Arrange
 			var testCode = @"[TestCategory(""Unit"")] public void TestMethod() { }";
-			var memberDeclaration = SyntaxFactory.ParseMemberDeclaration(testCode) as MethodDeclarationSyntax;
+			var memberDeclaration = (MethodDeclarationSyntax)SyntaxFactory.ParseMemberDeclaration(testCode);
 			AttributeSyntax attribute = memberDeclaration.AttributeLists.First().Attributes.First();
 
 			// Act
