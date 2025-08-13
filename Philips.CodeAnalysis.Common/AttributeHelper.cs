@@ -211,7 +211,7 @@ namespace Philips.CodeAnalysis.Common
 				   attributeSymbol.IsDerivedFrom(targetSymbol);
 		}
 
-    public bool TryExtractAttributeArgument<T>(AttributeArgumentSyntax argumentSyntax, SyntaxNodeAnalysisContext context, out string argumentString, out T value)
+		public bool TryExtractAttributeArgument<T>(AttributeArgumentSyntax argumentSyntax, SyntaxNodeAnalysisContext context, out string argumentString, out T value)
 		{
 			argumentString = argumentSyntax.Expression.ToString();
 
