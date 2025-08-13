@@ -115,12 +115,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Convert the string.Format to interpolated content
 			List<InterpolatedStringContentSyntax> newContents = ConvertStringFormatToInterpolatedContents(formatString, arguments);
-			if (newContents.Count == 0)
-			{
-				return Task.FromResult(document);
-			}
 
-			// Replace the interpolation node with the new contents in the parent interpolated string
+			// Get current contents and find the position of the node to replace
 			var currentContents = interpolatedString.Contents.ToList();
 			var index = currentContents.IndexOf(node);
 			if (index == -1)
@@ -130,7 +126,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 			// Remove the current interpolation and insert the new contents
 			currentContents.RemoveAt(index);
-			currentContents.InsertRange(index, newContents);
+			if (newContents.Count > 0)
+			{
+				currentContents.InsertRange(index, newContents);
+			}
+			// If newContents is empty (empty format string case), we just remove the interpolation
 
 			// Create new interpolated string with the updated contents
 			InterpolatedStringExpressionSyntax newInterpolatedString = interpolatedString.WithContents(SyntaxFactory.List(currentContents));
@@ -148,7 +148,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				RegexOptions.None, TimeSpan.FromSeconds(1));
 			var lastIndex = 0;
 
-			foreach (Match match in placeholderPattern.Matches(formatString))
+			MatchCollection matches = placeholderPattern.Matches(formatString);
+
+			foreach (Match match in matches)
 			{
 				// Add text before the placeholder
 				if (match.Index > lastIndex)
@@ -194,7 +196,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				lastIndex = match.Index + match.Length;
 			}
 
-			// Add remaining text
+			// Add remaining text after all placeholders (or all text if no placeholders)
 			if (lastIndex < formatString.Length)
 			{
 				var remainingText = formatString.Substring(lastIndex);
@@ -203,6 +205,25 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
 						SyntaxKind.InterpolatedStringTextToken,
 						remainingText, remainingText, SyntaxTriviaList.Empty);
+					result.Add(SyntaxFactory.InterpolatedStringText(textToken));
+				}
+			}
+
+			// Special case: if format string is empty or only contains text with no placeholders,
+			// and we haven't added anything yet, add an empty text token to represent the content
+			if (result.Count == 0 && matches.Count == 0)
+			{
+				if (string.IsNullOrEmpty(formatString))
+				{
+					// For empty format string, return empty list to remove the interpolation entirely
+					return result;
+				}
+				else
+				{
+					// For non-empty format string with no placeholders, add the text
+					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
+						SyntaxKind.InterpolatedStringTextToken,
+						formatString, formatString, SyntaxTriviaList.Empty);
 					result.Add(SyntaxFactory.InterpolatedStringText(textToken));
 				}
 			}
