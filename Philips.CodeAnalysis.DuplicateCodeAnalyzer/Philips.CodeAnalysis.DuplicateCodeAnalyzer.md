@@ -20,4 +20,4 @@ Enabling this rule on a legacy code base can yield many hits - too many to be ab
 # White listing
 
 For certain parts of the code, duplication can be allowed. For example for runtime performance reasons, one might repeat code explicitly. For use-cases like these, there is the Ability to provide an "AdditionalFile" to your project. This additional file needs to be named exactly "DuplicateCode.Allowed.txt". The syntax of this file is very similar to that of Microsofts
-[BannedApiAnalyzer](https://github.com/dotnet/roslyn-analyzers/blob/main/src/Microsoft.CodeAnalysis.BannedApiAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers.md).
+[BannedApiAnalyzer](https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md).

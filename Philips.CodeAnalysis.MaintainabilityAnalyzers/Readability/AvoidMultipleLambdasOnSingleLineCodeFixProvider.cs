@@ -48,13 +48,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				lastToken = lastToken.GetNextToken();
 				oldNode = lastToken.Parent;
 			}
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
-			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			// Use the simpler approach: let Roslyn's formatter handle indentation automatically
+			SyntaxNode newNode = oldNode.WithTrailingTrivia(
+				lastToken.TrailingTrivia.Add(SyntaxFactory.ElasticCarriageReturnLineFeed)
+			).WithAdditionalAnnotations(Formatter.Annotation);
+
 			root = root.ReplaceNode(oldNode, newNode);
+			Document newDocument = document.WithSyntaxRoot(root);
 
-			return document.WithSyntaxRoot(root);
+			// Let Roslyn format the entire document to ensure proper indentation
+			return await Formatter.FormatAsync(newDocument, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
+
+
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
 		{
