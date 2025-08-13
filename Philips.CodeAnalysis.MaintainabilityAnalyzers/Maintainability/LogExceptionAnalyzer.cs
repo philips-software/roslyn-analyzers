@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		/// </summary>
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			Helper.ForAllowedSymbols.RegisterLine("*.Log.*");
+			Helper.ForAllowedSymbols.RegisterLine("*Log*");
 			_ = Helper.ForAllowedSymbols.Initialize(context.Options.AdditionalFiles, AllowedFileName);
 
 			// Support legacy configuration via .editorconfig also.
@@ -112,10 +112,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			private bool IsCallingLogMethod(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocation)
 			{
 				var isLoggingMethod = false;
-				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess &&
-					context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol is INamedTypeSymbol typeSymbol)
+				if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
 				{
-					isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
+					// Get the symbol for the member access expression 
+					ISymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
+
+					INamedTypeSymbol typeSymbol = Helper.ForTypes.GetTypeSymbol(memberSymbol);
+					if (typeSymbol != null)
+					{
+						isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
+					}
 				}
 
 				return isLoggingMethod;

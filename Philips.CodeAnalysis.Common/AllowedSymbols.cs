@@ -165,13 +165,13 @@ namespace Philips.CodeAnalysis.Common
 					var parts = line.Split('.');
 					if (parts.Length == 1)
 					{
-						return (method == null) ? line == typeName : line == method.Name;
+						return (method == null) ? MatchesPattern(line, typeName) : MatchesPattern(line, method.Name);
 					}
 					else if (parts.Length == 2)
 					{
 						return (parts[0] == Wildcard)
-							? parts[1] == typeName
-							: parts[0] == nsName && parts[1] == typeName;
+							? MatchesPattern(parts[1], typeName)
+							: parts[0] == nsName && MatchesPattern(parts[1], typeName);
 					}
 					else
 					{
@@ -181,7 +181,7 @@ namespace Philips.CodeAnalysis.Common
 			}
 		}
 
-		private static bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
+		private bool MatchesFullNamespace(string[] parts, string nsName, string typeName, IMethodSymbol method)
 		{
 			var methodName = method?.Name;
 			var isMatch = true;
@@ -203,15 +203,40 @@ namespace Philips.CodeAnalysis.Common
 
 			if (parts[typeIndex] != Wildcard)
 			{
-				isMatch &= parts[typeIndex] == typeName;
+				isMatch &= MatchesPattern(parts[typeIndex], typeName);
 			}
 
 			if (method != null && parts[methodIndex] != Wildcard)
 			{
-				isMatch &= parts[methodIndex] == methodName;
+				isMatch &= MatchesPattern(parts[methodIndex], methodName);
 			}
 
 			return isMatch;
+		}
+
+		/// <summary>
+		/// Matches a pattern against a target string, supporting wildcards at the beginning and end.
+		/// </summary>
+		/// <param name="pattern">The pattern to match, which may contain wildcards (*)</param>
+		/// <param name="target">The target string to match against</param>
+		/// <returns>True if the pattern matches the target</returns>
+		private bool MatchesPattern(string pattern, string target)
+		{
+			if (pattern == Wildcard || pattern == target)
+			{
+				return true;
+			}
+
+			var starts = pattern.StartsWith(Wildcard);
+			var ends = pattern.EndsWith(Wildcard);
+
+			return (starts, ends) switch
+			{
+				(true, true) => target.Contains(pattern.Substring(1, pattern.Length - 2)),
+				(true, false) => target.EndsWith(pattern.Substring(1)),
+				(false, true) => target.StartsWith(pattern.Substring(0, pattern.Length - 1)),
+				_ => false
+			};
 		}
 
 
