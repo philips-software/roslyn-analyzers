@@ -117,10 +117,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					// Get the symbol for the member access expression 
 					ISymbol memberSymbol = context.SemanticModel.GetSymbolInfo(memberAccess.Expression).Symbol;
 
-					// Use TypesHelper to get the actual type symbol
-					var typesHelper = new TypesHelper();
-					INamedTypeSymbol typeSymbol = typesHelper.GetTypeSymbol(memberSymbol);
-
+					INamedTypeSymbol typeSymbol = Helper.ForTypes.GetTypeSymbol(memberSymbol);
 					if (typeSymbol != null)
 					{
 						isLoggingMethod = typeSymbol.GetMembers(memberAccess.Name.Identifier.Text).OfType<IMethodSymbol>().Any(Helper.ForAllowedSymbols.IsAllowed);
