@@ -62,9 +62,73 @@ namespace AssignmentInConditionUnitTests {
 	}
 }";
 
+		private const string MethodCallAssignmentViolation = @"
+namespace AssignmentInConditionUnitTests {
+	public class Program {
+		public bool Main() {
+			string result;
+			if (result = GetValue()) {
+				// Do something
+			}
+		}
+		
+		private string GetValue() {
+			return ""test"";
+		}
+	}
+}";
+
+		private const string MethodCallAssignmentFixed = @"
+namespace AssignmentInConditionUnitTests {
+	public class Program {
+		public bool Main() {
+			string result;
+			result = GetValue();
+			if (result) {
+				// Do something
+			}
+		}
+		
+		private string GetValue() {
+			return ""test"";
+		}
+	}
+}";
+
+		private const string ComplexTernaryMethodCallViolation = @"
+namespace AssignmentInConditionUnitTests {
+	public class Program {
+		public bool Main() {
+			string result;
+			int value = (result = GetValue()) != null ? 10 : 20;
+		}
+		
+		private string GetValue() {
+			return ""test"";
+		}
+	}
+}";
+
+		private const string ComplexTernaryMethodCallFixed = @"
+namespace AssignmentInConditionUnitTests {
+	public class Program {
+		public bool Main() {
+			string result;
+			result = GetValue();
+			int value = (result) != null ? 10 : 20;
+		}
+		
+		private string GetValue() {
+			return ""test"";
+		}
+	}
+}";
+
 		[DataTestMethod]
 		[DataRow(SimpleAssignmentViolation, SimpleAssignmentFixed, DisplayName = "SimpleAssignment")]
 		[DataRow(TernaryViolation, TernaryFixed, DisplayName = "Ternary")]
+		[DataRow(MethodCallAssignmentViolation, MethodCallAssignmentFixed, DisplayName = "MethodCallAssignment")]
+		[DataRow(ComplexTernaryMethodCallViolation, ComplexTernaryMethodCallFixed, DisplayName = "ComplexTernaryMethodCall")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenAssignmentInConditionCodeFixIsApplied(string testCode, string fixedCode)
 		{
