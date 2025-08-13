@@ -29,12 +29,27 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				if (trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
 				{
-					newRoot = root.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
+					newRoot = newRoot.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
+					/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
+					Before:
+								}
 
-					// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
-					newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
+								// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
+					After:
+								}
+
+								// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
+					*/
+
 				}
 			}
+
+			// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
+			if (newRoot != root)
+			{
+				newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
+			}
+
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}
