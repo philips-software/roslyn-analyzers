@@ -17,6 +17,19 @@ namespace Philips.CodeAnalysis.Common
 						!((IMethodSymbol)m).IsExtensionMethod);
 		}
 
+		public INamedTypeSymbol GetTypeSymbol(ISymbol symbol)
+		{
+			return symbol switch
+			{
+				IFieldSymbol fieldSymbol => fieldSymbol.Type as INamedTypeSymbol,
+				IPropertySymbol propertySymbol => propertySymbol.Type as INamedTypeSymbol,
+				ILocalSymbol localSymbol => localSymbol.Type as INamedTypeSymbol,
+				IParameterSymbol parameterSymbol => parameterSymbol.Type as INamedTypeSymbol,
+				INamedTypeSymbol namedTypeSymbol => namedTypeSymbol,
+				_ => null
+			};
+		}
+
 		public bool IsInheritingFromClass(INamedTypeSymbol inputType, string classTypeName)
 		{
 			INamedTypeSymbol type = inputType;
