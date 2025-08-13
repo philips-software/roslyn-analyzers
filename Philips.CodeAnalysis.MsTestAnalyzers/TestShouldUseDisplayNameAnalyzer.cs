@@ -47,26 +47,24 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			private void CheckDataTestMethodForDisplayName(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration)
 			{
 				// Check for DataRow attributes with comments but no DisplayName
-				foreach (AttributeListSyntax attributeList in methodDeclaration.AttributeLists)
-				{
-					foreach (AttributeSyntax attribute in attributeList.Attributes)
-					{
-						if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
-						{
-							// Check if this DataRow has a comment but no DisplayName
-							var hasDisplayName = attribute.ArgumentList?.Arguments.Any(arg =>
-								arg.NameEquals?.Name.Identifier.ValueText == "DisplayName") == true;
+				System.Collections.Generic.IEnumerable<AttributeSyntax> dataRowAttributes = methodDeclaration.AttributeLists
+					.SelectMany(list => list.Attributes)
+					.Where(attr => Helper.ForAttributes.IsDataRowAttribute(attr, context));
 
-							if (!hasDisplayName)
-							{
-								// Look for trailing comment on the same line
-								var comment = GetTrailingComment(attribute);
-								if (!string.IsNullOrWhiteSpace(comment))
-								{
-									var diagnostic = Diagnostic.Create(Rule, attribute.GetLocation());
-									context.ReportDiagnostic(diagnostic);
-								}
-							}
+				foreach (AttributeSyntax attribute in dataRowAttributes)
+				{
+					// Check if this DataRow has a comment but no DisplayName
+					var hasDisplayName = attribute.ArgumentList?.Arguments.Any(arg =>
+						arg.NameEquals?.Name.Identifier.ValueText == "DisplayName") == true;
+
+					if (!hasDisplayName)
+					{
+						// Look for trailing comment on the same line
+						var comment = GetTrailingComment(attribute);
+						if (!string.IsNullOrWhiteSpace(comment))
+						{
+							var diagnostic = Diagnostic.Create(Rule, attribute.GetLocation());
+							context.ReportDiagnostic(diagnostic);
 						}
 					}
 				}
