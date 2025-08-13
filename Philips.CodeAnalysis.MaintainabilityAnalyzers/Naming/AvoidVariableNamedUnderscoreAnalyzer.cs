@@ -12,9 +12,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AvoidVariableNamedUnderscoreAnalyzer : SingleDiagnosticAnalyzer
 	{
-		private const string Title = @"Avoid variables named exactly '_'";
-		private const string MessageFormat = @"Variable '{0}' is named '_' which can be confused with a discard. Consider using a discard or a more descriptive variable name";
-		private const string Description = @"Variables named exactly '_' can be confused with C# discards. Use either a proper discard or a more descriptive variable name.";
+		private const string Title = @"Avoid unnecessary typed discards and variables named '_'";
+		private const string MessageFormat = @"Use anonymous discard '_' instead of typed discard or variable named '{0}' when type is not needed";
+		private const string Description = @"Prefer anonymous discards over typed discards when the type is not needed for overload resolution, and avoid variables named exactly '_' which can be confused with discards.";
 
 		public AvoidVariableNamedUnderscoreAnalyzer()
 			: base(DiagnosticId.AvoidVariableNamedUnderscore, Title, MessageFormat, Description, Categories.Naming)
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a variable declaration with identifier "_" (for original functionality)
+			// Check if it's a variable declaration with identifier "_"
 			if (argument.Expression is DeclarationExpressionSyntax declaration2 &&
 				declaration2.Designation is SingleVariableDesignationSyntax variable &&
 				variable.Identifier.ValueText == "_")
@@ -167,7 +167,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				.Distinct()
 				.ToList();
 
-			// If there are multiple different out parameter types, the typed discard might be necessary
+			// If there are multiple different out parameter types, the typed discard is necessary
 			return outParameterTypes.Count > 1;
 		}
 	}
