@@ -114,17 +114,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return;
 			}
 
-			// Check if it's a simple identifier named "_" (for original functionality)
-			if (argument.Expression is IdentifierNameSyntax identifier &&
-				identifier.Identifier.ValueText == "_")
-			{
-				Location location = identifier.GetLocation();
-				var diagnostic = Diagnostic.Create(Rule, location, identifier.Identifier.ValueText);
-				context.ReportDiagnostic(diagnostic);
-			}
-
-			// Note: We don't flag DiscardDesignationSyntax (anonymous discards like "out _")
-			// when they are IdentifierNameSyntax, as they are the preferred form
+			// Note: We don't flag IdentifierNameSyntax("_") because that represents
+			// anonymous discards like "out _" which are the preferred form
 		}
 
 		private bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
