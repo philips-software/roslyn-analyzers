@@ -153,82 +153,89 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (Match match in matches)
 			{
 				// Add text before the placeholder
-				if (match.Index > lastIndex)
-				{
-					var textContent = formatString.Substring(lastIndex, match.Index - lastIndex);
-					if (!string.IsNullOrEmpty(textContent))
-					{
-						SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
-							SyntaxKind.InterpolatedStringTextToken,
-							textContent, textContent, SyntaxTriviaList.Empty);
-						result.Add(SyntaxFactory.InterpolatedStringText(textToken));
-					}
-				}
+				AddTextContent(result, formatString, lastIndex, match.Index);
 
-				// Parse the placeholder
-				if (int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var argIndex) && argIndex < arguments.Length)
+				// Process the placeholder
+				if (!TryProcessPlaceholder(result, match, arguments))
 				{
-					ExpressionSyntax expression = arguments[argIndex].Expression;
-					InterpolationSyntax interpolation;
-
-					// Add format specifier if present
-					if (match.Groups[2].Success && !string.IsNullOrEmpty(match.Groups[2].Value))
-					{
-						InterpolationFormatClauseSyntax formatClause = SyntaxFactory.InterpolationFormatClause(
-							SyntaxFactory.Token(SyntaxKind.ColonToken),
-							SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.InterpolatedStringTextToken,
-								match.Groups[2].Value, match.Groups[2].Value, SyntaxTriviaList.Empty));
-						interpolation = SyntaxFactory.Interpolation(expression, null, formatClause);
-					}
-					else
-					{
-						interpolation = SyntaxFactory.Interpolation(expression);
-					}
-
-					result.Add(interpolation);
-				}
-				else
-				{
-					// Invalid placeholder - return empty collection instead of null for graceful handling
+					// Invalid placeholder - return empty collection for graceful handling
 					return [];
 				}
 
 				lastIndex = match.Index + match.Length;
 			}
 
-			// Add remaining text after all placeholders (or all text if no placeholders)
+			// Add remaining text and handle special cases
+			HandleRemainingContent(result, formatString, lastIndex, matches.Count);
+
+			return result;
+		}
+
+		private static void AddTextContent(List<InterpolatedStringContentSyntax> result, string formatString, int startIndex, int endIndex)
+		{
+			if (endIndex > startIndex)
+			{
+				var textContent = formatString.Substring(startIndex, endIndex - startIndex);
+				if (!string.IsNullOrEmpty(textContent))
+				{
+					result.Add(CreateInterpolatedStringText(textContent));
+				}
+			}
+		}
+
+		private static bool TryProcessPlaceholder(List<InterpolatedStringContentSyntax> result, Match match, ArgumentSyntax[] arguments)
+		{
+			if (!int.TryParse(match.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var argIndex) ||
+				argIndex >= arguments.Length)
+			{
+				return false;
+			}
+
+			ExpressionSyntax expression = arguments[argIndex].Expression;
+			InterpolationSyntax interpolation = CreateInterpolationWithFormat(expression, match.Groups[2]);
+			result.Add(interpolation);
+			return true;
+		}
+
+		private static InterpolationSyntax CreateInterpolationWithFormat(ExpressionSyntax expression, Group formatGroup)
+		{
+			if (formatGroup.Success && !string.IsNullOrEmpty(formatGroup.Value))
+			{
+				InterpolationFormatClauseSyntax formatClause = SyntaxFactory.InterpolationFormatClause(
+					SyntaxFactory.Token(SyntaxKind.ColonToken),
+					SyntaxFactory.Token(SyntaxTriviaList.Empty, SyntaxKind.InterpolatedStringTextToken,
+						formatGroup.Value, formatGroup.Value, SyntaxTriviaList.Empty));
+				return SyntaxFactory.Interpolation(expression, null, formatClause);
+			}
+
+			return SyntaxFactory.Interpolation(expression);
+		}
+
+		private static void HandleRemainingContent(List<InterpolatedStringContentSyntax> result, string formatString, int lastIndex, int matchCount)
+		{
+			// Add remaining text after all placeholders
 			if (lastIndex < formatString.Length)
 			{
 				var remainingText = formatString.Substring(lastIndex);
 				if (!string.IsNullOrEmpty(remainingText))
 				{
-					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
-						SyntaxKind.InterpolatedStringTextToken,
-						remainingText, remainingText, SyntaxTriviaList.Empty);
-					result.Add(SyntaxFactory.InterpolatedStringText(textToken));
+					result.Add(CreateInterpolatedStringText(remainingText));
 				}
 			}
 
-			// Special case: if format string is empty or only contains text with no placeholders,
-			// and we haven't added anything yet, add an empty text token to represent the content
-			if (result.Count == 0 && matches.Count == 0)
+			// Handle special case: text-only format string with no placeholders
+			if (result.Count == 0 && matchCount == 0 && !string.IsNullOrEmpty(formatString))
 			{
-				if (string.IsNullOrEmpty(formatString))
-				{
-					// For empty format string, return empty list to remove the interpolation entirely
-					return result;
-				}
-				else
-				{
-					// For non-empty format string with no placeholders, add the text
-					SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
-						SyntaxKind.InterpolatedStringTextToken,
-						formatString, formatString, SyntaxTriviaList.Empty);
-					result.Add(SyntaxFactory.InterpolatedStringText(textToken));
-				}
+				result.Add(CreateInterpolatedStringText(formatString));
 			}
+		}
 
-			return result;
+		private static InterpolatedStringTextSyntax CreateInterpolatedStringText(string text)
+		{
+			SyntaxToken textToken = SyntaxFactory.Token(SyntaxTriviaList.Empty,
+				SyntaxKind.InterpolatedStringTextToken,
+				text, text, SyntaxTriviaList.Empty);
+			return SyntaxFactory.InterpolatedStringText(textToken);
 		}
 	}
 }
