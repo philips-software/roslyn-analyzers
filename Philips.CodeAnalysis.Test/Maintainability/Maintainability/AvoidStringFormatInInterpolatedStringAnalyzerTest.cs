@@ -96,5 +96,28 @@ class Test
 ";
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnalyzerDoesNotThrowExceptionForInterpolatedStrings()
+		{
+			// This test verifies that the analyzer can process interpolated strings without throwing
+			// the "Update GetSyntaxKind to include the SyntaxKind associated with InterpolatedStringExpressionSyntax" exception
+			var code = @"
+using System;
+
+class Test
+{
+	public void Method()
+	{
+		var firstName = ""John"";
+		var lastName = ""Doe"";
+		var result = $""Hello {string.Format(""{0} {1}"", firstName, lastName)}"";
+	}
+}
+";
+			// This should trigger the analyzer and cause a diagnostic, but not throw an exception
+			await VerifyDiagnostic(code).ConfigureAwait(false);
+		}
 	}
 }

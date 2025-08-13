@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					ImmutableDictionary<string, string> additionalData = ImmutableDictionary<string, string>.Empty;
 
 					//it doesn't have a timeout.  To help the fixer, see if it has a category...
-					if (hasCategory && TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && !allowed.IsEmpty)
+					if (hasCategory && Helper.ForAttributes.TryExtractAttributeArgument(categoryArgumentSyntax, context, out _, out string categoryForDiagnostic) && TryGetAllowedTimeouts(categoryForDiagnostic, out ImmutableList<string> allowed) && !allowed.IsEmpty)
 					{
 						var firstAllowedTimeout = allowed[0];
 						additionalData = additionalData.Add(DefaultTimeoutKey, firstAllowedTimeout);
@@ -95,12 +95,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					return;
 				}
 
-				if (!TryExtractAttributeArgument(context, categoryArgumentSyntax, out _, out string category))
+				if (!Helper.ForAttributes.TryExtractAttributeArgument(categoryArgumentSyntax, context, out _, out string category))
 				{
 					return;
 				}
 
-				if (!TryExtractAttributeArgument<int>(context, argumentSyntax, out var timeoutString, out _))
+				if (!Helper.ForAttributes.TryExtractAttributeArgument<int>(argumentSyntax, context, out var timeoutString, out _))
 				{
 					return;
 				}
@@ -118,28 +118,6 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 					var diagnostic = Diagnostic.Create(Rule, timeoutLocation, additionalData, errorText);
 					context.ReportDiagnostic(diagnostic);
 				}
-			}
-
-			private bool TryExtractAttributeArgument<T>(SyntaxNodeAnalysisContext context, AttributeArgumentSyntax argumentSyntax, out string argumentString, out T value)
-			{
-				argumentString = argumentSyntax.Expression.ToString();
-
-				SymbolInfo data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
-
-				if (data.Symbol == null)
-				{
-					value = default;
-					return false;
-				}
-
-				if (data.Symbol is IFieldSymbol field && field.HasConstantValue && field.Type.Name == typeof(T).Name)
-				{
-					value = (T)field.ConstantValue;
-					return true;
-				}
-
-				value = default;
-				return false;
 			}
 
 			public bool IsIncorrectTimeout(string argumentString, string category, out string messageFormat)

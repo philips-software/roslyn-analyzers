@@ -1,3 +1,44 @@
+## [1.7.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.4...v1.7.0) (2025-08-09)
+
+
+### Features
+
+* Add analyzer for backwards for-loop boundary check (PH2144) ([#836](https://github.com/philips-software/roslyn-analyzers/issues/836)) ([667ffb3](https://github.com/philips-software/roslyn-analyzers/commit/667ffb34243c6b998c697b889d50a8b3f400d608))
+* Add AvoidStringJoinInInterpolatedString analyzer to detect string.Join in interpolated strings ([#838](https://github.com/philips-software/roslyn-analyzers/issues/838)) ([21f775e](https://github.com/philips-software/roslyn-analyzers/commit/21f775e5597cb840e4039380ad4b978b7c7be893))
+* Add AvoidToStringOnString analyzer to detect redundant ToString() calls on string types (disabled by default) ([#854](https://github.com/philips-software/roslyn-analyzers/issues/854)) ([593a68a](https://github.com/philips-software/roslyn-analyzers/commit/593a68a0a089c1f561583461385f73ae3d6c1424))
+* PH2147: Create new analyzer to avoid variables named exactly _ ([#839](https://github.com/philips-software/roslyn-analyzers/issues/839)) ([9bfd6f3](https://github.com/philips-software/roslyn-analyzers/commit/9bfd6f353bb48c0f22acf2ad353859286968e8ed))
+
+
+### Bug Fixes
+
+* PH2001 false positive when documentation has useful param tags ([#835](https://github.com/philips-software/roslyn-analyzers/issues/835)) ([134423e](https://github.com/philips-software/roslyn-analyzers/commit/134423e434d7b467d16261a69057d18d3032d062))
+* Remove obsolete DataTestMethodsHaveDataRowsAnalyzer (PH2033) ([#851](https://github.com/philips-software/roslyn-analyzers/issues/851)) ([5d0a8f5](https://github.com/philips-software/roslyn-analyzers/commit/5d0a8f55b42f95a1a9c847ee1a8255e2abf2f277))
+* Remove obsolete PH2035 analyzer (TestMethodsMustHaveTheCorrectNumberOfArguments) ([#861](https://github.com/philips-software/roslyn-analyzers/issues/861)) ([3eb2170](https://github.com/philips-software/roslyn-analyzers/commit/3eb21707d92529b2f6899b4a82e755f46e6a2e34))
+* resolve GetSyntaxKind exception in AvoidStringFormatInInterpolatedStringAnalyzer (PH2145) ([#863](https://github.com/philips-software/roslyn-analyzers/issues/863)) ([b774643](https://github.com/philips-software/roslyn-analyzers/commit/b77464332ac2877d5cc48aa2467cec70b3105916))
+
+
+### Documentation
+
+* Add copilot-instructions.md with development guidelines and analyzer creation workflow ([#857](https://github.com/philips-software/roslyn-analyzers/issues/857)) ([81adecf](https://github.com/philips-software/roslyn-analyzers/commit/81adecf93471cfacaf330edbd09f946520ae8072))
+
+
+### Tests
+
+* Enable MSTest Analyzers ([#858](https://github.com/philips-software/roslyn-analyzers/issues/858)) ([86a0631](https://github.com/philips-software/roslyn-analyzers/commit/86a063180606723ea47be229feadad222ab04c7e))
+
+
+### Build Systems
+
+* Bump actions/download-artifact from 4.3.0 to 5.0.0 ([#864](https://github.com/philips-software/roslyn-analyzers/issues/864)) ([47259a4](https://github.com/philips-software/roslyn-analyzers/commit/47259a492dea562caa62dde7aaf05f6867021813))
+* Bump github/codeql-action from 3.29.4 to 3.29.5 ([#846](https://github.com/philips-software/roslyn-analyzers/issues/846)) ([d6625fe](https://github.com/philips-software/roslyn-analyzers/commit/d6625fe6cc8e21d0312f7a15e05a5874c69916fb))
+
+
+### Continuous Integration
+
+* Fix NuGet.org warnings by modernizing package metadata ([#845](https://github.com/philips-software/roslyn-analyzers/issues/845)) ([6f12b5f](https://github.com/philips-software/roslyn-analyzers/commit/6f12b5f7e9174fc767d9baf9b38bf38a58718f26))
+
+
+
 ### [1.6.4](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.3...v1.6.4) (2025-07-28)
 
 
