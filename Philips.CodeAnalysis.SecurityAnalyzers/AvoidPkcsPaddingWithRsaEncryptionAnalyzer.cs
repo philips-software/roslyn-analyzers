@@ -1,4 +1,4 @@
-// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
@@ -52,7 +52,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			Analyze(context);
 		}
 
-		private static bool IsRsaEncryptionPaddingPkcs1(MemberAccessExpressionSyntax memberAccess)
+		private bool IsRsaEncryptionPaddingPkcs1(MemberAccessExpressionSyntax memberAccess)
 		{
 			// Check if it's accessing Pkcs1 member
 			if (memberAccess.Name.Identifier.ValueText != "Pkcs1")
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// Use NamespaceResolver to check if the expression is RSAEncryptionPadding (for using statements)
-			var namespaceResolver = new NamespaceResolver(memberAccess);
+			NamespaceResolver namespaceResolver = Helper.ForNamespaces.GetUsingAliases(memberAccess);
 			return namespaceResolver.IsOfType(memberAccess, "System.Security.Cryptography", "RSAEncryptionPadding");
 		}
 	}
