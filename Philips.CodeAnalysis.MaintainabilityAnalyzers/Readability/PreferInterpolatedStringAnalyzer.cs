@@ -1,5 +1,6 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using Microsoft.CodeAnalysis;
@@ -12,6 +13,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PreferInterpolatedStringAnalyzer : DiagnosticAnalyzerBase
 	{
+		[Flags]
+		private enum ConversionResult
+		{
+			None = 0,
+			CanConvert = 1,
+			IsUnnecessary = 2
+		}
 		private const string Title = @"Prefer interpolated strings over string.Format";
 		private const string MessageFormat = @"Replace string.Format with interpolated string for better readability";
 		private const string Description = @"Interpolated strings are more readable and less error prone than string.Format";
@@ -56,13 +64,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			if (!CanConvertToInterpolatedString(invocation, out var isUnnecessary))
+			ConversionResult result = CanConvertToInterpolatedString(invocation);
+			if (result == ConversionResult.None)
 			{
 				return;
 			}
 
 			Location location = invocation.Syntax.GetLocation();
-			if (isUnnecessary)
+			if (result.HasFlag(ConversionResult.IsUnnecessary))
 			{
 				operationContext.ReportDiagnostic(Diagnostic.Create(UnnecessaryRule, location));
 			}
@@ -79,12 +88,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				   targetMethod.ContainingType.SpecialType == SpecialType.System_String;
 		}
 
-		private bool CanConvertToInterpolatedString(IInvocationOperation invocation, out bool isUnnecessary)
+		private ConversionResult CanConvertToInterpolatedString(IInvocationOperation invocation)
 		{
-			isUnnecessary = false;
 			if (invocation.Arguments.Length < 1)
 			{
-				return false;
+				return ConversionResult.None;
 			}
 
 			IOperation formatStringArgument = invocation.Arguments[0].Value;
@@ -92,37 +100,29 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			if (formatStringArgument.Kind != OperationKind.Literal ||
 				formatStringArgument.Type?.SpecialType != SpecialType.System_String)
 			{
-				return false;
+				return ConversionResult.None;
 			}
 
 			var formatString = (string)formatStringArgument.ConstantValue.Value;
 
-			if (formatString.Contains(":"))
-			{
-				return false;
-			}
-
 			// Parse the format string to find actual placeholders, ignoring escaped braces
 			var placeholderCount = CountFormatPlaceholders(formatString);
-			var hasAnyBraces = formatString.Contains("{") || formatString.Contains("}");
 
 			if (placeholderCount == 0)
 			{
 				// Only flag as unnecessary if there are no braces at all
 				// If there are escaped braces, string.Format is needed to produce literal braces
+				var hasAnyBraces = formatString.Contains("{") || formatString.Contains("}");
 				if (!hasAnyBraces)
 				{
-					isUnnecessary = true;
-					return true;
+					return ConversionResult.CanConvert | ConversionResult.IsUnnecessary;
 				}
-				else
-				{
-					// Has escaped braces but no placeholders - don't suggest conversion
-					return false;
-				}
+
+				// Has escaped braces but no placeholders - don't suggest conversion
+				return ConversionResult.None;
 			}
 
-			return invocation.Arguments.Length > 1;
+			return invocation.Arguments.Length > 1 ? ConversionResult.CanConvert : ConversionResult.None;
 		}
 
 		private int CountFormatPlaceholders(string formatString)
@@ -152,7 +152,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					{
 						// Found valid placeholder, check if it's a simple numeric placeholder
 						var content = formatString.Substring(i + 1, j - i - 1);
-						if (int.TryParse(content.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
+
+						// Handle format specifiers like {0:N2} by splitting on ':'
+						var colonIndex = content.IndexOf(':');
+						var indexPart = colonIndex >= 0 ? content.Substring(0, colonIndex) : content;
+
+						if (int.TryParse(indexPart.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out _))
 						{
 							placeholderCount++;
 						}

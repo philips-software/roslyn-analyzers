@@ -53,7 +53,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task NoWarningForStringWithFormatSpecifiers()
+		public async Task WarningForStringWithFormatSpecifiers()
 		{
 			const string input = @"
 class Foo
@@ -65,7 +65,7 @@ class Foo
 	}
 }";
 
-			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+			await VerifyDiagnostic(input, DiagnosticId.PreferInterpolatedString).ConfigureAwait(false);
 		}
 
 		[TestMethod]
