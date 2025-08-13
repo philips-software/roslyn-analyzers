@@ -70,7 +70,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			// Check if the second lambda is a descendant of the first lambda
 			// This indicates a nested scenario like Moq where one lambda contains another
-			return firstLambda.DescendantNodes().Contains(secondLambda);
+			// Walking upwards from secondLambda is more efficient than traversing all descendants of firstLambda
+			return secondLambda.Ancestors().Contains(firstLambda);
 		}
 
 		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
