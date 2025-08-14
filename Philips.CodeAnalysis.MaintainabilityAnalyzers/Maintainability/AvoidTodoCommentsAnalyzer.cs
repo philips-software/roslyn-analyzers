@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,16 +26,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidTodoCommentsSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
+		private static readonly Regex TodoWordRegex = new(@"(?<=\W|^)TODO(?=\W|$)", RegexOptions.IgnoreCase);
+
 		public override void Analyze()
 		{
 			IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia()
 				.Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) ||
 								 trivia.IsKind(SyntaxKind.MultiLineCommentTrivia));
-
-			if (!comments.Any())
-			{
-				return;
-			}
 
 			foreach (SyntaxTrivia comment in comments)
 			{
@@ -49,31 +47,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool ContainsTodoAsWord(string text)
 		{
-			const string todo = "TODO";
-			var upperText = text.ToUpperInvariant();
-			var index = upperText.IndexOf(todo, StringComparison.Ordinal);
-
-			while (index >= 0)
+			// Quick check first to avoid expensive regex on strings without TODO
+			if (text.IndexOf("TODO", StringComparison.OrdinalIgnoreCase) < 0)
 			{
-				// Check if TODO is at word boundaries
-				var isStartBoundary = index == 0 || !IsWordCharacter(upperText[index - 1]);
-				var isEndBoundary = index + todo.Length >= upperText.Length || !IsWordCharacter(upperText[index + todo.Length]);
-
-				if (isStartBoundary && isEndBoundary)
-				{
-					return true;
-				}
-
-				// Look for next occurrence
-				index = upperText.IndexOf(todo, index + 1, StringComparison.Ordinal);
+				return false;
 			}
 
-			return false;
-		}
-
-		private static bool IsWordCharacter(char c)
-		{
-			return char.IsLetterOrDigit(c) || c == '_';
+			return TodoWordRegex.IsMatch(text);
 		}
 	}
 }
