@@ -1,5 +1,6 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -38,12 +39,41 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (SyntaxTrivia comment in comments)
 			{
 				var commentText = comment.ToString();
-				if (commentText.ToUpperInvariant().Contains("TODO"))
+				if (ContainsTodoAsWord(commentText))
 				{
 					Location location = comment.GetLocation();
 					ReportDiagnostic(location);
 				}
 			}
+		}
+
+		private static bool ContainsTodoAsWord(string text)
+		{
+			const string todo = "TODO";
+			var upperText = text.ToUpperInvariant();
+			var index = upperText.IndexOf(todo, StringComparison.Ordinal);
+
+			while (index >= 0)
+			{
+				// Check if TODO is at word boundaries
+				var isStartBoundary = index == 0 || !IsWordCharacter(upperText[index - 1]);
+				var isEndBoundary = index + todo.Length >= upperText.Length || !IsWordCharacter(upperText[index + todo.Length]);
+
+				if (isStartBoundary && isEndBoundary)
+				{
+					return true;
+				}
+
+				// Look for next occurrence
+				index = upperText.IndexOf(todo, index + 1, StringComparison.Ordinal);
+			}
+
+			return false;
+		}
+
+		private static bool IsWordCharacter(char c)
+		{
+			return char.IsLetterOrDigit(c) || c == '_';
 		}
 	}
 }
