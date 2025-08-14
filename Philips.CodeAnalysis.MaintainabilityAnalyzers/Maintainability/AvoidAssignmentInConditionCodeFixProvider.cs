@@ -132,31 +132,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			// Replace the condition in the if statement
 			IfStatementSyntax newIfStatement = containingStatement.WithCondition(newCondition);
 
-			// Move leading trivia from the if statement to the extracted statement
-			SyntaxTriviaList leadingTrivia = containingStatement.GetLeadingTrivia();
-			StatementSyntax formattedExtractedStatement = extractedStatement.WithLeadingTrivia(leadingTrivia);
-			IfStatementSyntax newIfStatementWithTrivia = newIfStatement.WithoutLeadingTrivia();
-
-			// Preserve some indentation on the if statement
-			if (leadingTrivia.Count > 0)
-			{
-				newIfStatementWithTrivia = newIfStatementWithTrivia.WithLeadingTrivia(leadingTrivia[leadingTrivia.Count - 1]);
-			}
-
-			// If we're not already inside a block statement, we need to make it so
-			if (containingStatement.Parent is StatementSyntax and not BlockSyntax)
-			{
-				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedExtractedStatement, newIfStatementWithTrivia);
-				rootNode = rootNode.ReplaceNode(containingStatement, blockSyntax);
-			}
-			else
-			{
-				// Replace the if statement with both the extracted statement and the new if statement
-				SyntaxNode[] newNodes = { formattedExtractedStatement, newIfStatementWithTrivia };
-				rootNode = rootNode.ReplaceNode(containingStatement, newNodes);
-			}
-
-			return document.WithSyntaxRoot(rootNode);
+			Document result = ReplaceStatementWithExtractedAssignment(document, rootNode, containingStatement, newIfStatement, extractedStatement);
+			return result;
 		}
 
 		private Task<Document> HandleTernaryInStatement(Document document, SyntaxNode rootNode, ConditionalExpressionSyntax ternary, StatementSyntax extractedStatement, ExpressionSyntax newCondition, StatementSyntax parentStatement, CancellationToken _)
@@ -165,29 +142,37 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			ConditionalExpressionSyntax newTernary = ternary.WithCondition(newCondition);
 			StatementSyntax newParentStatement = parentStatement.ReplaceNode(ternary, newTernary);
 
-			// Move leading trivia
-			SyntaxTriviaList leadingTrivia = parentStatement.GetLeadingTrivia();
-			StatementSyntax formattedExtractedStatement = extractedStatement.WithLeadingTrivia(leadingTrivia);
-			StatementSyntax newParentWithTrivia = newParentStatement.WithoutLeadingTrivia();
+			Document result = ReplaceStatementWithExtractedAssignment(document, rootNode, parentStatement, newParentStatement, extractedStatement);
+			return Task.FromResult(result);
+		}
 
+		private Document ReplaceStatementWithExtractedAssignment(Document document, SyntaxNode rootNode, StatementSyntax originalStatement, StatementSyntax newStatement, StatementSyntax extractedStatement)
+		{
+			// Move leading trivia from the original statement to the extracted statement
+			SyntaxTriviaList leadingTrivia = originalStatement.GetLeadingTrivia();
+			StatementSyntax formattedExtractedStatement = extractedStatement.WithLeadingTrivia(leadingTrivia);
+			StatementSyntax newStatementWithTrivia = newStatement.WithoutLeadingTrivia();
+
+			// Preserve some indentation on the new statement
 			if (leadingTrivia.Count > 0)
 			{
-				newParentWithTrivia = newParentWithTrivia.WithLeadingTrivia(leadingTrivia[leadingTrivia.Count - 1]);
+				newStatementWithTrivia = newStatementWithTrivia.WithLeadingTrivia(leadingTrivia[leadingTrivia.Count - 1]);
 			}
 
 			// If we're not already inside a block statement, we need to make it so
-			if (parentStatement.Parent is StatementSyntax and not BlockSyntax)
+			if (originalStatement.Parent is StatementSyntax and not BlockSyntax)
 			{
-				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedExtractedStatement, newParentWithTrivia);
-				rootNode = rootNode.ReplaceNode(parentStatement, blockSyntax);
+				BlockSyntax blockSyntax = SyntaxFactory.Block(formattedExtractedStatement, newStatementWithTrivia);
+				rootNode = rootNode.ReplaceNode(originalStatement, blockSyntax);
 			}
 			else
 			{
-				SyntaxNode[] newNodes = { formattedExtractedStatement, newParentWithTrivia };
-				rootNode = rootNode.ReplaceNode(parentStatement, newNodes);
+				// Replace the original statement with both the extracted statement and the new statement
+				SyntaxNode[] newNodes = { formattedExtractedStatement, newStatementWithTrivia };
+				rootNode = rootNode.ReplaceNode(originalStatement, newNodes);
 			}
 
-			return Task.FromResult(document.WithSyntaxRoot(rootNode));
+			return document.WithSyntaxRoot(rootNode);
 		}
 	}
 }
