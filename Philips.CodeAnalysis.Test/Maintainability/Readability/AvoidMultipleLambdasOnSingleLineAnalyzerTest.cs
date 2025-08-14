@@ -174,11 +174,85 @@ public static class Foo
 }
 ";
 
+		private const string WrongMoqStyle = @"
+using System;
+
+public class It
+{
+  public static T Is<T>(System.Func<T, bool> predicate) => default(T);
+}
+
+public class Times
+{
+  public static Times Once => new Times();
+}
+
+public interface ICertificateInfo
+{
+  string SerialNumber { get; }
+}
+
+public interface IMockProvider
+{
+  void StoreCertificate(ICertificateInfo cert);
+  void Verify<T>(System.Func<IMockProvider, T> expression, Times times);
+}
+
+public class TestClass
+{
+  private IMockProvider _mockProvider;
+  private ICertificateInfo _embeddedPrimaryClient;
+
+  public void Method()
+  {
+    _mockProvider.Verify(x => x.StoreCertificate(It.Is<ICertificateInfo>(c => c.SerialNumber == _embeddedPrimaryClient.SerialNumber)), Times.Once);
+  }
+}
+";
+
+		private const string CorrectMoqStyle = @"
+using System;
+
+public class It
+{
+  public static T Is<T>(System.Func<T, bool> predicate) => default(T);
+}
+
+public class Times
+{
+  public static Times Once => new Times();
+}
+
+public interface ICertificateInfo
+{
+  string SerialNumber { get; }
+}
+
+public interface IMockProvider
+{
+  void StoreCertificate(ICertificateInfo cert);
+  void Verify<T>(System.Func<IMockProvider, T> expression, Times times);
+}
+
+public class TestClass
+{
+  private IMockProvider _mockProvider;
+  private ICertificateInfo _embeddedPrimaryClient;
+
+  public void Method()
+  {
+    _mockProvider.Verify(x => x.StoreCertificate(It.Is<ICertificateInfo>
+      (c => c.SerialNumber == _embeddedPrimaryClient.SerialNumber)), Times.Once);
+  }
+}
+";
+
 		[DataTestMethod]
 		[DataRow(WrongMultiple, CorrectMultiple, DisplayName = nameof(WrongMultiple)),
 		 DataRow(WrongDistinct, CorrectDistinct, DisplayName = nameof(WrongDistinct)),
 		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized)),
-		 DataRow(WrongWithIndentationIssue, CorrectWithProperIndentation, DisplayName = nameof(WrongWithIndentationIssue))]
+		 DataRow(WrongWithIndentationIssue, CorrectWithProperIndentation, DisplayName = nameof(WrongWithIndentationIssue)),
+		 DataRow(WrongMoqStyle, CorrectMoqStyle, DisplayName = nameof(WrongMoqStyle))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FlagWhen2LambdasOnSameLine(string input, string fixedCode)
 		{
