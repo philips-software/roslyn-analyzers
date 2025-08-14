@@ -133,33 +133,30 @@ namespace Philips.CodeAnalysis.Common
 		/// <returns>True if any attributesToFind appears after any attributesToCheckAfter</returns>
 		public bool HasAttributeAfterOther(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, INamedTypeSymbol[] attributesToFind, INamedTypeSymbol[] attributesToCheckAfter)
 		{
-			(int listIndex, int attrIndex)? firstPosition = null;
-
-			for (var listIndex = 0; listIndex < attributeLists.Count; listIndex++)
-			{
-				AttributeListSyntax attributeList = attributeLists[listIndex];
-				for (var attrIndex = 0; attrIndex < attributeList.Attributes.Count; attrIndex++)
-				{
-					AttributeSyntax attribute = attributeList.Attributes[attrIndex];
-					INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
-
-					if (attributeSymbol != null)
+			var allAttributes = attributeLists
+				.SelectMany((list, listIndex) =>
+					list.Attributes.Select((attr, attrIndex) => new
 					{
-						(int listIndex, int attrIndex) currentPosition = (listIndex, attrIndex);
+						Attribute = attr,
+						Position = (listIndex, attrIndex),
+						Symbol = context.SemanticModel.GetSymbolInfo(attr).Symbol?.ContainingType
+					}))
+				.Where(x => x.Symbol != null)
+				.ToArray();
 
-						if (attributesToCheckAfter.Any(attr => AttributeMatches(attributeSymbol, attr)))
-						{
-							firstPosition ??= currentPosition;
-						}
-						else if (attributesToFind.Any(attr => AttributeMatches(attributeSymbol, attr)) &&
-								firstPosition != null && currentPosition.CompareTo(firstPosition.Value) > 0)
-						{
-							return true;
-						}
-					}
-				}
+			(int, int)? firstCheckAfterPosition = allAttributes
+				.Where(x => attributesToCheckAfter.Any(attr => AttributeMatches(x.Symbol, attr)))
+				.Select(x => (ValueTuple<int, int>?)x.Position)
+				.FirstOrDefault();
+
+			if (firstCheckAfterPosition == null)
+			{
+				return false;
 			}
-			return false;
+
+			return allAttributes
+				.Where(x => attributesToFind.Any(attr => AttributeMatches(x.Symbol, attr)))
+				.Any(x => x.Position.CompareTo(firstCheckAfterPosition.Value) > 0);
 		}
 
 		/// <summary>
@@ -184,13 +181,10 @@ namespace Philips.CodeAnalysis.Common
 					INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
 					if (attributeSymbol != null)
 					{
-						foreach (KeyValuePair<string, Func<INamedTypeSymbol, bool>> categorizer in categorizers)
+						KeyValuePair<string, Func<INamedTypeSymbol, bool>>? matchingCategorizer = categorizers.Where(c => c.Value(attributeSymbol)).FirstOrDefault();
+						if (matchingCategorizer.HasValue)
 						{
-							if (categorizer.Value(attributeSymbol))
-							{
-								result[categorizer.Key].Add(attribute);
-								break; // Only add to first matching category
-							}
+							result[matchingCategorizer.Value.Key].Add(attribute);
 						}
 					}
 				}
