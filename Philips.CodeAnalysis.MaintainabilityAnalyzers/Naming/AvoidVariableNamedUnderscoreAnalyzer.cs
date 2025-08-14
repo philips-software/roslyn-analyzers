@@ -121,13 +121,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
 		{
 			// Find the method call containing this argument
-			SyntaxNode current = argument.Parent;
-			while (current is not null and not InvocationExpressionSyntax)
-			{
-				current = current.Parent;
-			}
-
-			if (current is not InvocationExpressionSyntax invocation)
+			InvocationExpressionSyntax invocation = argument.Ancestors()
+				.OfType<InvocationExpressionSyntax>()
+				.FirstOrDefault();
+			if (invocation is null)
 			{
 				return false; // Can't find method call, allow the flag (be conservative)
 			}
@@ -151,15 +148,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			System.Collections.Generic.IEnumerable<IMethodSymbol> methodsWithSameName = containingType.GetMembers(method.Name).OfType<IMethodSymbol>();
 
 			// Check if there are multiple overloads with different out parameter types at this position
-			var outParameterTypes = methodsWithSameName
+			var overloadCount = methodsWithSameName
 				.Where(m => argumentIndex < m.Parameters.Length)
-				.Where(m => m.Parameters[argumentIndex].RefKind == RefKind.Out)
-				.Select(m => m.Parameters[argumentIndex].Type.ToDisplayString())
-				.Distinct()
-				.ToList();
+				.Count(p => p.Parameters[argumentIndex].RefKind == RefKind.Out);
 
 			// If there are multiple different out parameter types, the typed discard is necessary
-			return outParameterTypes.Count > 1;
+			return overloadCount > 1;
 		}
 	}
 }
