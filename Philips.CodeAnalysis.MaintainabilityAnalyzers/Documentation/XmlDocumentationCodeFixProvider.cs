@@ -30,17 +30,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 				if (trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
 				{
 					newRoot = newRoot.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
-					/* Unmerged change from project 'Philips.CodeAnalysis.MaintainabilityAnalyzers(netstandard2.0)'
-					Before:
-								}
-
-								// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
-					After:
-								}
-
-								// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
-					*/
-
 				}
 			}
 
