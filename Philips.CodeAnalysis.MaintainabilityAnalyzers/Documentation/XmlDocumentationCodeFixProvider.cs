@@ -29,12 +29,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			{
 				if (trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
 				{
-					newRoot = root.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
-
-					// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
-					newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
+					newRoot = newRoot.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
 				}
 			}
+
+			// The formatting is slightly off after this. Rather than figure it out the hard way, just Format the whole document.
+			if (newRoot != root)
+			{
+				newRoot = newRoot.WithAdditionalAnnotations(Formatter.Annotation);
+			}
+
 			Document newDocument = document.WithSyntaxRoot(newRoot);
 			return newDocument;
 		}
