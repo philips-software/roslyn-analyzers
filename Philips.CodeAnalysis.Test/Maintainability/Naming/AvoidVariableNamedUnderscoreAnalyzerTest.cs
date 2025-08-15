@@ -307,14 +307,14 @@ class TestClass
 			{
 				new DiagnosticResult()
 				{
-					Id = DiagnosticId.AvoidVariableNamedUnderscore.ToId(),
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
 					Location = new DiagnosticResultLocation("Test0.cs", 9, 23),
 					Message = new System.Text.RegularExpressions.Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 				},
 				new DiagnosticResult()
 				{
-					Id = DiagnosticId.AvoidVariableNamedUnderscore.ToId(),
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
 					Location = new DiagnosticResultLocation("Test0.cs", 10, 33),
 					Message = new System.Text.RegularExpressions.Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
@@ -338,6 +338,87 @@ class TestClass
 		// These typed discards are needed for overload resolution
 		Parse(""123"", out int _);    // Disambiguates from Parse(string, out string)
 		Parse(""test"", out string _); // Disambiguates from Parse(string, out int)
+	}
+
+	private bool Parse(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+	
+	private bool Parse(string input, out string result)
+	{
+		result = input;
+		return true;
+	}
+}";
+
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryTypedDiscardWithNamedArgumentsShouldFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// Typed discard with named argument when anonymous discard would work
+		GetValue(value: out string _);
+		TryParseHelper(input: ""123"", result: out int _);
+	}
+
+	private void GetValue(out string value)
+	{
+		value = ""test"";
+	}
+	
+	private bool TryParseHelper(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+}";
+
+			DiagnosticResult[] expected = new[]
+			{
+				new DiagnosticResult()
+				{
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", 9, 32),
+					Message = new System.Text.RegularExpressions.Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				},
+				new DiagnosticResult()
+				{
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", 10, 50),
+					Message = new System.Text.RegularExpressions.Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				}
+			};
+
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NecessaryTypedDiscardWithNamedArgumentsForOverloadResolutionShouldNotFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// These typed discards with named arguments are needed for overload resolution
+		Parse(input: ""123"", result: out int _);    // Disambiguates from Parse(string, out string)
+		Parse(input: ""test"", result: out string _); // Disambiguates from Parse(string, out int)
 	}
 
 	private bool Parse(string input, out int result)
