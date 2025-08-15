@@ -102,6 +102,43 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
+		private const string CorrectLinqExpressions = @"
+    using System.Linq;
+    using System.Collections.Generic;
+    namespace AssignmentInConditionUnitTests {
+        public class Program {
+            public bool Main() {
+                var list = new List<int> { 1, 2, 3 };
+                if (list.Any()) {
+                    // Do nothing
+                }
+                if (list.Any(x => x > 2)) {
+                    // Do nothing  
+                }
+                if (list.Where(x => x > 1).Any()) {
+                    // Do nothing
+                }
+            }
+        }
+    }";
+
+		private const string CorrectMethodCalls = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Program {
+            public bool Main() {
+                if (GetBoolValue()) {
+                    // Do nothing
+                }
+                if (GetStringValue() != null) {
+                    // Do nothing
+                }
+            }
+            
+            private bool GetBoolValue() { return true; }
+            private string GetStringValue() { return ""test""; }
+        }
+    }";
+
 		private const string Violation = @"
     namespace AssignmentInConditionUnitTests {
         public class Program {
@@ -124,6 +161,20 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
+		private const string ViolationMethodCall = @"
+    namespace AssignmentInConditionUnitTests {
+        public class Program {
+            public bool Main() {
+                string result;
+                if (result = GetValue()) {
+                    // Do nothing
+                }
+            }
+            
+            private string GetValue() { return ""test""; }
+        }
+    }";
+
 		[DataTestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct)),
@@ -132,7 +183,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		 DataRow(CorrectInitializer, DisplayName = nameof(CorrectInitializer)),
 		 DataRow(CorrectPropertyAssignment, DisplayName = nameof(CorrectPropertyAssignment)),
 		 DataRow(CorrectNullCoalescing, DisplayName = nameof(CorrectNullCoalescing)),
-		 DataRow(CorrectAnonymousObject, DisplayName = nameof(CorrectAnonymousObject))]
+		 DataRow(CorrectAnonymousObject, DisplayName = nameof(CorrectAnonymousObject)),
+		 DataRow(CorrectLinqExpressions, DisplayName = nameof(CorrectLinqExpressions)),
+		 DataRow(CorrectMethodCalls, DisplayName = nameof(CorrectMethodCalls))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsValidNoDiagnosticIsTriggered(string testCode)
 		{
@@ -141,7 +194,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[DataTestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
-		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
+		 DataRow(ViolationTernary, DisplayName = "ViolationTernary"),
+		 DataRow(ViolationMethodCall, DisplayName = "ViolationMethodCall")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenDoingAssignmentInsideConditionDiagnosticIsRaised(string testCode)
 		{
