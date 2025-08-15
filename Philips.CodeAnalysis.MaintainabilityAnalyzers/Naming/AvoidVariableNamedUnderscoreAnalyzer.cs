@@ -141,10 +141,73 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private static bool IsTypedDiscardNecessaryForOverloadResolution(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
 		{
-			// For now, return false to flag all typed discards - we'll fix the logic after basic tests pass
-			_ = context;
-			_ = argument;
-			return false;
+			// Find the method call containing this argument
+			InvocationExpressionSyntax invocation = argument.Ancestors()
+				.OfType<InvocationExpressionSyntax>()
+				.FirstOrDefault();
+			if (invocation is null)
+			{
+				return false; // Can't find method call, allow the flag (be conservative)
+			}
+
+			// Get semantic information about the method
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
+			if (symbolInfo.Symbol is not IMethodSymbol method)
+			{
+				return false; // Can't resolve method, allow the flag
+			}
+
+			// Get the argument position - handle named arguments
+			var argumentIndex = GetArgumentIndex(invocation.ArgumentList.Arguments, argument, method);
+			if (argumentIndex < 0 || argumentIndex >= method.Parameters.Length)
+			{
+				return false; // Invalid position, allow the flag
+			}
+
+			// Use speculative binding to test if replacing typed discard with anonymous discard would change method resolution
+			// Create a new argument with anonymous discard instead of typed discard
+			ArgumentSyntax newArgument = argument.WithExpression(SyntaxFactory.IdentifierName("_"));
+
+			// Replace the argument in the argument list
+			SeparatedSyntaxList<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments;
+			SeparatedSyntaxList<ArgumentSyntax> newArguments = arguments.Replace(argument, newArgument);
+			ArgumentListSyntax newArgumentList = invocation.ArgumentList.WithArguments(newArguments);
+			InvocationExpressionSyntax newInvocation = invocation.WithArgumentList(newArgumentList);
+
+			// Get speculative symbol info to see if the same method would be called
+			SymbolInfo speculativeSymbolInfo = context.SemanticModel.GetSpeculativeSymbolInfo(
+				invocation.SpanStart,
+				newInvocation,
+				SpeculativeBindingOption.BindAsExpression);
+
+			// If the speculative binding fails or resolves to a different method, then the typed discard is necessary
+			if (speculativeSymbolInfo.Symbol is not IMethodSymbol speculativeMethod)
+			{
+				return true; // Speculative binding failed, typed discard is probably necessary
+			}
+
+			// If we get the same method, then the typed discard is not necessary
+			return !SymbolEqualityComparer.Default.Equals(method, speculativeMethod);
+		}
+
+		private static int GetArgumentIndex(SeparatedSyntaxList<ArgumentSyntax> arguments, ArgumentSyntax targetArgument, IMethodSymbol method)
+		{
+			// Handle named arguments by checking if the target argument has a name
+			if (targetArgument.NameColon != null)
+			{
+				var parameterName = targetArgument.NameColon.Name.Identifier.ValueText;
+				for (var i = 0; i < method.Parameters.Length; i++)
+				{
+					if (method.Parameters[i].Name == parameterName)
+					{
+						return i;
+					}
+				}
+				return -1; // Parameter name not found
+			}
+
+			// For positional arguments, just get the index
+			return arguments.IndexOf(targetArgument);
 		}
 	}
 }
