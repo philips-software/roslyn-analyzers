@@ -1,5 +1,6 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -47,7 +48,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			private void CheckDataTestMethodForDisplayName(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration)
 			{
 				// Check for DataRow attributes with comments but no DisplayName
-				System.Collections.Generic.IEnumerable<AttributeSyntax> dataRowAttributes = methodDeclaration.AttributeLists
+				IEnumerable<AttributeSyntax> dataRowAttributes = methodDeclaration.AttributeLists
 					.SelectMany(list => list.Attributes)
 					.Where(attr => Helper.ForAttributes.IsDataRowAttribute(attr, context));
 
@@ -55,12 +56,12 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				{
 					// Check if this DataRow has a comment but no DisplayName
 					var hasDisplayName = attribute.ArgumentList?.Arguments.Any(arg =>
-						arg.NameEquals?.Name.Identifier.ValueText == "DisplayName") == true;
+						arg.NameEquals?.Name.Identifier.ValueText == "DisplayName") ?? false;
 
 					if (!hasDisplayName)
 					{
 						// Look for trailing comment on the same line
-						var comment = GetTrailingComment(attribute);
+						var comment = GetMeaningfulTrailingComment(attribute);
 						if (!string.IsNullOrWhiteSpace(comment))
 						{
 							var diagnostic = Diagnostic.Create(Rule, attribute.GetLocation());
@@ -78,7 +79,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				if (!hasDescription)
 				{
 					// Look for leading comment before the method
-					var comment = GetLeadingComment(methodDeclaration);
+					var comment = GetMeaningfulLeadingComment(methodDeclaration);
 					if (!string.IsNullOrWhiteSpace(comment))
 					{
 						var diagnostic = Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation());
@@ -87,7 +88,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				}
 			}
 
-			private string GetTrailingComment(AttributeSyntax attribute)
+			private string GetMeaningfulTrailingComment(AttributeSyntax attribute)
 			{
 				// Look for the parent AttributeListSyntax to get the closing bracket
 				if (attribute.Parent is AttributeListSyntax attributeList)
@@ -104,7 +105,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				return string.Empty;
 			}
 
-			private string GetLeadingComment(MethodDeclarationSyntax methodDeclaration)
+			private string GetMeaningfulLeadingComment(MethodDeclarationSyntax methodDeclaration)
 			{
 				SyntaxTriviaList leadingTrivia = methodDeclaration.GetLeadingTrivia();
 
