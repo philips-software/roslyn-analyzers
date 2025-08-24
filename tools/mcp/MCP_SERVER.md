@@ -1,21 +1,21 @@
 # Roslyn Analyzers MCP Server
 
-A Model Context Protocol (MCP) server that automates common development tasks for the Philips Roslyn Analyzers repository.
+A focused Model Context Protocol (MCP) server that helps the Copilot Coding Agent find existing Helper.For methods and related utilities in the Philips Roslyn Analyzers repository.
+
+## Core Problem Solved
+
+The Copilot Coding Agent often overlooks existing Helper.ForXXX methods and creates new utility methods instead of using the comprehensive helper utilities already available in `Philips.CodeAnalysis.Common`. This server provides focused functionality to surface these existing helpers.
 
 ## Features
 
-The MCP server provides the following endpoints to streamline development:
+The MCP server provides streamlined endpoints for essential development tasks:
 
-### File Navigation
-- **`/list_files`** - List files in directories with optional filtering
-- **`/get_file`** - Get file content with optional line range specification
+### Helper Discovery (Primary Focus)
+- **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
-### Code Analysis
-- **`/search_symbols`** - Search for classes, methods, interfaces, and other symbols in the codebase
-
-### Build & Test Automation
+### Build & Test Automation  
 - **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
-- **`/run_tests`** - Execute tests with optional target project specification
+- **`/run_tests`** - Execute tests (security-hardened, fixed target)
 - **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
 
 ### Information
@@ -54,25 +54,9 @@ python mcp_server.py
 
 ### Example API Calls
 
-#### List C# Files
+#### Search for Helper Methods (Primary Feature)
 ```bash
-curl -X POST "http://localhost:8000/list_files" \
-  -H "Content-Type: application/json" \
-  -d '{"path": ".", "filters": ".cs"}'
-```
-
-#### Get File Content
-```bash
-curl -X POST "http://localhost:8000/get_file" \
-  -H "Content-Type: application/json" \
-  -d '{"path": "README.md"}'
-```
-
-#### Search for Classes
-```bash
-curl -X POST "http://localhost:8000/search_symbols" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "DiagnosticAnalyzer"}'
+curl -X POST "http://localhost:8000/search_helpers"
 ```
 
 #### Run Strict Build
@@ -80,11 +64,9 @@ curl -X POST "http://localhost:8000/search_symbols" \
 curl -X POST "http://localhost:8000/build_strict"
 ```
 
-#### Run Tests
+#### Run Tests (Security-Hardened)
 ```bash
-curl -X POST "http://localhost:8000/run_tests" \
-  -H "Content-Type: application/json" \
-  -d '{"target": "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj"}'
+curl -X POST "http://localhost:8000/run_tests"
 ```
 
 #### Run Dogfood Process

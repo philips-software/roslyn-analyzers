@@ -62,20 +62,8 @@ def validate_path(user_path: str) -> Path:
     except (OSError, ValueError) as e:
         raise HTTPException(status_code=400, detail=f"Invalid path: {str(e)}")
 
-# Request/Response models
-class ListFilesRequest(BaseModel):
-    path: str = "."
-    filters: Optional[str] = None
-
-class GetFileRequest(BaseModel):
-    path: str
-    lines: Optional[str] = None
-
-class SearchSymbolsRequest(BaseModel):
-    query: str
-
-class RunTestsRequest(BaseModel):
-    target: Optional[str] = None
+# Request/Response models (minimal for focused functionality)
+# Removed redundant models - tests always run against Philips.CodeAnalysis.Test
 
 # -------------------------
 # Manifest
@@ -84,27 +72,15 @@ class RunTestsRequest(BaseModel):
 def manifest():
     """Return MCP server manifest describing available endpoints."""
     return {
-        "name": "roslyn-analyzers-mcp",
+        "name": "roslyn-analyzers-mcp", 
         "version": "1.0.0",
-        "description": "MCP server for Roslyn Analyzers development tasks",
+        "description": "MCP server for Roslyn Analyzers development tasks - focused on Helper.For methods",
         "endpoints": {
-            "list_files": {
+            "search_helpers": {
                 "method": "POST",
-                "params": ["path", "filters"], 
-                "returns": ["files"],
-                "description": "List files in directory with optional filters"
-            },
-            "get_file": {
-                "method": "POST",
-                "params": ["path", "lines"], 
-                "returns": ["content"],
-                "description": "Get file content with optional line range"
-            },
-            "search_symbols": {
-                "method": "POST",
-                "params": ["query"], 
-                "returns": ["matches"],
-                "description": "Search for symbols (classes, methods, etc.) in codebase"
+                "params": [], 
+                "returns": ["helpers", "helpers_count", "message"],
+                "description": "Search for Helper.For methods and common utilities that developers often miss"
             },
             "build_strict": {
                 "method": "POST",
@@ -114,9 +90,9 @@ def manifest():
             },
             "run_tests": {
                 "method": "POST",
-                "params": ["target"], 
-                "returns": ["results"],
-                "description": "Run tests with optional target project"
+                "params": [], 
+                "returns": ["status", "results", "return_code"],
+                "description": "Run tests against main test project (security-hardened)"
             },
             "run_dogfood": {
                 "method": "POST",
@@ -130,124 +106,66 @@ def manifest():
 # -------------------------
 # File navigation
 # -------------------------
-@app.post("/list_files")
-def list_files(request: ListFilesRequest):
-    """List files in the specified directory with optional filters."""
-    try:
-        path = validate_path(request.path)
-        
-        if not path.exists():
-            raise HTTPException(status_code=404, detail=f"Path not found: {path}")
-        
-        matches = []
-        
-        if path.is_file():
-            matches.append(str(path.relative_to(BASE_DIR)))
-        else:
-            for root, dirs, files in os.walk(path):
-                # Skip .git and other common directories
-                dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['bin', 'obj', 'packages', 'node_modules']]
-                
-                for file in files:
-                    file_path = Path(root) / file
-                    
-                    # Apply filters if specified
-                    if request.filters:
-                        if not any(file.endswith(ext.strip()) for ext in request.filters.split(',')):
-                            continue
-                    
-                    # Skip binary and generated files
-                    if file.endswith(('.dll', '.exe', '.pdb', '.nupkg', '.snupkg')):
-                        continue
-                        
-                    relative_path = file_path.relative_to(BASE_DIR)
-                    matches.append(str(relative_path))
-        
-        return {"files": sorted(matches)}
-    
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing files: {str(e)}")
-
-@app.post("/get_file")
-def get_file(request: GetFileRequest):
-    """Get content of specified file with optional line range."""
-    try:
-        file_path = validate_path(request.path)
-        
-        if not file_path.exists():
-            raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
-            
-        if not file_path.is_file():
-            raise HTTPException(status_code=400, detail=f"Path is not a file: {file_path}")
-        
-        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
-            content = f.readlines()
-        
-        if request.lines:
-            try:
-                if ":" in request.lines:
-                    start, end = map(int, request.lines.split(":"))
-                    content = content[start-1:end]  # Convert to 0-based indexing
-                else:
-                    line_num = int(request.lines)
-                    content = [content[line_num-1]] if line_num <= len(content) else []
-            except (ValueError, IndexError) as e:
-                raise HTTPException(status_code=400, detail=f"Invalid line specification: {request.lines}")
-        
-        return {"content": "".join(content)}
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        return {"content": f"Error reading file: {str(e)}"}
-
+# Search Helper.For methods (core functionality for Copilot Coding Agent)
 # -------------------------
-# Symbol search
-# -------------------------
-@app.post("/search_symbols")
-def search_symbols(request: SearchSymbolsRequest):
-    """Search for symbols (classes, methods, interfaces, etc.) in the codebase."""
+@app.post("/search_helpers")
+def search_helpers():
+    """Search for Helper.For methods and related helper utilities that developers commonly miss."""
     try:
-        matches = []
+        helpers_found = []
         
-        # Search patterns for different symbol types (allow partial matches)
-        query_pattern = re.escape(request.query).replace(r'\*', '.*')
-        patterns = [
-            rf"class\s+\w*{query_pattern}\w*\s*[<:\{{]",  # Classes
-            rf"interface\s+\w*{query_pattern}\w*\s*[<:\{{]",  # Interfaces
-            rf"enum\s+\w*{query_pattern}\w*\s*[:\{{]",  # Enums
-            rf"struct\s+\w*{query_pattern}\w*\s*[<:\{{]",  # Structs
-            rf"(public|private|protected|internal)\s+.*\s+\w*{query_pattern}\w*\s*\(",  # Methods
-            rf"(public|private|protected|internal)\s+.*\s+\w*{query_pattern}\w*\s*[{{;]",  # Properties/Fields
-            # Also search for any line containing the query
-            rf".*{query_pattern}.*",  # General match
+        # Find all Helper classes and their For methods
+        helper_files = [
+            "Philips.CodeAnalysis.Common/Helper.cs",
+            "Philips.CodeAnalysis.Common/AdditionalFilesHelper.cs",
+            "Philips.CodeAnalysis.Common/AttributeHelper.cs",
+            "Philips.CodeAnalysis.Common/CodeFixHelper.cs",
+            "Philips.CodeAnalysis.Common/DocumentationHelper.cs",
+            "Philips.CodeAnalysis.Common/ExtensionsHelper.cs",
+            "Philips.CodeAnalysis.Common/LiteralHelper.cs",
+            "Philips.CodeAnalysis.Common/ModifiersHelper.cs",
+            "Philips.CodeAnalysis.Common/NamespacesHelper.cs",
+            "Philips.CodeAnalysis.Common/TestHelper.cs",
+            "Philips.CodeAnalysis.Common/TypesHelper.cs",
+            "Philips.CodeAnalysis.Common/ConstructorSyntaxHelper.cs",
+            "Philips.CodeAnalysis.Common/AssembliesHelper.cs"
         ]
         
-        # Search in C# files
-        for root, dirs, files in os.walk(BASE_DIR):
-            # Skip .git and build directories
-            dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['bin', 'obj', 'packages']]
-            
-            for file in files:
-                if file.endswith('.cs'):
-                    file_path = Path(root) / file
-                    try:
-                        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                            content = f.read()
-                            
-                        for i, line in enumerate(content.splitlines(), 1):
-                            for pattern in patterns:
-                                if re.search(pattern, line, re.IGNORECASE):
-                                    relative_path = file_path.relative_to(BASE_DIR)
-                                    matches.append(f"{relative_path}:{i}: {line.strip()}")
-                                    break
-                    except Exception:
-                        continue  # Skip files that can't be read
+        for helper_file in helper_files:
+            helper_path = os.path.join(BASE_DIR, helper_file)
+            if os.path.exists(helper_path):
+                try:
+                    with open(helper_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        lines = content.split('\n')
+                        
+                        # Find all public methods and properties
+                        for i, line in enumerate(lines):
+                            # Look for public methods, properties, and Helper.For references
+                            if any(pattern in line for pattern in [
+                                'public static', 'public class', 'public ', 
+                                'ForAllowedSymbols', 'ForAdditionalFiles',
+                                'Helper.For'
+                            ]):
+                                helpers_found.append({
+                                    "file": helper_file,
+                                    "line": i + 1,
+                                    "content": line.strip(),
+                                    "context": lines[max(0, i-1):i+3] if i > 0 else lines[i:i+3]
+                                })
+                
+                except Exception as e:
+                    continue
         
-        return {"matches": matches}
+        return {
+            "status": "success",
+            "helpers_count": len(helpers_found),
+            "helpers": helpers_found[:50],  # Limit results to avoid token overflow
+            "message": f"Found {len(helpers_found)} helper methods/properties. Use these instead of creating new utility methods."
+        }
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error searching symbols: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error searching helpers: {str(e)}")
 
 # -------------------------
 # Build strict
@@ -297,16 +215,14 @@ def build_strict():
         raise HTTPException(status_code=500, detail=f"Error running strict build: {str(e)}")
 
 # -------------------------
-# Run tests
+# Run tests (fixed target for security)
 # -------------------------
 @app.post("/run_tests")
-def run_tests(request: RunTestsRequest):
-    """Run tests with optional target project specification."""
+def run_tests():
+    """Run tests against the main test project."""
     try:
-        test_target = request.target or "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj"
-        
         test_cmd = [
-            "dotnet", "test", test_target,
+            "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
             "--configuration", "Release",
             "--logger", "trx;LogFileName=test-results.trx",
             "--no-build"
