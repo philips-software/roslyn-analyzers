@@ -1,0 +1,96 @@
+{
+  "mcp": {
+    "servers": [
+      {
+        "name": "roslyn-analyzers-dev",
+        "description": "MCP server for Roslyn Analyzers development tasks automation",
+        "version": "1.0.0",
+        "url": "http://localhost:8000",
+        "capabilities": {
+          "file_operations": true,
+          "code_analysis": true,
+          "build_automation": true,
+          "test_execution": true,
+          "dogfood_process": true
+        },
+        "endpoints": [
+          {
+            "path": "/list_files",
+            "method": "POST",
+            "description": "List files in directories with optional filtering",
+            "parameters": {
+              "path": "string",
+              "filters": "string"
+            }
+          },
+          {
+            "path": "/get_file",
+            "method": "POST", 
+            "description": "Get file content with optional line range specification",
+            "parameters": {
+              "path": "string",
+              "start_line": "integer",
+              "end_line": "integer"
+            }
+          },
+          {
+            "path": "/search_symbols",
+            "method": "POST",
+            "description": "Search for classes, methods, interfaces, and other symbols in the codebase",
+            "parameters": {
+              "query": "string"
+            }
+          },
+          {
+            "path": "/build_strict",
+            "method": "POST",
+            "description": "Build the solution with warnings treated as errors",
+            "parameters": {
+              "project": "string"
+            }
+          },
+          {
+            "path": "/run_tests",
+            "method": "POST",
+            "description": "Execute tests with optional target project specification",
+            "parameters": {
+              "project": "string"
+            }
+          },
+          {
+            "path": "/run_dogfood",
+            "method": "POST",
+            "description": "Run the complete dogfooding process (build analyzers and apply them to the codebase)",
+            "parameters": {}
+          },
+          {
+            "path": "/manifest",
+            "method": "GET",
+            "description": "Get server manifest with endpoint descriptions",
+            "parameters": {}
+          },
+          {
+            "path": "/health",
+            "method": "GET", 
+            "description": "Health check endpoint",
+            "parameters": {}
+          }
+        ],
+        "startup": {
+          "command": "./tools/mcp/start_mcp_server.sh",
+          "working_directory": ".",
+          "environment": {},
+          "timeout": 30
+        },
+        "authentication": {
+          "type": "none"
+        },
+        "health_check": {
+          "endpoint": "/health",
+          "interval": 60,
+          "timeout": 10
+        }
+      }
+    ]
+  }
+}

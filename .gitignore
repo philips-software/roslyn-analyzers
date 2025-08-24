@@ -258,3 +258,8 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# MCP Server temporary files
+tools/mcp/Directory.Build.props.backup
+tools/mcp/*.log
+tools/mcp/test-results.trx

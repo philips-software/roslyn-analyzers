@@ -34,11 +34,11 @@ These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with 
 
 ## MCP Server for Development
 
-A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [MCP_SERVER.md](./MCP_SERVER.md) for details.
+A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
 
 Quick start:
 ```bash
-./start_mcp_server.sh
+./tools/mcp/start_mcp_server.sh
 ```
 
 ## CI/CD

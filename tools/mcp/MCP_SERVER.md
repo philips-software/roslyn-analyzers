@@ -26,11 +26,12 @@ The MCP server provides the following endpoints to streamline development:
 
 1. **Install Python dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install -r tools/mcp/requirements.txt
    ```
 
 2. **Start the server:**
    ```bash
+   cd tools/mcp
    python mcp_server.py
    ```
 
@@ -41,7 +42,14 @@ The MCP server provides the following endpoints to streamline development:
 ### Starting the Server
 ```bash
 # From the repository root
+cd tools/mcp
 python mcp_server.py
+```
+
+### Using the Startup Script
+```bash
+# From the repository root
+./tools/mcp/start_mcp_server.sh
 ```
 
 ### Example API Calls
