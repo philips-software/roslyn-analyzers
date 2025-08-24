@@ -105,6 +105,24 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedClassesNonEmptyRegionTest()
+		{
+			var baseline = @"
+class Foo
+{{
+	class Cat
+	{{
+		#region
+		private int meow;
+		#endregion
+	}}
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
