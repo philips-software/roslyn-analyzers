@@ -28,8 +28,39 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Base directory for all operations
-BASE_DIR = Path(__file__).parent.absolute()
+# Base directory for all operations - repository root
+BASE_DIR = Path(__file__).parent.parent.parent.absolute()
+
+def validate_path(user_path: str) -> Path:
+    """
+    Validate and sanitize user-provided paths to prevent path traversal attacks.
+    
+    Args:
+        user_path: User-provided path string
+        
+    Returns:
+        Path object that is guaranteed to be within BASE_DIR
+        
+    Raises:
+        HTTPException: If path is invalid or attempts to traverse outside BASE_DIR
+    """
+    # Never allow absolute paths from user input
+    if Path(user_path).is_absolute():
+        raise HTTPException(status_code=400, detail="Absolute paths are not allowed")
+    
+    # Construct path relative to BASE_DIR
+    try:
+        # Remove any leading slashes and normalize
+        clean_path = user_path.lstrip('/')
+        full_path = (BASE_DIR / clean_path).resolve()
+        
+        # Ensure the resolved path is within BASE_DIR
+        if not str(full_path).startswith(str(BASE_DIR.resolve())):
+            raise HTTPException(status_code=400, detail="Path traversal outside repository is not allowed")
+            
+        return full_path
+    except (OSError, ValueError) as e:
+        raise HTTPException(status_code=400, detail=f"Invalid path: {str(e)}")
 
 # Request/Response models
 class ListFilesRequest(BaseModel):
@@ -103,7 +134,7 @@ def manifest():
 def list_files(request: ListFilesRequest):
     """List files in the specified directory with optional filters."""
     try:
-        path = Path(BASE_DIR) / request.path if not Path(request.path).is_absolute() else Path(request.path)
+        path = validate_path(request.path)
         
         if not path.exists():
             raise HTTPException(status_code=404, detail=f"Path not found: {path}")
@@ -141,7 +172,7 @@ def list_files(request: ListFilesRequest):
 def get_file(request: GetFileRequest):
     """Get content of specified file with optional line range."""
     try:
-        file_path = Path(BASE_DIR) / request.path if not Path(request.path).is_absolute() else Path(request.path)
+        file_path = validate_path(request.path)
         
         if not file_path.exists():
             raise HTTPException(status_code=404, detail=f"File not found: {file_path}")
