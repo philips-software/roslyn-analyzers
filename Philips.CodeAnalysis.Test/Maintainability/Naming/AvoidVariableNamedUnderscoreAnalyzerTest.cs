@@ -275,7 +275,22 @@ class MyNetwork
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
 		}
 
-		private const string CommonTestMethods = @"
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryTypedDiscardShouldFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// Typed discard when anonymous discard would work
+		GetValue(out string _);
+		TryParseHelper(""123"", out int _);
+	}
+
 	private void GetValue(out string value)
 	{
 		value = ""test"";
@@ -286,24 +301,9 @@ class MyNetwork
 		result = 42;
 		return true;
 	}
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task UnnecessaryTypedDiscardShouldFlag()
-		{
-			var test = @"
-using System;
-
-internal class TestClass
-	{
-		public void TestMethod()
-		{
-			// Typed discard when anonymous discard would work
-			GetValue(out string _);
-			TryParseHelper(""123"", out int _);
-		}" + CommonTestMethods + @"
 }";
 
-			private DiagnosticResult[] expected = new[]
+			DiagnosticResult[] expected = new[]
 			{
 				new DiagnosticResult()
 				{
@@ -321,14 +321,14 @@ internal class TestClass
 				}
 			};
 
-	private await VerifyDiagnostic(test, expected).private ConfigureAwait(false);
-}
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
+		}
 
-[TestMethod]
-[TestCategory(TestDefinitions.UnitTests)]
-public static async Task NecessaryTypedDiscardForOverloadResolutionShouldNotFlag()
-{
-	var test = @"
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NecessaryTypedDiscardForOverloadResolutionShouldNotFlag()
+		{
+			var test = @"
 using System;
 
 class TestClass
@@ -353,14 +353,14 @@ class TestClass
 	}
 }";
 
-	await VerifySuccessfulCompilation(test).ConfigureAwait(false);
-}
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
 
-[TestMethod]
-[TestCategory(TestDefinitions.UnitTests)]
-public static async Task UnnecessaryTypedDiscardWithNamedArgumentsShouldFlag()
-{
-	var test = @"
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryTypedDiscardWithNamedArgumentsShouldFlag()
+		{
+			var test = @"
 using System;
 
 class TestClass
@@ -368,37 +368,48 @@ class TestClass
 	public void TestMethod()
 	{
 		// Typed discard with named argument when anonymous discard would work
-		GetValue(value: out string _);
-		TryParseHelper(input: ""123"", result: out int _);
-	}" + CommonTestMethods + @"
+		GetStringValue(value: out string _);
+		TryParseInt(input: ""123"", result: out int _);
+	}
+
+	private void GetStringValue(out string value)
+	{
+		value = ""test"";
+	}
+	
+	private bool TryParseInt(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
 }";
 
-	DiagnosticResult[] expected = new[]
-	{
+			DiagnosticResult[] expected = new[]
+			{
 				new DiagnosticResult()
 				{
 					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 9, 32),
+					Location = new DiagnosticResultLocation("Test0.cs", 9, 36),
 					Message = new System.Text.RegularExpressions.Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 				},
 				new DiagnosticResult()
 				{
 					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 10, 50),
+					Location = new DiagnosticResultLocation("Test0.cs", 10, 46),
 					Message = new System.Text.RegularExpressions.Regex(".*"),
 					Severity = DiagnosticSeverity.Error,
 				}
 			};
 
-	await VerifyDiagnostic(test, expected).ConfigureAwait(false);
-}
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
+		}
 
-[TestMethod]
-[TestCategory(TestDefinitions.UnitTests)]
-public static async Task NecessaryTypedDiscardWithNamedArgumentsForOverloadResolutionShouldNotFlag()
-{
-	var test = @"
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NecessaryTypedDiscardWithNamedArgumentsForOverloadResolutionShouldNotFlag()
+		{
+			var test = @"
 using System;
 
 class TestClass
@@ -423,7 +434,7 @@ class TestClass
 	}
 }";
 
-	await VerifySuccessfulCompilation(test).ConfigureAwait(false);
-}
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
 	}
 }

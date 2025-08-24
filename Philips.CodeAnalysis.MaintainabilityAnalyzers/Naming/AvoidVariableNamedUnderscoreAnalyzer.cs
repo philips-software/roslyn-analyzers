@@ -147,7 +147,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				.FirstOrDefault();
 			if (invocation is null)
 			{
-				return false; // Can't find method call, allow the flag (be conservative)
+				return false; // Can't find method call, allow the flag
 			}
 
 			// Get semantic information about the method
@@ -164,30 +164,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return false; // Invalid position, allow the flag
 			}
 
-			// Use speculative binding to test if replacing typed discard with anonymous discard would change method resolution
-			// Create a new argument with anonymous discard instead of typed discard
-			ArgumentSyntax newArgument = argument.WithExpression(SyntaxFactory.IdentifierName("_"));
+			// Simple heuristic: check if there are method overloads with different out parameter types at this position
+			INamedTypeSymbol containingType = method.ContainingType;
+			System.Collections.Generic.IEnumerable<IMethodSymbol> methodsWithSameName = containingType.GetMembers(method.Name).OfType<IMethodSymbol>();
 
-			// Replace the argument in the argument list
-			SeparatedSyntaxList<ArgumentSyntax> arguments = invocation.ArgumentList.Arguments;
-			SeparatedSyntaxList<ArgumentSyntax> newArguments = arguments.Replace(argument, newArgument);
-			ArgumentListSyntax newArgumentList = invocation.ArgumentList.WithArguments(newArguments);
-			InvocationExpressionSyntax newInvocation = invocation.WithArgumentList(newArgumentList);
+			// Count how many overloads have an out parameter at this position with different types
+			var outParameterTypes = methodsWithSameName
+				.Where(m => argumentIndex < m.Parameters.Length && m.Parameters[argumentIndex].RefKind == RefKind.Out)
+				.Select(m => m.Parameters[argumentIndex].Type)
+				.Distinct(SymbolEqualityComparer.Default)
+				.Count();
 
-			// Get speculative symbol info to see if the same method would be called
-			SymbolInfo speculativeSymbolInfo = context.SemanticModel.GetSpeculativeSymbolInfo(
-				invocation.SpanStart,
-				newInvocation,
-				SpeculativeBindingOption.BindAsExpression);
-
-			// If the speculative binding fails or resolves to a different method, then the typed discard is necessary
-			if (speculativeSymbolInfo.Symbol is not IMethodSymbol speculativeMethod)
-			{
-				return true; // Speculative binding failed, typed discard is probably necessary
-			}
-
-			// If we get the same method, then the typed discard is not necessary
-			return !SymbolEqualityComparer.Default.Equals(method, speculativeMethod);
+			// If there are multiple overloads with different out parameter types at this position,
+			// then the typed discard is necessary for overload resolution
+			return outParameterTypes > 1;
 		}
 
 		private static int GetArgumentIndex(SeparatedSyntaxList<ArgumentSyntax> arguments, ArgumentSyntax targetArgument, IMethodSymbol method)
