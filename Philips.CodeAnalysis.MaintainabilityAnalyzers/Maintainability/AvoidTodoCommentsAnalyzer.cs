@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool ContainsTodoAsWord(string text)
 		{
-			// Quick check first to avoid expensive regex on strings without TODO
+			// Performance optimization: quick IndexOf check before expensive regex
 			if (text.IndexOf("TODO", StringComparison.OrdinalIgnoreCase) < 0)
 			{
 				return false;
