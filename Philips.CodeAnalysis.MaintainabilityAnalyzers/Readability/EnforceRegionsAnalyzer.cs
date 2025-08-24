@@ -109,13 +109,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
-			// Check if nested classes are present - if so, skip empty region analysis to avoid false positives
-			var hasNestedClasses = ContainsNestedClasses(members);
+			// Check if this class is nested within another class - if so, skip empty region analysis to avoid false positives
+			var isNestedClass = IsNestedClass(typeDeclaration);
 
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
-				// Skip empty region checking when nested classes are present to avoid false positives
-				if (!hasNestedClasses && !MemberPresentInRegion(typeDeclaration, pair.Value))
+				// Skip empty region checking when analyzing nested classes to avoid false positives
+				if (!isNestedClass && !MemberPresentInRegion(typeDeclaration, pair.Value))
 				{
 					CheckEmptyRegion(pair.Value, members, context);
 				}
@@ -130,16 +130,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 
 		/// <summary>
-		/// Checks if the given list of members contains any nested type declarations (classes, structs, etc.)
+		/// Checks if the given type declaration is nested within another type
 		/// </summary>
-		/// <param name="members">The list of members to check</param>
-		/// <returns>True if nested classes/types are present, false otherwise</returns>
-		private static bool ContainsNestedClasses(SyntaxList<MemberDeclarationSyntax> members)
+		/// <param name="typeDeclaration">The type declaration to check</param>
+		/// <returns>True if the type is nested within another type, false otherwise</returns>
+		private static bool IsNestedClass(TypeDeclarationSyntax typeDeclaration)
 		{
-			return members.Any(member =>
-				member.IsKind(SyntaxKind.ClassDeclaration) ||
-				member.IsKind(SyntaxKind.StructDeclaration) ||
-				member.IsKind(SyntaxKind.InterfaceDeclaration));
+			return typeDeclaration.Parent is TypeDeclarationSyntax;
 		}
 
 		private static string GetRegionName(DirectiveTriviaSyntax region)
