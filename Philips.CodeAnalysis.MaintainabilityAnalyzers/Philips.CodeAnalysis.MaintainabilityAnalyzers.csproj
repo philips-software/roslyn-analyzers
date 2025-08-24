@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\Directory.Build.Common.props" />
   <Import Project="..\Directory.Build.Analyzer.props" />
-
   <PropertyGroup>
     <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -11,15 +10,10 @@
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <PackageReleaseNotes>Added PH2144: AvoidIncorrectForLoopCondition analyzer to detect backwards for-loop boundary check issues</PackageReleaseNotes>
   </PropertyGroup>
-
-  <ItemGroup>
-  </ItemGroup>
-  
   <ItemGroup>
     <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
-
 </Project>
