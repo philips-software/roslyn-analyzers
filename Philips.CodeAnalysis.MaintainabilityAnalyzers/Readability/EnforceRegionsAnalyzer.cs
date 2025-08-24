@@ -226,7 +226,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			Location location = member.GetLocation();
 			var memberLine = GetMemberLineNumber(location);
-			return memberLine > locationRange.StartLine && memberLine < locationRange.EndLine;
+			// Fixed logic: use >= and < for proper boundary handling
+			// This ensures members on the line after the #region are included
+			return memberLine >= locationRange.StartLine && memberLine < locationRange.EndLine;
 		}
 
 		/// <summary>
