@@ -32,5 +32,14 @@ For symbols and stack traces, launch a second instance of Visual Studio, attach 
 
 These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with Visual Studio 2019 16.6.
 
+## MCP Server for Development
+
+A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [MCP_SERVER.md](./MCP_SERVER.md) for details.
+
+Quick start:
+```bash
+./start_mcp_server.sh
+```
+
 ## CI/CD
 [Learn more](./cicd.md) about the CI/CD pipeline.

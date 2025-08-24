@@ -252,3 +252,9 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
