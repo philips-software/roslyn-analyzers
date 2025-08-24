@@ -13,10 +13,39 @@ The MCP server provides streamlined endpoints for essential development tasks:
 ### Helper Discovery (Primary Focus)
 - **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
+### Code Coverage Analysis (New!)
+- **`/analyze_coverage`** - Analyze code coverage and provide actionable suggestions to reach SonarCloud's 80% requirement
+
 ### Build & Test Automation  
 - **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
 - **`/run_tests`** - Execute tests (security-hardened, fixed target)
 - **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
+
+## Coverage Analysis for SonarCloud
+
+The `/analyze_coverage` endpoint specifically addresses SonarCloud's 80% code coverage requirement that often causes the Copilot Coding Agent to fall short. This endpoint:
+
+**Key Benefits:**
+- **Identifies coverage gaps** - Pinpoints exact uncovered lines and methods
+- **Provides actionable suggestions** - Offers specific test cases to improve coverage  
+- **Generates test templates** - Creates skeleton test methods for uncovered code
+- **Prioritizes testing areas** - Focuses on error handling, edge cases, and complex logic
+
+**Sample Response:**
+```json
+{
+  "overall_coverage": 72.5,
+  "status": "success", 
+  "uncovered_lines": [
+    {"file": "Helper.cs", "line": 45, "suggestion": "Add test case that executes line 45"}
+  ],
+  "suggestions": [
+    {"type": "coverage_gap", "message": "Current coverage: 72.5%, Target: 80%, Gap: 7.5%"},
+    {"type": "test_strategy", "message": "Focus on testing error handling, edge cases, and exception paths"},
+    {"type": "test_template", "message": "Test template: [Test] public void TestHelperLine45() { /* Add test */ }"}
+  ]
+}
+```
 
 ### Information
 - **`/manifest`** - Get server manifest with endpoint descriptions
@@ -73,6 +102,17 @@ curl -X POST "http://localhost:8000/run_tests"
 ```bash
 curl -X POST "http://localhost:8000/run_dogfood"
 ```
+
+#### Analyze Code Coverage (New!)
+```bash
+curl -X POST "http://localhost:8000/analyze_coverage"
+```
+
+This endpoint helps reach SonarCloud's 80% coverage requirement by:
+- Running tests with coverage analysis
+- Identifying specific uncovered lines and methods
+- Providing actionable suggestions for improving coverage
+- Generating test templates for uncovered code sections
 
 ## Dogfood Process
 

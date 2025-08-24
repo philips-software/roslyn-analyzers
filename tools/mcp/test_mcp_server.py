@@ -49,10 +49,19 @@ def test_endpoint(name, method, path, data=None):
     try:
         print(f"\n🧪 Testing {name}...")
         
+        # Set timeout based on endpoint type
+        timeout = 10  # Default timeout
+        if name in ["Build Strict", "Run Dogfood"]:
+            timeout = 120  # 2 minutes for build operations
+        elif name == "Run Tests":
+            timeout = 60   # 1 minute for tests
+        elif name == "Analyze Coverage":
+            timeout = 180  # 3 minutes for coverage analysis
+        
         if method.upper() == "GET":
-            response = requests.get(f"{BASE_URL}{path}", timeout=10)
+            response = requests.get(f"{BASE_URL}{path}", timeout=timeout)
         else:
-            response = requests.post(f"{BASE_URL}{path}", json=data, timeout=10)
+            response = requests.post(f"{BASE_URL}{path}", json=data, timeout=timeout)
         
         if response.status_code == 200:
             result = response.json()
@@ -64,7 +73,7 @@ def test_endpoint(name, method, path, data=None):
             return False, None
             
     except requests.exceptions.Timeout:
-        print(f"   ⏰ {name} - Timeout")
+        print(f"   ⏰ {name} - Timeout (this may be expected for long operations)")
         return False, None
     except Exception as e:
         print(f"   ❌ {name} - Error: {str(e)}")
@@ -84,10 +93,11 @@ def run_tests():
             ("Health Check", "GET", "/health", None),
             ("Root Info", "GET", "/", None),
             ("Manifest", "GET", "/manifest", None),
-            ("List Files", "POST", "/list_files", {"path": ".", "filters": ".md"}),
-            ("Get File", "POST", "/get_file", {"path": "README.md", "lines": "1:2"}),
-            ("Search Symbols", "POST", "/search_symbols", {"query": "Analyzer"}),
+            ("Search Helpers", "POST", "/search_helpers", None),
             ("Build Strict", "POST", "/build_strict", None),
+            ("Run Tests", "POST", "/run_tests", None),
+            ("Run Dogfood", "POST", "/run_dogfood", None),
+            ("Analyze Coverage", "POST", "/analyze_coverage", None),
         ]
         
         passed = 0
@@ -99,18 +109,30 @@ def run_tests():
                 passed += 1
                 
                 # Print some sample results
-                if name == "List Files" and result:
-                    files = result.get("files", [])
-                    print(f"   📄 Found {len(files)} files")
-                    
-                elif name == "Search Symbols" and result:
-                    matches = result.get("matches", [])
-                    print(f"   🔍 Found {len(matches)} matches")
+                if name == "Search Helpers" and result:
+                    helpers = result.get("helpers", [])
+                    count = result.get("helpers_count", 0)
+                    print(f"   🔍 Found {count} helper methods")
                     
                 elif name == "Build Strict" and result:
                     status = result.get("status", "unknown")
                     errors = len(result.get("errors", []))
                     print(f"   🔨 Build {status}, {errors} errors")
+                
+                elif name == "Run Tests" and result:
+                    status = result.get("status", "unknown")
+                    print(f"   🧪 Tests {status}")
+                
+                elif name == "Run Dogfood" and result:
+                    status = result.get("status", "unknown")
+                    violations = len(result.get("violations", []))
+                    print(f"   🐕 Dogfood {status}, {violations} violations")
+                
+                elif name == "Analyze Coverage" and result:
+                    status = result.get("status", "unknown")
+                    coverage = result.get("overall_coverage", 0)
+                    suggestions = len(result.get("suggestions", []))
+                    print(f"   📊 Coverage {status}, {coverage:.1f}% coverage, {suggestions} suggestions")
         
         print(f"\n📊 Test Results: {passed}/{total} tests passed")
         

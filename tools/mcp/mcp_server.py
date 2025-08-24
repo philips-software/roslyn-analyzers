@@ -99,6 +99,12 @@ def manifest():
                 "params": [], 
                 "returns": ["status", "violations"],
                 "description": "Run dogfood process - build analyzers and apply to codebase"
+            },
+            "analyze_coverage": {
+                "method": "POST",
+                "params": [],
+                "returns": ["overall_coverage", "uncovered_lines", "suggestions", "status"],
+                "description": "Analyze code coverage and provide actionable suggestions to reach 80% SonarCloud requirement"
             }
         }
     }
@@ -368,6 +374,188 @@ def run_dogfood():
         raise HTTPException(status_code=500, detail=f"Error running dogfood process: {str(e)}")
 
 # -------------------------
+# Coverage analysis
+# -------------------------
+@app.post("/analyze_coverage")
+def analyze_coverage():
+    """
+    Analyze code coverage to help reach SonarCloud's 80% coverage requirement.
+    
+    This endpoint helps the Copilot Coding Agent by:
+    1. Running tests with coverage analysis
+    2. Identifying uncovered lines and methods
+    3. Suggesting specific test cases to improve coverage
+    4. Providing actionable insights for reaching 80% coverage
+    """
+    try:
+        # Install coverage if not available
+        try:
+            import coverage
+        except ImportError:
+            # Install coverage package
+            install_cmd = ["python3", "-m", "pip", "install", "coverage==7.3.2"]
+            subprocess.run(install_cmd, cwd=BASE_DIR, capture_output=True, text=True, check=True)
+            import coverage
+        
+        # Initialize coverage
+        cov = coverage.Coverage(
+            source=['Philips.CodeAnalysis.Common', 
+                   'Philips.CodeAnalysis.MaintainabilityAnalyzers',
+                   'Philips.CodeAnalysis.DuplicateCodeAnalyzer',
+                   'Philips.CodeAnalysis.SecurityAnalyzers',
+                   'Philips.CodeAnalysis.MoqAnalyzers',
+                   'Philips.CodeAnalysis.MsTestAnalyzers'],
+            branch=True,  # Enable branch coverage
+            config_file=False
+        )
+        
+        # For .NET projects, we'll analyze using dotnet test with coverage
+        # First, install the coverage tool for .NET
+        coverage_install_cmd = [
+            "dotnet", "tool", "install", "--global", "dotnet-coverage", "--version", "17.9.6"
+        ]
+        subprocess.run(coverage_install_cmd, cwd=BASE_DIR, capture_output=True, text=True)
+        
+        # Run tests with coverage
+        coverage_cmd = [
+            "dotnet-coverage", "collect", 
+            "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
+            "--configuration", "Release",
+            "--no-build",
+            "--logger", "trx;LogFileName=coverage-test-results.trx",
+            "--output-format", "xml",
+            "--output", "coverage.xml"
+        ]
+        
+        coverage_result = subprocess.run(coverage_cmd, cwd=BASE_DIR, capture_output=True, text=True)
+        
+        # Parse coverage results and identify gaps
+        coverage_analysis = {
+            "overall_coverage": 0.0,
+            "branch_coverage": 0.0,
+            "uncovered_lines": [],
+            "uncovered_methods": [],
+            "suggestions": [],
+            "status": "success" if coverage_result.returncode == 0 else "failure"
+        }
+        
+        # Try to parse XML coverage results
+        coverage_xml_path = BASE_DIR / "coverage.xml"
+        if coverage_xml_path.exists():
+            try:
+                import xml.etree.ElementTree as ET
+                tree = ET.parse(coverage_xml_path)
+                root = tree.getroot()
+                
+                # Extract coverage metrics
+                for module in root.findall(".//module"):
+                    name = module.get("name", "")
+                    if any(proj in name for proj in [
+                        "Philips.CodeAnalysis.Common",
+                        "Philips.CodeAnalysis.MaintainabilityAnalyzers", 
+                        "Philips.CodeAnalysis.DuplicateCodeAnalyzer",
+                        "Philips.CodeAnalysis.SecurityAnalyzers",
+                        "Philips.CodeAnalysis.MoqAnalyzers",
+                        "Philips.CodeAnalysis.MsTestAnalyzers"
+                    ]):
+                        # Extract line coverage
+                        lines_covered = int(module.get("lines-covered", "0"))
+                        lines_valid = int(module.get("lines-valid", "1"))
+                        if lines_valid > 0:
+                            line_rate = lines_covered / lines_valid
+                            coverage_analysis["overall_coverage"] = max(
+                                coverage_analysis["overall_coverage"], line_rate * 100
+                            )
+                        
+                        # Extract uncovered lines
+                        for line in module.findall(".//line[@hits='0']"):
+                            line_num = line.get("number")
+                            file_name = line.get("filename", "unknown")
+                            coverage_analysis["uncovered_lines"].append({
+                                "file": file_name,
+                                "line": line_num,
+                                "suggestion": f"Add test case that executes line {line_num} in {file_name}"
+                            })
+                
+            except Exception as e:
+                coverage_analysis["suggestions"].append({
+                    "type": "error",
+                    "message": f"Could not parse coverage XML: {str(e)}"
+                })
+        
+        # Generate intelligent suggestions based on coverage gaps
+        current_coverage = coverage_analysis.get("overall_coverage", 0)
+        target_coverage = 80.0
+        
+        if current_coverage < target_coverage:
+            gap = target_coverage - current_coverage
+            uncovered_count = len(coverage_analysis["uncovered_lines"])
+            
+            coverage_analysis["suggestions"].extend([
+                {
+                    "type": "coverage_gap",
+                    "message": f"Current coverage: {current_coverage:.1f}%, Target: {target_coverage}%, Gap: {gap:.1f}%"
+                },
+                {
+                    "type": "test_strategy", 
+                    "message": f"Found {uncovered_count} uncovered lines. Focus on testing error handling, edge cases, and exception paths."
+                },
+                {
+                    "type": "priority",
+                    "message": "Prioritize testing: 1) Public methods with complex logic, 2) Error handling paths, 3) Branch conditions"
+                }
+            ])
+            
+            # Add specific suggestions for common patterns
+            if uncovered_count > 20:
+                coverage_analysis["suggestions"].append({
+                    "type": "batch_testing",
+                    "message": "Consider creating parameterized tests to cover multiple scenarios efficiently"
+                })
+            
+            # Method-level suggestions
+            method_patterns = {}
+            for uncovered in coverage_analysis["uncovered_lines"][:10]:  # Analyze first 10
+                file_path = uncovered.get("file", "")
+                if file_path:
+                    method_patterns[file_path] = method_patterns.get(file_path, 0) + 1
+            
+            for file_path, count in method_patterns.items():
+                if count > 3:
+                    coverage_analysis["suggestions"].append({
+                        "type": "file_focus",
+                        "message": f"File {file_path} has {count} uncovered lines - consider comprehensive test for this class"
+                    })
+        else:
+            coverage_analysis["suggestions"].append({
+                "type": "success",
+                "message": f"Coverage target reached! Current: {current_coverage:.1f}%"
+            })
+        
+        # Add actionable test templates
+        if coverage_analysis["uncovered_lines"]:
+            sample_uncovered = coverage_analysis["uncovered_lines"][:3]
+            for uncovered in sample_uncovered:
+                coverage_analysis["suggestions"].append({
+                    "type": "test_template",
+                    "message": f"Test template: [Test] public void Test_{uncovered['file'].split('.')[-1]}Line{uncovered['line']}() {{ /* Add test for {uncovered['file']}:{uncovered['line']} */ }}"
+                })
+        
+        return coverage_analysis
+    
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Coverage analysis failed: {str(e)}",
+            "suggestions": [
+                {
+                    "type": "fallback",
+                    "message": "Manually review uncovered code and add tests for: 1) Exception handling, 2) Edge cases, 3) All public method branches"
+                }
+            ]
+        }
+
+# -------------------------
 # Health check and info
 # -------------------------
 @app.get("/")
@@ -377,7 +565,7 @@ def root():
         "name": "Roslyn Analyzers MCP Server",
         "version": "1.0.0",
         "status": "running",
-        "endpoints": ["/manifest", "/list_files", "/get_file", "/search_symbols", "/build_strict", "/run_tests", "/run_dogfood"]
+        "endpoints": ["/manifest", "/search_helpers", "/build_strict", "/run_tests", "/run_dogfood", "/analyze_coverage"]
     }
 
 @app.get("/health")

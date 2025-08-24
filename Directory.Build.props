@@ -1,0 +1,5 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+  </PropertyGroup>
+</Project>

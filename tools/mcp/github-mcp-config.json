@@ -7,60 +7,43 @@
         "version": "1.0.0",
         "url": "http://localhost:8000",
         "capabilities": {
-          "file_operations": true,
+          "file_operations": false,
           "code_analysis": true,
           "build_automation": true,
           "test_execution": true,
-          "dogfood_process": true
+          "dogfood_process": true,
+          "helper_discovery": true,
+          "coverage_analysis": true
         },
         "endpoints": [
           {
-            "path": "/list_files",
+            "path": "/search_helpers",
             "method": "POST",
-            "description": "List files in directories with optional filtering",
-            "parameters": {
-              "path": "string",
-              "filters": "string"
-            }
-          },
-          {
-            "path": "/get_file",
-            "method": "POST", 
-            "description": "Get file content with optional line range specification",
-            "parameters": {
-              "path": "string",
-              "start_line": "integer",
-              "end_line": "integer"
-            }
-          },
-          {
-            "path": "/search_symbols",
-            "method": "POST",
-            "description": "Search for classes, methods, interfaces, and other symbols in the codebase",
-            "parameters": {
-              "query": "string"
-            }
+            "description": "Search for Helper.For methods and related utilities that developers commonly miss",
+            "parameters": {}
           },
           {
             "path": "/build_strict",
             "method": "POST",
             "description": "Build the solution with warnings treated as errors",
-            "parameters": {
-              "project": "string"
-            }
+            "parameters": {}
           },
           {
             "path": "/run_tests",
             "method": "POST",
-            "description": "Execute tests with optional target project specification",
-            "parameters": {
-              "project": "string"
-            }
+            "description": "Execute tests against main test project (security-hardened)",
+            "parameters": {}
           },
           {
             "path": "/run_dogfood",
             "method": "POST",
             "description": "Run the complete dogfooding process (build analyzers and apply them to the codebase)",
+            "parameters": {}
+          },
+          {
+            "path": "/analyze_coverage",
+            "method": "POST",
+            "description": "Analyze code coverage and provide actionable suggestions to reach 80% SonarCloud requirement",
             "parameters": {}
           },
           {
