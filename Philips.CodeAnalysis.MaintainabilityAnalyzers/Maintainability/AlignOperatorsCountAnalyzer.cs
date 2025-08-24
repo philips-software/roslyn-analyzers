@@ -15,10 +15,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class AlignOperatorsCountAnalyzer : DiagnosticAnalyzerBase
 	{
-		private const string Title = "Align number of {0} and {1} operators.";
-		private const string MessageFormat = Title;
-		private const string DescriptionFormat =
-			"Overload the {1} operator, when you overload the {0} operator, as they are often used in combination with each other.";
 		private const string Category = Categories.Maintainability;
 		private const string Plus = "+";
 
@@ -47,12 +43,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			return new(
 				diagnosticId.ToId(),
-				string.Format(Title, first, second),
-				string.Format(MessageFormat, first, second),
+				$"Align number of {first} and {second} operators.",
+				$"Align number of {first} and {second} operators.",
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: false,
-				description: string.Format(DescriptionFormat, first, second)
+				description: $"Overload the {second} operator, when you overload the {first} operator, as they are often used in combination with each other."
 			);
 		}
 
