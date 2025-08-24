@@ -109,9 +109,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
+			// Check if nested classes are present - if so, skip empty region analysis to avoid false positives
+			var hasNestedClasses = ContainsNestedClasses(members);
+
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
-				if (!MemberPresentInRegion(typeDeclaration, pair.Value))
+				// Skip empty region checking when nested classes are present to avoid false positives
+				if (!hasNestedClasses && !MemberPresentInRegion(typeDeclaration, pair.Value))
 				{
 					CheckEmptyRegion(pair.Value, members, context);
 				}
@@ -123,6 +127,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 			}
 
+		}
+
+		/// <summary>
+		/// Checks if the given list of members contains any nested type declarations (classes, structs, etc.)
+		/// </summary>
+		/// <param name="members">The list of members to check</param>
+		/// <returns>True if nested classes/types are present, false otherwise</returns>
+		private static bool ContainsNestedClasses(SyntaxList<MemberDeclarationSyntax> members)
+		{
+			return members.Any(member =>
+				member.IsKind(SyntaxKind.ClassDeclaration) ||
+				member.IsKind(SyntaxKind.StructDeclaration) ||
+				member.IsKind(SyntaxKind.InterfaceDeclaration));
 		}
 
 		private static string GetRegionName(DirectiveTriviaSyntax region)
