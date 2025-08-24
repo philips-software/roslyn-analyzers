@@ -1,6 +1,6 @@
 # Roslyn Analyzers MCP Server
 
-A focused Model Context Protocol (MCP) server that helps the Copilot Coding Agent find existing Helper.For methods and related utilities in the Philips Roslyn Analyzers repository.
+A focused Model Context Protocol (MCP) server that helps the Copilot Coding Agent navigate common problems, such as finding existing Helper.For methods, strict build rules, dogfooding analyzers on ourselves, and 80% code coverage on modified code.
 
 ## Core Problem Solved
 
