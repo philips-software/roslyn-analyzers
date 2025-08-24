@@ -123,6 +123,44 @@ class Foo
 
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionContainingNestedClassWorks()
+		{
+			// This should work (and does work) - region in outer class containing nested class
+			var baseline = @"
+class Foo
+{{
+	#region
+	class Cat
+	{{
+		private int meow;
+	}}
+	#endregion
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SimpleNestedClassWithRegion()
+		{
+			// Let's try a simpler case - nested class with region containing just a method
+			var baseline = @"
+class Foo
+{{
+	class Cat
+	{{
+		#region
+		private void Meow() {{ }}
+		#endregion
+	}}
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
