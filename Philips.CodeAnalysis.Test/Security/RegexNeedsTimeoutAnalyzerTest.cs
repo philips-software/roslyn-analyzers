@@ -48,9 +48,8 @@ namespace RegexNeedsTimeoutTest
 		}
 
 		[DataTestMethod]
-		// NOTE: Implicit names are not currently detected by this analyzer.
-		//[DataRow(@"("".*"", RegexOptions.Compiled)")]
-		//[DataRow(@"("".*"")")]
+		[DataRow(@"("".*"", RegexOptions.Compiled)")]
+		[DataRow(@"("".*"")")]
 		[DataRow(@"Regex("".*"", RegexOptions.Compiled)")]
 		[DataRow(@"Regex("".*"")")]
 		[DataRow(@"System.Text.RegularExpressions.Regex("".*"", RegexOptions.Compiled)")]
