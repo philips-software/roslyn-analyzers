@@ -11,7 +11,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class EnforceRegionsRemoveEmptyRegionAnalyzerTest : CodeFixVerifier
+	public class AvoidEmptyRegionsAnalyzerTest : CodeFixVerifier
 	{
 		[DataRow("#region myRegion\n#endregion")]
 		[DataRow("#region myRegion\r\n#endregion")]

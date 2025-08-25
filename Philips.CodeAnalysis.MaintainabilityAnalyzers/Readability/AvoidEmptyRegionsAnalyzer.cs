@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -25,98 +26,81 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.RegionDirectiveTrivia);
 		}
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var typeDeclaration = (TypeDeclarationSyntax)context.Node;
+			var regionDirective = (RegionDirectiveTriviaSyntax)context.Node;
 
-			// Skip analysis for nested classes to avoid false positives
-			if (TypesHelper.IsNestedClass(typeDeclaration))
+			// Find the matching #endregion
+			EndRegionDirectiveTriviaSyntax endRegionDirective = FindMatchingEndRegion(regionDirective);
+			if (endRegionDirective == null)
 			{
-				return;
+				return; // No matching end region found
 			}
 
-			// Get only the regions that are direct children of this type declaration
-			System.Collections.Generic.List<DirectiveTriviaSyntax> directRegions = GetDirectRegions(typeDeclaration);
-			if (directRegions.Count == 0)
+			// Check if the region is empty (contains only whitespace and comments)
+			if (IsRegionEmpty(regionDirective, endRegionDirective, context.SemanticModel.SyntaxTree.GetText()))
 			{
-				return;
-			}
-
-			// Region directives should come in pairs
-			if (directRegions.Count % 2 == 1)
-			{
-				return;
-			}
-
-			// If pair is malformed (eg. #region followed by #region), bail out
-			for (var i = 0; i < directRegions.Count; i += 2)
-			{
-				DirectiveTriviaSyntax start = directRegions[i];
-				DirectiveTriviaSyntax end = directRegions[i + 1];
-
-				if (start.IsKind(SyntaxKind.EndRegionDirectiveTrivia) || end.IsKind(SyntaxKind.RegionDirectiveTrivia))
-				{
-					return;
-				}
-			}
-
-			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
-
-			// Check each region pair for emptiness
-			for (var i = 0; i < directRegions.Count; i += 2)
-			{
-				DirectiveTriviaSyntax regionStart = directRegions[i];
-				DirectiveTriviaSyntax regionEnd = directRegions[i + 1];
-
-				Location regionLocation = regionStart.GetLocation();
-				var regionStartLine = regionLocation.GetLineSpan().StartLinePosition.Line;
-				var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
-
-				// Check if any members exist between the region lines
-				var hasMembers = members.Any(member =>
-				{
-					var memberLine = member.GetLocation().GetLineSpan().StartLinePosition.Line;
-					return memberLine > regionStartLine && memberLine < regionEndLine;
-				});
-
-				if (!hasMembers)
-				{
-					// Empty region - report diagnostic
-					var diagnostic = Diagnostic.Create(AvoidEmpty, regionLocation);
-					context.ReportDiagnostic(diagnostic);
-				}
+				var diagnostic = Diagnostic.Create(AvoidEmpty, regionDirective.GetLocation());
+				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
-		private static System.Collections.Generic.List<DirectiveTriviaSyntax> GetDirectRegions(TypeDeclarationSyntax typeDeclaration)
+		private static EndRegionDirectiveTriviaSyntax FindMatchingEndRegion(RegionDirectiveTriviaSyntax regionStart)
 		{
-			var regions = new System.Collections.Generic.List<DirectiveTriviaSyntax>();
+			SyntaxTree syntaxTree = regionStart.SyntaxTree;
+			SyntaxNode root = syntaxTree.GetRoot();
 
-			// Only get region directives that are directly under this type declaration,
-			// not from nested types
-			foreach (SyntaxTrivia trivia in typeDeclaration.DescendantTrivia())
+			var regionDepth = 1;
+			var startPosition = regionStart.SpanStart;
+
+			// Find all region and endregion directives after the current region
+			IOrderedEnumerable<SyntaxTrivia> allDirectives = root.DescendantTrivia(descendIntoTrivia: true)
+				.Where(trivia => trivia.SpanStart > startPosition &&
+								 (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) ||
+								  trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia)))
+				.OrderBy(trivia => trivia.SpanStart);
+
+			foreach (SyntaxTrivia trivia in allDirectives)
 			{
-				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) || trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				if (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia))
 				{
-					// Check if this trivia is directly under this type and not in a nested type
-					SyntaxNode containingType = trivia.Token.Parent;
-					while (containingType is not null and not TypeDeclarationSyntax)
+					regionDepth++;
+				}
+				else if (trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				{
+					regionDepth--;
+					if (regionDepth == 0)
 					{
-						containingType = containingType.Parent;
-					}
-
-					// Only include if the containing type is the current type we're analyzing
-					if (containingType == typeDeclaration)
-					{
-						regions.Add((DirectiveTriviaSyntax)trivia.GetStructure());
+						return (EndRegionDirectiveTriviaSyntax)trivia.GetStructure();
 					}
 				}
 			}
 
-			return regions;
+			return null;
+		}
+
+		private static bool IsRegionEmpty(RegionDirectiveTriviaSyntax regionStart, EndRegionDirectiveTriviaSyntax regionEnd, SourceText sourceText)
+		{
+			var regionStartLine = regionStart.GetLocation().GetLineSpan().StartLinePosition.Line;
+			var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
+
+			// Check each line between the region start and end
+			for (var lineNumber = regionStartLine + 1; lineNumber < regionEndLine; lineNumber++)
+			{
+				TextLine line = sourceText.Lines[lineNumber];
+				var lineText = line.ToString().Trim();
+
+				// If we find any non-empty, non-comment line, the region is not empty
+				if (!string.IsNullOrEmpty(lineText) && !lineText.StartsWith("//"))
+				{
+					return false;
+				}
+			}
+
+			return true; // Region contains only whitespace and/or comments
 		}
 	}
 }
