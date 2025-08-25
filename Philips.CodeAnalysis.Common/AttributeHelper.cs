@@ -144,9 +144,9 @@ namespace Philips.CodeAnalysis.Common
 				.Where(x => x.Symbol != null)
 				.ToArray();
 
-			(int, int)? firstCheckAfterPosition = allAttributes
+			(int listIndex, int attrIndex)? firstCheckAfterPosition = allAttributes
 				.Where(x => attributesToCheckAfter.Any(attr => AttributeMatches(x.Symbol, attr)))
-				.Select(x => (ValueTuple<int, int>?)x.Position)
+				.Select(x => x.Position)
 				.FirstOrDefault();
 
 			if (firstCheckAfterPosition == null)
