@@ -2,6 +2,7 @@
 
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Philips.CodeAnalysis.Common
 {
@@ -48,6 +49,16 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsUserControl(INamedTypeSymbol type)
 		{
 			return IsInheritingFromClass(type, @"ContainerControl");
+		}
+
+		/// <summary>
+		/// Checks if the given type declaration is nested within another type
+		/// </summary>
+		/// <param name="typeDeclaration">The type declaration to check</param>
+		/// <returns>True if the type is nested within another type, false otherwise</returns>
+		public static bool IsNestedClass(TypeDeclarationSyntax typeDeclaration)
+		{
+			return typeDeclaration.Parent is TypeDeclarationSyntax;
 		}
 	}
 }

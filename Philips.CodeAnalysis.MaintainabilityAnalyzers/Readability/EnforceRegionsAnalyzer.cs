@@ -109,13 +109,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
-			// Check if this class is nested within another class - if so, skip empty region analysis to avoid false positives
-			var isNestedClass = IsNestedClass(typeDeclaration);
+			if (typeDeclaration.Parent is TypeDeclarationSyntax)
+			{
+				return;
+			}
 
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
-				// Skip empty region checking when analyzing nested classes to avoid false positives
-				if (!isNestedClass && !MemberPresentInRegion(typeDeclaration, pair.Value))
+				if (!MemberPresentInRegion(typeDeclaration, pair.Value))
 				{
 					CheckEmptyRegion(pair.Value, members, context);
 				}
@@ -129,15 +130,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		}
 
-		/// <summary>
-		/// Checks if the given type declaration is nested within another type
-		/// </summary>
-		/// <param name="typeDeclaration">The type declaration to check</param>
-		/// <returns>True if the type is nested within another type, false otherwise</returns>
-		private static bool IsNestedClass(TypeDeclarationSyntax typeDeclaration)
-		{
-			return typeDeclaration.Parent is TypeDeclarationSyntax;
-		}
 
 		private static string GetRegionName(DirectiveTriviaSyntax region)
 		{
@@ -240,9 +232,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			Location location = member.GetLocation();
 			var memberLine = GetMemberLineNumber(location);
-			// Fixed logic: use >= and < for proper boundary handling
-			// This ensures members on the line after the #region are included
-			return memberLine >= locationRange.StartLine && memberLine < locationRange.EndLine;
+			return memberLine > locationRange.StartLine && memberLine < locationRange.EndLine;
 		}
 
 		/// <summary>
