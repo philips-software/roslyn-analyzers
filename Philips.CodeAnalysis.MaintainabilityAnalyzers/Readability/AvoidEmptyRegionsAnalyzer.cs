@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var startPosition = regionStart.SpanStart;
 
 			// Find all region and endregion directives after the current region
-			IOrderedEnumerable<SyntaxTrivia> allDirectives = root.DescendantTrivia(descendIntoTrivia: true)
+			var allDirectives = root.DescendantTrivia(descendIntoTrivia: true)
 				.Where(trivia => trivia.SpanStart > startPosition &&
 								 (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) ||
 								  trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia)))
