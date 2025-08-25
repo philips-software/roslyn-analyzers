@@ -33,15 +33,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string NonCheckedRegionMemberDescription = @"Member's location relative to region {0} should be verified. Implement the check in enforce region analyer";
 		private const string NonCheckedRegionMemberCategory = Categories.Readability;
 
-		private const string AvoidEmptyRegionTitle = @"Avoid empty regions";
-		public const string AvoidEmptyRegionMessageFormat = @"Remove the empty region";
-		private const string AvoidEmptyRegionDescription = @"Remove the empty region";
-		private const string AvoidEmptyRegionCategory = Categories.Readability;
+
 
 		private const string NonPublicDataMembersRegion = "Non-Public Data Members";
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
-		private const string EmptyRegion = "Empty region";
+
 
 		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
@@ -58,11 +55,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
 			NonCheckedRegionMemberTitle, NonCheckedRegionMemberMessageFormat, NonCheckedRegionMemberCategory,
 			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberDescription);
-		private static readonly DiagnosticDescriptor AvoidEmpty = new(DiagnosticId.AvoidEmptyRegions.ToId(), AvoidEmptyRegionTitle,
-			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDuplicateRegion, NonCheckedMember, AvoidEmpty);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDuplicateRegion, NonCheckedMember);
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
@@ -109,19 +104,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
-			// Ideally, we would handle nested classes.
-			if (TypesHelper.IsNestedClass(typeDeclaration))
-			{
-				return;
-			}
-
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
-				if (!MemberPresentInRegion(typeDeclaration, pair.Value))
-				{
-					CheckEmptyRegion(pair.Value, members, context);
-				}
-
 				if (RegionChecks.TryGetValue(pair.Key, out Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool> functionToCall))
 				{
 					IReadOnlyList<MemberDeclarationSyntax> membersOfRegion = GetMembersOfRegion(members, pair.Value);
@@ -258,19 +242,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return true;
 		}
 
-		/// <summary>
-		/// Checks whether the regions are empty, contain no statements.
-		/// </summary>
-		private static void CheckEmptyRegion(LocationRangeModel locationRange, IReadOnlyList<MemberDeclarationSyntax> members, SyntaxNodeAnalysisContext context)
-		{
-			var foundMemberInside = members.Any(m => MemberPresentInRegion(m, locationRange));
-
-			if (!foundMemberInside)
-			{
-				// Empty region
-				CreateDiagnostic(locationRange.Location, context, EmptyRegion, AvoidEmpty);
-			}
-		}
 
 		/// <summary>
 		/// Verify whether the given member belongs to the public interface region
