@@ -49,6 +49,5 @@ namespace Philips.CodeAnalysis.Common
 		{
 			return IsInheritingFromClass(type, @"ContainerControl");
 		}
-
 	}
 }
