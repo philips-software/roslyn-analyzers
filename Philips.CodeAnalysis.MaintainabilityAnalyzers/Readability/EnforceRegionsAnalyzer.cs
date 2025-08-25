@@ -109,7 +109,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
-			if (Philips.CodeAnalysis.Common.TypesHelper.IsNestedClass(typeDeclaration))
+			// Ideally, we would handle nested classes.
+			if (TypesHelper.IsNestedClass(typeDeclaration))
 			{
 				return;
 			}
