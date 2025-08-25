@@ -1,4 +1,4 @@
-// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using System.Linq;
@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var startPosition = regionStart.SpanStart;
 
 			// Find all region and endregion directives after the current region
-			var allDirectives = root.DescendantTrivia(descendIntoTrivia: true)
+			IOrderedEnumerable<SyntaxTrivia> allDirectives = root.DescendantTrivia(descendIntoTrivia: true)
 				.Where(trivia => trivia.SpanStart > startPosition &&
 								 (trivia.IsKind(SyntaxKind.RegionDirectiveTrivia) ||
 								  trivia.IsKind(SyntaxKind.EndRegionDirectiveTrivia)))
