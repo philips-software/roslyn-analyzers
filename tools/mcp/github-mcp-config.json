@@ -1,79 +1,11 @@
 {
-  "mcp": {
-    "servers": [
-      {
-        "name": "roslyn-analyzers-dev",
-        "description": "MCP server for Roslyn Analyzers development tasks automation",
-        "version": "1.0.0",
-        "url": "http://localhost:8000",
-        "capabilities": {
-          "file_operations": false,
-          "code_analysis": true,
-          "build_automation": true,
-          "test_execution": true,
-          "dogfood_process": true,
-          "helper_discovery": true,
-          "coverage_analysis": true
-        },
-        "endpoints": [
-          {
-            "path": "/search_helpers",
-            "method": "POST",
-            "description": "Search for Helper.For methods and related utilities that developers commonly miss",
-            "parameters": {}
-          },
-          {
-            "path": "/build_strict",
-            "method": "POST",
-            "description": "Build the solution with warnings treated as errors",
-            "parameters": {}
-          },
-          {
-            "path": "/run_tests",
-            "method": "POST",
-            "description": "Execute tests against main test project (security-hardened)",
-            "parameters": {}
-          },
-          {
-            "path": "/run_dogfood",
-            "method": "POST",
-            "description": "Run the complete dogfooding process (build analyzers and apply them to the codebase)",
-            "parameters": {}
-          },
-          {
-            "path": "/analyze_coverage",
-            "method": "POST",
-            "description": "Analyze code coverage and provide actionable suggestions to reach 80% SonarCloud requirement",
-            "parameters": {}
-          },
-          {
-            "path": "/manifest",
-            "method": "GET",
-            "description": "Get server manifest with endpoint descriptions",
-            "parameters": {}
-          },
-          {
-            "path": "/health",
-            "method": "GET", 
-            "description": "Health check endpoint",
-            "parameters": {}
-          }
-        ],
-        "startup": {
-          "command": "./tools/mcp/start_mcp_server.sh",
-          "working_directory": ".",
-          "environment": {},
-          "timeout": 30
-        },
-        "authentication": {
-          "type": "none"
-        },
-        "health_check": {
-          "endpoint": "/health",
-          "interval": 60,
-          "timeout": 10
-        }
-      }
-    ]
+  "mcpServers": {
+    "roslyn-analyzers-dev": {
+      "type": "local",
+      "command": "bash",
+      "args": [ "-lc", "./tools/mcp/start_mcp_server.sh" ],
+      "env": {},
+      "tools": [ "search_helpers", "build_strict", "run_tests", "run_dogfood", "analyze_coverage" ]
+    }
   }
 }
