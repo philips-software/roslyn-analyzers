@@ -743,5 +743,73 @@ public class TestClass
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MultipleXmlDocumentationInstancesInSameDocumentCanBeFixedAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	public void FirstMethod()
+	{{
+	}}
+
+	/// <summary>Gets the SecondMethod</summary>
+	public void SecondMethod()
+	{{
+	}}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public int ThirdProperty {{ get; }}
+}}
+";
+
+			var fixedContent = $@"
+public class TestClass
+{{
+	public void FirstMethod()
+	{{
+	}}
+
+	public void SecondMethod()
+	{{
+	}}
+
+	public int ThirdProperty {{ get; }}
+}}
+";
+
+			DiagnosticResult[] expectedDiagnostics = new[]
+			{
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.EmptyXmlComments.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 4, null)
+				},
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.XmlDocumentationShouldAddValue.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 9, null)
+				},
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.EmptyXmlComments.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 14, null)
+				}
+			};
+
+			await VerifyDiagnostic(content, expectedDiagnostics).ConfigureAwait(false);
+			await VerifyFix(content, fixedContent).ConfigureAwait(false);
+		}
+
 	}
 }
