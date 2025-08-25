@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "roslyn-analyzers-dev": {
+      "type": "local",
+      "command": "bash",
+      "args": [ "-lc", "./tools/mcp/start_mcp_server.sh" ],
+      "env": {},
+      "tools": [ "search_helpers", "build_strict", "run_tests", "run_dogfood", "analyze_coverage" ]
+    }
+  }
+}
