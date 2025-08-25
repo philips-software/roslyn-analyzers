@@ -9,9 +9,9 @@ from fastmcp import FastMCP
 
 mcp = FastMCP("roslyn-analyzers-dev")
 BASE_DIR = Path(__file__).resolve().parents[2]  # repo root (../../)
+DEFAULT_TIMEOUT = 900  # 15 minutes for long builds/tests
 
-def _run(cmd: list[str]) -> tuple[int, str]:
-    # Input validation: ensure cmd is a non-empty list of strings, and no suspicious characters
+def _run(cmd: list[str], *, timeout: int = DEFAULT_TIMEOUT) -> tuple[int, str]:
     if (
         not isinstance(cmd, list)
         or not cmd
@@ -19,9 +19,25 @@ def _run(cmd: list[str]) -> tuple[int, str]:
         or any(any(c in x for c in [';', '&', '|', '$', '`', '>', '<']) for x in cmd)
     ):
         raise ValueError("Unsafe or invalid command list passed to _run")
-    p = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, shell=False)
+    p = subprocess.run(
+        cmd,
+        cwd=BASE_DIR,
+        capture_output=True,
+        text=True,
+        shell=False,
+        timeout=timeout
+    )
     return p.returncode, (p.stdout or "") + (p.stderr or "")
 
+def _coverage_exe() -> str:
+    """
+    Return an absolute path to dotnet-coverage if installed globally; otherwise
+    fall back to 'dotnet-coverage' and let the call fail gracefully.
+    """
+    home = Path.home()
+    candidate = home / ".dotnet" / "tools" / ("dotnet-coverage.exe" if os.name == "nt" else "dotnet-coverage")
+    return str(candidate) if candidate.exists() else "dotnet-coverage"
+    
 @mcp.tool
 def search_helpers() -> Dict[str, Any]:
     """Search for Helper.For methods and related helper utilities across Philips.CodeAnalysis.Common."""
@@ -116,13 +132,17 @@ def run_dogfood() -> Dict[str, Any]:
 def analyze_coverage() -> Dict[str, Any]:
     """Collect .NET coverage and summarize uncovered lines (if dotnet-coverage is available, otherwise returns guidance)."""
     # Try to install the coverage tool; ignore failures to keep tool resilient
-    _run(["dotnet", "tool", "install", "--global", "dotnet-coverage", "--version", "17.9.6"])
+    _run(["dotnet", "tool", "install", "--global", "dotnet-coverage", "--version", "17.9.6"], timeout=300)
+
+    coverage_bin = _coverage_exe()
     rc, out = _run([
-        "dotnet-coverage", "collect",
+        coverage_bin, "collect",
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
-        "--configuration", "Release", "--no-build", "--logger", "trx;LogFileName=coverage-test-results.trx",
+        "--configuration", "Release", "--no-build",
+        "--logger", "trx;LogFileName=coverage-test-results.trx",
         "--output-format", "xml", "--output", "coverage.xml"
     ])
+
     analysis = {"status": "success" if rc == 0 else "failure", "overall_coverage": 0.0, "uncovered_lines": [], "suggestions": []}
     xml_path = BASE_DIR / "coverage.xml"
     if xml_path.exists():
