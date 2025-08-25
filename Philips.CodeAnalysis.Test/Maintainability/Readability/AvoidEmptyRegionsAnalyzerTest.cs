@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Philips.CodeAnalysis.Common;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability;
 using Philips.CodeAnalysis.Test.Helpers;
 using Philips.CodeAnalysis.Test.Verifiers;
@@ -10,7 +11,7 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 {
 	[TestClass]
-	public class EnforceRegionsRemoveEmptyRegionAnalyzerTest : CodeFixVerifier
+	public class AvoidEmptyRegionsAnalyzerTest : CodeFixVerifier
 	{
 		[DataRow("#region myRegion\n#endregion")]
 		[DataRow("#region myRegion\r\n#endregion")]
@@ -105,6 +106,111 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedClassesNonEmptyRegionTest()
+		{
+			var baseline = @"
+class Foo
+{{
+	class Cat
+	{{
+		#region
+		private int meow;
+		#endregion
+	}}
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionContainingNestedClassWorks()
+		{
+			// This should work (and does work) - region in outer class containing nested class
+			var baseline = @"
+class Foo
+{{
+	#region
+	class Cat
+	{{
+		private int meow;
+	}}
+	#endregion
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task SimpleNestedClassWithRegion()
+		{
+			// Let's try a simpler case - nested class with region containing just a method
+			var baseline = @"
+class Foo
+{{
+	class Cat
+	{{
+		#region
+		private void Meow() {{ }}
+		#endregion
+	}}
+}}";
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+
+		}
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegion()
+		{
+			var givenText = @"
+class C {{
+	#region Dictionaries
+	#endregion
+}}
+";
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegionFalsePositive1()
+		{
+			// 2 Analyses/sets triggered, but first #endregion is with second set (which now has 3 items)
+			var givenText = @"
+namespace MyNamespace {{
+	#region Dictionaries
+	public class StringToActionDictionary {{ }}
+	#endregion
+
+	#region Lists
+	public class ObjectList {{ }}
+	#endregion
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidEmptyRegionFalsePositive2()
+		{
+			// 2 Analyses/sets triggered, but first #endregion is with second set (which should have 3 items (not good), but
+			// last #endregion is excluded, so perceived as a pair, starting with an #endregion.
+			var givenText = @"
+	#region Dictionaries
+	public class StringToActionDictionary {{ }}
+	#endregion
+
+	#region Lists
+	public class ObjectList {{ }}
+	#endregion
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
@@ -112,7 +218,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new EnforceRegionsAnalyzer();
+			return new AvoidEmptyRegionsAnalyzer();
 		}
 	}
 }
