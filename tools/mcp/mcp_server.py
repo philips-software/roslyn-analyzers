@@ -45,7 +45,7 @@ def search_helpers() -> Dict[str, Any]:
         p = BASE_DIR / rel
         if not p.exists():
             continue
-        content = p.read_text(encoding="utf-8", errors="ignore").splitlines()
+        content = p.read_text(encoding="utf-8", errors="replace").splitlines()
         for i, line in enumerate(content):
             if any(s in line for s in ("public static", "Helper.For", "ForAllowedSymbols", "ForAdditionalFiles")):
                 ctx = content[max(0, i-1): i+3]
