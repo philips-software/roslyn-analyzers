@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
-using static LanguageExt.Prelude;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 {
@@ -25,11 +24,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Cardinality
 	{
 		public override void Analyze()
 		{
-			_ = Optional(Node)
-				.Filter((m) => m.ReturnsVoid())
-				.Filter((m) => !Helper.ForModifiers.IsOverridden(m))
-				.Select((m) => m.CreateDiagnostic(Rule))
-				.Iter(Context.ReportDiagnostic);
+			if (Node.ReturnsVoid() && !Helper.ForModifiers.IsOverridden(Node))
+			{
+				Context.ReportDiagnostic(Node.CreateDiagnostic(Rule));
+			}
 		}
 	}
 }
