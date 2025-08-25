@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -11,11 +12,16 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class LockObjectsMustBeReadonlyAnalyzerTest : DiagnosticVerifier
+	public class LockObjectsMustBeReadonlyAnalyzerTest : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new LockObjectsMustBeReadonlyAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new LockObjectsMustBeReadonlyCodeFixProvider();
 		}
 
 		[DataRow("static object _foo", true)]
@@ -154,6 +160,111 @@ class Foo
 }}
 ";
 			await VerifyDiagnostic(template, DiagnosticId.LocksShouldBeReadonly, regex: "'_foo'").ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixPrivateFieldAsync()
+		{
+			const string original = @"using System;
+class Foo
+{
+	private object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+class Foo
+{
+	private readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixStaticFieldAsync()
+		{
+			const string original = @"using System;
+class Foo
+{
+	static object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+class Foo
+{
+	static readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixPrivateStaticFieldAsync()
+		{
+			const string original = @"using System;
+class Foo
+{
+	private static object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+class Foo
+{
+	private static readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixAlreadyReadonlyAsync()
+		{
+			const string code = @"using System;
+class Foo
+{
+	private readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 	}
 }
