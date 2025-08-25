@@ -11,7 +11,15 @@ mcp = FastMCP("roslyn-analyzers-dev")
 BASE_DIR = Path(__file__).resolve().parents[2]  # repo root (../../)
 
 def _run(cmd: list[str]) -> tuple[int, str]:
-    p = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
+    # Input validation: ensure cmd is a non-empty list of strings, and no suspicious characters
+    if (
+        not isinstance(cmd, list)
+        or not cmd
+        or not all(isinstance(x, str) for x in cmd)
+        or any(any(c in x for c in [';', '&', '|', '$', '`', '>', '<']) for x in cmd)
+    ):
+        raise ValueError("Unsafe or invalid command list passed to _run")
+    p = subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True, shell=False)
     return p.returncode, (p.stdout or "") + (p.stderr or "")
 
 @mcp.tool
