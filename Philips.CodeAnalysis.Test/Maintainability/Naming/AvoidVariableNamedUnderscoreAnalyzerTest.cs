@@ -79,7 +79,7 @@ class TestClass
 	}
 }";
 
-			await VerifyDiagnostic(test, DiagnosticId.AvoidVariableNamedUnderscore).ConfigureAwait(false);
+			await VerifyDiagnostic(test, DiagnosticId.AvoidUnnecessaryTypedDiscard).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -303,23 +303,9 @@ class TestClass
 	}
 }";
 
-			DiagnosticResult[] expected = new[]
-			{
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 9, 23),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				},
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 10, 33),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				}
-			};
+			DiagnosticResult[] expected = CreateTypedDiscardDiagnostics(
+				(9, 23), (10, 33)
+			);
 
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
@@ -384,23 +370,9 @@ class TestClass
 	}
 }";
 
-			DiagnosticResult[] expected = new[]
-			{
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 9, 36),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				},
-				new DiagnosticResult()
-				{
-					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
-					Location = new DiagnosticResultLocation("Test0.cs", 10, 46),
-					Message = new System.Text.RegularExpressions.Regex(".*"),
-					Severity = DiagnosticSeverity.Error,
-				}
-			};
+			DiagnosticResult[] expected = CreateTypedDiscardDiagnostics(
+				(9, 36), (10, 45)
+			);
 
 			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
 		}
@@ -435,6 +407,22 @@ class TestClass
 }";
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		private static DiagnosticResult[] CreateTypedDiscardDiagnostics(params (int line, int column)[] locations)
+		{
+			var results = new DiagnosticResult[locations.Length];
+			for (var i = 0; i < locations.Length; i++)
+			{
+				results[i] = new DiagnosticResult()
+				{
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", locations[i].line, locations[i].column),
+					Message = new System.Text.RegularExpressions.Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				};
+			}
+			return results;
 		}
 	}
 }
