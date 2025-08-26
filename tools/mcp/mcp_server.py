@@ -75,7 +75,7 @@ def build_strict() -> Dict[str, Any]:
         "dotnet", "build", "Philips.CodeAnalysis.sln",
         "--configuration", "Release", "--no-incremental", "-warnaserror"
     ])
-    errors = [ln.strip() for ln in out.splitlines() if "error" in ln.lower() and (" cs" in ln.lower() or " ph" in ln.lower() or " netsdk" in ln.lower())] or " mstest" in ln.lower())]
+    errors = [ln.strip() for ln in out.splitlines() if "error" in ln.lower() and (" cs" in ln.lower() or " ph" in ln.lower() or " netsdk" in ln.lower() or " mstest" in ln.lower())]
     return {"status": "success" if rc == 0 else "failure", "return_code": rc, "errors": errors, "logs": out[-8000:]}
 
 @mcp.tool
