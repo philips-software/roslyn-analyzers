@@ -95,7 +95,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return ConversionResult.None;
 			}
 
+			// Check if this is an IFormatProvider overload (first parameter is IFormatProvider)
+			if (invocation.TargetMethod.Parameters.Length > 0 &&
+				invocation.TargetMethod.Parameters[0].Type?.Name == "IFormatProvider")
+			{
+				return ConversionResult.None;
+			}
+
 			IOperation formatStringArgument = invocation.Arguments[0].Value;
+
+			// Check if format string is an interpolated string
+			if (formatStringArgument.Kind == OperationKind.InterpolatedString)
+			{
+				return ConversionResult.None;
+			}
 
 			if (formatStringArgument.Kind != OperationKind.Literal ||
 				formatStringArgument.Type?.SpecialType != SpecialType.System_String)
@@ -152,6 +165,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					{
 						// Found valid placeholder, check if it's a simple numeric placeholder
 						var content = formatString.Substring(i + 1, j - i - 1);
+
+						// Handle alignment options like {0,3} or {0,3:N2} by splitting on ','
+						if (content.Contains(","))
+						{
+							// Has alignment component - bail out as interpolated strings don't support this syntax directly
+							return 0;
+						}
 
 						// Handle format specifiers like {0:N2} by splitting on ':'
 						var colonIndex = content.IndexOf(':');

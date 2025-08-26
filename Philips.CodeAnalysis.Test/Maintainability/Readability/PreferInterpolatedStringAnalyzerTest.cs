@@ -134,5 +134,77 @@ class Foo
 
 			await VerifyDiagnostic(input, DiagnosticId.PreferInterpolatedString).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForAlignmentOptions()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		int value = 42;
+		string str = string.Format(""Value: {0,10}"", value);
+	}
+}";
+
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForAlignmentWithFormatSpecifier()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		decimal value = 123.456m;
+		string str = string.Format(""Value: {0,10:N2}"", value);
+	}
+}";
+
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForIFormatProviderOverload()
+		{
+			const string input = @"
+using System;
+using System.Globalization;
+
+class Foo
+{
+	public void Test()
+	{
+		int value = 42;
+		string str = string.Format(CultureInfo.InvariantCulture, ""Value: {0}"", value);
+	}
+}";
+
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NoWarningForInterpolatedStringAsFormat()
+		{
+			const string input = @"
+class Foo
+{
+	public void Test()
+	{
+		string name = ""World"";
+		int value = 42;
+		string str = string.Format($""Hello {name}, value: {{0}}"", value);
+	}
+}";
+
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
 	}
 }
