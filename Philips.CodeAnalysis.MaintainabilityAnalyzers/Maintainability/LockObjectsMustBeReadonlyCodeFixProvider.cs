@@ -52,6 +52,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxTokenList modifiers = fieldDeclaration.Modifiers;
 			if (!modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
 			{
+				// Don't offer a fix for volatile fields since volatile and readonly are mutually exclusive
+				if (modifiers.Any(m => m.IsKind(SyntaxKind.VolatileKeyword)))
+				{
+					return document;
+				}
+
 				SyntaxToken readonlyModifier = SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword);
 
 				// Simply add readonly to the modifiers list and let Roslyn's formatter handle positioning
