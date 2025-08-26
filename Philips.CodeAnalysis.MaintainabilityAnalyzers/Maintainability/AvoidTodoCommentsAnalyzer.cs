@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidTodoCommentsSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
-		private static readonly Regex TodoWordRegex = new(@"(?<=\W|^)TODO(?=\W|$)", RegexOptions.IgnoreCase);
+		private static readonly Regex TodoWordRegex = new(@"(?<=\W|^)TODO(?=\W|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		public override void Analyze()
 		{
