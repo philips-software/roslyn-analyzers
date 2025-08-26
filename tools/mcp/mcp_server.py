@@ -2,7 +2,6 @@
 import os
 import subprocess
 import shutil
-import json
 from pathlib import Path
 from typing import List, Dict, Any
 from fastmcp import FastMCP
@@ -76,8 +75,8 @@ def build_strict() -> Dict[str, Any]:
         "dotnet", "build", "Philips.CodeAnalysis.sln",
         "--configuration", "Release", "--no-incremental", "-warnaserror"
     ])
-    errors = [ln.strip() for ln in out.splitlines() if "error" in ln.lower() and (" cs" in ln.lower() or " ph" in ln.lower())]
-    return {"status": "success" if rc == 0 else "failure", "return_code": rc, "errors": errors, "logs": out}
+    errors = [ln.strip() for ln in out.splitlines() if "error" in ln.lower() and (" cs" in ln.lower() or " ph" in ln.lower() or " netsdk" in ln.lower())] or " mstest" in ln.lower())]
+    return {"status": "success" if rc == 0 else "failure", "return_code": rc, "errors": errors, "logs": out[-8000:]}
 
 @mcp.tool
 def run_tests() -> Dict[str, Any]:
@@ -86,7 +85,7 @@ def run_tests() -> Dict[str, Any]:
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
         "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx", "--no-build"
     ])
-    return {"status": "success" if rc == 0 else "failure", "return_code": rc, "results": out}
+    return {"status": "success" if rc == 0 else "failure", "return_code": rc, "results": out[-8000:]}
 
 @mcp.tool
 def run_dogfood() -> Dict[str, Any]:
