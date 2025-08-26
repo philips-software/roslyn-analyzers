@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Formatting;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
@@ -51,31 +52,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			SyntaxTokenList modifiers = fieldDeclaration.Modifiers;
 			if (!modifiers.Any(m => m.IsKind(SyntaxKind.ReadOnlyKeyword)))
 			{
-				SyntaxToken readonlyModifier = SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword).WithTrailingTrivia(SyntaxFactory.Space);
+				SyntaxToken readonlyModifier = SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword);
 
-				// Insert readonly after access modifiers but before static
-				SyntaxTokenList newModifiers = modifiers;
-				var insertIndex = 0;
-
-				// Find appropriate position for readonly modifier
-				for (var i = 0; i < modifiers.Count; i++)
-				{
-					if (modifiers[i].IsKind(SyntaxKind.PublicKeyword) ||
-						modifiers[i].IsKind(SyntaxKind.PrivateKeyword) ||
-						modifiers[i].IsKind(SyntaxKind.ProtectedKeyword) ||
-						modifiers[i].IsKind(SyntaxKind.InternalKeyword))
-					{
-						insertIndex = i + 1;
-					}
-					else if (modifiers[i].IsKind(SyntaxKind.StaticKeyword))
-					{
-						insertIndex = i + 1;
-						break;
-					}
-				}
-
-				newModifiers = newModifiers.Insert(insertIndex, readonlyModifier);
-				FieldDeclarationSyntax newFieldDeclaration = fieldDeclaration.WithModifiers(newModifiers);
+				// Simply add readonly to the modifiers list and let Roslyn's formatter handle positioning
+				SyntaxTokenList newModifiers = modifiers.Add(readonlyModifier);
+				FieldDeclarationSyntax newFieldDeclaration = fieldDeclaration.WithModifiers(newModifiers)
+					.WithAdditionalAnnotations(Formatter.Annotation);
 
 				SyntaxNode newRoot = rootNode.ReplaceNode(fieldDeclaration, newFieldDeclaration);
 				return document.WithSyntaxRoot(newRoot);
