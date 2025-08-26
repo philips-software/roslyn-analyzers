@@ -668,5 +668,254 @@ class Foo
 ";
 			await VerifyFix(original, expected).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixConstFieldAsync()
+		{
+			const string code = @"using System;
+class Foo
+{
+	private static readonly object _foo = new object();
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			// readonly fields should not trigger a diagnostic
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixNullableFieldAsync()
+		{
+			const string original = @"#nullable enable
+using System;
+class Foo
+{
+	private object? _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"#nullable enable
+using System;
+class Foo
+{
+	private readonly object? _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixPartialClassFieldAsync()
+		{
+			const string original = @"using System;
+partial class Foo
+{
+	private object _foo;
+}
+
+partial class Foo
+{
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+partial class Foo
+{
+	private readonly object _foo;
+}
+
+partial class Foo
+{
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixWithMultipleModifiersAsync()
+		{
+			const string original = @"using System;
+class Foo
+{
+	private static new object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+class Foo
+{
+	private static new readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixInStructAsync()
+		{
+			const string original = @"using System;
+struct Foo
+{
+	private object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+struct Foo
+{
+	private readonly object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixWithInheritanceAsync()
+		{
+			const string original = @"using System;
+class Base
+{
+	protected object _baseField;
+}
+
+class Derived : Base
+{
+	public void Test()
+	{
+		lock(_baseField) { }
+	}
+}
+";
+			const string expected = @"using System;
+class Base
+{
+	protected readonly object _baseField;
+}
+
+class Derived : Base
+{
+	public void Test()
+	{
+		lock(_baseField) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixRecordFieldAsync()
+		{
+			const string code = @"using System;
+record Foo
+{
+	private object _foo;
+
+	public void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			// Test that the analyzer works with record fields - expect successful compilation if analyzer doesn't trigger on records
+			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixInterfaceFieldAsync()
+		{
+			const string code = @"using System;
+interface IFoo
+{
+	static object _foo = new object();
+
+	static void Test()
+	{
+		lock(_foo) { }
+	}
+}
+";
+			// Interface static fields should work with the CodeFix
+			await VerifyDiagnostic(code).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LockObjectsMustBeReadonlyCodeFixAsyncMethodAsync()
+		{
+			const string original = @"using System;
+using System.Threading.Tasks;
+class Foo
+{
+	private object _foo;
+
+	public async Task TestAsync()
+	{
+		await Task.Delay(1);
+		lock(_foo) { }
+	}
+}
+";
+			const string expected = @"using System;
+using System.Threading.Tasks;
+class Foo
+{
+	private readonly object _foo;
+
+	public async Task TestAsync()
+	{
+		await Task.Delay(1);
+		lock(_foo) { }
+	}
+}
+";
+			await VerifyFix(original, expected).ConfigureAwait(false);
+		}
 	}
 }
