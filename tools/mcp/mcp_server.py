@@ -178,4 +178,4 @@ def analyze_coverage() -> Dict[str, Any]:
     return analysis
 
 if __name__ == "__main__":
-    mcp.run_stdio()
+    mcp.run()
