@@ -77,6 +77,37 @@ class Foo
 			var testCode = string.Format(template, line);
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
+
+		[DataRow("result.OfType<string>().Where((x => true)).Count();")]
+		[DataRow("result.OfType<string>().Where(x => true).Count();")]
+		[DataRow("result.OfType<string>().Where(x => true).Any();")]
+		[DataRow("result.OfType<string>().Where(x => true).First();")]
+		[DataRow("result.OfType<string>().Where(x => true).FirstOrDefault();")]
+		[DataRow("result.OfType<string>().Where(x => true).Last();")]
+		[DataRow("result.OfType<string>().Where(x => true).LastOrDefault();")]
+		[DataRow("result.OfType<string>().Where(x => true).Single();")]
+		[DataRow("result.OfType<string>().Where(x => true).SingleOrDefault();")]
+		[DataRow("result.OfType<string>().First().Single();")]
+		[DataRow("result.OfType<string>().First().Any();")]
+		[DataRow("Console.WriteLine(\"ny\")")]
+		[DataTestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryWhereWithSecondExpression(string line)
+		{
+			var template = @"
+using System.Linq;
+class Foo
+{{
+  public void MyTest()
+  {{
+    var result = Array.Empty<string>();
+    {0}
+  }}
+}}
+";
+			var testCode = string.Format(template, line);
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
 	}
 }
 

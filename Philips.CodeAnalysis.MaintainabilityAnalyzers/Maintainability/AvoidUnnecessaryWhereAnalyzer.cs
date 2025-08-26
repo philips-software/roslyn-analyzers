@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
+using System.Collections.Generic;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 {
@@ -22,54 +23,69 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.AvoidUnnecessaryWhere, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 	}
+
 	public class AvoidUnnecessaryWhereSyntaxNodeAction : SyntaxNodeAction<InvocationExpressionSyntax>
 	{
+		// List of terminal methods that can replace Where
+		private static readonly HashSet<string> _terminalMethods =
+		[
+			"Count", "Any", "Single", "SingleOrDefault", "Last", "LastOrDefault", "First", "FirstOrDefault"
+		];
+
 		public override void Analyze()
 		{
-			// Is this a call to Count(), Any(), etc, w/o a predicate?
-			if (Node.ArgumentList.Arguments.Count != 0)
-			{
-				return;
-			}
-			if (Node.Expression is not MemberAccessExpressionSyntax expressionOfInterest)
-			{
-				return;
-			}
-			if (expressionOfInterest.Name.Identifier.Text is not @"Count"
-					and not @"Any"
-					and not @"Single"
-					and not @"SingleOrDefault"
-					and not @"Last"
-					and not @"LastOrDefault"
-					and not @"First"
-					and not @"FirstOrDefault"
-			)
+			// Only analyze invocations with no arguments
+			if (Node.ArgumentList.Arguments.Count > 0)
 			{
 				return;
 			}
 
-			// Is it from a Where clause?
-			if (expressionOfInterest.Expression is not InvocationExpressionSyntax whereInvocationExpression)
-			{
-				return;
-			}
-			if (whereInvocationExpression.Expression is not MemberAccessExpressionSyntax whereExpression)
-			{
-				return;
-			}
-			if (whereExpression.Name.Identifier.Text is not @"Where")
+			// Check if this is a method invocation of a terminal method
+			if (Node.Expression is not MemberAccessExpressionSyntax memberAccess)
 			{
 				return;
 			}
 
-			// It's practicially guaranteed we found something, but let's confirm it's System.Linq.Where
-			var whereSymbol = Context.SemanticModel.GetSymbolInfo(whereExpression.Name).Symbol as IMethodSymbol;
-			var strWhereSymbol = whereSymbol?.ToString();
-			if (strWhereSymbol != null && strWhereSymbol.StartsWith(@"System.Collections.Generic.IEnumerable"))
+			// Get the method name and check if it's a terminal method
+			var methodName = memberAccess.Name.Identifier.Text;
+			if (!_terminalMethods.Contains(methodName))
 			{
-				Location location = whereExpression.Name.Identifier.GetLocation();
-				ReportDiagnostic(location, expressionOfInterest.Name.Identifier.Text);
+				return;
 			}
+
+			// Check if the previous expression is a Where call
+			if (memberAccess.Expression is not InvocationExpressionSyntax invocation)
+			{
+				return;
+			}
+
+			if (invocation.Expression is not MemberAccessExpressionSyntax whereMemberAccess)
+			{
+				return;
+			}
+
+			// Check if it's a Where method
+			if (whereMemberAccess.Name.Identifier.Text != "Where")
+			{
+				return;
+			}
+
+			// Verify it's System.Linq.Where
+			if (Context.SemanticModel.GetSymbolInfo(whereMemberAccess.Name).Symbol is not IMethodSymbol whereSymbol)
+			{
+				return;
+			}
+
+			// Check if it's from System.Linq
+			var whereSymbolString = whereSymbol.ToString();
+			if (!whereSymbolString.StartsWith("System.Collections.Generic.IEnumerable"))
+			{
+				return;
+			}
+
+			// Report the diagnostic
+			Location location = whereMemberAccess.Name.Identifier.GetLocation();
+			ReportDiagnostic(location, methodName);
 		}
 	}
 }

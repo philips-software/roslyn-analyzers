@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -8,16 +9,19 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Philips.CodeAnalysis.Common
 {
+	/// <summary>
+	/// Analyze the flow of input variables to output variables. Useful for input validation checks.
+	/// </summary>
 	public class ValidationFlowAnalysis
 	{
 		private readonly HashSet<string> _connectedToReturn;
+		private readonly List<Tuple<string, string>> _aliases;
 
 		public ValidationFlowAnalysis(BaseMethodDeclarationSyntax method)
 		{
 			_connectedToReturn = [];
-			IEnumerable<SyntaxToken> parameters = method.ParameterList.Parameters.Select(para => para.Identifier);
-			List<IdentifierNameSyntax> returnVariable = FindReturnVariable(method);
-			FindConnected(parameters, returnVariable);
+			_aliases = [];
+			FindConnected(method);
 		}
 
 		/// <summary>
@@ -25,18 +29,52 @@ namespace Philips.CodeAnalysis.Common
 		/// </summary>
 		public ImmutableList<string> ConnectedToReturn => _connectedToReturn.ToImmutableList();
 
-		private void FindConnected(IEnumerable<SyntaxToken> tokens, List<IdentifierNameSyntax> returnedVariables)
+		private void FindConnected(BaseMethodDeclarationSyntax method)
 		{
-			var returnedNames = new HashSet<string>();
-			foreach (IdentifierNameSyntax ret in returnedVariables)
+			var parameters = method.ParameterList.Parameters.Select(para => para.Identifier.Text).ToList();
+			AddAssignments(method, parameters);
+			IEnumerable<string> returnVariable = FindReturnVariable(method).Select(ret => ret.Identifier.Text);
+			var returnedNames = new HashSet<string>(returnVariable);
+			foreach (var token in parameters)
 			{
-				_ = returnedNames.Add(ret.Identifier.Text);
-			}
-			foreach (SyntaxToken token in tokens)
-			{
-				if (returnedNames.Contains(token.Text))
+				if (returnedNames.Contains(token))
 				{
-					_ = _connectedToReturn.Add(token.Text);
+					_ = _connectedToReturn.Add(token);
+					break;
+				}
+
+				List<string> needle = GetAliases(token);
+
+			}
+		}
+
+		private List<string> GetAliases(string needle)
+		{
+			var foundList = new List<string>();
+			foreach (Tuple<string, string> pair in _aliases)
+			{
+				if (pair.Item1 == needle)
+				{
+					foundList.Add(pair.Item2);
+				}
+			}
+
+			return foundList;
+		}
+
+		private void AddAssignments(BaseMethodDeclarationSyntax method, List<string> parameters)
+		{
+			IEnumerable<SyntaxNode> declarators = method.DescendantNodes().Where(node => node.IsKind(SyntaxKind.VariableDeclarator));
+			foreach (VariableDeclaratorSyntax declarator in declarators)
+			{
+				var assignedFrom = FindReferencedVariable(declarator.Initializer?.Value)?.Identifier.Text;
+				if (!string.IsNullOrEmpty(assignedFrom))
+				{
+					var assignedTo = declarator.Identifier.Text;
+					if (parameters.Contains(assignedFrom))
+					{
+						_aliases.Add(new Tuple<string, string>(assignedTo, assignedFrom));
+					}
 				}
 			}
 		}
