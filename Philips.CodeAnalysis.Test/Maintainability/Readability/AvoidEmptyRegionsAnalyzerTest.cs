@@ -176,6 +176,26 @@ class C {{
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedRegionEmptyInnerRegionTriggersDiagnostic()
+		{
+			var givenText = @"
+public class MyClass
+{
+	#region OuterRegion
+	private void Foo1() { }
+	
+	#region InnerEmptyRegion
+	#endregion
+	
+	private void Foo2() { }
+	#endregion
+}
+";
+			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyRegionFalsePositive1()
 		{
 			// 2 Analyses/sets triggered, but first #endregion is with second set (which now has 3 items)
