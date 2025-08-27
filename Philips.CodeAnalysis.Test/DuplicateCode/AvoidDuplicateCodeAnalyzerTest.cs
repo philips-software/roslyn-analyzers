@@ -65,7 +65,7 @@ Foo.WhitelistedFunction";
 			}
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(10)]
 		[DataRow(20)]
 		[DataRow(50)]
@@ -119,7 +119,7 @@ Foo.WhitelistedFunction";
 
 
 		// See https://en.wikipedia.org/wiki/Rabin–Karp_algorithm for "hi" example
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(256, 101, 104, 105, 65)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void RollingHashCalculator2Test(int b, int m, int val1, int val2, int result)
@@ -289,7 +289,7 @@ Foo.WhitelistedFunction";
 			Assert.IsNotNull(existing);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("object obj = new object();", "Foo()")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidDuplicateCodeNoErrorAsync(string method1, string method2)
@@ -298,7 +298,7 @@ Foo.WhitelistedFunction";
 			await VerifySuccessfulCompilation(file).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();", "object obj = new object(); object obj2 = new object(); object obj3 = new object();")]
 		[DataRow("object obj = new object(); object obj2 = new object(); object obj3 = new object();", "Bar(); object obj = new object(); object obj2 = new object(); object obj3 = new object();")]

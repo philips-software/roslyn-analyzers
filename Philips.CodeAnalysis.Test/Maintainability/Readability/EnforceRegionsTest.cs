@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class EnforceRegionsTest : DiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public static void b() {{}}", false)]
 		[DataRow(@"private static void b() {{}}", true)]
 		[DataRow(@"protected void b() {{}}", true)]
@@ -85,7 +85,7 @@ class Foo
 
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public static void b() {{}}", true)]
 		[DataRow(@"private static void b() {{}}", false)]
 		[DataRow(@"protected void b() {{}}", false)]
@@ -140,7 +140,7 @@ class Foo
 			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public  static int a;", true)]
 		[DataRow(@"private  static int a;", false)]
 		[DataRow(@"protected int a", false)]
@@ -210,7 +210,7 @@ class C {{
 			await VerifySuccessfulCompilation(givenText);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"#region Constants", false)]
 		[DataRow(@"#region Public Properties/Methods", false)]
 		[DataRow(@"#region Non-Public Properties/Methods", true)]
@@ -234,7 +234,7 @@ class Foo
 			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Non-Public Properties/Methods")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DuplicateRegionTest(string given)

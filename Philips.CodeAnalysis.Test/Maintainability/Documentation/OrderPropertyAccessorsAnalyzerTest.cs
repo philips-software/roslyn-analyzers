@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		[DataRow(@"{ get { return null; } }")]
 		[DataRow(@"{ set {} }")]
 		[DataRow(@"{ get; init; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderValidTestsAsync(string property)
 		{
@@ -38,7 +38,7 @@ public class TestClass
 		[DataRow(@"{ init; get; }")]
 		[DataRow(@"{ set; get; }")]
 		[DataRow(@"{ set{ } get{ return default; } }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OrderInvalidTestsAsync(string property)
 		{

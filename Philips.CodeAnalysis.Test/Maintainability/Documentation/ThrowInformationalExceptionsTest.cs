@@ -143,7 +143,7 @@ public class Foo
 ";
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectWithLiteral, DisplayName = nameof(CorrectWithLiteral)),
 		 DataRow(CorrectWithLocalVar, DisplayName = nameof(CorrectWithLocalVar)),
 		 DataRow(CorrectWithNameOf, DisplayName = nameof(CorrectWithNameOf)),
@@ -158,7 +158,7 @@ public class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoArguments, DisplayName = nameof(WrongNoArguments)),
 		DataRow(WrongIssue273, DisplayName = nameof(WrongIssue273))]
 		[TestCategory(TestDefinitions.UnitTests)]

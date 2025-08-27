@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// </summary>
 		/// <param name="content"></param>
 		/// <param name="isError"></param>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", false)]
 		[DataRow("public const int InitialCount = 1;", false)]
 		[DataRow("public int i = 1;", true)]

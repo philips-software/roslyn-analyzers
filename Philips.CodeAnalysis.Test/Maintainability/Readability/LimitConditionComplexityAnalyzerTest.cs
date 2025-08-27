@@ -89,7 +89,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
 		[DataRow(CorrectTernary, DisplayName = nameof(CorrectTernary))]
 		[DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle))]
@@ -102,7 +102,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Wrong, DisplayName = nameof(Wrong))]
 		[DataRow(WrongTernary, DisplayName = nameof(WrongTernary))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -114,7 +114,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Wrong, "Dummy.Designer")]
 		[DataRow(Wrong, "GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]

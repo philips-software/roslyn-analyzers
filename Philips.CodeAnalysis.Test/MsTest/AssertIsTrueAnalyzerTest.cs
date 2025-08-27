@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			DefaultMethodAttributes = @"[TestMethod]";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true == false)", "Assert.AreEqual(true, false)")]
 		[DataRow("Assert.IsTrue(true != false)", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true == false)", "Assert.AreNotEqual(true, false)")]
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Object o = null;\n      Assert.IsTrue(o == null)", "Object o = null;\n      Assert.IsNull(o)")]
 		[DataRow("Object o = null;\n      Assert.IsTrue(o != null)", "Object o = null;\n      Assert.IsNotNull(o)")]
 		[DataRow("Object o = null;\n      Assert.IsFalse(o == null)", "Object o = null;\n      Assert.IsNotNull(o)")]
@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected, expectedErrorLineOffset: 1).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true == false, \"blah\")", "Assert.AreEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsTrue(true != false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
 		[DataRow("Assert.IsFalse(true == false, \"blah\")", "Assert.AreNotEqual(true, false, \"blah\")")]
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true.Equals(false))", "Assert.AreEqual(true, false)")]
 		//[DataRow("Assert.IsTrue(!true.Equals(false))", "Assert.AreNotEqual(true, false)")]
 		[DataRow("Assert.IsFalse(true.Equals(false))", "Assert.AreNotEqual(true, false)")]
@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true && true)", "Assert.IsTrue(true);\r\n      Assert.IsTrue(true)")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CanBreakDownCompoundStatements(string given, string expected)
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true && true, \"blah\")", "Assert.IsTrue(true, \"blah\");\r\n      Assert.IsTrue(true, \"blah\")")]
 		[DataRow("Assert.IsTrue(true && true, \"blah{0}\", 1)", "Assert.IsTrue(true, \"blah{0}\", 1);\r\n      Assert.IsTrue(true, \"blah{0}\", 1)")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -152,7 +152,7 @@ int i = 50;
 			await VerifyChange(given, expected, 3);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsFalse(1 != 2 && 2 == 3)")]
 		[DataRow("Assert.IsTrue(1 != 2 || 2 == 3)")]
 		[DataRow("Assert.IsFalse(1 != 2 || 2 == 3)")]
@@ -162,7 +162,7 @@ int i = 50;
 			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("bool value = false; Assert.IsFalse(value)")]
 		[DataRow("Assert.IsFalse(\"foo\".Contains(\"f\"))")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -171,7 +171,7 @@ int i = 50;
 			await VerifyNoChange(given).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true)")]
 		[DataRow("Assert.IsTrue(false)")]
 		[DataRow("Assert.IsTrue(!false)")]

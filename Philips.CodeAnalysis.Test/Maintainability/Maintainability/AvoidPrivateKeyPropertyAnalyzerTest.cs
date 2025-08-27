@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidPrivateKeyPropertyAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"_ = new X509Certificate2().PrivateKey")]
 		[DataRow(@"X509Certificate2 cert = new X509Certificate2();
 			_ = cert.PrivateKey;")]
@@ -51,7 +51,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"_ = new string(""Foo"").Length")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OtherPropertyShouldBeIgnored(string s)

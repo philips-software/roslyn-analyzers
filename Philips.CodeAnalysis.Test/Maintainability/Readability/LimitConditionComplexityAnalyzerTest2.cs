@@ -46,7 +46,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenConfigInvalidDefaultValueUsedAndCorrectCodePassesAsync(string testCode)
@@ -57,7 +57,7 @@ namespace ComplexConditionUnitTests {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(IncorrectCode, DisplayName = nameof(WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenConfigInvalidDefaultValueUsedAndIncorrectCodeFailsAsync(string testCode)

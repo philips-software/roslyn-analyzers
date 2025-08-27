@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Assert
 			AssertFailedException actualException = await Assert.ThrowsExactlyAsync<AssertFailedException>(
 				() => VerifyDiagnostic("public class A {}", expectedResult));
-			StringAssert.Contains(actualException.Message, "SyntaxKind");
+			Assert.Contains("SyntaxKind", actualException.Message);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

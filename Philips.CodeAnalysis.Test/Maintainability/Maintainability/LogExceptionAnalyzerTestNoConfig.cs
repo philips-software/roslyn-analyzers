@@ -53,7 +53,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectCode, DisplayName = nameof(CorrectCode))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenCallingLogClassNoDiagnosticShouldBeTriggered(string testCode)
@@ -64,7 +64,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongCode, DisplayName = nameof(WrongCode))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenExceptionIsNotLoggedDiagnosticShouldBeTriggered(string testCode)

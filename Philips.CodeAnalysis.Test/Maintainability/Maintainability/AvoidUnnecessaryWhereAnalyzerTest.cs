@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("result.OfType<string>().Where(x => true).LastOrDefault();")]
 		[DataRow("result.OfType<string>().Where(x => true).Single();")]
 		[DataRow("result.OfType<string>().Where(x => true).SingleOrDefault();")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereTest(string line)
 		{
@@ -59,7 +59,7 @@ class Foo
 		[DataRow("result.OfType<string>().First().Single(x => true);")]
 		[DataRow("result.OfType<string>().First().Any();")]
 		[DataRow("Console.WriteLine(\"ny\")")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidUnnecessaryWhereNoFindingTest(string line)
 		{

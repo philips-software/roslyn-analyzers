@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.NamespaceMatchFilePath.ToId()}.folder_in_namespace", "false");
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "C:\\Philips.Test\\MyTest.cs")]
 		[DataRow("Philips.Test", "C:\\Philips.Test\\")]
 		[DataRow("Philips.Test", "C:\\Philips.Test\\Src\\MyTest.cs")]
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Production\\code\\MyTest.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Production\\MyAnalyzer.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.TestFramework\\MyHelper.cs")]
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			await VerifyDiagnostic(code, expected, sanitizedPath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Test\\code\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]
 		[DataRow("Philips.CodeAnalysis.Common", "C:\\Philips.CodeAnalysis.Common\\SingleDiagnosticAnalyzer{TU}.cs", DisplayName = "Generic filename")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Test\\src\\MyTest.cs", DisplayName = "Namespace Match, Folder Does not")]

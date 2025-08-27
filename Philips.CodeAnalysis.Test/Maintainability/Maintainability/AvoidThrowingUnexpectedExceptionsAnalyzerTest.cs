@@ -161,7 +161,7 @@ public class FooException
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectExplicitCast, DisplayName = nameof(CorrectExplicitCast)),
 		 DataRow(CorrectOperatorPlus, DisplayName = nameof(CorrectOperatorPlus))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -170,7 +170,7 @@ public class FooException
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongStaticConstructor, ".*static constructor.*", DisplayName = nameof(WrongStaticConstructor)),
 		 DataRow(WrongFinalizer, ".*finalizer.*", DisplayName = nameof(WrongFinalizer)),
 		 DataRow(WrongDispose, ".*Dispose.*", DisplayName = nameof(WrongDispose)),

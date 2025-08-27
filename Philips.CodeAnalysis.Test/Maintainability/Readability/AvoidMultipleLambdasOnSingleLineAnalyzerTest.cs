@@ -247,7 +247,7 @@ public class TestClass
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongMultiple, CorrectMultiple, DisplayName = nameof(WrongMultiple)),
 		 DataRow(WrongDistinct, CorrectDistinct, DisplayName = nameof(WrongDistinct)),
 		 DataRow(WrongParenthesized, CorrectParenthesized, DisplayName = nameof(WrongParenthesized)),
@@ -262,7 +262,7 @@ public class TestClass
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectNoLambda, DisplayName = nameof(CorrectNoLambda)),
 		 DataRow(CorrectSingle, DisplayName = nameof(CorrectSingle)),
 		 DataRow(CorrectMultiple, DisplayName = nameof(CorrectMultiple)),
