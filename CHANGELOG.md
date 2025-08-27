@@ -1,3 +1,17 @@
+### [1.9.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.0...v1.9.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* PH2141 false positive for regions containing copyright comments ([#961](https://github.com/philips-software/roslyn-analyzers/issues/961)) ([cc26e84](https://github.com/philips-software/roslyn-analyzers/commit/cc26e845dfa5e245604e0da31b0855508474ade6))
+
+
+### Tests
+
+* Update MSTest and run MSTEST auto-fixers ([#959](https://github.com/philips-software/roslyn-analyzers/issues/959)) ([6edac6e](https://github.com/philips-software/roslyn-analyzers/commit/6edac6ed02ff94f008935d9d0bc5786f3cc8aff8))
+
+
+
 ## [1.9.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.8.0...v1.9.0) (2025-08-27)
 
 
