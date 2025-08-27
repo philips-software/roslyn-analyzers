@@ -247,6 +247,46 @@ namespace MyNamespace {{
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithOnlyCopyrightCommentShouldNotTriggerDiagnostic()
+		{
+			const string input = @"public class Foo
+{
+  #region Copyright
+  // © 2025 Koninklijke Philips N.V.
+  #endregion
+}";
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithRegularCommentsShouldTriggerDiagnostic()
+		{
+			const string input = @"public class Foo
+{
+  #region TODO
+  // This is just a regular comment
+  // Nothing special here
+  #endregion
+}";
+			await VerifyDiagnostic(input, DiagnosticId.AvoidEmptyRegions).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithCopyrightKeywordShouldNotTriggerDiagnostic()
+		{
+			const string input = @"public class Foo
+{
+  #region License
+  // Copyright 2023 Koninklijke Philips N.V.
+  #endregion
+}";
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
