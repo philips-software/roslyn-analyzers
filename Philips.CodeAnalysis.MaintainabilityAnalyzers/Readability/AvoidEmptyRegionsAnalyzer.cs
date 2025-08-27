@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -92,7 +93,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var regionStartLine = regionStart.GetLocation().GetLineSpan().StartLinePosition.Line;
 			var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
 
-			var hasNonCommentContent = false;
 			var hasCommentContent = false;
 
 			// Check each line between the region start and end
@@ -110,18 +110,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				// If we find any non-comment line, the region is definitely not empty
 				if (!lineText.StartsWith("//"))
 				{
-					hasNonCommentContent = true;
-					break;
+					return false;
 				}
 
 				// Track that we have comment content
 				hasCommentContent = true;
-			}
-
-			// If we have non-comment content, the region is not empty
-			if (hasNonCommentContent)
-			{
-				return false;
 			}
 
 			// If we have no content at all (only whitespace), the region is empty
@@ -139,7 +132,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var regionStartLine = regionStart.GetLocation().GetLineSpan().StartLinePosition.Line;
 			var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
 
-			var allCommentText = string.Empty;
+			var commentTextBuilder = new StringBuilder();
 
 			// Collect all comment text in the region
 			for (var lineNumber = regionStartLine + 1; lineNumber < regionEndLine; lineNumber++)
@@ -149,9 +142,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 				if (!string.IsNullOrEmpty(lineText) && lineText.StartsWith("//"))
 				{
-					allCommentText += lineText + " ";
+					_ = commentTextBuilder.Append(lineText).Append(' ');
 				}
 			}
+
+			var allCommentText = commentTextBuilder.ToString();
 
 			// Check if the comments contain copyright information
 			var hasCopyright = CopyrightRegex.IsMatch(allCommentText);
