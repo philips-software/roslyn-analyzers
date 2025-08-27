@@ -231,6 +231,22 @@ namespace MyNamespace {{
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionWithCopyrightShouldNotTriggerDiagnostic()
+		{
+			const string input = @"public class Foo
+{
+  #region Header
+  // © 2019 Koninklijke Philips N.V.  All rights reserved.
+  // Reproduction or transmission in whole or in part, in any form or by any means, 
+  // electronic, mechanical or otherwise, is prohibited without the prior  written consent of 
+  // the owner.
+  #endregion
+}";
+			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
+		}
+
 		protected override CodeFixProvider GetCodeFixProvider()
 		{
 			return new EnforceRegionsRemoveEmptyRegionCodeFixProvider();
