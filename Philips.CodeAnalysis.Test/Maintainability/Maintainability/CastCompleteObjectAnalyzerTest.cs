@@ -40,7 +40,7 @@ namespace CastCompleteTests {
     }
 }";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectSingleField, DisplayName = nameof(CorrectSingleField)),
 		 DataRow(CorrectOtherType, DisplayName = nameof(CorrectOtherType))]
@@ -50,7 +50,7 @@ namespace CastCompleteTests {
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongMultipleFields, DisplayName = nameof(WrongMultipleFields))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenTestCodeIsInvalidDiagnosticIsTriggered(string testCode)
@@ -58,7 +58,7 @@ namespace CastCompleteTests {
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g")]
 		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]

@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("#region myRegion // My comment \r\n#endregion       ")]
 		[DataRow("#region myRegion\r\n\r\n#endregion")]
 		[DataRow("#region myRegion // comment\r\n#endregion")] // even with comment
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RemoveEmptyRegionTriggersDiagnosticAndFixes(string emptyRegionBlock)
 		{

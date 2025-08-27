@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 			Assert.IsFalse(fourthMoveResult);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("CreateDirectory")]
 		[DataRow("Delete")]
 		[DataRow("Exists")]

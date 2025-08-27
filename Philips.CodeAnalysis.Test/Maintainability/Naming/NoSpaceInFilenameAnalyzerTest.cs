@@ -38,7 +38,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectName, DisplayName = "CorrectName"),
 		 DataRow(OutOfScopePath, DisplayName = "OutOfScopePath")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -50,7 +50,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// Diagnostic is expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(SpaceName, DisplayName = "SpaceName"),
 		 DataRow(SpaceAbsolutePath, DisplayName = "SpaceAbsolutePath"),
 		 DataRow(SpaceRelativePath, DisplayName = "SpaceRelativePath")]

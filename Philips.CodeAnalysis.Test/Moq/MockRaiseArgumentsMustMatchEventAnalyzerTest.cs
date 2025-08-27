@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		}
 
 		[DataRow(false, "m.Object, EventArgs.Empty")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventMustHaveCorrectArgumentsAsync(bool isError, string args)
 		{
@@ -84,7 +84,7 @@ public static class Bar
 		[DataRow(true, "m.Object")]
 		[DataRow(false, "m.Object, EventArgs.Empty")]
 		[DataRow(false, "EventArgs.Empty")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventMustHaveCorrectArgumentCountAsync(bool isError, string args)
 		{
@@ -134,7 +134,7 @@ public static class Bar
 		//[DataRow(true, "", DiagnosticIds.MockRaiseArgumentCountMismatch)]
 		[DataRow("EventArgs.Empty", @"PH2053")]
 		//[DataRow(false, "new DerivedEventArgs()", DiagnosticIds.MockRaiseArgumentsMustMatchEvent)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventMustHaveCorrectArgumentCount2Async(string args, string diagnosticId)
 		{
@@ -181,7 +181,7 @@ public static class Bar
 		[DataRow("EventArgs.Empty", 1, @"PH2054")]
 		[DataRow("EventArgs.Empty, EventArgs.Empty", 1, @"PH2054")]
 		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", 3, @"PH2053")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventMustHaveCorrectArgumentsNonEventHandlerAsync(string args, int errorCount, string diagnosticId)
 		{
@@ -241,7 +241,7 @@ public static class Bar
 		[DataRow("", @"PH2054")]
 		[DataRow("EventArgs.Empty", @"PH2054")]
 		[DataRow("EventArgs.Empty, EventArgs.Empty, EventArgs.Empty", @"PH2054")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventMustHaveCorrectArgumentsNonEventHandler2Async(string args, string diagnosticId)
 		{

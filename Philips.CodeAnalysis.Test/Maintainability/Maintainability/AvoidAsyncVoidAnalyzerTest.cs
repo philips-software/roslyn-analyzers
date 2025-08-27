@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidAsyncVoidAnalyzerTest : AssertDiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(true, "void")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultObjectInvalidCreationTestAsync(bool isAsync, string returnType)
@@ -29,7 +29,7 @@ public class Tests
 			await VerifyDiagnostic(code, DiagnosticId.AvoidAsyncVoid).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(false, "void")]
 		[DataRow(true, "Task")]
 		[DataRow(true, "Task<int>")]
@@ -125,7 +125,7 @@ class FooClass
     await Task.Delay(1000);
     return 42;
 });")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidAsyncVoidDelegateAsync(bool isError, string code)
 		{

@@ -47,7 +47,7 @@ namespace RegexNeedsTimeoutTest
 ";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		// NOTE: Implicit names are not currently detected by this analyzer.
 		//[DataRow(@"("".*"", RegexOptions.Compiled)")]
 		//[DataRow(@"("".*"")")]
@@ -63,7 +63,7 @@ namespace RegexNeedsTimeoutTest
 			await VerifyDiagnostic(testCode, DiagnosticId.RegexNeedsTimeout).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Object()")]
 		[DataRow(@"("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]
 		[DataRow(@"Regex("".*"", RegexOptions.Compiled, TimeSpan.FromSeconds(1))")]

@@ -33,7 +33,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
             }
             ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestInitialize]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestInitializeCodeFixProviderTest(string testMethod)
@@ -47,7 +47,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[ClassInitialize]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassInitializeCodeFixProviderTest(string testMethod)
@@ -60,7 +60,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestCleanup]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestCleanupCodeFixProviderTest(string testMethod)
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyFix(givenText, expectedText).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[ClassCleanup]\n public void SomeMethod() {int i = 5;}")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassCleanupCodeFixProviderTest(string testMethod)

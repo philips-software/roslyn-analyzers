@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 
 		protected async Task VerifyDiagnostic(string source, int count)
 		{
-			Assert.IsTrue(count > 1, "Only use this overload when your test expects the same Diagnostic multiple times.");
+			Assert.IsGreaterThan(1, count, "Only use this overload when your test expects the same Diagnostic multiple times.");
 			var analyzer = GetDiagnosticAnalyzer() as SingleDiagnosticAnalyzer;
 			Assert.IsNotNull(analyzer, @"This overload is only for Analyzers that support a single DiagnosticId");
 
@@ -99,8 +99,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 		/// <param name="assemblyName">The name of the resulting assembly of the compilation, without the extension</param>
 		protected async Task VerifyDiagnostic(string source, DiagnosticResult[] expected, string filenamePrefix = null, string assemblyName = null)
 		{
-			Assert.IsTrue(expected.Length > 0, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
-			Assert.IsTrue(expected.Length > 1, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
+			Assert.IsGreaterThan(0, expected.Length, @"Specify a diagnostic. If you expect compilation to succeed, call VerifySuccessfulCompilation instead.");
+			Assert.IsGreaterThan(1, expected.Length, @$"Use the overload that doesn't use an array of {nameof(DiagnosticResult)}s.");
 
 			DiagnosticAnalyzer analyzer = GetDiagnosticAnalyzer();
 			await VerifyDiagnosticsInternal(new[] { source }, filenamePrefix, assemblyName, analyzer, expected).ConfigureAwait(false);

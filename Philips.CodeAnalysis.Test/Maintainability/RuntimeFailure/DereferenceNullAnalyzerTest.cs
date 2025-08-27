@@ -74,7 +74,7 @@ Instruction i = method.Body.Instructions[0];
 		/// </summary>
 		/// <param name="content1"></param>
 		/// <param name="content2"></param>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("string t0 = y.ToString()", "string t1 = y.ToString()")]
 		[DataRow("", "string t1 = y.ToString()")]
 		[DataRow("", "int t2 = y.Length")]
@@ -93,7 +93,7 @@ Instruction i = method.Body.Instructions[0];
 		/// </summary>
 		/// <param name="content1"></param>
 		/// <param name="content2"></param>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", "")]
 		[DataRow("y=string.Empty", "")]
 		[DataRow("y=string.Empty", "int t2 = y.Length")]

@@ -32,7 +32,7 @@ class Foo
 ";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("private string _x, _password);", @"")]
 		[DataRow("private const string MyPassword = \"Hi\");", @"")]
 		[DataRow("public string Password {get; set;}", @"")]
@@ -76,7 +76,7 @@ class Foo
 ";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("private string _x, _password);", @"")]
 		[DataRow("private const string MyPassword = \"Hi\");", @"")]
 		[DataRow("public string Password {get; set;}", @"")]
@@ -90,7 +90,7 @@ class Foo
 			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPasswordField).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("private string _x, _y);", @"")]
 		[DataRow("private const string MyField = \"Hi\");", @"")]
 		[DataRow("public string MyProperty {get; set;}", @"")]

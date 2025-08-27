@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("", "", false)]
 		[DataRow("", "int x = 4;", false)]
 		[DataRow("static", "int x = 4;", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyTypeInitializerStaticAsync(string modifier, string content, bool isError)
 		{
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[DataRow("  /// <summary />")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
 		{

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodNameAnalyzerTest : CodeFixVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("DataTestMethod", "TestSomething", true)]
 		[DataRow("DataTestMethod", "SomeTest", false)]
 		[DataRow("STATestMethod", "TestSomething", true)]

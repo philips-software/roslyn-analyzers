@@ -70,7 +70,7 @@ namespace PropertiesinOrderTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectAutoProperties, DisplayName = nameof(CorrectAutoProperties)),
 		 DataRow(CorrectInitializer, DisplayName = nameof(CorrectInitializer)),
@@ -87,7 +87,7 @@ namespace PropertiesinOrderTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongInAssignment, DisplayName = nameof(WrongInAssignment))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenReferencingOtherPropertiesDiagnosticIsRaisedAsync(string testCode)
@@ -98,7 +98,7 @@ namespace PropertiesinOrderTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)

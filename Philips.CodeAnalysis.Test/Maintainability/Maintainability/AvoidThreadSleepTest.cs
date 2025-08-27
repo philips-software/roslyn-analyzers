@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	public class AvoidThreadSleepTest : CodeFixVerifier
 	{
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Thread.Sleep(200);")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ThreadSleepNotAvoidedTest(string test)

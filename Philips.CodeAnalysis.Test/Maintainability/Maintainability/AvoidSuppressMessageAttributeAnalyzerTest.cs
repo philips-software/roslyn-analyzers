@@ -86,7 +86,7 @@ namespace WpfApp1 {
 		[DataRow("WhitelistedFunction", "using System.Diagnostics.CodeAnalysis;", "SuppressMessage")]
 		[DataRow("WhitelistedFunction", "", "System.Diagnostics.CodeAnalysis.SuppressMessage")]
 		[DataRow("WhitelistedFunction", "using SM = System.Diagnostics.CodeAnalysis;", "SM.SuppressMessage")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidSupressMessageRaisedInUserCode(string functionName, string usingStatement, string attribute)
 		{
