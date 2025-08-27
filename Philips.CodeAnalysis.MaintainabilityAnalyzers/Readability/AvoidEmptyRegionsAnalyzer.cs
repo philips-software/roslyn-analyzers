@@ -1,7 +1,10 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -21,6 +24,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static readonly DiagnosticDescriptor AvoidEmpty = new(DiagnosticId.AvoidEmptyRegions.ToId(), AvoidEmptyRegionTitle,
 			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription);
+
+		private static readonly Regex CopyrightRegex = new(@"©|\uFFFD|Copyright", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+		private static readonly Regex YearRegex = new(@"\d\d\d\d", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(AvoidEmpty);
 
@@ -87,20 +93,66 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var regionStartLine = regionStart.GetLocation().GetLineSpan().StartLinePosition.Line;
 			var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
 
+			var hasCommentContent = false;
+
 			// Check each line between the region start and end
 			for (var lineNumber = regionStartLine + 1; lineNumber < regionEndLine; lineNumber++)
 			{
 				TextLine line = sourceText.Lines[lineNumber];
 				var lineText = line.ToString().Trim();
 
-				// If we find any non-empty, non-comment line, the region is not empty
-				if (!string.IsNullOrEmpty(lineText) && !lineText.StartsWith("//"))
+				// Skip empty lines
+				if (string.IsNullOrEmpty(lineText))
+				{
+					continue;
+				}
+
+				// If we find any non-comment line, the region is definitely not empty
+				if (!lineText.StartsWith("//"))
 				{
 					return false;
 				}
+
+				// Track that we have comment content
+				hasCommentContent = true;
 			}
 
-			return true; // Region contains only whitespace and/or comments
+			// If we have no content at all (only whitespace), the region is empty
+			if (!hasCommentContent)
+			{
+				return true;
+			}
+
+			// We have only comments - check if they contain copyright information
+			return !ContainsCopyrightInformation(regionStart, regionEnd, sourceText);
+		}
+
+		private static bool ContainsCopyrightInformation(RegionDirectiveTriviaSyntax regionStart, EndRegionDirectiveTriviaSyntax regionEnd, SourceText sourceText)
+		{
+			var regionStartLine = regionStart.GetLocation().GetLineSpan().StartLinePosition.Line;
+			var regionEndLine = regionEnd.GetLocation().GetLineSpan().StartLinePosition.Line;
+
+			var commentTextBuilder = new StringBuilder();
+
+			// Collect all comment text in the region
+			for (var lineNumber = regionStartLine + 1; lineNumber < regionEndLine; lineNumber++)
+			{
+				TextLine line = sourceText.Lines[lineNumber];
+				var lineText = line.ToString().Trim();
+
+				if (!string.IsNullOrEmpty(lineText) && lineText.StartsWith("//"))
+				{
+					_ = commentTextBuilder.Append(lineText).Append(' ');
+				}
+			}
+
+			var allCommentText = commentTextBuilder.ToString();
+
+			// Check if the comments contain copyright information
+			var hasCopyright = CopyrightRegex.IsMatch(allCommentText);
+			var hasYear = YearRegex.IsMatch(allCommentText);
+
+			return hasCopyright && hasYear;
 		}
 	}
 }
