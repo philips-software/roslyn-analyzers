@@ -14,7 +14,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 	{
 		[DataRow(true)]
 		[DataRow(false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenTo(bool isWrittenTo)
 		{
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[DataRow(true)]
 		[DataRow(false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToStruct(bool isWrittenTo)
 		{
@@ -73,7 +73,7 @@ public class TestClass
 
 		[DataRow(true)]
 		[DataRow(false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToButRequiredForInterface(bool isExplicit)
 		{
@@ -119,7 +119,7 @@ public class TestClass : Data
 
 		[DataRow(true)]
 		[DataRow(false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNotWrittenToExpressionMethod(bool isWrittenTo)
 		{
@@ -180,7 +180,7 @@ public class TestClass : Data
 
 		[DataRow(": Foo", false)]
 		[DataRow("", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyStatementMethodBody(string baseClass, bool isError)
 		{
@@ -207,7 +207,7 @@ public class TestClass {baseClass}
 		[DataRow("", "i = 0", false)]
 		[DataRow(": Foo", "_ = i.ToString()", false)]
 		[DataRow("", "_ = i.ToString()", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SingleStatementMethodBody(string baseClass, string statement, bool isError)
 		{

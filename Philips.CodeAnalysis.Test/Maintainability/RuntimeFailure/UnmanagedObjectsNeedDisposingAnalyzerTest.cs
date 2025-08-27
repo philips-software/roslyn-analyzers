@@ -38,7 +38,7 @@ namespace MyNamespace
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("IntPtr", true, DisplayName = "CorrectIntPtrDisposable"),
 		 DataRow("HANDLE", true, DisplayName = "CorrectHandleDisposable"),
 		 DataRow("int", false, DisplayName = "CorrectIntNotDisposable")]
@@ -71,7 +71,7 @@ namespace MyNamespace
 		/// <summary>
 		/// Diagnostic is expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("IntPtr", DisplayName = "WrongIntPtrNotDisposable"),
 		 DataRow("Handle", DisplayName = "WrongHandleNotDisposable")]
 		[TestCategory(TestDefinitions.UnitTests)]

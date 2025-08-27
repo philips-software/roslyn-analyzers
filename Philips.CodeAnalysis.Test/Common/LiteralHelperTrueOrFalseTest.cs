@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			}
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("true", true),
 		 DataRow("false", true),
 		 DataRow("typeof(bool)", false),

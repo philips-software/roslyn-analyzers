@@ -133,7 +133,7 @@ class Foo
 
 		[DataRow("{0}")]
 		[DataRow("{1}")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontStringFormatUselessly2a(string arg)
 		{
@@ -438,7 +438,7 @@ class Foo
 
 		[DataRow("\"{0}\"", ", errorMessage", true)]
 		[DataRow("\"this is a test\"", "", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontStringFormatUselesslyLogStatement(string format, string args, bool isError)
 		{
@@ -487,7 +487,7 @@ class Foo
 		[DataRow("$\"{0}\"")]
 		[DataRow("$\"this is a test\"")]
 		[DataRow("$\"{errorMessage}\"")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontStringFormatUselesslyIssue134(string format)
 		{
@@ -599,7 +599,7 @@ class Foo
 		[DataRow(@"$""{Environment.NewLine}""")]
 		[DataRow(@"string.Format(""{0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""{0}"", new object[] { Environment.NewLine })")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorsOnPropertyLikeStrings(string argument)
 		{
@@ -622,7 +622,7 @@ class Foo
 		[DataRow(@"$""this is a test {Environment.NewLine}""")]
 		[DataRow(@"string.Format(""This is a test {0}"", Environment.NewLine)")]
 		[DataRow(@"string.Format(""This is a test {0}"", new object[] { Environment.NewLine })")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoresFormatStringsWithAdditionalText(string argument)
 		{
@@ -644,7 +644,7 @@ class Foo
 		}
 
 		[DataRow(@"string.Join("","", Array.Empty<char>(), )")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task IgnoresOtherMethods(string argument)
 		{

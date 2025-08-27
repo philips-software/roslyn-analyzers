@@ -308,7 +308,7 @@ public class Foo
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectCatchAll, DisplayName = nameof(CorrectCatchAll)),
 		 DataRow(CorrectCatchAllAlias, DisplayName = nameof(CorrectCatchAllAlias)),
 		 DataRow(CorrectEnumerateFiles, DisplayName = nameof(CorrectEnumerateFiles)),
@@ -319,7 +319,7 @@ public class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongDirectoryCreate, FixedDirectoryCreate, FixedDirectoryCreateOnLinux, DisplayName = nameof(WrongDirectoryCreate)),
 		 DataRow(WrongEnumerateFiles, FixedEnumerateFiles, FixedEnumerateFilesLinux, DisplayName = nameof(WrongEnumerateFiles)),
 		 DataRow(WrongDangerous, FixedDangerous, null, DisplayName = nameof(WrongDangerous))]

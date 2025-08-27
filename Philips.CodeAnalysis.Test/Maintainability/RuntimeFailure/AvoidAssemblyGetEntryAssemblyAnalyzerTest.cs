@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.RuntimeFailure
 	public class AvoidAssemblyGetEntryAssemblyAnalyzerTest : DiagnosticVerifier
 	{
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Assembly.GetEntryAssembly();")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GetEntryAssemblyNotAvoidedTest(string test)

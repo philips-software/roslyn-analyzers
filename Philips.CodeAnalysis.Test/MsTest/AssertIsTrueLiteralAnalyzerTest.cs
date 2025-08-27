@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Public Interface
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true)")]
 		[DataRow("Assert.IsTrue(false)")]
 		[DataRow("Assert.IsTrue(!false)")]

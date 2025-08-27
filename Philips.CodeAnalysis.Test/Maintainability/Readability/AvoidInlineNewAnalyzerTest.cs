@@ -68,7 +68,7 @@ class Foo
 
 		[DataRow("new Foo()")]
 		[DataRow("(new Foo())")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DontInlineNewCallCustomTypeAsync(string newVariant)
 		{
@@ -78,7 +78,7 @@ class Foo
 
 		[DataRow("new Foo()")]
 		[DataRow("(new Foo())")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoErrorInlineNewCallCustomTypeAllowedMethodAsync(string newVariant)
 		{
