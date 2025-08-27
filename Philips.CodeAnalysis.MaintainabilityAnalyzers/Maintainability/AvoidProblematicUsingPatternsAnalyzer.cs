@@ -1,6 +1,5 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -77,7 +76,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				if (symbolInfo.Symbol is ILocalSymbol localSymbol)
 				{
 					// Check if this local symbol is declared as an out parameter
-					if (IsOutParameterDeclaration(localSymbol))
+					if (localSymbol.IsOutParameterDeclaration())
 					{
 						return false; // Out parameters are safe to use
 					}
@@ -88,18 +87,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			return false;
 		}
 
-		private bool IsOutParameterDeclaration(ILocalSymbol localSymbol)
-		{
-			// Find the declaration syntax for this local symbol
-			SyntaxReference declarationSyntax = localSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-			if (declarationSyntax == null)
-			{
-				return false;
-			}
 
-			// Check if the declaration is within an ArgumentSyntax with an out modifier
-			ArgumentSyntax argumentSyntax = declarationSyntax.GetSyntax().Ancestors().OfType<ArgumentSyntax>().FirstOrDefault();
-			return argumentSyntax?.RefOrOutKeyword.IsKind(SyntaxKind.OutKeyword) == true;
-		}
 	}
 }
