@@ -150,7 +150,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				return false; // Can't find method call, allow the flag
 			}
 
-			// Get semantic information about the method
+			// Early check: if the invocation doesn't look like it could have overloads, 
+			// we can avoid semantic model access entirely
+			if (invocation.Expression is not (MemberAccessExpressionSyntax or IdentifierNameSyntax))
+			{
+				return false; // Complex expression, allow the flag
+			}
+
+			// Get semantic information about the method - moved lower for performance
 			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
 			if (symbolInfo.Symbol is not IMethodSymbol method)
 			{
@@ -168,16 +175,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 			INamedTypeSymbol containingType = method.ContainingType;
 			System.Collections.Generic.IEnumerable<IMethodSymbol> methodsWithSameName = containingType.GetMembers(method.Name).OfType<IMethodSymbol>();
 
-			// Count how many overloads have an out parameter at this position with different types
-			var outParameterTypes = methodsWithSameName
-				.Where(m => argumentIndex < m.Parameters.Length && m.Parameters[argumentIndex].RefKind == RefKind.Out)
-				.Select(m => m.Parameters[argumentIndex].Type)
-				.Distinct(SymbolEqualityComparer.Default)
-				.Count();
+			// Count how many overloads have an out parameter at this position
+			var overloadCount = methodsWithSameName
+				.Where(m => argumentIndex < m.Parameters.Length)
+				.Count(m => m.Parameters[argumentIndex].RefKind == RefKind.Out);
 
-			// If there are multiple overloads with different out parameter types at this position,
-			// then the typed discard is necessary for overload resolution
-			return outParameterTypes > 1;
+			// If there are multiple overloads with out parameters at this position,
+			// then the typed discard might be necessary for overload resolution
+			return overloadCount > 1;
 		}
 
 		private static int GetArgumentIndex(SeparatedSyntaxList<ArgumentSyntax> arguments, ArgumentSyntax targetArgument, IMethodSymbol method)
