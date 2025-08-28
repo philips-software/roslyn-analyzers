@@ -36,6 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[DataTestMethod]
 		[DataRow(@"// TODO: This needs to be done", DisplayName = "Single line TODO")]
+		[DataRow(@"// TODO:", DisplayName = "TODO with colon only")]
 		[DataRow(@"// todo: lowercase version", DisplayName = "Lowercase todo")]
 		[DataRow(@"// Todo: Mixed case", DisplayName = "Mixed case Todo")]
 		[DataRow(@"// TODO This needs to be done", DisplayName = "TODO without colon")]
