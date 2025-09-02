@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Description = @"TestTimeouts classes should be internal to avoid accessibility issues";
 
 		public TestTimeoutsClassAccessibilityAnalyzer()
-			: base(DiagnosticId.TestTimeoutsClassShouldBeInternal, Title, MessageFormat, Description, Categories.MsTest, isEnabled: false)
+			: base(DiagnosticId.TestTimeoutsClassShouldBeInternal, Title, MessageFormat, Description, Categories.MsTest, isEnabled: true)
 		{ }
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
