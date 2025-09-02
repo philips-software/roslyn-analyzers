@@ -1,4 +1,4 @@
-// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
 using System.Composition;
@@ -20,8 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.TestTimeoutsClassShouldBeInternal;
 
-		protected override async Task<Document> ApplyFix(Document document, ClassDeclarationSyntax node,
-			ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, ClassDeclarationSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken);
 
