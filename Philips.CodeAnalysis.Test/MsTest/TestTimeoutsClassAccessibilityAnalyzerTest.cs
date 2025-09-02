@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestTimeoutsClassPublicShouldTriggerDiagnostic()
+		public async Task TimeoutsClassPublicShouldTriggerDiagnostic()
 		{
 			const string code = @"public class TestTimeouts
 {
@@ -44,7 +44,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestTimeoutsClassInternalShouldNotTriggerDiagnostic()
+		public async Task TimeoutsClassInternalShouldNotTriggerDiagnostic()
 		{
 			const string code = @"internal class TestTimeouts
 {
@@ -56,7 +56,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestTimeoutsClassPublicSealedShouldTriggerDiagnostic()
+		public async Task TimeoutsClassPublicSealedShouldTriggerDiagnostic()
 		{
 			const string code = @"public sealed class TestTimeouts
 {
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestTimeoutsClassInternalStaticShouldTriggerDiagnostic()
+		public async Task TimeoutsClassInternalStaticShouldTriggerDiagnostic()
 		{
 			const string code = @"internal static class TestTimeouts
 {
