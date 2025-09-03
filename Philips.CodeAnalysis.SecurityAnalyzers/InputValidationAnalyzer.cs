@@ -11,6 +11,32 @@ using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
+	/// <summary>
+	/// Tracks information about parameter flow through methods
+	/// </summary>
+	internal sealed class ParameterFlowInfo
+	{
+		/// <summary>
+		/// The parameter being tracked
+		/// </summary>
+		public IParameterSymbol Parameter { get; set; }
+
+		/// <summary>
+		/// Whether the parameter has been validated
+		/// </summary>
+		public bool IsValidated { get; set; }
+
+		/// <summary>
+		/// Locations where the parameter is used
+		/// </summary>
+		public List<Location> UsageLocations { get; set; }
+
+		/// <summary>
+		/// Methods that the parameter flows to
+		/// </summary>
+		public List<IMethodSymbol> FlowsToMethods { get; set; }
+	}
+
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class InputValidationAnalyzer : DiagnosticAnalyzerBase
 	{
@@ -19,8 +45,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private const string Description = @"When constructing a new Regex instance, provide a timeout (or `RegexOptions.NonBacktracking` in .NET 7 and higher) as this can facilitate denial-of-serice attacks.";
 		private const string Category = Categories.Security;
 
-		private static readonly Dictionary<string, ValidationSinkInfo> SinkMemberInfos = [];
-		private readonly List<SyntaxNode> validationSinks = [];
+		// private static readonly Dictionary<string, ValidationSinkInfo> SinkMemberInfos = [];
+		// private readonly List<SyntaxNode> validationSinks = [];
 
 		public static readonly DiagnosticDescriptor Rule = new(
 			DiagnosticId.InputValidation.ToId(),
@@ -31,78 +57,172 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(AnalyzeInvocation, SyntaxKind.InvocationExpression);
-			context.RegisterSyntaxNodeAction(AnalyzeDeclaration, SyntaxKind.MethodDeclaration);
-			context.RegisterSymbolAction(AnalyzeMethod, SymbolKind.Method);
+			context.RegisterSyntaxNodeAction(AnalyzeMethodDeclaration, SyntaxKind.MethodDeclaration);
 		}
 
-		private void AnalyzeDeclaration(SyntaxNodeAnalysisContext context)
+		private void AnalyzeMethodDeclaration(SyntaxNodeAnalysisContext context)
 		{
-			var method = (BaseMethodDeclarationSyntax)context.Node;
-			IEnumerable<ReturnStatementSyntax> returns = method.Body.DescendantNodes().Where(node => node.IsKind(SyntaxKind.ReturnStatement)).Cast<ReturnStatementSyntax>();
-			SeparatedSyntaxList<ParameterSyntax> parameters = method.ParameterList.Parameters;
-		}
+			var method = (MethodDeclarationSyntax)context.Node;
+			IMethodSymbol methodSymbol = context.SemanticModel.GetDeclaredSymbol(method);
+			if (methodSymbol == null)
+			{
+				return;
+			}
 
-		private void AnalyzeMethod(SymbolAnalysisContext context)
-		{
-			var methodSymbol = (IMethodSymbol)context.Symbol;
 			if (
-				(methodSymbol.ReturnType.SpecialType != SpecialType.System_String) ||
-				!methodSymbol.Parameters.Any(parameter => parameter.RefKind == RefKind.Out && parameter.Type.SpecialType == SpecialType.System_String))
+				(methodSymbol.ReturnType.SpecialType != SpecialType.System_String) &&
+				!methodSymbol.Parameters.Any(parameter => parameter.Type.SpecialType == SpecialType.System_String))
 			{
 				return;
 			}
 
+			// Get method references and analyze parameter flow
+			AnalyzeParameterFlow(context, methodSymbol);
 		}
 
-		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
+		private void AnalyzeParameterFlow(SyntaxNodeAnalysisContext context, IMethodSymbol methodSymbol)
 		{
-			return GeneratedCodeAnalysisFlags.Analyze;
-		}
-
-		private void AnalyzeInvocation(SyntaxNodeAnalysisContext context)
-		{
-			var invocation = (InvocationExpressionSyntax)context.Node;
-			if (Helper.ForTests.IsInTestClass(context))
+			// Skip methods without a body (interface methods, abstract methods, etc.)
+			if (methodSymbol.DeclaringSyntaxReferences.Length == 0)
 			{
 				return;
 			}
 
-			if (invocation.Expression is MemberAccessExpressionSyntax expression)
+			// Get method syntax node
+			SyntaxNode methodSyntax = methodSymbol.DeclaringSyntaxReferences[0].GetSyntax(context.CancellationToken);
+			if (methodSyntax is not MethodDeclarationSyntax methodDeclaration)
 			{
-				if (SinkMemberInfos.TryGetValue(expression.Name.Identifier.Text, out ValidationSinkInfo info))
+				return;
+			}
+
+			// Get the method body
+			if (methodDeclaration.Body == null)
+			{
+				return;
+			}
+
+			// Create a dictionary to track parameter usage
+			Dictionary<string, ParameterFlowInfo> parameterTracker = [];
+
+			// Initialize tracking for each string parameter
+			foreach (IParameterSymbol parameter in methodSymbol.Parameters)
+			{
+				if (parameter.Type.SpecialType == SpecialType.System_String)
 				{
-					PreprocessingSymbolInfo symbolInfo = context.SemanticModel.GetPreprocessingSymbolInfo(expression.Name);
-					if (symbolInfo.IsDefined)
+					parameterTracker.Add(parameter.Name, new ParameterFlowInfo
 					{
-						if (info.IsMatch(symbolInfo.Symbol!))
+						Parameter = parameter,
+						IsValidated = false,
+						UsageLocations = [],
+						FlowsToMethods = []
+					});
+				}
+			}
+
+			// Find all invocations within the method body
+			var invocations = methodDeclaration.Body.DescendantNodes()
+				.OfType<InvocationExpressionSyntax>()
+				.ToList();
+
+			// Analyze each invocation for parameter usage
+			foreach (InvocationExpressionSyntax invocation in invocations)
+			{
+				AnalyzeInvocationForParameterUsage(context, invocation, parameterTracker);
+			}
+
+			// Check for validation before usage
+			foreach (ParameterFlowInfo paramInfo in parameterTracker.Values)
+			{
+				if (paramInfo.Parameter.Type.SpecialType == SpecialType.System_String && !paramInfo.IsValidated &&
+					paramInfo.UsageLocations.Count > 0)
+				{
+					// Report diagnostic for unvalidated string parameter usage
+					context.ReportDiagnostic(Diagnostic.Create(
+						Rule,
+						paramInfo.UsageLocations.First(),
+						paramInfo.Parameter.Name));
+				}
+			}
+		}
+
+		private void AnalyzeInvocationForParameterUsage(
+			SyntaxNodeAnalysisContext context,
+			InvocationExpressionSyntax invocation,
+			Dictionary<string, ParameterFlowInfo> parameterTracker)
+		{
+			// Get method symbol for the invocation using the context's semantic model
+			SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(invocation);
+			if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
+			{
+				return;
+			}
+
+			// Check if this is a validation method
+			var isValidationMethod = IsValidationMethod(methodSymbol);
+
+			// Analyze arguments
+			for (var i = 0; i < invocation.ArgumentList.Arguments.Count && i < methodSymbol.Parameters.Length; i++)
+			{
+				ArgumentSyntax argument = invocation.ArgumentList.Arguments[i];
+
+				// Check if argument is a parameter reference
+				if (argument.Expression is IdentifierNameSyntax identifier)
+				{
+					var paramName = identifier.Identifier.ValueText;
+
+					if (parameterTracker.TryGetValue(paramName, out ParameterFlowInfo paramInfo))
+					{
+						// Record usage location
+						paramInfo.UsageLocations.Add(argument.GetLocation());
+						paramInfo.FlowsToMethods.Add(methodSymbol);
+						paramInfo.IsValidated = isValidationMethod;
+						// Check if this is a known sink method
+						if (IsSinkMethod(methodSymbol) && !paramInfo.IsValidated)
 						{
-							ArgumentSyntax argument = invocation.ArgumentList.Arguments[info.ArgumentIndex];
-							AnalyzeArgument(context, argument);
-							validationSinks.Add(argument);
+							// Report diagnostic for unvalidated parameter flowing to sink
+							context.ReportDiagnostic(Diagnostic.Create(
+								Rule,
+								argument.GetLocation(),
+								$"Parameter '{paramName}' is used without validation"));
 						}
 					}
 				}
 			}
 		}
 
-		private void AnalyzeArgument(SyntaxNodeAnalysisContext context, ArgumentSyntax argument)
+		private bool IsValidationMethod(IMethodSymbol methodSymbol)
 		{
-			DataFlowAnalysis analysis = context.SemanticModel.AnalyzeDataFlow(argument.Expression);
-			SyntaxNode originalNode = analysis.DataFlowsIn[0].DeclaringSyntaxReferences[0].GetSyntax();
+			// Check if method name suggests validation
+			var methodName = methodSymbol.Name.ToLowerInvariant();
+			return methodName.Contains("validate") || methodName.Contains("sanitize") ||
+				   methodName.Contains("check") || methodName.Contains("verify");
+		}
+		/*
+				private bool IsSourceMethod(IMethodSymbol methodSymbol)
+				{
+					// Check if method is a known sink (e.g., database access, file I/O, etc.)
+					var fullName = $"{methodSymbol.ContainingNamespace}.{methodSymbol.ContainingType.Name}.{methodSymbol.Name}".ToLowerInvariant();
 
+					// Check for common source patterns
+					return fullName.Contains("control") || fullName.Contains("window") ||
+						   fullName.Contains("keyboard") || fullName.Contains("mouse");
+				}
+		*/
+		private bool IsSinkMethod(IMethodSymbol methodSymbol)
+		{
+			// Check if method is a known sink (e.g., database access, file I/O, etc.)
+			var fullName = $"{methodSymbol.ContainingNamespace}.{methodSymbol.ContainingType.Name}.{methodSymbol.Name}".ToLowerInvariant();
 
-			var argumentVariableName = GetVariableNameOfArgument(argument);
-			SyntaxNode block = argument.FirstAncestorOrSelf<SyntaxNode>(node => node.IsKind(SyntaxKind.Block));
-			IEnumerable<SyntaxNode> declaration = block?.DescendantNodes().Where(child => child.IsKind(SyntaxKind.VariableDeclaration));
-			IEnumerable<SyntaxNode> calls = block?.DescendantNodes(child =>
-				child.IsKind(SyntaxKind.Argument) &&
-				GetVariableNameOfArgument(child as ArgumentSyntax) == argumentVariableName);
+			// Check for common sink patterns
+			return fullName.Contains("SqlCommand") || fullName.Contains("Execute") ||
+				   fullName.Contains("Query") || fullName.Contains("Write") ||
+				   fullName.Contains("Read") || fullName.Contains("Load") ||
+				   fullName.Contains("Save");
 		}
 
-		private string GetVariableNameOfArgument(ArgumentSyntax argument)
+		protected override GeneratedCodeAnalysisFlags GetGeneratedCodeAnalysisFlags()
 		{
-			return (argument?.Expression as IdentifierNameSyntax)?.Identifier.Text;
+			return GeneratedCodeAnalysisFlags.None;
 		}
 	}
 
