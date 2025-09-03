@@ -36,7 +36,7 @@ class Foo
 		[DataRow("data.Item1", false)]
 		[DataRow("data.Item2", true)]
 		[DataRow("data.num", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrors(string argument, bool isError)
 		{

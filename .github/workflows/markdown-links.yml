@@ -9,8 +9,23 @@ jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Check Markdown Links
+        id: markdown-link-check
         uses: gaurav-nelson/github-action-markdown-link-check@9710f0fec812ce0a3b98bef4c9d842fc1f39d976 # ratchet:gaurav-nelson/github-action-markdown-link-check@1.0.13
         with:
           config-file: .github/linters/markdown-link-check.json
+          use-quiet-mode: 'yes'
+      
+      - name: Show Success Summary
+        if: success()
+        run: |
+          echo "::notice::✅ All markdown links are valid! No dead links found."
+      
+      - name: Show Debugging Instructions
+        if: failure() && steps.markdown-link-check.outcome == 'failure'
+        run: |
+          echo "::error::❌ MARKDOWN LINK CHECK FAILED ❌"
+          echo "::error::Dead links were found in the markdown files."
+          echo "::error::Look for '[✗]' or 'dead link' in the output above to find the specific broken links."
+          echo "::error::Common causes: broken URLs, typos in links, or temporarily unavailable websites."

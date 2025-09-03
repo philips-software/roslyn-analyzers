@@ -30,7 +30,7 @@ public class DerivedTestMethod : TestMethodAttribute
 			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public", true)]
 		[DataRow(@"private", false)]
 		[DataRow(@"internal", false)]
@@ -56,7 +56,8 @@ class Foo
 
 		}
 
-		[DataTestMethod]
+		[TestMethod]
+		[DataRow(@"[STATestClass]", true)]
 		[DataRow(@"[TestClass]", true)]
 		[DataRow(@"", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -76,9 +77,10 @@ class Foo
 			await VerifyErrorAsync(baseline, given, isError).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[DerivedTestMethod]", false)]
 		[DataRow(@"[TestMethod]", false)]
+		[DataRow(@"[STATestMethod]", false)]
 		[DataRow(@"[DataTestMethod]", false)]
 		[DataRow(@"[AssemblyInitialize()]", false)]
 		[DataRow(@"[TestCleanup()]", false)]

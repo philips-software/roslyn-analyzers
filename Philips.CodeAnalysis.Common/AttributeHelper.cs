@@ -26,11 +26,6 @@ namespace Philips.CodeAnalysis.Common
 			return HasAttribute(attributeLists, context, attribute.Name, attribute.FullName, out _);
 		}
 
-		public bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, AttributeDefinition attribute, out Location location)
-		{
-			return HasAttribute(attributeLists, context, attribute.Name, attribute.FullName, out location);
-		}
-
 		public bool HasAttribute(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, string name, string fullName, out Location location)
 		{
 			return HasAttribute(attributeLists, context, name, fullName, out location, out _);
@@ -125,6 +120,34 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsDataRowAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context)
 		{
 			return IsAttribute(attribute, context, MsTestFrameworkDefinitions.DataRowAttribute, out _, out _);
+		}
+
+		public bool TryExtractAttributeArgument<T>(AttributeArgumentSyntax argumentSyntax, SyntaxNodeAnalysisContext context, out string argumentString, out T value)
+		{
+			argumentString = argumentSyntax.Expression.ToString();
+
+			SymbolInfo data = context.SemanticModel.GetSymbolInfo(argumentSyntax.Expression);
+
+			if (data.Symbol == null)
+			{
+				var helper = new LiteralHelper();
+				if (helper.TryGetLiteralValue(argumentSyntax.Expression, context.SemanticModel, out T literalValue))
+				{
+					value = literalValue;
+					return true;
+				}
+				value = default;
+				return false;
+			}
+
+			if (data.Symbol is IFieldSymbol field && field.HasConstantValue && field.Type.Name == typeof(T).Name)
+			{
+				value = (T)field.ConstantValue;
+				return true;
+			}
+
+			value = default;
+			return false;
 		}
 	}
 }

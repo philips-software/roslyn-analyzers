@@ -13,10 +13,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodsShouldHaveValidReturnTypesAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -36,9 +32,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow(true, "int", true)]
 		[DataRow(true, "Task", false)]
 		[DataRow(true, "Task<int>", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestMethodsMustReturnVoidAsync(bool isAsync, string returnType, bool isError)
+		public async Task MustReturnVoidAsync(bool isAsync, string returnType, bool isError)
 		{
 			var code = $@"using System;
 using System.Threading.Tasks;

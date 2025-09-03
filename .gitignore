@@ -153,10 +153,11 @@ PublishScripts/
 
 # NuGet Packages
 *.nupkg
+*.snupkg
 # The packages folder can be ignored because of Package Restore
-**/packages/*
+**/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
-!**/packages/build/
+!**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
 # NuGet v3's project.json files produces more ignoreable files
@@ -251,3 +252,14 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# MCP Server temporary files
+tools/mcp/Directory.Build.props.backup
+tools/mcp/*.log
+tools/mcp/test-results.trx

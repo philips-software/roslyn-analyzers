@@ -28,9 +28,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
 		[DataRow("sealed", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestClassMustBePublicAsync(string modifier, bool isCorrect)
+		public async Task ClassMustBePublicAsync(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	public void Foo() {{ }}
 }}";
 
-			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]" })
+			foreach (var testType in new[] { "[TestMethod]", "[DataTestMethod]", "[STATestMethod]" })
 			{
 				var text = string.Format(code, testType, modifier);
 
@@ -72,9 +72,9 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("public", true)]
 		[DataRow("sealed", false)]
 		[DataRow("public sealed", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestClassWithAssemblyInitializeMustBePublicStaticAsync(string modifier, bool isCorrect)
+		public async Task ClassWithAssemblyInitializeMustBePublicStaticAsync(string modifier, bool isCorrect)
 		{
 			const string code = @"using Microsoft.VisualStudio.TestTools.UnitTesting;
 

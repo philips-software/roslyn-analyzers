@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			return new AssertIsTrueParenthesisAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue((1 == 2))", "Assert.IsTrue(1 == 2)")]
 		[DataRow("Assert.IsFalse((1 == 2))", "Assert.IsFalse(1 == 2)")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyChange(given, expected, expectedErrorColumnOffset: given.IndexOf("(") + 1).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(((1 == 2)))", "Assert.IsTrue((1 == 2))")]
 		[DataRow("Assert.IsFalse(((1 == 2)))", "Assert.IsFalse((1 == 2))")]
 		[TestCategory(TestDefinitions.UnitTests)]

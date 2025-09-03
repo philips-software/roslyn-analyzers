@@ -1,13 +1,11 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CodeFixes;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.CodeAnalysis.Text;
@@ -50,10 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				replaceNode = replaceNode.WithLeadingTrivia(leadingTrivia);
 			}
-			SyntaxTrivia newLine = SyntaxFactory.SyntaxTrivia(SyntaxKind.WhitespaceTrivia, Environment.NewLine);
-
-			SyntaxTriviaList trivia = trailingTrivia.Insert(0, newLine);
-			replaceNode = replaceNode.WithTrailingTrivia(trivia);
+			replaceNode = replaceNode.WithTrailingTrivia(trailingTrivia);
 
 			root = root.ReplaceNode(node, replaceNode).WithAdditionalAnnotations(Formatter.Annotation);
 

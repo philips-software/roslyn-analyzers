@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	{
 		[DataRow("ValueTask", "4")]
 		[DataRow("Task", "() => 4")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTaskResultTest(string taskType, string argument)
 		{

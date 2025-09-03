@@ -34,7 +34,7 @@ class Foo
 
 
 		[DataRow("(int Foo, int Bar)")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NamedTuplesDontCauseErrorsAsync(string argument)
 		{
@@ -43,7 +43,7 @@ class Foo
 		}
 
 		[DataRow("(int, int)")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementsDoNotHaveNamesAsync(string argument)
 		{
@@ -52,7 +52,7 @@ class Foo
 		}
 
 		[DataRow("(int Foo, int)")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ErrorIfTupleElementDoesNotHaveNameAsync(string argument)
 		{

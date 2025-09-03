@@ -28,16 +28,20 @@ jobs:
         
     - name: Bump version
       id: tag_version
-      uses: mathieudutour/github-tag-action@fcfbdceb3093f6d85a3b194740f8c6cec632f4e2 # 6.1
+      uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # 6.2
       with:
         dry_run: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Results
       run: |
-        echo New Tag:  ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
-        echo New Version:  ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
-        echo Changelog:  '${{ steps.tag_version.outputs.changelog }}'
+        echo "New Tag:  ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
+        echo "New Version:  ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
+        echo "Changelog:"
+        echo "${{ steps.tag_version.outputs.changelog }}"
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        echo "${{ steps.tag_version.outputs.changelog }}" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
         
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}

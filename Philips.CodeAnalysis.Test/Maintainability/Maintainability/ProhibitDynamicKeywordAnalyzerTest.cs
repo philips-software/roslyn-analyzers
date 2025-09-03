@@ -13,10 +13,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class ProhibitDynamicKeywordAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -34,7 +30,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"void TestMethod() { List<dynamic> list = null; }")]
 		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
 		[DataRow(@"dynamic TestProperty { get; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DynamicTypeShouldTriggerDiagnostic(string testCode)
 		{
@@ -46,7 +42,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 bool isDynamic = !String.IsNullOrEmpty(dynamic) &&
 dynamic.StartsWith(""Y"", true, CultureInfo.CurrentCulture);
  }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DynamicNameShouldNotTriggerDiagnostic(string testCode)
 		{

@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish
     steps:
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 #v3
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     
-    - uses: dorny/paths-filter@7267a8516b6f92bdb098633497bad573efdbf271 #v2.12.0
+    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 #v3.0.2
       id: changes
       with:
         filters: |
@@ -28,12 +28,14 @@ jobs:
             - 'Philips.CodeAnalysis.${{ matrix.package }}/**'
             
     - name: Download artifact
-      uses: actions/download-artifact@87c55149d96e628cc2ef7e6fc2aab372015aec85 #v4
+      uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 #v5
       with:
         name: Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }}
 
     - name: Nuget
-      if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && matrix.package == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && matrix.package == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && matrix.package == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && matrix.package == 'MsTestAnalyzers')
+      if: (steps.changes.outputs.MaintainabilityAnalyzers == 'true' && matrix.package == 'MaintainabilityAnalyzers') || (steps.changes.outputs.DuplicateCodeAnalyzer == 'true' && matrix.package == 'DuplicateCodeAnalyzer') || (steps.changes.outputs.MoqAnalyzers == 'true' && matrix.package == 'MoqAnalyzers') || (steps.changes.outputs.MsTestAnalyzers == 'true' && matrix.package == 'MsTestAnalyzers') || (steps.changes.outputs.SecurityAnalyzers == 'true' && matrix.package == 'SecurityAnalyzers')
       run: |
-        echo Publishing to Nuget Philips.CodeAnalysis.${{ matrix.package }}-${{ inputs.new_tag }} >> $GITHUB_STEP_SUMMARY
-#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+        echo Publishing to Nuget Philips.CodeAnalysis.${{ matrix.package }}.${{ inputs.new_tag }}.*.nupkg >> $GITHUB_STEP_SUMMARY
+        echo Publishing to Nuget Philips.CodeAnalysis.${{ matrix.package }}.${{ inputs.new_tag }}.*.snupkg >> $GITHUB_STEP_SUMMARY
+#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.${{ inputs.new_tag }}.*.nupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json
+#        dotnet nuget push Philips.CodeAnalysis.${{ matrix.package }}.${{ inputs.new_tag }}.*.snupkg --api-key ${{ secrets.nuget-token }} --source https://api.nuget.org/v3/index.json

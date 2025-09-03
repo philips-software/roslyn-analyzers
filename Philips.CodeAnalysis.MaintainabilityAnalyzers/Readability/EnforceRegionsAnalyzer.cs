@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
@@ -28,13 +29,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string EnforceNonDuplicateRegionCategory = Categories.Readability;
 
 		private const string NonCheckedRegionMemberTitle = @"Members location relative to regions (Enforce Region Analyzer).";
-		public const string NonCheckedRegionMemberTitleMessageFormat = @"Member's location relative to region {0} should be verified in Enforce Regions Analyzer";
-		private const string NonCheckedRegionMemberTitleDescription = @"Member's location relative to region {0} should be verified. Implement the check in enforce region analyer";
-		private const string NonCheckedRegionMemberTitleCategory = Categories.Readability;
+		public const string NonCheckedRegionMemberMessageFormat = @"Member's location relative to region {0} should be verified in Enforce Regions Analyzer";
+		private const string NonCheckedRegionMemberDescription = @"Member's location relative to region {0} should be verified. Implement the check in enforce region analyer";
+		private const string NonCheckedRegionMemberCategory = Categories.Readability;
+
+
 
 		private const string NonPublicDataMembersRegion = "Non-Public Data Members";
 		private const string NonPublicPropertiesAndMethodsRegion = "Non-Public Properties/Methods";
 		private const string PublicInterfaceRegion = "Public Interface";
+
 
 		private static readonly Dictionary<string, Func<IReadOnlyList<MemberDeclarationSyntax>, SyntaxNodeAnalysisContext, bool>> RegionChecks = new()
 		{
@@ -45,30 +49,51 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(DiagnosticId.EnforceRegions.ToId(), EnforceRegionTitle,
 			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
-		private static readonly DiagnosticDescriptor EnforceNonDupliateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
+		private static readonly DiagnosticDescriptor EnforceNonDuplicateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
 			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
 		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
-			NonCheckedRegionMemberTitle, NonCheckedRegionMemberTitleMessageFormat, NonCheckedRegionMemberTitleCategory,
-			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberTitleDescription);
+			NonCheckedRegionMemberTitle, NonCheckedRegionMemberMessageFormat, NonCheckedRegionMemberCategory,
+			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberDescription);
 
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDupliateRegion, NonCheckedMember);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDuplicateRegion, NonCheckedMember);
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration);
+			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration);
 		}
 
 		private static void Analyze(SyntaxNodeAnalysisContext context)
 		{
-			var classDeclaration = (ClassDeclarationSyntax)context.Node;
+			var typeDeclaration = (TypeDeclarationSyntax)context.Node;
 
 			RegionVisitor visitor = new();
 
-			visitor.Visit(classDeclaration);
+			visitor.Visit(typeDeclaration);
 
 			IReadOnlyList<DirectiveTriviaSyntax> regions = visitor.Regions;
+			if (regions.Count == 0)
+			{
+				return;
+			}
+			// Region directives should come in pairs
+			if (regions.Count % 2 == 1)
+			{
+				return;
+			}
+
+			// If pair is malformed (eg. #region followed by #region), bail out
+			for (var i = 0; i < regions.Count; i += 2)
+			{
+				DirectiveTriviaSyntax start = regions[i];
+				DirectiveTriviaSyntax end = regions[i + 1];
+
+				if (start.IsKind(SyntaxKind.EndRegionDirectiveTrivia) || end.IsKind(SyntaxKind.RegionDirectiveTrivia))
+				{
+					return;
+				}
+			}
 
 			Dictionary<string, LocationRangeModel> regionLocations = PopulateRegionLocations(regions, context);
 
@@ -77,7 +102,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			SyntaxList<MemberDeclarationSyntax> members = classDeclaration.Members;
+			SyntaxList<MemberDeclarationSyntax> members = typeDeclaration.Members;
 
 			foreach (KeyValuePair<string, LocationRangeModel> pair in regionLocations)
 			{
@@ -90,11 +115,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		}
 
+
 		private static string GetRegionName(DirectiveTriviaSyntax region)
 		{
 			var regionName = string.Empty;
 
-			Microsoft.CodeAnalysis.Text.TextLineCollection lines = region.GetText().Lines;
+			TextLineCollection lines = region.GetText().Lines;
 
 			if (lines.Count > 0)
 			{
@@ -119,21 +145,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 					return;
 				}
 
-				if (RegionChecks.ContainsKey(regionName))
+				if (regionLocations.Remove(regionName))
 				{
-					if (regionLocations.Remove(regionName))
-					{
-						Location memberLocation = region.DirectiveNameToken.GetLocation();
-						CreateDiagnostic(memberLocation, context, regionName, EnforceNonDupliateRegion);
-					}
-					else
-					{
-						Location location = region.GetLocation();
-						var lineNumber = GetMemberLineNumber(location);
+					Location memberLocation = region.DirectiveNameToken.GetLocation();
+					CreateDiagnostic(memberLocation, context, regionName, EnforceNonDuplicateRegion);
+				}
+				else
+				{
+					Location location = region.GetLocation();
+					Location memberLocation = region.DirectiveNameToken.GetLocation();
+					var lineNumber = GetMemberLineNumber(location);
 
-						regionLocations.Add(regionName, new LocationRangeModel(lineNumber, lineNumber));
-						regionStartName = regionName;
-					}
+					regionLocations.Add(regionName, new LocationRangeModel(memberLocation, lineNumber, lineNumber));
+					regionStartName = regionName;
 				}
 			}
 			else
@@ -162,7 +186,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private static Dictionary<string, LocationRangeModel> PopulateRegionLocations(IReadOnlyList<DirectiveTriviaSyntax> regions, SyntaxNodeAnalysisContext context)
 		{
 			Dictionary<string, LocationRangeModel> regionLocations = [];
-			var regionStartName = "";
+			var regionStartName = string.Empty;
+
 			for (var i = 0; i < regions.Count; i++)
 			{
 				DirectiveTriviaSyntax region = regions[i];
@@ -188,11 +213,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <param name="member"></param>
 		/// <param name="locationRange"></param>
 		/// <returns>true if member is inside the given region, else false</returns>
-		private static bool MemberPresentInRegion(MemberDeclarationSyntax member, LocationRangeModel locationRange)
+		private static bool MemberPresentInRegion(SyntaxNode member, LocationRangeModel locationRange)
 		{
 			Location location = member.GetLocation();
-			var memberLocation = GetMemberLineNumber(location);
-			return memberLocation > locationRange.StartLine && memberLocation < locationRange.EndLine;
+			var memberLine = GetMemberLineNumber(location);
+			return memberLine > locationRange.StartLine && memberLine < locationRange.EndLine;
 		}
 
 		/// <summary>
@@ -217,13 +242,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return true;
 		}
 
+
 		/// <summary>
 		/// Verify whether the given member belongs to the public interface region
 		/// If the member is of type field, then throw an error
 		/// If the member is of type method, then check if its non-public
 		/// </summary>
-		/// <param name="member"></param>
-		/// <param name="context"></param>
 		private static void VerifyMemberForPublicInterfaceRegion(MemberDeclarationSyntax member, SyntaxNodeAnalysisContext context)
 		{
 			if (TryGetModifiers(member, true, out SyntaxTokenList modifiers))

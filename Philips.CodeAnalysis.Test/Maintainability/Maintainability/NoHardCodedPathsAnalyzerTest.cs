@@ -20,6 +20,23 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowDoubleBackslashHardcodedPath()
+		{
+			const string template = @"
+using System;
+class Foo
+{
+	public void Test()
+	{
+		string path = @""\\"";
+	}
+}
+";
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CatchesHardCodedAbsoluteWindowsPaths()
 		{
 			const string template = @"

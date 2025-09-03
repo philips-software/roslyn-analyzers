@@ -36,6 +36,18 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task CheckNullStringNoError()
+		{
+			var test = @"
+  string json = ""test"";
+  Assert.AreEqual(""null"", json);
+";
+			await VerifyNoError(test);
+		}
+
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckDefaultBehaviorAsync()
 		{
 			await VerifyNoError(@"
@@ -72,7 +84,7 @@ Assert.AreEqual(default, GetValue());
 		[DataRow(false, "-1u", null, false)]
 		[DataRow(false, "1u", null, false)]
 		[DataRow(false, "0u", null, false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNegativeInteger(bool shouldWrapArgument, string arg0, string arg1, bool isError)
 		{
@@ -127,7 +139,7 @@ Assert.AreEqual({actualParameter}, {expectedParameter});
 		[DataRow("-1u")]
 		[DataRow("1u")]
 		[DataRow("0u")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNull(string arg)
 		{
@@ -147,7 +159,7 @@ Assert.IsNull({arg});
 		[DataRow("-1u")]
 		[DataRow("1u")]
 		[DataRow("0u")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNotNull(string arg)
 		{

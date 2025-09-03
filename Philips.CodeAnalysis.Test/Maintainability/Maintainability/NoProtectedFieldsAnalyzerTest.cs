@@ -20,9 +20,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("protected", true)]
 		[DataRow("public", false)]
 		[DataRow("private", false)]
-		[DataRow("private", false)]
 		[DataRow("internal", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ProtectedFieldsRaiseErrorAsync(string modifiers, bool isError)
 		{

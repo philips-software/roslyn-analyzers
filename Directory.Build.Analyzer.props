@@ -1,0 +1,58 @@
+<Project>
+  <PropertyGroup>
+    <IsRoslynAnalyzer>true</IsRoslynAnalyzer>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <ReportAnalyzer>true</ReportAnalyzer>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSource>true</IncludeSource>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageOutputPath>../Packages</PackageOutputPath>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>packageicon.png</PackageIcon>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/39734771</PackageIconUrl>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/philips-software/roslyn-analyzers</PackageProjectUrl>
+    <PackageReleaseNotes>See Changelog</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/philips-software/roslyn-analyzers</RepositoryUrl>
+    <Copyright>©2019-2025 Koninklijke Philips N.V.</Copyright>
+    <Authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</Authors>
+    <Company>Philips</Company>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(GITHUB_ACTIONS)' == 'true' ">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
+    <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
+    <None Include="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="tools" />
+    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)\netstandard2.0\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="..\LICENSE.md" Pack="true" PackagePath="" />
+    <None Include="..\README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Philips.CodeAnalysis.Common\Philips.CodeAnalysis.Common.csproj" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

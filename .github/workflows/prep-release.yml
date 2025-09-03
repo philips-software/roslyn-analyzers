@@ -13,7 +13,7 @@ jobs:
     steps:
     - name: Create Branch
       id: create-branch
-      uses: peterjgrainger/action-create-branch@08259812c8ebdbf1973747f9297e332fa078d3c1 # @v2.4.0
+      uses: peterjgrainger/action-create-branch@10c7d268152480ae859347db45dc69086cef1d9c # @v3.0.0
       with:
         branch: 'release-${{ needs.tagversion.outputs.new_version }}'
       env:
@@ -30,7 +30,7 @@ jobs:
     needs: [tagversion, branch, changelog]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # @v1
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
     
     - name: Create Pull Request
       run: |

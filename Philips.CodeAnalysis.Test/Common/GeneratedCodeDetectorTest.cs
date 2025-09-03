@@ -22,10 +22,19 @@ namespace Philips.CodeAnalysis.Test.Common
 				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)
 			{ }
 
-			public static bool ShouldAnalyzeTree { get; set; }
-			public static bool ShouldAnalyzeConstructor { get; set; }
-			public static bool ShouldAnalyzeStruct { get; set; }
-			public static bool ShouldAnalyzeSwitch { get; set; }
+			public AvoidWritingCodeAnalyzer(bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeStruct, bool shouldAnalyzeSwitch)
+				: base(DiagnosticId.TestMethodName, @"Avoid writing code", @"Message Format", @"Description", Categories.Maintainability)
+			{
+				ShouldAnalyzeTree = shouldAnalyzeTree;
+				ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
+				ShouldAnalyzeStruct = shouldAnalyzeStruct;
+				ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
+			}
+
+			public bool ShouldAnalyzeTree { get; set; }
+			public bool ShouldAnalyzeConstructor { get; set; }
+			public bool ShouldAnalyzeStruct { get; set; }
+			public bool ShouldAnalyzeSwitch { get; set; }
 
 			private Helper _helper;
 
@@ -97,23 +106,22 @@ namespace Philips.CodeAnalysis.Test.Common
 		}
 		#endregion Helper Analyzer
 
+		private AvoidWritingCodeAnalyzer _configuredAnalyzer;
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
-			return new AvoidWritingCodeAnalyzer();
+			return _configuredAnalyzer ?? new AvoidWritingCodeAnalyzer();
 		}
 
 		[DataRow(true, false, false, false)]
 		[DataRow(false, true, false, false)]
 		[DataRow(false, false, true, false)]
 		[DataRow(false, false, false, true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NonGeneratedCodeIsFlaggedAsync(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = shouldAnalyzeStruct;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(shouldAnalyzeTree, shouldAnalyzeConstructor, shouldAnalyzeStruct, shouldAnalyzeSwitch);
 
 			var input = @"
 public class Foo
@@ -131,7 +139,7 @@ public void Method(int i) { switch(i) { default: break;} }
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedConstructorIsNotFlaggedAsync()
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = true;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(false, true, false, false);
 
 			var input = @"
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
@@ -147,7 +155,7 @@ public class Foo
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedStructIsNotFlaggedAsync()
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeStruct = true;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(false, false, true, false);
 
 			var input = @"
 [System.CodeDom.Compiler.GeneratedCodeAttribute(""protoc"", null)]
@@ -161,7 +169,7 @@ public struct Foo { }
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedSwitchIsNotFlaggedAsync()
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = true;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(false, false, false, true);
 
 			var input = @"
 public class Foo
@@ -188,13 +196,11 @@ public class Foo
 		[DataRow(@"Foo.g", true, false, false)]
 		[DataRow(@"Foo.g", false, true, false)]
 		[DataRow(@"Foo.g", false, false, true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedFilesNamesAreNotFlaggedAsync(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = shouldAnalyzeTree;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeConstructor = shouldAnalyzeConstructor;
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeSwitch = shouldAnalyzeSwitch;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(shouldAnalyzeTree, shouldAnalyzeConstructor, false, shouldAnalyzeSwitch);
 
 			var input = @"public class Foo { public Foo(); public void Method(int i) { switch(i) { default: break;} } }";
 			await VerifySuccessfulCompilation(input, fileNamePrefix).ConfigureAwait(false);
@@ -202,11 +208,12 @@ public class Foo
 
 		[DataRow(@"Foo")]
 		[DataRow(@"Foo.xyz")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NonGeneratedFilesAreFlaggedAsync(string fileNamePrefix)
 		{
-			AvoidWritingCodeAnalyzer.ShouldAnalyzeTree = true;
+			_configuredAnalyzer = new AvoidWritingCodeAnalyzer(true, false, false, false);
+
 			var input = @"public class Foo { }";
 			await VerifyDiagnostic(input, DiagnosticId.TestMethodName, fileNamePrefix).ConfigureAwait(false);
 		}

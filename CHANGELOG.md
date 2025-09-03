@@ -1,3 +1,279 @@
+### [1.9.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.0...v1.9.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* PH2141 false positive for regions containing copyright comments ([#961](https://github.com/philips-software/roslyn-analyzers/issues/961)) ([cc26e84](https://github.com/philips-software/roslyn-analyzers/commit/cc26e845dfa5e245604e0da31b0855508474ade6))
+
+
+### Tests
+
+* Update MSTest and run MSTEST auto-fixers ([#959](https://github.com/philips-software/roslyn-analyzers/issues/959)) ([6edac6e](https://github.com/philips-software/roslyn-analyzers/commit/6edac6ed02ff94f008935d9d0bc5786f3cc8aff8))
+
+
+
+## [1.9.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.8.0...v1.9.0) (2025-08-27)
+
+
+### Features
+
+* Add analyzer to avoid problematic using statement patterns (PH2149) ([#855](https://github.com/philips-software/roslyn-analyzers/issues/855)) ([8db5abc](https://github.com/philips-software/roslyn-analyzers/commit/8db5abcef88984f8270d4129023e03602e7c94d3))
+
+
+### Bug Fixes
+
+* analyzer packages to include tools for old-style projects ([#942](https://github.com/philips-software/roslyn-analyzers/issues/942)) ([d597931](https://github.com/philips-software/roslyn-analyzers/commit/d59793133efda4c718f618412e5339854ce12fc5))
+* PH2102 CodeFixer for multiple XML documentation instances in same document ([#926](https://github.com/philips-software/roslyn-analyzers/issues/926)) ([f26e17b](https://github.com/philips-software/roslyn-analyzers/commit/f26e17b72ff1708a443b1d97d2c33ba72b435a7d))
+* PH2115 CodeFixer for nested lambda scenarios like Moq verification calls  ([#922](https://github.com/philips-software/roslyn-analyzers/issues/922)) ([da838dc](https://github.com/philips-software/roslyn-analyzers/commit/da838dc6d1a4452a13c08eec240b7d92ff28629d))
+* PH2149 false positive for out parameter declarations in using statements ([#955](https://github.com/philips-software/roslyn-analyzers/issues/955)) ([3f440a8](https://github.com/philips-software/roslyn-analyzers/commit/3f440a81cff3faf78dec076614172c4f17c88752))
+* Redesign AvoidEmptyRegionsAnalyzer with region-focused approach to eliminate nested class false positives ([#940](https://github.com/philips-software/roslyn-analyzers/issues/940)) ([3e662b4](https://github.com/philips-software/roslyn-analyzers/commit/3e662b4ec62d46ca43eda8d2c139d63d14cb24b3))
+
+
+### Code Refactoring
+
+* Remove LanguageExt.Core dependency from MaintainabilityAnalyzers ([#936](https://github.com/philips-software/roslyn-analyzers/issues/936)) ([f05c034](https://github.com/philips-software/roslyn-analyzers/commit/f05c0348df3ee6e52bf754d18c8ff3cc344c4d5c))
+
+
+### Build Systems
+
+* Bump amannn/action-semantic-pull-request from 5.5.3 to 6.0.1 ([#929](https://github.com/philips-software/roslyn-analyzers/issues/929)) ([a4e3c16](https://github.com/philips-software/roslyn-analyzers/commit/a4e3c16ee67eb0306615e3c04be6764e2869dbc5))
+
+
+
+## [1.8.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.7.0...v1.8.0) (2025-08-13)
+
+
+### Features
+
+* Add AvoidTodoCommentsAnalyzer (PH2151) to detect TODO comments in source code ([#872](https://github.com/philips-software/roslyn-analyzers/issues/872)) ([dc5da39](https://github.com/philips-software/roslyn-analyzers/commit/dc5da3926b7ffd4963fba4c820085a9e4e48865e))
+* Add AvoidUnusedToString analyzer (PH2153) to detect discarded ToString() calls ([#876](https://github.com/philips-software/roslyn-analyzers/issues/876)) ([643cd2e](https://github.com/philips-software/roslyn-analyzers/commit/643cd2e699a7a812029b058d15dd8caf6f6ca684))
+* Add code fixer for PH2140 AvoidExcludeFromCodeCoverage analyzer ([#875](https://github.com/philips-software/roslyn-analyzers/issues/875)) ([c68a267](https://github.com/philips-software/roslyn-analyzers/commit/c68a267bc27254656abc2ca713bfb102ddb51e05))
+* Enable PH2146 analyzer for detecting redundant ToString() calls on strings ([#870](https://github.com/philips-software/roslyn-analyzers/issues/870)) ([09afc80](https://github.com/philips-software/roslyn-analyzers/commit/09afc809d8ab8bbacc3c55cb24ff97adcf51965b))
+* PH2158: AvoidPkcsPaddingWithRsaEncryption security analyzer with CodeFixer ([#908](https://github.com/philips-software/roslyn-analyzers/issues/908)) ([0e91f2b](https://github.com/philips-software/roslyn-analyzers/commit/0e91f2bfbc6ecc600af3e1f9c4c5fd11b3dfeb96))
+
+
+### Bug Fixes
+
+* Correct PH2147 false positive for typed discards ([#867](https://github.com/philips-software/roslyn-analyzers/issues/867)) ([a00248c](https://github.com/philips-software/roslyn-analyzers/commit/a00248c15da128f1dfed5f4c437d78cfa983c03e))
+* PH2012 analyzer to detect literal integer timeout values ([#868](https://github.com/philips-software/roslyn-analyzers/issues/868)) ([0b3a2c7](https://github.com/philips-software/roslyn-analyzers/commit/0b3a2c7488913b65cb4385630b2a6fb4f22e15a3))
+* PH2045 AvoidStaticClasses analyzer to properly handle properties, constructors, and events ([#904](https://github.com/philips-software/roslyn-analyzers/issues/904)) ([62a5650](https://github.com/philips-software/roslyn-analyzers/commit/62a565015343fdeec8b54db1333514573004338a))
+* PH2090 false positive for ILogger.LogError() calls ([#910](https://github.com/philips-software/roslyn-analyzers/issues/910)) ([b8c121e](https://github.com/philips-software/roslyn-analyzers/commit/b8c121e7136a764c4c1d2be34aa28c1c5ec1ab5e))
+* PH2101 false negative: detect null dereference when checking properties ([#842](https://github.com/philips-software/roslyn-analyzers/issues/842)) ([916ebe3](https://github.com/philips-software/roslyn-analyzers/commit/916ebe3136ebed691fb11ab9d6458f54743fc46f))
+* PH2136 false positive by clearing analyzer state between compilations ([#912](https://github.com/philips-software/roslyn-analyzers/issues/912)) ([9a7c4c5](https://github.com/philips-software/roslyn-analyzers/commit/9a7c4c519d8fe6801e88f0a6e6cde2f32d6fa99e))
+* Simplify PH2115 CodeFixer to use Formatter.FormatAsync for automatic indentation ([#914](https://github.com/philips-software/roslyn-analyzers/issues/914)) ([fcd5820](https://github.com/philips-software/roslyn-analyzers/commit/fcd5820c610203121e8596fe52f9a1b7ad169397))
+
+
+### Tests
+
+* Add unit tests for AttributeHelper class ([#916](https://github.com/philips-software/roslyn-analyzers/issues/916)) ([136bf10](https://github.com/philips-software/roslyn-analyzers/commit/136bf1068a038bfe9e5f0fd5059e6b51cb670c8f))
+* Fix concurrency issues in GeneratedCodeDetectorTest ([#896](https://github.com/philips-software/roslyn-analyzers/issues/896)) ([21f6d8b](https://github.com/philips-software/roslyn-analyzers/commit/21f6d8b7e0535f443d002ca08e5ed211ce2d6ae6))
+
+
+### Continuous Integration
+
+* Add NuGet package ecosystem to dependabot configuration with CodeAnalysis exclusions ([#891](https://github.com/philips-software/roslyn-analyzers/issues/891)) ([75bbacc](https://github.com/philips-software/roslyn-analyzers/commit/75bbacc0ec0a1ef0a5480908c7b1233ec9d46ea5))
+* Add types: [checks_requested] to merge_group triggers in GitHub Actions workflows ([#871](https://github.com/philips-software/roslyn-analyzers/issues/871)) ([abd4acb](https://github.com/philips-software/roslyn-analyzers/commit/abd4acba4c4bec83b0518d4ae254aea27156a4e7))
+* fix tagversion.yml to handle apostrophes ([#920](https://github.com/philips-software/roslyn-analyzers/issues/920)) ([8cfb271](https://github.com/philips-software/roslyn-analyzers/commit/8cfb2712603a67643360bf4a0f1b67aea63d4a44))
+* Improve CheckMarkdown debugging by enabling quiet mode and adding clear error messages ([#899](https://github.com/philips-software/roslyn-analyzers/issues/899)) ([3772fa0](https://github.com/philips-software/roslyn-analyzers/commit/3772fa076fbbf2eaf98ccf0642a333884898f066))
+* Use original zgosalvez action instead of philips-forks for pinned actions checking ([#917](https://github.com/philips-software/roslyn-analyzers/issues/917)) ([273330b](https://github.com/philips-software/roslyn-analyzers/commit/273330baf57ec728a69908192701dfc3948c798c))
+
+
+### Code Refactoring
+
+* Improve LiteralHelper.IsNull() implementation to use SyntaxKind check for better robustness ([#887](https://github.com/philips-software/roslyn-analyzers/issues/887)) ([b117eef](https://github.com/philips-software/roslyn-analyzers/commit/b117eef7318b4db0a39fba622cbf89ed083e9f9a))
+
+
+### Build Systems
+
+* Bump actions/checkout from 4.2.2 to 5.0.0 ([#918](https://github.com/philips-software/roslyn-analyzers/issues/918)) ([038d257](https://github.com/philips-software/roslyn-analyzers/commit/038d257d355be32743d2e8bc3a364d37f3a7555f))
+* Bump github/codeql-action from 3.29.7 to 3.29.8 ([#894](https://github.com/philips-software/roslyn-analyzers/issues/894)) ([413a3a0](https://github.com/philips-software/roslyn-analyzers/commit/413a3a06cac6ef325e2579fd8bd282a5be91420a))
+* Bump github/codeql-action from 3.29.8 to 3.29.9 ([#921](https://github.com/philips-software/roslyn-analyzers/issues/921)) ([9271e04](https://github.com/philips-software/roslyn-analyzers/commit/9271e04fe139bfdcf8c4c07b6651f32986aec111))
+
+
+### Documentation
+
+* Add comprehensive GitHub Copilot instructions for repository workflow ([#883](https://github.com/philips-software/roslyn-analyzers/issues/883)) ([6e41164](https://github.com/philips-software/roslyn-analyzers/commit/6e41164fb539bead9dab917a4473fa021503323b))
+* Add comprehensive MSTest analyzers migration guide for Microsoft's official analyzers ([#853](https://github.com/philips-software/roslyn-analyzers/issues/853)) ([32b3b12](https://github.com/philips-software/roslyn-analyzers/commit/32b3b123e9999107b7051e73d3cef91c55e40bb1))
+* fix dead link in DuplicateCodeAnalyzer documentation ([#915](https://github.com/philips-software/roslyn-analyzers/issues/915)) ([e97329e](https://github.com/philips-software/roslyn-analyzers/commit/e97329ee1e0e9f93a58171e61c5d0f87f926cbab))
+* Improve CD documentation with detailed release process ([#881](https://github.com/philips-software/roslyn-analyzers/issues/881)) ([adbdea5](https://github.com/philips-software/roslyn-analyzers/commit/adbdea5808f43408a231602adee1dbb6ffe93a90))
+
+
+
+## [1.7.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.4...v1.7.0) (2025-08-09)
+
+
+### Features
+
+* Add analyzer for backwards for-loop boundary check (PH2144) ([#836](https://github.com/philips-software/roslyn-analyzers/issues/836)) ([667ffb3](https://github.com/philips-software/roslyn-analyzers/commit/667ffb34243c6b998c697b889d50a8b3f400d608))
+* Add AvoidStringJoinInInterpolatedString analyzer to detect string.Join in interpolated strings ([#838](https://github.com/philips-software/roslyn-analyzers/issues/838)) ([21f775e](https://github.com/philips-software/roslyn-analyzers/commit/21f775e5597cb840e4039380ad4b978b7c7be893))
+* Add AvoidToStringOnString analyzer to detect redundant ToString() calls on string types (disabled by default) ([#854](https://github.com/philips-software/roslyn-analyzers/issues/854)) ([593a68a](https://github.com/philips-software/roslyn-analyzers/commit/593a68a0a089c1f561583461385f73ae3d6c1424))
+* PH2147: Create new analyzer to avoid variables named exactly _ ([#839](https://github.com/philips-software/roslyn-analyzers/issues/839)) ([9bfd6f3](https://github.com/philips-software/roslyn-analyzers/commit/9bfd6f353bb48c0f22acf2ad353859286968e8ed))
+
+
+### Bug Fixes
+
+* PH2001 false positive when documentation has useful param tags ([#835](https://github.com/philips-software/roslyn-analyzers/issues/835)) ([134423e](https://github.com/philips-software/roslyn-analyzers/commit/134423e434d7b467d16261a69057d18d3032d062))
+* Remove obsolete DataTestMethodsHaveDataRowsAnalyzer (PH2033) ([#851](https://github.com/philips-software/roslyn-analyzers/issues/851)) ([5d0a8f5](https://github.com/philips-software/roslyn-analyzers/commit/5d0a8f55b42f95a1a9c847ee1a8255e2abf2f277))
+* Remove obsolete PH2035 analyzer (TestMethodsMustHaveTheCorrectNumberOfArguments) ([#861](https://github.com/philips-software/roslyn-analyzers/issues/861)) ([3eb2170](https://github.com/philips-software/roslyn-analyzers/commit/3eb21707d92529b2f6899b4a82e755f46e6a2e34))
+* resolve GetSyntaxKind exception in AvoidStringFormatInInterpolatedStringAnalyzer (PH2145) ([#863](https://github.com/philips-software/roslyn-analyzers/issues/863)) ([b774643](https://github.com/philips-software/roslyn-analyzers/commit/b77464332ac2877d5cc48aa2467cec70b3105916))
+
+
+### Documentation
+
+* Add copilot-instructions.md with development guidelines and analyzer creation workflow ([#857](https://github.com/philips-software/roslyn-analyzers/issues/857)) ([81adecf](https://github.com/philips-software/roslyn-analyzers/commit/81adecf93471cfacaf330edbd09f946520ae8072))
+
+
+### Tests
+
+* Enable MSTest Analyzers ([#858](https://github.com/philips-software/roslyn-analyzers/issues/858)) ([86a0631](https://github.com/philips-software/roslyn-analyzers/commit/86a063180606723ea47be229feadad222ab04c7e))
+
+
+### Build Systems
+
+* Bump actions/download-artifact from 4.3.0 to 5.0.0 ([#864](https://github.com/philips-software/roslyn-analyzers/issues/864)) ([47259a4](https://github.com/philips-software/roslyn-analyzers/commit/47259a492dea562caa62dde7aaf05f6867021813))
+* Bump github/codeql-action from 3.29.4 to 3.29.5 ([#846](https://github.com/philips-software/roslyn-analyzers/issues/846)) ([d6625fe](https://github.com/philips-software/roslyn-analyzers/commit/d6625fe6cc8e21d0312f7a15e05a5874c69916fb))
+
+
+### Continuous Integration
+
+* Fix NuGet.org warnings by modernizing package metadata ([#845](https://github.com/philips-software/roslyn-analyzers/issues/845)) ([6f12b5f](https://github.com/philips-software/roslyn-analyzers/commit/6f12b5f7e9174fc767d9baf9b38bf38a58718f26))
+
+
+
+### [1.6.4](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.3...v1.6.4) (2025-07-28)
+
+
+### Bug Fixes
+
+* enforce regions false positives ([#830](https://github.com/philips-software/roslyn-analyzers/issues/830)) ([320a5a6](https://github.com/philips-software/roslyn-analyzers/commit/320a5a6f0b27ce746e6627347c3c8f9ac13a2cd8))
+* Fix PH2101 false positive when multiple 'as' expressions exist in same block ([#833](https://github.com/philips-software/roslyn-analyzers/issues/833)) ([d88f603](https://github.com/philips-software/roslyn-analyzers/commit/d88f603f7d5b4ff8b4993c80237e5b9ac4c704a3))
+
+
+### Build Systems
+
+* Bump github/codeql-action from 3.29.2 to 3.29.4 ([#837](https://github.com/philips-software/roslyn-analyzers/issues/837)) ([b85fb0a](https://github.com/philips-software/roslyn-analyzers/commit/b85fb0af3866a9c4dab6e232973b2e8d0de86ef5))
+
+
+
+### [1.6.3](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.2...v1.6.3) (2025-07-07)
+
+
+### Bug Fixes
+
+* Assert.AreEqual(null, myVar) ([#822](https://github.com/philips-software/roslyn-analyzers/issues/822)) ([d161fa7](https://github.com/philips-software/roslyn-analyzers/commit/d161fa7a024ff989e38cfd41118d9224c67ce366))
+* Avoid Empty Region ApplyFix exception ([#827](https://github.com/philips-software/roslyn-analyzers/issues/827)) ([cce92f6](https://github.com/philips-software/roslyn-analyzers/commit/cce92f60ac1007b901b79e3cebb63cf21874be41))
+
+
+### Continuous Integration
+
+* snupkg ([#825](https://github.com/philips-software/roslyn-analyzers/issues/825)) ([69ec992](https://github.com/philips-software/roslyn-analyzers/commit/69ec9921f2d291de37dacbdc6e492fbc0cd7f6dd))
+
+
+### Build Systems
+
+* Bump github/codeql-action from 3.29.0 to 3.29.1 ([#819](https://github.com/philips-software/roslyn-analyzers/issues/819)) ([dd2ef14](https://github.com/philips-software/roslyn-analyzers/commit/dd2ef14c4efd7fa90c8745d42cc040dcf4dcd6c9))
+* Bump github/codeql-action from 3.29.1 to 3.29.2 ([#824](https://github.com/philips-software/roslyn-analyzers/issues/824)) ([d1af3b3](https://github.com/philips-software/roslyn-analyzers/commit/d1af3b3e4f3b7a9ba3fc84117fd4ac7fd18e764c))
+* Bump ncipollo/release-action from 1.16.0 to 1.18.0 ([#820](https://github.com/philips-software/roslyn-analyzers/issues/820)) ([2eda139](https://github.com/philips-software/roslyn-analyzers/commit/2eda139c9108abecbf2dfa67be31a602a338f7b7))
+
+
+
+### [1.6.2](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.1...v1.6.2) (2025-06-29)
+
+
+### Bug Fixes
+
+* bail on nested regions ([#813](https://github.com/philips-software/roslyn-analyzers/issues/813)) ([b18c528](https://github.com/philips-software/roslyn-analyzers/commit/b18c52830d21422c5b4485054e9007f9bdfc60fe))
+* FixAll for Empty Region throws exception ([#815](https://github.com/philips-software/roslyn-analyzers/issues/815)) ([becd0dc](https://github.com/philips-software/roslyn-analyzers/commit/becd0dcd120eacbf328be44d9dc842a2ea9eb560))
+* PH2080 allow double backslash ([#814](https://github.com/philips-software/roslyn-analyzers/issues/814)) ([279f0f0](https://github.com/philips-software/roslyn-analyzers/commit/279f0f01c3c895b1e8dbb623b018cad1feb046c0))
+
+
+### Code Refactoring
+
+* CodeFixVerifier more strict with newlines ([#817](https://github.com/philips-software/roslyn-analyzers/issues/817)) ([be03316](https://github.com/philips-software/roslyn-analyzers/commit/be033168f62b6658f02c06b3b867b1c276b2531a))
+* update low-risk dependency updates ([#816](https://github.com/philips-software/roslyn-analyzers/issues/816)) ([66c3abb](https://github.com/philips-software/roslyn-analyzers/commit/66c3abb96c0ac31aacd890ad00000c77f65442dc))
+
+
+### Build Systems
+
+* Bump actions/setup-dotnet from 4.0.0 to 4.3.1 ([#803](https://github.com/philips-software/roslyn-analyzers/issues/803)) ([3468f45](https://github.com/philips-software/roslyn-analyzers/commit/3468f45bf34d6a1475d5e797056570dc83f6fa78))
+* Bump actions/setup-java from 4.2.1 to 4.7.1 ([#804](https://github.com/philips-software/roslyn-analyzers/issues/804)) ([f24e27e](https://github.com/philips-software/roslyn-analyzers/commit/f24e27e04a348875d32d324d448da5d52b313fd8))
+* Bump amannn/action-semantic-pull-request from 5.4.0 to 5.5.3 ([#790](https://github.com/philips-software/roslyn-analyzers/issues/790)) ([6c06610](https://github.com/philips-software/roslyn-analyzers/commit/6c0661061722557f64cc9b10bbf35a9b78fa619f))
+* Bump dorny/paths-filter from 3.0.0 to 3.0.2 ([#787](https://github.com/philips-software/roslyn-analyzers/issues/787)) ([2777215](https://github.com/philips-software/roslyn-analyzers/commit/27772153111a18777b2c2a7e8392cc250b317efe))
+* Bump github/codeql-action from 3.28.15 to 3.29.0 ([#805](https://github.com/philips-software/roslyn-analyzers/issues/805)) ([59a2e58](https://github.com/philips-software/roslyn-analyzers/commit/59a2e582f36eebc8f2c82490848ca4f242e29816))
+
+
+
+### [1.6.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.6.0...v1.6.1) (2025-06-27)
+
+
+### Bug Fixes
+
+* Assert.AreEqual type matching too strict ([#808](https://github.com/philips-software/roslyn-analyzers/issues/808)) ([c1663ec](https://github.com/philips-software/roslyn-analyzers/commit/c1663ece2fa5d77bd3b77d732e91954d87b39096))
+* Empty region false positives ([#807](https://github.com/philips-software/roslyn-analyzers/issues/807)) ([77eca7e](https://github.com/philips-software/roslyn-analyzers/commit/77eca7e14d924624f266d728a53f5dabab3c00c1))
+* support codefixer for empty region ([#809](https://github.com/philips-software/roslyn-analyzers/issues/809)) ([489188c](https://github.com/philips-software/roslyn-analyzers/commit/489188c402c93686856e3347caa942db8511e16c))
+
+
+### Code Refactoring
+
+* sonarqube findings ([#810](https://github.com/philips-software/roslyn-analyzers/issues/810)) ([d927eaa](https://github.com/philips-software/roslyn-analyzers/commit/d927eaa3fbf132bcb77362b77b3871dc7896436c))
+
+
+
+## [1.6.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.5.0...v1.6.0) (2025-06-25)
+
+
+### Features
+
+* Add support for STATestMethod and STATestClass ([#802](https://github.com/philips-software/roslyn-analyzers/issues/802)) ([c534ec7](https://github.com/philips-software/roslyn-analyzers/commit/c534ec7be3f145871586e688efca4d61ee632470))
+* Introduce avoid Assembly.GetEntryAssembly analyzer ([#740](https://github.com/philips-software/roslyn-analyzers/issues/740)) ([c144450](https://github.com/philips-software/roslyn-analyzers/commit/c144450f2af4981f784a0a32d49c4e82ffd1e852))
+
+
+### Bug Fixes
+
+* Diagnostic on empty regions ([#715](https://github.com/philips-software/roslyn-analyzers/issues/715)) ([9a89a06](https://github.com/philips-software/roslyn-analyzers/commit/9a89a063c77d2605ec44d9b7a07095e3b712a78a))
+* false positive ph2089 anonymous object initialization mistaken for assignment in condition ([#781](https://github.com/philips-software/roslyn-analyzers/issues/781)) ([f1be028](https://github.com/philips-software/roslyn-analyzers/commit/f1be028122728b982dadff0c44aba2a614741d65))
+* Limit the length of strings to inspect  ([#736](https://github.com/philips-software/roslyn-analyzers/issues/736)) ([0961bc0](https://github.com/philips-software/roslyn-analyzers/commit/0961bc0fd74a4aa55584ab9f387141f2f4b2764a))
+* Make AllowedSymbols thread safe ([#782](https://github.com/philips-software/roslyn-analyzers/issues/782)) ([e70c89c](https://github.com/philips-software/roslyn-analyzers/commit/e70c89c7477888b1dcefcbb883cd4191dadddc4b))
+* Unable to find Mono.Cecil assemblies ([#744](https://github.com/philips-software/roslyn-analyzers/issues/744)) ([5a3a111](https://github.com/philips-software/roslyn-analyzers/commit/5a3a1113bebf1d06d72caafd2beda69a50a264ab))
+* Various small improvements ([#759](https://github.com/philips-software/roslyn-analyzers/issues/759)) ([ef467f2](https://github.com/philips-software/roslyn-analyzers/commit/ef467f2b2f8d0617bfb91c7b152b93aa18048526))
+
+
+### Continuous Integration
+
+* Move to .NET 8 ([#780](https://github.com/philips-software/roslyn-analyzers/issues/780)) ([e5cebd5](https://github.com/philips-software/roslyn-analyzers/commit/e5cebd5a0c1c7ed3d166841a9f4ca2e8ddc959eb))
+
+
+### Build Systems
+
+* Bump actions/checkout from 4.1.1 to 4.2.2 ([#796](https://github.com/philips-software/roslyn-analyzers/issues/796)) ([19f6176](https://github.com/philips-software/roslyn-analyzers/commit/19f6176666f7fabd3a5d6d96a775b726cf0a2930))
+* Bump actions/download-artifact from 3.0.2 to 4.1.0 ([#731](https://github.com/philips-software/roslyn-analyzers/issues/731)) ([540d849](https://github.com/philips-software/roslyn-analyzers/commit/540d849069798e2e92ae549c3971341caebb9d7e))
+* Bump actions/download-artifact from 4.1.0 to 4.1.1 ([#738](https://github.com/philips-software/roslyn-analyzers/issues/738)) ([a24f15e](https://github.com/philips-software/roslyn-analyzers/commit/a24f15e533277810342e2c3c034d604118c12eca))
+* Bump actions/download-artifact from 4.1.1 to 4.1.2 ([#751](https://github.com/philips-software/roslyn-analyzers/issues/751)) ([50900c2](https://github.com/philips-software/roslyn-analyzers/commit/50900c2a3d39899281a1847ba09b2c8832d17c5c))
+* Bump actions/download-artifact from 4.1.2 to 4.1.3 ([#760](https://github.com/philips-software/roslyn-analyzers/issues/760)) ([5e0898a](https://github.com/philips-software/roslyn-analyzers/commit/5e0898a525b31bd13fb1ac6dcd94ce5edf074a98))
+* Bump actions/download-artifact from 4.1.3 to 4.2.0 ([#784](https://github.com/philips-software/roslyn-analyzers/issues/784)) ([4a5a55b](https://github.com/philips-software/roslyn-analyzers/commit/4a5a55b95a53d1dc95cdfbede77064f7dfd8df06))
+* Bump actions/download-artifact from 4.2.0 to 4.3.0 ([#800](https://github.com/philips-software/roslyn-analyzers/issues/800)) ([8a6688f](https://github.com/philips-software/roslyn-analyzers/commit/8a6688fd3b61481e0cfde0551ad7a9fda8b250eb))
+* Bump actions/setup-java from 4.0.0 to 4.2.1 ([#766](https://github.com/philips-software/roslyn-analyzers/issues/766)) ([eb18457](https://github.com/philips-software/roslyn-analyzers/commit/eb18457e7dc197add4bb454d343d2ae574f47fa1))
+* Bump actions/upload-artifact from 3.1.3 to 4.0.0 ([#729](https://github.com/philips-software/roslyn-analyzers/issues/729)) ([5443a5b](https://github.com/philips-software/roslyn-analyzers/commit/5443a5b884efc13a7faddc391a63a4913242ca0d))
+* Bump actions/upload-artifact from 4.0.0 to 4.3.0 ([#743](https://github.com/philips-software/roslyn-analyzers/issues/743)) ([d0dc34d](https://github.com/philips-software/roslyn-analyzers/commit/d0dc34d900cc6dd62de380ae7d1d05a8205f3941))
+* Bump actions/upload-artifact from 4.3.0 to 4.3.1 ([#753](https://github.com/philips-software/roslyn-analyzers/issues/753)) ([45eeeed](https://github.com/philips-software/roslyn-analyzers/commit/45eeeed9c0b8ffbf536a3c228195e20497e37c05))
+* Bump actions/upload-artifact from 4.3.1 to 4.6.2 ([#797](https://github.com/philips-software/roslyn-analyzers/issues/797)) ([f0903fe](https://github.com/philips-software/roslyn-analyzers/commit/f0903fe0268b6229d38ea81ed341c19a6b9ee603))
+* Bump dorny/paths-filter from 2.11.1 to 2.12.0 ([#745](https://github.com/philips-software/roslyn-analyzers/issues/745)) ([1adaa16](https://github.com/philips-software/roslyn-analyzers/commit/1adaa16ad060fc4b11305b3885fd658d7a1489d6))
+* Bump dorny/paths-filter from 2.12.0 to 3.0.0 ([#747](https://github.com/philips-software/roslyn-analyzers/issues/747)) ([a4abef1](https://github.com/philips-software/roslyn-analyzers/commit/a4abef1649b50e147f770f859282a4e2af3c352a))
+* Bump EndBug/add-and-commit from 9.1.3 to 9.1.4 ([#746](https://github.com/philips-software/roslyn-analyzers/issues/746)) ([5c306c3](https://github.com/philips-software/roslyn-analyzers/commit/5c306c32ed788b7764f84d93dd76249771e0cd60))
+* Bump github/codeql-action from 2.22.8 to 3.22.12 ([#734](https://github.com/philips-software/roslyn-analyzers/issues/734)) ([4bce218](https://github.com/philips-software/roslyn-analyzers/commit/4bce2182df8812eefe8a2fa3b8a0b78242bf37a3))
+* Bump github/codeql-action from 3.22.12 to 3.23.0 ([#737](https://github.com/philips-software/roslyn-analyzers/issues/737)) ([81ef0fc](https://github.com/philips-software/roslyn-analyzers/commit/81ef0fcef05b543234c98a15dad542d55c37e218))
+* Bump github/codeql-action from 3.23.0 to 3.23.1 ([#741](https://github.com/philips-software/roslyn-analyzers/issues/741)) ([848787d](https://github.com/philips-software/roslyn-analyzers/commit/848787dfedf495b7e1dfa21bc17bb19b9f435f29))
+* Bump github/codeql-action from 3.23.1 to 3.23.2 ([#748](https://github.com/philips-software/roslyn-analyzers/issues/748)) ([2b9246d](https://github.com/philips-software/roslyn-analyzers/commit/2b9246da3dc3030a2b31bba56e63300b99902ba7))
+* Bump github/codeql-action from 3.23.2 to 3.24.5 ([#757](https://github.com/philips-software/roslyn-analyzers/issues/757)) ([307e734](https://github.com/philips-software/roslyn-analyzers/commit/307e7345dfc0a6c69d9d5614d6f8ed4593ceaae6))
+* Bump github/codeql-action from 3.24.10 to 3.28.15 ([#795](https://github.com/philips-software/roslyn-analyzers/issues/795)) ([dde9c23](https://github.com/philips-software/roslyn-analyzers/commit/dde9c23b8eac723aad6a9cb1a9e546b34c2033f5))
+* Bump github/codeql-action from 3.24.5 to 3.24.10 ([#769](https://github.com/philips-software/roslyn-analyzers/issues/769)) ([759f41e](https://github.com/philips-software/roslyn-analyzers/commit/759f41ec9d82b7c95ac24fad13daae2d375a5010))
+* Bump mathieudutour/github-tag-action from 6.1 to 6.2 ([#770](https://github.com/philips-software/roslyn-analyzers/issues/770)) ([cc7d229](https://github.com/philips-software/roslyn-analyzers/commit/cc7d22924f464af18122b0449f246e1f05122d64))
+* Bump ncipollo/release-action from 1.13.0 to 1.14.0 ([#752](https://github.com/philips-software/roslyn-analyzers/issues/752)) ([c0a9c2c](https://github.com/philips-software/roslyn-analyzers/commit/c0a9c2c23ad6d739ef73ac64a88a575e8183107a))
+* Bump ncipollo/release-action from 1.14.0 to 1.16.0 ([#791](https://github.com/philips-software/roslyn-analyzers/issues/791)) ([5336ccb](https://github.com/philips-software/roslyn-analyzers/commit/5336ccbd6871ea4620de1051325f28ed05217883))
+* Bump peterjgrainger/action-create-branch from 2.4.0 to 3.0.0 ([#761](https://github.com/philips-software/roslyn-analyzers/issues/761)) ([c69f886](https://github.com/philips-software/roslyn-analyzers/commit/c69f886a8e03f0d1b1d06534bd1e30fee736c13d))
+
+
+
 ## [1.5.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.4.0...v1.5.0) (2023-12-19)
 
 

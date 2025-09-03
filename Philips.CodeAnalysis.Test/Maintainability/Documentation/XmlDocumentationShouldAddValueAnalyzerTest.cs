@@ -57,6 +57,31 @@ public class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DefaultWhiteSpaceWithBaseTest()
+		{
+			var content = $@"
+		/// <summary>
+		/// 
+		/// </summary>
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
+";
+
+			var newContent = $@"
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
+";
+
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyClassTestAsync()
 		{
 			var content = $@"
@@ -180,7 +205,7 @@ public enum TestEnumeration
 		[DataRow("Gets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassInvalidTestsAsync(string text)
 		{
@@ -201,7 +226,7 @@ public class Foo
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassValidTestsAsync(string text)
 		{
@@ -223,7 +248,7 @@ public class Foo
 		[DataRow("Gets an dummy Foo")]
 		[DataRow("Gets a rom")]
 		[DataRow("Gets a roms")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodInvalidTestsAsync(string text)
 		{
@@ -241,7 +266,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodValidTestsAsync(string text)
 		{
@@ -265,7 +290,7 @@ public class TestClass
 		[DataRow("Gets/sets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyInvalidTestsAsync(string text)
 		{
@@ -284,7 +309,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyValidTestsAsync(string text)
 		{
@@ -309,7 +334,7 @@ public class TestClass
 		[DataRow("Gets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldInvalidTestsAsync(string text)
 		{
@@ -325,7 +350,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldValidTestsAsync(string text)
 		{
@@ -346,7 +371,7 @@ public class TestClass
 		[DataRow("Fires the Foo event")]
 		[DataRow("Raise Foo")]
 		[DataRow("Raises an instance of the Foo event")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventInvalidTestsAsync(string text)
 		{
@@ -362,7 +387,7 @@ public class TestClass
 		}
 
 		[DataRow("Raised when Foo happens")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventValidTestsAsync(string text)
 		{
@@ -378,7 +403,7 @@ public class TestClass
 
 		[DataRow("On Foo")]
 		[DataRow("It is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumTestsAsync(string text)
 		{
@@ -394,7 +419,7 @@ public enum Foo
 		}
 
 		[DataRow("When it is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumValidTestsAsync(string text)
 		{
@@ -411,7 +436,7 @@ public enum Foo
 
 		[DataRow("On Foo")]
 		[DataRow("It is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberInvalidTestsAsync(string text)
 		{
@@ -426,7 +451,7 @@ public enum TestEnumeration
 		}
 
 		[DataRow("When it is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberValidTestsAsync(string text)
 		{
@@ -445,7 +470,7 @@ public enum TestEnumeration
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixEmptyTests(string text)
 		{
@@ -474,7 +499,7 @@ public class TestClass
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixValueTests(string text)
 		{
@@ -537,7 +562,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ConstructorTestAsync()
+		public async Task ConstructorTest()
 		{
 			var content = $@"
 public class Foo
@@ -550,8 +575,241 @@ public class Foo
 	}}
 }}
 ";
+			var newContent = $@"
+public class Foo
+{{
+	public Foo()
+	{{
+	}}
+}}
+";
 
 			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstructorWithBaseTest()
+		{
+			var content = $@"
+public class Foo : BaseClass
+{{
+	/// <summary>
+	/// Constructor
+	/// </summary>
+	public Foo()
+		: base()
+	{{
+	}}
+}}
+";
+			var newContent = $@"
+public class Foo : BaseClass
+{{
+	public Foo()
+		: base()
+	{{
+	}}
+}}
+";
+
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+			await VerifyFix(content, newContent);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulParamShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""value"">The meaningful parameter description that provides useful information.</param>
+	public void Foo(int value)
+	{{
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UselessSummaryWithUsefulParamShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary>Foo</summary>
+	/// <param name=""value"">The meaningful parameter description that provides useful information.</param>
+	public void Foo(int value)
+	{{
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulReturnsShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <returns>A meaningful return value description that provides useful information.</returns>
+	public int Foo()
+	{{
+		return 42;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUsefulExceptionShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <exception cref=""System.ArgumentNullException"">Thrown when argument is null and operation cannot proceed.</exception>
+	public void Foo(string arg)
+	{{
+		if (arg == null) throw new System.ArgumentNullException(nameof(arg));
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithMultipleUsefulElementsShouldNotTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""input"">The input value to process with specific business logic.</param>
+	/// <returns>A processed result based on the input with additional computation.</returns>
+	/// <exception cref=""System.ArgumentException"">Thrown when input is invalid for processing.</exception>
+	public int ProcessValue(string input)
+	{{
+		if (string.IsNullOrEmpty(input)) throw new System.ArgumentException(""Invalid input"");
+		return input.Length * 2;
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task EmptySummaryWithUselessParamShouldStillTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	/// <param name=""foo"">foo</param>
+	public void Foo(int foo)
+	{{
+	}}
+}}
+";
+			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UselessSummaryWithUselessParamShouldTriggerAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary>Foo</summary>
+	/// <param name=""foo"">foo</param>
+	public void Foo(int foo)
+	{{
+	}}
+}}
+";
+			await VerifyDiagnostic(content, DiagnosticId.XmlDocumentationShouldAddValue).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MultipleXmlDocumentationInstancesInSameDocumentCanBeFixedAsync()
+		{
+			var content = $@"
+public class TestClass
+{{
+	/// <summary></summary>
+	public void FirstMethod()
+	{{
+	}}
+
+	/// <summary>Gets the SecondMethod</summary>
+	public void SecondMethod()
+	{{
+	}}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	public int ThirdProperty {{ get; }}
+}}
+";
+
+			var fixedContent = $@"
+public class TestClass
+{{
+	public void FirstMethod()
+	{{
+	}}
+
+	public void SecondMethod()
+	{{
+	}}
+
+	public int ThirdProperty {{ get; }}
+}}
+";
+
+			DiagnosticResult[] expectedDiagnostics = new[]
+			{
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.EmptyXmlComments.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 4, null)
+				},
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.XmlDocumentationShouldAddValue.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 9, null)
+				},
+				new DiagnosticResult
+				{
+					Id = DiagnosticId.EmptyXmlComments.ToId(),
+					Message = new System.Text.RegularExpressions.Regex(".*", System.Text.RegularExpressions.RegexOptions.Singleline, System.TimeSpan.FromSeconds(1)),
+					Severity = Microsoft.CodeAnalysis.DiagnosticSeverity.Error,
+					Location = new DiagnosticResultLocation(null, 14, null)
+				}
+			};
+
+			await VerifyDiagnostic(content, expectedDiagnostics).ConfigureAwait(false);
+			await VerifyFix(content, fixedContent).ConfigureAwait(false);
+		}
+
 	}
 }

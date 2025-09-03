@@ -44,34 +44,38 @@ class TestDefinitions
 				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke");
 		}
 
-		[DataTestMethod]
-		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\n    [Timeout(1000)]")]
-		[DataRow("[DataTestMethod]", "[DataTestMethod]\n    [Timeout(1000)]")]
-		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\n    [Timeout(TestTimeouts.CiAppropriate)]")]
+		[TestMethod]
+		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\r\n    [Timeout(1000)]")]
+		[DataRow("[DataTestMethod]", "[DataTestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests)]", "[TestMethod, TestCategory(TestDefinitions.UnitTests)]\r\n    [Timeout(TestTimeouts.CiAppropriate)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresent(string methodAttributes, string expectedMethodAttributes)
 		{
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
-		[DataRow("[TestMethod]", "[TestMethod]\n    [Timeout(1000)]")]
+		[TestMethod]
+		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentNoCategory(string methodAttributes, string expectedMethodAttributes)
 		{
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
-		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\n    [Timeout(1000)]")]
+		[TestMethod]
+		[DataRow("[STATestMethod, TestCategory(\"foo\")]", "[STATestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
+		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TimeoutAttributeNotPresentUnknownCategory(string methodAttributes, string expectedMethodAttributes)
 		{
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
+		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(TestTimeouts.CiAppropriate)]")]
@@ -81,7 +85,19 @@ class TestDefinitions
 			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(1234)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(5678)]")]
+		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(9999)]")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TimeoutAttributeWithLiteralIntegerShouldTriggerAsync(string methodAttributes)
+		{
+			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
+		[DataRow("[DataTestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAcceptable)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.Integration)]")]
@@ -93,7 +109,7 @@ class TestDefinitions
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestMethod][Timeout(1)]")]
 		[DataRow("[Timeout(1)][TestMethod]")]
 		[DataRow("[TestMethod, Timeout(1)]")]
@@ -106,7 +122,7 @@ class TestDefinitions
 			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestInitialize]")]
 		[DataRow("[TestCleanup]")]
 		[DataRow("[AssemblyInitialize]")]

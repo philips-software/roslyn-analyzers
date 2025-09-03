@@ -15,10 +15,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AvoidAssertConditionalAccessAnalyzerTest : AssertDiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -30,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Public Interface
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name?.ToString(), \"xyz\")")]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name?.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), name2.ToString())")]
@@ -42,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual((name1?.ToString()), (name2?.ToString()))")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidAssertConditionalAccessAnalyzerFailTestMultipleErrorsAsync(string test)
@@ -68,7 +64,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(name.ToString(), \"xyz\")")]
 		[DataRow("string name=\"xyz\"; Assert.AreEqual(\"xyz\",name.ToString())")]
 		[DataRow("string name1=\"xyz\"; string name2=\"abc\"; Assert.AreEqual(name1.ToString(), name2.ToString())")]

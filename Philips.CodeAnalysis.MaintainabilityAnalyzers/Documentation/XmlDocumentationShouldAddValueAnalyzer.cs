@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 		private static readonly DiagnosticDescriptor EmptyRule = new(DiagnosticId.EmptyXmlComments.ToId(), EmptyTitle, EmptyMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EmptyDescription);
 
 		private static readonly HashSet<string> UselessWords =
-			["get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor"];
+			[.. new[] { "get", StringConstants.Set, "the", "a", "an", "it", "i", "of", "to", "for", "on", "or", "and", StringConstants.Value, "indicate", "indicating", "instance", "raise", "raises", "fire", "event", "constructor", "ctor" }];
 		private HashSet<string> additionalUselessWords;
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EmptyRule, ValueRule);
@@ -116,6 +116,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 				var lowercaseName = name.ToLowerInvariant();
 
+				// If any element contains useful information, skip all diagnostics
+				if (HasUsefulElements(xmlElements, lowercaseName))
+				{
+					return;
+				}
+
 				foreach (XmlElementSyntax xmlElement in xmlElements)
 				{
 					if (xmlElement.StartTag.Name.LocalName.Text != @"summary")
@@ -133,25 +139,53 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 						continue;
 					}
 
-					// Find the 'value' in the XML documentation content by:
-					// 1. Splitting it into separate words.
-					// 2. Filtering a predefined and a configurable list of words that add no value.
-					// 3. Filter words that are part of the method name.
-					// 4. Throw a Diagnostic if no words remain. This boils down to the content only containing 'low value' words.
-					IEnumerable<string> words =
-						SplitInWords(content)
-							.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
-							.Where(s => !lowercaseName.Contains(s));
-
-					// We assume here that every remaining word adds value to the documentation text.
-					if (!words.Any())
-					{
-						var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
-						var diagnostic = Diagnostic.Create(ValueRule, loc);
-						context.ReportDiagnostic(diagnostic);
-					}
+					// Summary already evaluated by HasUsefulElements
+					var loc = Location.Create(context.Node.SyntaxTree, xmlElement.Content.FullSpan);
+					var valueDiagnostic = Diagnostic.Create(ValueRule, loc);
+					context.ReportDiagnostic(valueDiagnostic);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Checks if there are any XML documentation elements that have useful content.
+		/// Elements like summary, param, returns, exception, etc. are considered if they have useful information.
+		/// </summary>
+		/// <param name="xmlElements">All XML documentation elements</param>
+		/// <param name="lowercaseName">The lowercase name of the documented element</param>
+		/// <returns>True if there are elements with useful content, false otherwise</returns>
+		private bool HasUsefulElements(IEnumerable<XmlElementSyntax> xmlElements, string lowercaseName)
+		{
+			var xmlDocElements = new[] { "summary", "param", "returns", "exception", "remarks", "example", "value" };
+
+			foreach (XmlElementSyntax xmlElement in xmlElements)
+			{
+				var tagName = xmlElement.StartTag.Name.LocalName.Text;
+				if (!xmlDocElements.Contains(tagName))
+				{
+					continue;
+				}
+
+				var content = GetContent(xmlElement);
+
+				if (string.IsNullOrWhiteSpace(content))
+				{
+					continue;
+				}
+
+				IEnumerable<string> words =
+					SplitInWords(content)
+						.Where(u => !additionalUselessWords.Contains(u) && !UselessWords.Contains(u))
+						.Where(s => !lowercaseName.Contains(s));
+
+				// If there are remaining words, assume this element has useful content
+				if (words.Any())
+				{
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		private static string GetContent(XmlElementSyntax xmlElement)

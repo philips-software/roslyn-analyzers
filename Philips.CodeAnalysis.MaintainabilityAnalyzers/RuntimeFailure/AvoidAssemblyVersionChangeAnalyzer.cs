@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			var value = helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, @"assembly_version");
 			if (!string.IsNullOrWhiteSpace(value))
 			{
-				var isParseSuccessful = Version.TryParse(value.ToString(), out Version parsedVersion);
+				var isParseSuccessful = Version.TryParse(value, out Version parsedVersion);
 
 				if (!isParseSuccessful)
 				{

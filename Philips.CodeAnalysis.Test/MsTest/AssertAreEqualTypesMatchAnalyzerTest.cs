@@ -15,15 +15,20 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AssertAreEqualTypesMatchAnalyzerTest : DiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
+		[DataRow("Literal", "us1", false)]
+		[DataRow("Literal", "l1", false)]
+		[DataRow("i", "l1", false)]
+		[DataRow("i", "us1", false)]
+		[DataRow("d1", "i", false)]
 		[DataRow("i", "j", false)]
 		[DataRow("i", "str2", true)]
 		[DataRow("str1", "str2", false)]
-		[DataRow("str1", "b2", false)]
-		[DataRow("i", "b2", false)]
-		[DataRow("d1", "b2", false)]
-		[DataRow("f1", "b2", false)]
-		[DataRow("x1", "b2", false)]
+		[DataRow("str1", "b2", true)]
+		[DataRow("i", "b2", true)]
+		[DataRow("d1", "b2", true)]
+		[DataRow("f1", "b2", true)]
+		[DataRow("x1", "b2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AreEqualTypesMatchTestAsync(string arg1, string arg2, bool isError)
 		{
@@ -35,18 +40,20 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
     [TestMethod]
     public void TestMethod()
     {{
+      const int Literal = 2;
       string str1, str2;
       int i, j;
       double d1, d2;
       float f1, f2;
       byte x1, x2;
-      boolean b1, b2;
+      bool b1, b2;
+      ushort us1, us2;
+      long l1, l2;
       Microsoft.VisualStudio.TestTools.UnitTesting.Assert.AreEqual({0}, {1});
     }}
   }}
 }}
 ";
-
 			var givenText = string.Format(baseline, arg1, arg2);
 			var arg1Type = GetWellKnownTypeName(arg1);
 			var arg2Type = GetWellKnownTypeName(arg2);
@@ -61,7 +68,7 @@ namespace AssertAreEqualTypesMatchAnalyzerTest
 					Severity = DiagnosticSeverity.Error,
 					Locations = new[]
 					{
-						new DiagnosticResultLocation("Test0.cs", 15, 7)
+						new DiagnosticResultLocation("Test0.cs", 18, 7)
 					}
 				};
 				await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);

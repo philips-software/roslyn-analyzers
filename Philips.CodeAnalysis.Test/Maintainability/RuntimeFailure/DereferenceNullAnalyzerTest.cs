@@ -74,7 +74,7 @@ Instruction i = method.Body.Instructions[0];
 		/// </summary>
 		/// <param name="content1"></param>
 		/// <param name="content2"></param>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("string t0 = y.ToString()", "string t1 = y.ToString()")]
 		[DataRow("", "string t1 = y.ToString()")]
 		[DataRow("", "int t2 = y.Length")]
@@ -93,10 +93,9 @@ Instruction i = method.Body.Instructions[0];
 		/// </summary>
 		/// <param name="content1"></param>
 		/// <param name="content2"></param>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", "")]
 		[DataRow("y=string.Empty", "")]
-		[DataRow("", "")]
 		[DataRow("y=string.Empty", "int t2 = y.Length")]
 		[DataRow("if (y==null) int b = 0", "int t2 = y.Length")]
 		[DataRow("string z = \"hi\"", "int t2 = y?.Length")]
@@ -369,5 +368,55 @@ class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DereferenceNullAsExpressionPropertyCheckNotVariableCheckTestAsync()
+		{
+			var testCode = @"
+class DataGridViewTextBoxCell 
+{{
+  public object Value {{ get; set; }}
+  public void Foo()
+  {{
+    object obj = new DataGridViewTextBoxCell();
+    DataGridViewTextBoxCell assignedCell = obj as DataGridViewTextBoxCell;
+    if (assignedCell.Value == null)
+    {{
+      assignedCell.Value = string.Empty;
+    }}
+  }}
+}}
+";
+			await VerifyDiagnostic(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MultipleAsExpressionsInSameBlockShouldNotTriggerFalsePositiveAsync()
+		{
+			var testCode = @"
+class SomeKindOfModel
+{{
+	public bool IsValid {{ get; set; }}
+}}
+
+class Foo 
+{{
+	public void TestMethod(object aModel, object anOldModel)
+	{{
+		var model = aModel as SomeKindOfModel;
+		var oldModel = anOldModel as SomeKindOfModel;
+		if (oldModel != null && oldModel.IsValid) {{
+			// some code
+		}}            
+		if (model != null && model.IsValid) {{
+			// some code
+		}}
+	}}
+}}
+";
+			// This should not produce any diagnostics since both variables are properly null-checked
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
 	}
 }

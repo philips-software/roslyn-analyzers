@@ -1,25 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Directory.Build.Common.props" />
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <IsPackable>false</IsPackable>
-    <AnalysisLevel>latest-Recommended</AnalysisLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <ReportAnalyzer>true</ReportAnalyzer>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0</FileVersion>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
-    <PackageReference Include="Moq" Version="4.10.1" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.10.3" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.10.3" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,10 +15,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodsShouldHaveUniqueNamesAnalyzerTest : DiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{

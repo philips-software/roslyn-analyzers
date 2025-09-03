@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			Diagnostic result = Check(context, invocationExpressionSyntax, invocationExpressionSyntax.ArgumentList, isIsTrue);
 
-			return result is null ? Array.Empty<Diagnostic>() : (IEnumerable<Diagnostic>)(new[] { result });
+			return result is null ? Array.Empty<Diagnostic>() : [result];
 		}
 		protected virtual Diagnostic Check(SyntaxNodeAnalysisContext context, SyntaxNode node, ArgumentListSyntax arguments, bool isIsTrue)
 		{

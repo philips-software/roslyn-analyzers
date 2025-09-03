@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 		public const string IndexOutOfRangeException = "System.IndexOutOfRangeException";
 		public const string OutOfMemoryException = "System.OutOfMemoryException";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Insert", ArgumentOutOfRangeException)]
 		[DataRow("InsertRange", ArgumentNullException, ArgumentOutOfRangeException)]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			AssertCorrectUnhandledExceptions(type, methodName, expectedExceptions);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("CreateDirectory", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
 		[DataRow("Delete", IoException, UnauthorizedException, ArgumentException, ArgumentNullException, PathTooLongException, DirectoryNotFoundException)]
 		[DataRow("GetFiles", ArgumentOutOfRangeException, ArgumentException, ArgumentNullException, IndexOutOfRangeException, OutOfMemoryException)]

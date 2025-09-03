@@ -26,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[DataRow("foo", false)]
 		[DataRow("_foo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrect(string content, bool isGood)
 		{
@@ -55,7 +55,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__Foo", true)]
 		[DataRow("_foo", true)]
 		[DataRow("_foo_", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIgnoresPublicFields(string content, bool isGood)
 		{
@@ -229,7 +229,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__Foo", false)]
 		[DataRow("_foo", false)]
 		[DataRow("_foo_", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EventNameIsCorrect(string content, bool isGood)
 		{
@@ -256,7 +256,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__foo", false)]
 		[DataRow("__Foo", false)]
 		[DataRow("_foo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrect(string content, bool isGood)
 		{
@@ -281,12 +281,11 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[DataRow("Foo", "const", true)]
-		[DataRow("Foo", "const", true)]
 		[DataRow("_Foo", "const", false)]
 		[DataRow("__foo", "const", false)]
 		[DataRow("__Foo", "const", false)]
 		[DataRow("_foo", "const", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AttributedLocalVariableNameIsCorrect(string content, string attribute, bool isGood)
 		{
@@ -311,11 +310,9 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[DataRow("int i; for(i=0;i<5;i++){}", true)]
 		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
-		[DataRow("int _i; for(_i=0;i<5;i++){}", false)]
 		[DataRow("for(var i=0;i<5;i++){}", true)]
 		[DataRow("for(var _i=0;i<5;i++){}", false)]
-		[DataRow("for(var _i=0;i<5;i++){}", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForLoop(string content, bool isGood)
 		{
@@ -341,7 +338,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("using(var i = new MemoryStream()){}", true)]
 		[DataRow("using(var _i = new MemoryStream()){}", false)]
 		[DataRow("using(var _I = new MemoryStream()){}", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectUsing(string content, bool isGood)
 		{
@@ -367,7 +364,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(var i in new[] { 1, 2 }){}", true)]
 		[DataRow("foreach(var _i in new[] { 1, 2 }){}", false)]
 		[DataRow("foreach(var _I in new[] { 1, 2 }){}", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForeach(string content, bool isGood)
 		{

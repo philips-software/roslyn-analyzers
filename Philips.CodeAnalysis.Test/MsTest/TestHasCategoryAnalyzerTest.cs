@@ -17,11 +17,11 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestHasCategoryAnalyzerTest : CodeFixVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
 		[DataRow(@"[Owner(""MK""), TestMethod]", 15)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeTestAsync(string test, int expectedColumn)
+		public async Task HasCategoryAttributeTestAsync(string test, int expectedColumn)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,13 +46,13 @@ class Foo
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"UnitTest", false)]
 		[DataRow(@"ManualTest", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeTest2Async(string category, bool isError)
+		public async Task HasCategoryAttributeTest2Async(string category, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -67,13 +67,13 @@ class Foo
 			await VerifyErrorAsync(baseline, category, isError).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"UnitTests", false)]
 		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
 		[DataRow(@"", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeIndirectionTestAsync(string category, bool isError)
+		public async Task HasCategoryAttributeIndirectionTestAsync(string category, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -95,11 +95,11 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Foo1", false)]
 		[DataRow(@"Foo2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestHasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
+		public async Task HasCategoryAttributeWhiteListTestAsync(string testName, bool isError)
 		{
 			var baseline = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;

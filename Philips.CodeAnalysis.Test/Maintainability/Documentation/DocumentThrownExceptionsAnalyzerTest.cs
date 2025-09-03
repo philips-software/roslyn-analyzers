@@ -163,6 +163,7 @@ public class Foo
 {
     /// <summary> Helpful text. </summary>
     /// <exception>
+
     /// <exception cref=""ArgumentException""></exception>
     public void MethodA()
     {
@@ -172,54 +173,54 @@ public class Foo
 ";
 
 		private const string WrongEmptyCref = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string FixedEmptyCref = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""""></exception>
-    /// <exception cref=""ArgumentException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""""></exception>
+			/// <exception cref=""ArgumentException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string WrongType = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""InvalidOperationException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""InvalidOperationException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string FixedWrongType = @"
-public class Foo
-{
-    /// <summary> Helpful text. </summary>
-    /// <exception cref=""InvalidOperationException""></exception>
-	/// <exception cref=""ArgumentException""></exception>
-    public void MethodA()
-    {
-        throw new ArgumentException(""Error"");
-    }
-}
-";
+		public class Foo
+		{
+			/// <summary> Helpful text. </summary>
+			/// <exception cref=""InvalidOperationException""></exception>
+			/// <exception cref=""ArgumentException""></exception>
+			public void MethodA()
+			{
+				throw new ArgumentException(""Error"");
+			}
+		}
+		";
 
 		private const string WrongInProperty = @"
 public class Foo
@@ -252,7 +253,7 @@ public class Foo
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
 		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
@@ -266,7 +267,7 @@ public class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoCref, FixedNoCref, DisplayName = nameof(WrongNoCref))]
 		[DataRow(WrongEmptyCref, FixedEmptyCref, DisplayName = nameof(WrongEmptyCref))]
 		[DataRow(WrongType, FixedWrongType, DisplayName = nameof(WrongType))]
@@ -277,7 +278,7 @@ public class Foo
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc))]
 		[DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty))]
 		[DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]

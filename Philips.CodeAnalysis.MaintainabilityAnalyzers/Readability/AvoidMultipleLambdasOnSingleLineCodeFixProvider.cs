@@ -33,8 +33,45 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return null;
 			}
 			LambdaExpressionSyntax firstLambdaOnLine = GetOtherLambdaOnSameLine(parent, secondLambda);
-			// Nice location to break the line, after the closing parenthesis of the ArgumentList where the first lambda is part of.
+
+			// For nested lambda scenarios (like Moq), we want to break before the second lambda
+			// For LINQ chain scenarios, we want to break after the first lambda's method call
+
+			// Check if this is a nested lambda scenario by looking at the immediate parent structure
+			if (IsNestedLambdaScenario(firstLambdaOnLine, secondLambda))
+			{
+				// For nested lambdas, we want to break after the method call that contains the second lambda
+				// Find the InvocationExpressionSyntax that directly contains the second lambda
+				InvocationExpressionSyntax containingInvocation = secondLambda.Ancestors()
+					.OfType<InvocationExpressionSyntax>()
+					.FirstOrDefault(inv => inv.ArgumentList.Arguments.Any(arg => arg.DescendantNodes().Contains(secondLambda)));
+
+				if (containingInvocation != null)
+				{
+					// Return the Expression part of the invocation (e.g., "It.Is<ICertificateInfo>")
+					// so that the line break is added after it
+					return containingInvocation.Expression;
+				}
+
+				// Fallback to the argument containing the second lambda
+				return secondLambda.Parent;
+			}
+
+			// For LINQ chains, break after the first lambda's method call (existing logic)
 			return firstLambdaOnLine?.Parent?.Parent;
+		}
+
+		private bool IsNestedLambdaScenario(LambdaExpressionSyntax firstLambda, LambdaExpressionSyntax secondLambda)
+		{
+			if (firstLambda == null || secondLambda == null)
+			{
+				return false;
+			}
+
+			// Check if the second lambda is a descendant of the first lambda
+			// This indicates a nested scenario like Moq where one lambda contains another
+			// Walking upwards from secondLambda is more efficient than traversing all descendants of firstLambda
+			return secondLambda.Ancestors().Contains(firstLambda);
 		}
 
 		protected override async Task<Document> ApplyFix(Document document, SyntaxNode node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
@@ -48,13 +85,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				lastToken = lastToken.GetNextToken();
 				oldNode = lastToken.Parent;
 			}
-			SyntaxTriviaList newTrivia = lastToken.TrailingTrivia.Add(SyntaxFactory.EndOfLine(StringConstants.WindowsNewLine));
 
-			SyntaxNode newNode = oldNode.WithTrailingTrivia(newTrivia).WithAdditionalAnnotations(Formatter.Annotation);
+			// Use the simpler approach: let Roslyn's formatter handle indentation automatically
+			SyntaxNode newNode = oldNode.WithTrailingTrivia(
+				lastToken.TrailingTrivia.Add(SyntaxFactory.ElasticCarriageReturnLineFeed)
+			).WithAdditionalAnnotations(Formatter.Annotation);
+
 			root = root.ReplaceNode(oldNode, newNode);
+			Document newDocument = document.WithSyntaxRoot(root);
 
-			return document.WithSyntaxRoot(root);
+			// Let Roslyn format the entire document to ensure proper indentation
+			return await Formatter.FormatAsync(newDocument, cancellationToken: cancellationToken).ConfigureAwait(false);
 		}
+
+
 
 		private SyntaxNode GetParentOnHigherLine(SyntaxNode node)
 		{

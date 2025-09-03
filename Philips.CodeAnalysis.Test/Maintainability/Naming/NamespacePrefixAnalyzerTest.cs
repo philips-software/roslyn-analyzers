@@ -49,7 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return new NamespacePrefixAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("")]
 		[DataRow("test")]
 		[DataRow("Philips.Test")]
@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[DataRow(ConfiguredPrefix + ".")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespacePrefixError(string ns)
 		{
@@ -82,7 +82,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		}
 
 		[DataRow("System.Runtime.CompilerServices")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotReportANamespaceOnExemptList(string ns)
 		{

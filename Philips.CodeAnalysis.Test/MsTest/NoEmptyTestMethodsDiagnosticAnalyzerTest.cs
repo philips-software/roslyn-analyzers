@@ -33,6 +33,7 @@ public class DerivedTestMethod : TestMethodAttribute
 			return base.GetAdditionalSourceCode().Add(("DerivedTestMethod.cs", code));
 		}
 
+		[DataRow("STATestMethod")]
 		[DataRow("DerivedTestMethod")]
 		[DataRow("TestMethod")]
 		[DataRow("DataTestMethod")]
@@ -43,7 +44,7 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow("TestCleanup")]
 		[DataRow("ClassCleanup")]
 		[DataRow("AssemblyCleanup")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyMethodTriggersAnalyzerAsync(string attribute)
 		{

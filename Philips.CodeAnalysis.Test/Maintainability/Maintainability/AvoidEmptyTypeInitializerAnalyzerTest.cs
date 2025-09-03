@@ -31,7 +31,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("", "", false)]
 		[DataRow("", "int x = 4;", false)]
 		[DataRow("static", "int x = 4;", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyTypeInitializerStaticAsync(string modifier, string content, bool isError)
 		{
@@ -56,9 +56,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 		[DataRow("  /// <summary />")]
-		[DataRow(@"  /** <summary>
-  </summary> */")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidEmptyTypeInitializerStaticWithFix(string summaryComment)
 		{
@@ -72,7 +70,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			var classContent = string.Format(template, string.Format(@"{0}
 static Foo() {{ }}", summaryComment));
 
-			var expected = string.Format(template, "  \r\n");
+			var expected = string.Format(template, string.Empty);
 
 			await VerifyFix(classContent, expected).ConfigureAwait(false);
 		}

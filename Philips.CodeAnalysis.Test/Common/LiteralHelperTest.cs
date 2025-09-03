@@ -1,6 +1,8 @@
 ﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -44,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			}
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("typeof(bool)", true),
 		 DataRow("typeof(System.DateTime)", false),
 		 DataRow("null", true),
@@ -65,9 +67,90 @@ namespace Philips.CodeAnalysis.Test.Common
 			await VerifyDiagnostic(testCode, expected);
 		}
 
+		[TestMethod]
+		[DataRow(typeof(int), false)]
+		[DataRow(typeof(int?), true)]
+		[DataRow(typeof(string), true)]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TryGetLiteralValueNullCasesTypeSpecific(Type type, bool expectedResult)
+		{
+			const string expression = "null";
+			object expectedValue = null;
+
+			var testCode = $"public class C {{ public void M() {{ var x = {expression}; }} }}";
+			Document document = CreateDocument(testCode);
+			SyntaxNode root = await document.GetSyntaxRootAsync(TestContext.CancellationTokenSource.Token);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(TestContext.CancellationTokenSource.Token);
+			VariableDeclaratorSyntax varDecl = root.DescendantNodes().OfType<VariableDeclaratorSyntax>().First();
+			ExpressionSyntax valueExpr = varDecl.Initializer.Value;
+
+			CodeFixHelper helper = new();
+
+			bool result;
+			object value;
+
+			if (type == typeof(int))
+			{
+				result = helper.ForLiterals.TryGetLiteralValue<int>(valueExpr, semanticModel, out var v);
+				value = v;
+				expectedValue = 0;
+			}
+			else if (type == typeof(int?))
+			{
+				result = helper.ForLiterals.TryGetLiteralValue<int?>(valueExpr, semanticModel, out var v);
+				value = v;
+			}
+			else if (type == typeof(string))
+			{
+				result = helper.ForLiterals.TryGetLiteralValue<string>(valueExpr, semanticModel, out var v);
+				value = v;
+			}
+			else
+			{
+				Assert.Fail("Unsupported type for test.");
+				return;
+			}
+
+			Assert.AreEqual(expectedResult, result);
+			Assert.AreEqual(expectedValue, value);
+		}
+
+		[TestMethod]
+		[DataRow("42", true, 42)]
+		[DataRow("\"hello\"", true, "hello")]
+		[DataRow("1.5", true, 1.5)]
+		[DataRow("true", true, true)]
+		[DataRow("a", false, null)]
+		[DataRow("typeof(int)", false, null)]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TryGetLiteralValueWorksAsExpected(string expression, bool expectedResult, object expectedValue)
+		{
+			var testCode = $"public class C {{ public void M() {{ var x = {expression}; }} }}";
+			Document document = CreateDocument(testCode);
+			SyntaxNode root = await document.GetSyntaxRootAsync(TestContext.CancellationTokenSource.Token);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(TestContext.CancellationTokenSource.Token);
+			VariableDeclaratorSyntax varDecl = root.DescendantNodes().OfType<VariableDeclaratorSyntax>().First();
+			ExpressionSyntax valueExpr = varDecl.Initializer.Value;
+
+			CodeFixHelper helper = new();
+			var result = helper.ForLiterals.TryGetLiteralValue(valueExpr, semanticModel, out object value);
+
+			Assert.AreEqual(expectedResult, result);
+			if (expectedResult)
+			{
+				Assert.AreEqual(expectedValue, value);
+			}
+			else
+			{
+				Assert.IsNull(value);
+			}
+		}
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new IsLiteralAnalyzer();
 		}
+
+		public TestContext TestContext { get; set; }
 	}
 }

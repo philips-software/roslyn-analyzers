@@ -18,7 +18,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Arrange
 			var expectedAnalyzer = "DummyAnalyzer";
 			var expectedId = "DummyId";
-			var expectedTime = 25.0d;
+			var expectedTime = 25;
 			var testName = $"Philips.CodeAnalysis.{expectedAnalyzer} \"{expectedId}\" = {expectedTime} s";
 
 			// Act

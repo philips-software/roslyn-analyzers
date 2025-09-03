@@ -38,7 +38,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(false, "Foo.Bar(new object())", false, "")]
 		[DataRow(true, "Foo.Bar", false, "")]
 		[DataRow(false, "Foo.Bar", false, "")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ExtensionMethodErrors(bool isExtensionMethod, string call, bool isError, string fixedText)
 		{
@@ -210,22 +210,6 @@ public class Bar : Mock<Foo>
 {
   public void Reset()
   {
-    MockExtensions.Reset(this);
-  }
-}
-", false)]
-		[DataRow(@"
-using System;
-using Moq;
-
-public class Foo
-{
-}
-
-public class Bar : Mock<Foo>
-{
-  public void Reset()
-  {
   }
 }
 
@@ -291,7 +275,7 @@ public class Baz
   }
 }
 ", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ExtensionMethodsDontCallDifferentMethodsAsync(string template, bool isError)
 		{

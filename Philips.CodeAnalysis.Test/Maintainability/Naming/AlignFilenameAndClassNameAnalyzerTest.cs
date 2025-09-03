@@ -23,7 +23,7 @@ namespace AlignFilenameAndClassName {{
     }}
 }}";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("class", "Program"),
 		 DataRow("class", "Program.Part"),
 		 DataRow("struct", "Program"),
@@ -34,7 +34,7 @@ namespace AlignFilenameAndClassName {{
 			await VerifySuccessfulCompilation(string.Format(SourceCodeTemplate, typeKind), filePath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Program"),
 		 DataRow("Program{T}")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -49,7 +49,7 @@ namespace AlignFilenameAndClassName {{
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("class", "Program2"),
 		 DataRow("struct", "SomethingElse"),
 		 DataRow("enum", "Prog")]

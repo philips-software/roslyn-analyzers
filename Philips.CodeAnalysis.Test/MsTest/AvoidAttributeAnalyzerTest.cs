@@ -26,7 +26,7 @@ Foo.WhitelistedFunction
 			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AvoidAttributeAnalyzer.AttributesWhitelist, allowedMethodName));
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestMethod, Ignore]", 16)]
 		[DataRow(@"[Ignore]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -59,7 +59,7 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[Owner(""MK"")]", 4)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
@@ -92,7 +92,7 @@ class Foo
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestInitialize]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestInitializeMethodTestAsync(string test, int expectedColumn)
@@ -124,7 +124,7 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestCleanup]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidTestCleanupMethodTestAsync(string test, int expectedColumn)
@@ -156,7 +156,7 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[ClassInitialize]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassInitializeMethodTestAsync(string test, int expectedColumn)
@@ -188,7 +188,7 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[ClassCleanup]", 4)]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidClassCleanupMethodTestAsync(string test, int expectedColumn)
@@ -219,7 +219,7 @@ class Foo
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[ClassCleanup]")]
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]
@@ -242,7 +242,7 @@ class Foo
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[ClassCleanup]")]
 		[DataRow(@"[ClassInitialize]")]
 		[DataRow(@"[TestInitialize]")]

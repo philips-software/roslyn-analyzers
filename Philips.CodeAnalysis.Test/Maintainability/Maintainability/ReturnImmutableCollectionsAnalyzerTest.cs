@@ -187,7 +187,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectReadOnlyList, DisplayName = nameof(CorrectReadOnlyList)),
 		 DataRow(CorrectReadOnlyCollection, DisplayName = nameof(CorrectReadOnlyCollection)),
@@ -205,7 +205,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongList, CorrectReadOnlyList, DisplayName = nameof(WrongList)),
 		 DataRow(WrongIList, CorrectReadOnlyList, DisplayName = nameof(WrongIList)),
 		 DataRow(WrongICollection, CorrectReadOnlyCollection, DisplayName = nameof(WrongICollection)),
@@ -229,7 +229,7 @@ namespace ReturnImmutableTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)

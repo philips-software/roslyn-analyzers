@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.Test.Common.Inspection
 	[TestClass]
 	public class CallTreeNodeTest
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("CreateDirectory", 4)]
 		[DataRow("Delete", 2)]
 		[DataRow("Exists", 3)]

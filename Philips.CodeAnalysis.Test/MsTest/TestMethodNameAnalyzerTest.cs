@@ -17,35 +17,39 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestMethodNameAnalyzerTest : CodeFixVerifier
 	{
-		[DataTestMethod]
-		[DataRow("TestSomething", true)]
-		[DataRow("SomeTest", false)]
-		[DataRow("CheckSomething", false)]
-		[DataRow("SomeCheck", false)]
-		[DataRow("EnsureSomething", true)]
-		[DataRow("SomethingToEnsure", false)]
-		[DataRow("VerifySomething", true)]
-		[DataRow("SomethingToVerify", false)]
+		[TestMethod]
+		[DataRow("DataTestMethod", "TestSomething", true)]
+		[DataRow("DataTestMethod", "SomeTest", false)]
+		[DataRow("STATestMethod", "TestSomething", true)]
+		[DataRow("STATestMethod", "SomeTest", false)]
+		[DataRow("TestMethod", "TestSomething", true)]
+		[DataRow("TestMethod", "SomeTest", false)]
+		[DataRow("TestMethod", "CheckSomething", false)]
+		[DataRow("TestMethod", "SomeCheck", false)]
+		[DataRow("TestMethod", "EnsureSomething", true)]
+		[DataRow("TestMethod", "SomethingToEnsure", false)]
+		[DataRow("TestMethod", "VerifySomething", true)]
+		[DataRow("TestMethod", "SomethingToVerify", false)]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AreEqualTypesMatchTest(string name, bool isError)
+		public async Task AreEqualTypesMatchTest(string testMethodType, string name, bool isError)
 		{
 			var baseline = @"
 namespace TestMethodNameAnalyzerTest
 {{
   public class TestClass
   {{
-    [TestMethod]
-    public void {0}()
+    [{0}]
+    public void {1}()
     {{
     }}
   }}
 }}
 ";
-			var givenText = string.Format(baseline, name);
+			var givenText = string.Format(baseline, testMethodType, name);
 			var prefix = GetPrefix(name);
 			var expectedMessage = string.Format(TestMethodNameAnalyzer.MessageFormat, prefix);
 			var fixedName = FixName(name);
-			var fixedText = string.Format(baseline, fixedName);
+			var fixedText = string.Format(baseline, testMethodType, fixedName);
 
 			if (isError)
 			{

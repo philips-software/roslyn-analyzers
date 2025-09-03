@@ -1,0 +1,17 @@
+name: copilot-setup-steps
+on:
+  workflow_dispatch:
+jobs:
+  copilot-setup-steps:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    environment: copilot
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - name: Python deps for MCP server
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install "fastmcp>=0.4"
+

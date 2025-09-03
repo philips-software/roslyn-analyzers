@@ -14,10 +14,6 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AssertIsTrueLiteralAnalyzerTest : AssertDiagnosticVerifier
 	{
-		#region Non-Public Data Members
-
-		#endregion
-
 		#region Non-Public Properties/Methods
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
@@ -29,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Public Interface
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.IsTrue(true)")]
 		[DataRow("Assert.IsTrue(false)")]
 		[DataRow("Assert.IsTrue(!false)")]

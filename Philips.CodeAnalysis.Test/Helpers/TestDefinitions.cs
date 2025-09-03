@@ -2,7 +2,7 @@
 
 namespace Philips.CodeAnalysis.Test.Helpers
 {
-	public class TestDefinitions
+	internal sealed class TestDefinitions
 	{
 		public const string UnitTests = "Unit";
 	}

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 		private const string MessageFormat = @"Properties and variables should be named using positive wording.";
 		private const string Description = MessageFormat;
 
-		private static readonly List<string> NegativeWords = ["disable", "ignore", "missing", "absent"];
+		private static readonly List<string> NegativeWords = [.. new[] { "disable", "ignore", "missing", "absent" }];
 
 		public PositiveNamingAnalyzer()
 			: base(DiagnosticId.PositiveNaming, Title, MessageFormat, Description, Categories.Naming)
