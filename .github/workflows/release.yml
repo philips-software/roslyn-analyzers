@@ -30,7 +30,7 @@ jobs:
           
     - name: GitHub Tag & Release
 #      if: steps.changes.outputs.packages == 'true'
-      uses: ncipollo/release-action@bcfe5470707e8832e12347755757cec0eb3c22af #v1.14
+      uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b #v1.14
       with:
         tag: ${{ inputs.new_tag }}
         name: Release ${{ inputs.new_tag }}
