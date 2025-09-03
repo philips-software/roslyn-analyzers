@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			{StringConstants.StackClassName, ReadonlyCollection},
 			{StringConstants.DictionaryClassName, ReadonlyDictionary},
 			{StringConstants.IListInterfaceName, ReadonlyList},
-			{"ICollection", ReadonlyCollection},
+			{StringConstants.ICollectionInterfaceName, ReadonlyCollection},
 			{StringConstants.IDictionaryInterfaceName, ReadonlyDictionary}
 		};
 

@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			: base(DiagnosticId.ReturnImmutableCollections, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
 		{ }
 
-		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { StringConstants.List, StringConstants.QueueClassName, StringConstants.SortedListClassName, StringConstants.StackClassName, StringConstants.DictionaryClassName, StringConstants.IListInterfaceName, StringConstants.IDictionaryInterfaceName };
+		private static readonly IReadOnlyList<string> MutableCollections = new List<string>() { StringConstants.List, StringConstants.QueueClassName, StringConstants.SortedListClassName, StringConstants.StackClassName, StringConstants.DictionaryClassName, StringConstants.IListInterfaceName, StringConstants.IDictionaryInterfaceName, StringConstants.ICollectionInterfaceName };
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
@@ -52,20 +52,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			NamespaceResolver resolver = Helper.ForNamespaces.GetUsingAliases(type);
-			var typeName = resolver.GetDealiasedName(type);
+			var mightBeMutable = resolver.MightByOfType(type, MutableCollections);
 
-			NamespaceIgnoringComparer comparer = new();
-			if (type is ArrayTypeSyntax || MutableCollections.Any(m => comparer.Compare(m, typeName) == 0))
+			if (type is ArrayTypeSyntax || mightBeMutable)
 			{
 				// Double check the type's namespace.
 				ITypeSymbol symbolType = context.SemanticModel.GetTypeInfo(type).Type;
 				var isArray = symbolType is IArrayTypeSymbol;
-				var ns = symbolType?.ContainingNamespace?.ToString();
-				if (symbolType != null && (isArray || ns is "System.Collections.Generic" or "<global namespace>"))
+				var fullFormat = new SymbolDisplayFormat(SymbolDisplayGlobalNamespaceStyle.Omitted, SymbolDisplayTypeQualificationStyle.NameAndContainingTypesAndNamespaces);
+				var fullName = symbolType?.ToDisplayString(fullFormat);
+				if (symbolType != null && (isArray || MutableCollections.Contains(fullName)))
 				{
-					ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(AnnotationsKey, typeName);
+					ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty.Add(AnnotationsKey, fullName);
 					Location loc = type.GetLocation();
-					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, properties, typeName));
+					context.ReportDiagnostic(Diagnostic.Create(Rule, loc, properties, fullName));
 				}
 			}
 		}

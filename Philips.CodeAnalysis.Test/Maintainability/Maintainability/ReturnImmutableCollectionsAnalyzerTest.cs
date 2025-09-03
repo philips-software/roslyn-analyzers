@@ -106,6 +106,16 @@ namespace ReturnImmutableTests {
     }
 }";
 
+		private const string WrongICollection = @"
+using System.Collections.Generic;
+namespace ReturnImmutableTests {
+    public class Number {
+        public ICollection<int> MethodA() {
+            return null;
+        }
+    }
+}";
+
 		private const string WrongQueue = @"
 using System.Collections.Generic;
 namespace ReturnImmutableTests {
@@ -198,6 +208,7 @@ namespace ReturnImmutableTests {
 		[DataTestMethod]
 		[DataRow(WrongList, CorrectReadOnlyList, DisplayName = nameof(WrongList)),
 		 DataRow(WrongIList, CorrectReadOnlyList, DisplayName = nameof(WrongIList)),
+		 DataRow(WrongICollection, CorrectReadOnlyCollection, DisplayName = nameof(WrongICollection)),
 		 DataRow(WrongQueue, CorrectReadOnlyCollection, DisplayName = nameof(WrongQueue)),
 		 DataRow(WrongSortedList, CorrectReadOnlyDictionary, DisplayName = nameof(WrongSortedList)),
 		 DataRow(WrongStack, CorrectReadOnlyCollection, DisplayName = nameof(WrongStack)),

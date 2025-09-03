@@ -143,5 +143,15 @@ namespace Philips.CodeAnalysis.Common
 			return name;
 		}
 
+		/// <summary>
+		/// Based on the 'using' statements in this source file, determine if the <paramref name="type"/> MIGHT be any of the fully qualified names in the <paramref name="fullyQualifiedList"/>.
+		/// </summary>
+		public bool MightByOfType(TypeSyntax type, IReadOnlyList<string> fullyQualifiedList)
+		{
+			var deAliased = $".{GetDealiasedName(type)}";
+			var deAliasedLength = deAliased.Length;
+			IEnumerable<string> candidates = fullyQualifiedList.Where(qualified => qualified.EndsWith(deAliased));
+			return candidates.Any(candidate => _namespaces.Contains(candidate.Substring(0, candidate.Length - deAliasedLength)));
+		}
 	}
 }
