@@ -1,5 +1,7 @@
 // © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+#pragma warning disable IDE0055 // Fix formatting
+
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -80,7 +82,7 @@ namespace UnitTestProject1
 	[TestClass()]
 	public class UnitTest1
 	{{
-		[TestMethod()]
+		[TestMethod]
 		public void TestMethod1()
 		{{
 		}}
@@ -124,7 +126,7 @@ namespace UnitTestProject1
 	}}
 }}";
 
-			await VerifyCodeFix(template, expected).ConfigureAwait(false);
+			await VerifyFix(template, expected).ConfigureAwait(false);
 		}
 	}
 }

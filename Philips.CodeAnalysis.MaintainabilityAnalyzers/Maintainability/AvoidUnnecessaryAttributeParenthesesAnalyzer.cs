@@ -1,6 +1,9 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+#pragma warning disable IDE0055 // Fix formatting
+
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -18,8 +21,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		public AvoidUnnecessaryAttributeParenthesesAnalyzer()
 			: base(DiagnosticId.AvoidUnnecessaryAttributeParentheses, Title, MessageFormat, Description,
-				Categories.Maintainability)
+				Categories.Maintainability, isEnabled: false)
 		{
+		}
+
+		protected override SyntaxKind GetSyntaxKind()
+		{
+			return SyntaxKind.Attribute;
 		}
 	}
 
