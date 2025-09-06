@@ -221,6 +221,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If directory traversal fails, return null
+				return null;
 			}
 
 			return null;
