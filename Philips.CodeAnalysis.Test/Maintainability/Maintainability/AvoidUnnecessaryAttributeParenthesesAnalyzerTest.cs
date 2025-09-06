@@ -92,7 +92,7 @@ namespace UnitTestProject1
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestCodeFix()
+		public async Task AvoidUnnecessaryAttributeParenthesesCodeFixProviderTest()
 		{
 			const string template = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
