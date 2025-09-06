@@ -12,8 +12,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	public class PreferCombinatorialTestingAnalyzer : TestMethodDiagnosticAnalyzer
 	{
 		private const string Title = @"Consider using combinatorial testing";
-		public const string MessageFormat = @"Consider using combinatorial testing instead of multiple DataRow attributes. This method has {0} DataRow attributes.";
-		private const string Description = @"Methods with multiple DataRow attributes may benefit from combinatorial testing using the Combinatorial.MSTest package for better maintainability.";
+		public const string MessageFormat = @"Consider using CombinatorialValues instead of {0} DataRow attributes for this single-parameter method.";
+		private const string Description = @"Methods with a single parameter and multiple DataRow attributes can be simplified using CombinatorialValues from the Combinatorial.MSTest package.";
 		private const string Category = Categories.MsTest;
 
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.PreferCombinatorialTestingOverDataRows.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: false, description: Description);
@@ -36,9 +36,16 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
-				// Count DataRow attributes
+				// Only analyze methods with exactly 1 parameter
+				if (methodDeclaration.ParameterList.Parameters.Count != 1)
+				{
+					return;
+				}
+
+				// Count DataRow attributes and verify they all have exactly 1 argument
 				SyntaxList<AttributeListSyntax> attributeLists = methodDeclaration.AttributeLists;
 				var dataRowCount = 0;
+				var allDataRowsHaveSingleArgument = true;
 
 				foreach (AttributeListSyntax attributeList in attributeLists)
 				{
@@ -47,12 +54,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 						if (Helper.ForAttributes.IsDataRowAttribute(attribute, context))
 						{
 							dataRowCount++;
+
+							// Check if this DataRow has exactly 1 argument
+							if (attribute.ArgumentList?.Arguments.Count != 1)
+							{
+								allDataRowsHaveSingleArgument = false;
+							}
 						}
 					}
 				}
 
-				// Only suggest if there are enough DataRows
-				if (dataRowCount >= MinimumDataRowsForSuggestion)
+				// Only suggest if there are enough DataRows with single arguments
+				if (dataRowCount >= MinimumDataRowsForSuggestion && allDataRowsHaveSingleArgument)
 				{
 					Location location = methodDeclaration.Identifier.GetLocation();
 					var diagnostic = Diagnostic.Create(Rule, location, dataRowCount);

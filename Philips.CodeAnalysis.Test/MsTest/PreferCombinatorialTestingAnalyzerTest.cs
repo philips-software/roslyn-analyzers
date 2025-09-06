@@ -17,7 +17,41 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	{
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PreferCombinatorialTestingTriggersDiagnosticWithMultipleDataRowsAsync()
+		public async Task PreferCombinatorialTestingTriggersDiagnosticWithSingleParameterMethodAsync()
+		{
+			var testCode = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class TestClass
+{
+	[TestMethod]
+	[DataRow(""value1"")]
+	[DataRow(""value2"")]
+	[DataRow(""value3"")]
+	[DataRow(""value4"")]
+	[TestCategory(TestDefinitions.UnitTests)]
+	public void TestMethodWithManyDataRows(string text)
+	{
+		// Test implementation
+	}
+}
+";
+
+			DiagnosticResult expected = new()
+			{
+				Id = DiagnosticId.PreferCombinatorialTestingOverDataRows.ToId(),
+				Message = new Regex(@"Consider using CombinatorialValues instead of 4 DataRow attributes for this single-parameter method."),
+				Severity = DiagnosticSeverity.Info,
+				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 14) }
+			};
+
+			await VerifyDiagnostic(testCode, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PreferCombinatorialTestingNoDiagnosticWithMultipleParametersAsync()
 		{
 			var testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,40 +65,7 @@ public class TestClass
 	[DataRow(""value3"", 3)]
 	[DataRow(""value4"", 4)]
 	[TestCategory(TestDefinitions.UnitTests)]
-	public void TestMethodWithManyDataRows(string text, int number)
-	{
-		// Test implementation
-	}
-}
-";
-
-			DiagnosticResult expected = new()
-			{
-				Id = DiagnosticId.PreferCombinatorialTestingOverDataRows.ToId(),
-				Message = new Regex(@"Consider using combinatorial testing instead of multiple DataRow attributes. This method has 4 DataRow attributes."),
-				Severity = DiagnosticSeverity.Info,
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 13, 14) }
-			};
-
-			await VerifyDiagnostic(testCode, expected).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PreferCombinatorialTestingNoDiagnosticWithFewDataRowsAsync()
-		{
-			var testCode = @"
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-[TestClass]
-public class TestClass
-{
-	[TestMethod]
-	[DataRow(""value1"", 1)]
-	[DataRow(""value2"", 2)]
-	[DataRow(""value3"", 3)]
-	[TestCategory(TestDefinitions.UnitTests)]
-	public void TestMethodWithFewDataRows(string text, int number)
+	public void TestMethodWithMultipleParameters(string text, int number)
 	{
 		// Test implementation
 	}
@@ -98,7 +99,7 @@ public class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task PreferCombinatorialTestingTriggersDiagnosticWithManyDataRowsAsync()
+		public async Task PreferCombinatorialTestingTriggersDiagnosticWithManySingleParameterDataRowsAsync()
 		{
 			var testCode = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -107,19 +108,17 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 public class TestClass
 {
 	[TestMethod]
-	[DataRow(""private static readonly"", false)]
-	[DataRow(""private static"", false)]
-	[DataRow(""private const"", false)]
-	[DataRow(""private"", false)]
-	[DataRow(""public static readonly"", true)]
-	[DataRow(""public const"", true)]
-	[DataRow(""public static"", true)]
-	[DataRow(""public readonly"", true)]
-	[DataRow(""public"", true)]
+	[DataRow(""private"")]
+	[DataRow(""public"")]
+	[DataRow(""internal"")]
+	[DataRow(""protected"")]
+	[DataRow(""static"")]
+	[DataRow(""readonly"")]
+	[DataRow(""const"")]
 	[TestCategory(TestDefinitions.UnitTests)]
-	public void TestMethodWithManyDataRows(string modifiers, bool expected)
+	public void TestMethodWithManyDataRows(string modifier)
 	{
-		// Test implementation similar to HelperTest example
+		// Test implementation 
 	}
 }
 ";
@@ -127,12 +126,63 @@ public class TestClass
 			DiagnosticResult expected = new()
 			{
 				Id = DiagnosticId.PreferCombinatorialTestingOverDataRows.ToId(),
-				Message = new Regex(@"Consider using combinatorial testing instead of multiple DataRow attributes. This method has 9 DataRow attributes."),
+				Message = new Regex(@"Consider using CombinatorialValues instead of 7 DataRow attributes for this single-parameter method."),
 				Severity = DiagnosticSeverity.Info,
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 18, 14) }
+				Locations = new[] { new DiagnosticResultLocation("Test0.cs", 16, 14) }
 			};
 
 			await VerifyDiagnostic(testCode, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PreferCombinatorialTestingNoDiagnosticWithFewSingleParameterDataRowsAsync()
+		{
+			var testCode = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class TestClass
+{
+	[TestMethod]
+	[DataRow(""value1"")]
+	[DataRow(""value2"")]
+	[DataRow(""value3"")]
+	[TestCategory(TestDefinitions.UnitTests)]
+	public void TestMethodWithFewDataRows(string text)
+	{
+		// Test implementation
+	}
+}
+";
+
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task PreferCombinatorialTestingNoDiagnosticWithDataRowsHavingMultipleArgumentsAsync()
+		{
+			var testCode = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class TestClass
+{
+	[TestMethod]
+	[DataRow(""value1"", 1)] // These DataRows have multiple arguments
+	[DataRow(""value2"", 2)] // but method has single parameter  
+	[DataRow(""value3"", 3)]
+	[DataRow(""value4"", 4)]
+	[TestCategory(TestDefinitions.UnitTests)]
+	public void TestMethodWithMismatchedDataRows(string text)
+	{
+		// Test implementation
+	}
+}
+";
+
+			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
