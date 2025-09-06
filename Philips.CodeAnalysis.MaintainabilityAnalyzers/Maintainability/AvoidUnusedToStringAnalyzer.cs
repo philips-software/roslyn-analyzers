@@ -15,7 +15,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"Calling ToString() when the result is assigned to a discard variable or used as a standalone expression statement is unnecessary and should be removed.";
 
 		public AvoidUnusedToStringAnalyzer()
-			: base(DiagnosticId.AvoidUnusedToString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+			: base(DiagnosticId.AvoidUnusedToString, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: true)
 		{ }
 	}
 
