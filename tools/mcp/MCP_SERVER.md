@@ -126,6 +126,8 @@ The dogfood process (`/run_dogfood`) automates the complete self-analysis workfl
 
 This process follows the same workflow as `.github/workflows/dogfood.yml` to ensure that the analyzers work correctly and that the codebase follows its own rules.
 
+**Testing the Dogfood Implementation**: Since the main codebase currently has no dogfood violations, you can test the implementation by temporarily introducing a known violation (such as an empty catch block) in a source file, running the dogfood analysis, and verifying that it detects the violation. The implementation successfully detects analyzer codes like PH2097 (empty statement blocks) and PH2098 (empty catch blocks).
+
 ## Development
 
 The server is designed to be run from the repository root directory. It automatically:
