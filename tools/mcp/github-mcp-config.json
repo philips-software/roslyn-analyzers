@@ -5,7 +5,7 @@
       "command": "bash",
       "args": [
         "-lc",
-        "cd \"${GITHUB_WORKSPACE:-/home/runner/work/${GITHUB_REPOSITORY##*/}/${GITHUB_REPOSITORY##*/}}\" 2>/dev/null || cd \"$(ls -d /home/runner/work/*/* 2>/dev/null | head -n1 || echo .)\"; exec python3 ./tools/mcp/mcp_server.py"
+        "cd \"${GITHUB_WORKSPACE:-/home/runner/work/${GITHUB_REPOSITORY##*/}/${GITHUB_REPOSITORY##*/}}\" 2>/dev/null || cd \"$(find /home/runner/work -name '.git' -type d 2>/dev/null | head -n1 | xargs dirname 2>/dev/null || echo .)\"; exec python3 ./tools/mcp/mcp_server.py"
       ],
       "env": {},
       "tools": [
