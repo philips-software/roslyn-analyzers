@@ -43,7 +43,7 @@ class Foo
 		{
 			var analyzer = new LicenseAnalyzer();
 			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> descriptors = analyzer.SupportedDiagnostics;
-			Assert.AreEqual(1, descriptors.Length);
+			Assert.HasCount(1, descriptors);
 			Assert.AreEqual("PH2155", descriptors[0].Id);
 		}
 
@@ -79,9 +79,9 @@ class Foo
 		public void LicenseAnalyzerMessageFormatContainsExpectedPlaceholders()
 		{
 			var messageFormat = LicenseAnalyzer.MessageFormat;
-			Assert.IsTrue(messageFormat.Contains("{0}"), "Message format should contain package name placeholder");
-			Assert.IsTrue(messageFormat.Contains("{1}"), "Message format should contain version placeholder");
-			Assert.IsTrue(messageFormat.Contains("{2}"), "Message format should contain license placeholder");
+			Assert.Contains("{0}", messageFormat, "Message format should contain package name placeholder");
+			Assert.Contains("{1}", messageFormat, "Message format should contain version placeholder");
+			Assert.Contains("{2}", messageFormat, "Message format should contain license placeholder");
 		}
 
 		[TestMethod]
@@ -92,10 +92,10 @@ class Foo
 			var allowedLicensesFileName = LicenseAnalyzer.AllowedLicensesFileName;
 			var licensesCacheFileName = LicenseAnalyzer.LicensesCacheFileName;
 
-			Assert.IsTrue(allowedLicensesFileName.EndsWith(".txt"));
-			Assert.IsTrue(licensesCacheFileName.EndsWith(".json"));
-			Assert.IsTrue(allowedLicensesFileName.Contains("Allowed"));
-			Assert.IsTrue(licensesCacheFileName.Contains("licenses"));
+			Assert.EndsWith(".txt", allowedLicensesFileName);
+			Assert.EndsWith(".json", licensesCacheFileName);
+			Assert.Contains("Allowed", allowedLicensesFileName);
+			Assert.Contains("licenses", licensesCacheFileName);
 		}
 
 		[TestMethod]
@@ -189,7 +189,7 @@ namespace TestNamespace
 			var analyzer = new LicenseAnalyzer();
 			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> supportedDiagnostics = analyzer.SupportedDiagnostics;
 			Assert.IsFalse(supportedDiagnostics.IsDefault);
-			Assert.AreEqual(1, supportedDiagnostics.Length);
+			Assert.HasCount(1, supportedDiagnostics);
 
 			// The analyzer should be designed to work at compilation level
 			// since it needs to analyze the entire project's dependencies
@@ -202,7 +202,7 @@ namespace TestNamespace
 			var analyzer = new LicenseAnalyzer();
 			Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor = analyzer.SupportedDiagnostics[0];
 			Assert.IsFalse(string.IsNullOrWhiteSpace(descriptor.Title.ToString()));
-			Assert.IsTrue(descriptor.Title.ToString().Contains("License"));
+			Assert.Contains("License", descriptor.Title.ToString());
 		}
 
 		[TestMethod]
@@ -223,7 +223,7 @@ namespace TestNamespace
 			Assert.IsNotNull(descriptor.HelpLinkUri);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("MIT")]
 		[DataRow("Apache-2.0")]
 		[DataRow("BSD-2-Clause")]
@@ -391,9 +391,9 @@ public class GenericClass<T> where T : class
 			Assert.IsNotNull(LicenseAnalyzer.MessageFormat);
 
 			// Verify they have reasonable values
-			Assert.IsTrue(LicenseAnalyzer.AllowedLicensesFileName.Length > 0);
-			Assert.IsTrue(LicenseAnalyzer.LicensesCacheFileName.Length > 0);
-			Assert.IsTrue(LicenseAnalyzer.MessageFormat.Length > 0);
+			Assert.IsGreaterThan(0, LicenseAnalyzer.AllowedLicensesFileName.Length);
+			Assert.IsGreaterThan(0, LicenseAnalyzer.LicensesCacheFileName.Length);
+			Assert.IsGreaterThan(0, LicenseAnalyzer.MessageFormat.Length);
 		}
 
 		[TestMethod]
@@ -403,13 +403,13 @@ public class GenericClass<T> where T : class
 			var messageFormat = LicenseAnalyzer.MessageFormat;
 
 			// Should contain placeholders for package name, version, and license
-			Assert.IsTrue(messageFormat.Contains("{0}"));
-			Assert.IsTrue(messageFormat.Contains("{1}"));
-			Assert.IsTrue(messageFormat.Contains("{2}"));
+			Assert.Contains("{0}", messageFormat);
+			Assert.Contains("{1}", messageFormat);
+			Assert.Contains("{2}", messageFormat);
 
 			// Should contain meaningful text
-			Assert.IsTrue(messageFormat.Contains("Package"));
-			Assert.IsTrue(messageFormat.Contains("license"));
+			Assert.Contains("Package", messageFormat);
+			Assert.Contains("license", messageFormat);
 		}
 
 		[TestMethod]
@@ -419,7 +419,7 @@ public class GenericClass<T> where T : class
 			// Verify the cache file name constant has a proper value
 			var fileName = LicenseAnalyzer.LicensesCacheFileName;
 			Assert.IsFalse(string.IsNullOrEmpty(fileName));
-			Assert.IsTrue(fileName.EndsWith(".json"));
+			Assert.EndsWith(".json", fileName);
 			Assert.AreEqual("licenses.json", fileName);
 		}
 
@@ -430,7 +430,7 @@ public class GenericClass<T> where T : class
 			// Verify the allowed licenses file name constant has a proper value
 			var fileName = LicenseAnalyzer.AllowedLicensesFileName;
 			Assert.IsFalse(string.IsNullOrEmpty(fileName));
-			Assert.IsTrue(fileName.EndsWith(".txt"));
+			Assert.EndsWith(".txt", fileName);
 			Assert.AreEqual("Allowed.Licenses.txt", fileName);
 		}
 
@@ -765,9 +765,9 @@ public class УникодIdentifier
 
 			// Verify descriptor consistency
 			Assert.AreEqual("PH2155", descriptor.Id);
-			Assert.IsTrue(descriptor.Title.ToString().Length > 0);
-			Assert.IsTrue(descriptor.MessageFormat.ToString().Length > 0);
-			Assert.IsTrue(descriptor.Description.ToString().Length > 0);
+			Assert.IsGreaterThan(0, descriptor.Title.ToString().Length);
+			Assert.IsGreaterThan(0, descriptor.MessageFormat.ToString().Length);
+			Assert.IsGreaterThan(0, descriptor.Description.ToString().Length);
 			Assert.AreEqual("Philips Security", descriptor.Category);
 			Assert.IsFalse(descriptor.IsEnabledByDefault);
 		}
