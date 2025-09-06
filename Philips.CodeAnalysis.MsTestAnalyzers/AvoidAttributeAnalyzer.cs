@@ -19,6 +19,15 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> Attributes = GetAttributeModels();
 
+		private static readonly DiagnosticDescriptor RetryBaseAttributeRule = new(
+			"PH2159",
+			"Retry attribute not allowed",
+			"Tests may not use attributes that derive from RetryBaseAttribute.",
+			Categories.Maintainability,
+			DiagnosticSeverity.Error,
+			isEnabledByDefault: true,
+			description: "Attributes that derive from RetryBaseAttribute attempt to overcome flaky tests. It would be preferable to avoid the flaky test.");
+
 		public static readonly ImmutableArray<DiagnosticDescriptor> Rules = GetRules(Attributes);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => Rules;
@@ -92,6 +101,49 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				var diagnostic = Diagnostic.Create(attribute.Rule, descriptionLocation, id);
 				context.ReportDiagnostic(diagnostic);
 			}
+
+			// Additional check for attributes that derive from RetryBaseAttribute
+			CheckForRetryBaseAttributeDerivatives(attributesNode, context);
+		}
+
+		private void CheckForRetryBaseAttributeDerivatives(AttributeListSyntax attributesNode, SyntaxNodeAnalysisContext context)
+		{
+			foreach (AttributeSyntax attributeSyntax in attributesNode.Attributes)
+			{
+				SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(attributeSyntax);
+				if (symbolInfo.Symbol is IMethodSymbol constructorSymbol)
+				{
+					INamedTypeSymbol attributeClass = constructorSymbol.ContainingType;
+
+					// Skip if this is the direct Retry attribute (already handled by the main check)
+					if (attributeClass.Name == "RetryAttribute" &&
+						attributeClass.ContainingNamespace.ToDisplayString() == "Microsoft.VisualStudio.TestTools.UnitTesting")
+					{
+						continue;
+					}
+
+					if (DerivesFromRetryBaseAttribute(attributeClass))
+					{
+						var diagnostic = Diagnostic.Create(RetryBaseAttributeRule, attributeSyntax.GetLocation());
+						context.ReportDiagnostic(diagnostic);
+					}
+				}
+			}
+		}
+
+		private bool DerivesFromRetryBaseAttribute(INamedTypeSymbol attributeType)
+		{
+			INamedTypeSymbol baseType = attributeType.BaseType;
+			while (baseType != null)
+			{
+				if (baseType.Name == "RetryBaseAttribute" &&
+					baseType.ContainingNamespace.ToDisplayString() == "Microsoft.VisualStudio.TestTools.UnitTesting")
+				{
+					return true;
+				}
+				baseType = baseType.BaseType;
+			}
+			return false;
 		}
 
 		private bool IsWhitelisted(ImmutableHashSet<string> whitelist, SemanticModel semanticModel, SyntaxNode node, out string id)
@@ -116,6 +168,9 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			IEnumerable<DiagnosticDescriptor> items = attributes.SelectMany(x => x.Value)
 									.Select(x => x.Rule);
 			builder.AddRange(items);
+
+			// Add the RetryBaseAttribute rule
+			builder.Add(RetryBaseAttributeRule);
 
 			return builder.ToImmutable();
 		}
@@ -172,9 +227,18 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 				isSuppressible: true,
 				isEnabledByDefault: true);
 
+			var retryAttribute = new AttributeModel(@"Retry",
+				@"Microsoft.VisualStudio.TestTools.UnitTesting.RetryAttribute",
+				@"Retry attribute not allowed",
+				@"Tests may not use the Retry attribute.",
+				@"The Retry attribute attempts to overcome flaky tests. It would be preferable to avoid the flaky test.",
+				DiagnosticId.AvoidRetryAttribute,
+				isSuppressible: false,
+				isEnabledByDefault: true);
+
 			ImmutableDictionary<string, ImmutableArray<AttributeModel>>.Builder builder = ImmutableDictionary.CreateBuilder<string, ImmutableArray<AttributeModel>>();
 
-			builder[StringConstants.AssertFullyQualifiedName] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute);
+			builder[StringConstants.AssertFullyQualifiedName] = ImmutableArray.Create(ownerAttribute, removedAttribute, testInitializeAttribute, testCleanupAttribute, classCleanupAttribute, classInitializeAttribute, retryAttribute);
 
 			return builder.ToImmutable();
 		}
