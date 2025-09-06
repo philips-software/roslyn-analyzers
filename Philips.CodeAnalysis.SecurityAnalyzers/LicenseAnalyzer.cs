@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Newtonsoft.Json;
 using NuGet.ProjectModel;
@@ -15,7 +15,7 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
-	public class LicenseAnalyzer : SingleDiagnosticAnalyzer
+	public class LicenseAnalyzer : DiagnosticAnalyzer
 	{
 		private const string Title = @"Avoid Packages with Unacceptable Licenses";
 		public const string MessageFormat = @"Package '{0}' version '{1}' has an unacceptable license '{2}'. " +
@@ -40,19 +40,38 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
 
-		public LicenseAnalyzer()
-			: base(DiagnosticId.AvoidUnlicensedPackages, Title, MessageFormat, Description, Categories.Security, isEnabled: false)
-		{ }
+		private static readonly DiagnosticDescriptor Rule = new(
+			DiagnosticId.AvoidUnlicensedPackages.ToId(),
+			Title,
+			MessageFormat,
+			Categories.Security,
+			DiagnosticSeverity.Error,
+			isEnabledByDefault: false,
+			Description,
+			DiagnosticId.AvoidUnlicensedPackages.ToHelpLinkUrl());
 
-		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
+		private static readonly DiagnosticDescriptor InfoDiagnostic = new(
+			"PH2155_INFO",
+			"License analysis information",
+			"{0}",
+			Categories.Security,
+			DiagnosticSeverity.Info,
+			isEnabledByDefault: true);
+
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
+			ImmutableArray.Create(Rule, InfoDiagnostic);
+
+		public override void Initialize(AnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(AnalyzeProject, SyntaxKind.CompilationUnit);
+			context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+			context.EnableConcurrentExecution();
+			context.RegisterCompilationAction(AnalyzeProject);
 		}
 
-		private void AnalyzeProject(SyntaxNodeAnalysisContext context)
+		private void AnalyzeProject(CompilationAnalysisContext context)
 		{
-			// Only analyze if we're not in a test project (to avoid noise during development)
-			if (Helper.ForTests.IsInTestClass(context))
+			// Skip analysis for test projects to avoid noise during development
+			if (IsTestProject(context.Compilation))
 			{
 				return;
 			}
@@ -70,21 +89,37 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				// * Check licenses OFFLINE using project.assets.json and the local global‑packages cache
 				AnalyzePackagesFromAssetsFile(context, allowedLicenses);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// If NuGet.ProjectModel or other dependencies are not available at runtime,
-				// gracefully handle the error. This can happen in analyzer environments.
-				// The architecture is demonstrated but requires proper analyzer packaging.
-				return;
+				// Report diagnostic about the error instead of silently failing
+				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Failed to analyze package licenses: {ex.Message}");
+				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
-		private void AnalyzePackagesFromAssetsFile(SyntaxNodeAnalysisContext context, HashSet<string> allowedLicenses)
+		private static bool IsTestProject(Compilation compilation)
+		{
+			// Check if this is a test project by looking for common test framework references
+			var referencedAssemblyNames = new HashSet<string>(
+				compilation.ReferencedAssemblyNames.Select(name => name.Name),
+				StringComparer.OrdinalIgnoreCase);
+
+			return referencedAssemblyNames.Contains("Microsoft.VisualStudio.TestPlatform.TestFramework") ||
+				   referencedAssemblyNames.Contains("MSTest.TestFramework") ||
+				   referencedAssemblyNames.Contains("NUnit.Framework") ||
+				   referencedAssemblyNames.Contains("xunit") ||
+				   referencedAssemblyNames.Contains("xunit.core");
+		}
+
+		private void AnalyzePackagesFromAssetsFile(CompilationAnalysisContext context, HashSet<string> allowedLicenses)
 		{
 			// Get project.assets.json path from analyzer config options
-			var assetsFilePath = GetProjectAssetsPath(context.Options.AnalyzerConfigOptionsProvider);
+			var assetsFilePath = TryFindAssetsFileFromSourcePaths();
 			if (string.IsNullOrEmpty(assetsFilePath) || !File.Exists(assetsFilePath))
 			{
+				// Report diagnostic that project.assets.json was not found
+				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, "Could not find project.assets.json file for license analysis");
+				context.ReportDiagnostic(diagnostic);
 				return;
 			}
 
@@ -96,10 +131,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				// Parse project.assets.json using NuGet.ProjectModel as requested
 				lockFile = LockFileUtilities.GetLockFile(assetsFilePath, NuGet.Common.NullLogger.Instance);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// If we can't parse the assets file or NuGet.ProjectModel is not available, skip analysis
-				// The architecture is demonstrated but requires proper analyzer packaging.
+				// Report diagnostic about parsing failure instead of silently failing
+				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Failed to parse project.assets.json: {ex.Message}");
+				context.ReportDiagnostic(diagnostic);
 				return;
 			}
 
@@ -127,7 +163,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				{
 					var diagnostic = Diagnostic.Create(
 						Rule,
-						context.Node.GetLocation(),
+						Location.None,
 						library.Name,
 						library.Version?.ToString() ?? "unknown",
 						licenseInfo);
@@ -140,20 +176,53 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			SaveLicenseCache(licenseCache, Path.GetDirectoryName(assetsFilePath));
 		}
 
-		private static string GetProjectAssetsPath(AnalyzerConfigOptionsProvider optionsProvider)
-		{
-			// For .NET Standard 2.0 compatibility, use the options provider differently
-			// Try to find project.assets.json by examining source files
-			// Use the parameter to avoid IDE0060 warning
-			_ = optionsProvider;
-			return TryFindAssetsFileFromSourcePaths();
-		}
-
 		private static string TryFindAssetsFileFromSourcePaths()
 		{
-			// Since GlobalOptions isn't available in .NET Standard 2.0, we'll need to work around this
-			// For now, return null to gracefully handle the missing functionality
-			// In a real implementation, we could use alternative approaches like examining source file paths
+			// For .NET Standard 2.0 compatibility, use alternative approaches to find project.assets.json
+			// Try common locations relative to the current working directory
+			var currentDir = Directory.GetCurrentDirectory();
+
+			// Look for project.assets.json in common locations
+			var possiblePaths = new[]
+			{
+				Path.Combine(currentDir, "obj", "project.assets.json"),
+				Path.Combine(currentDir, "..", "obj", "project.assets.json"),
+				Path.Combine(currentDir, "..", "..", "obj", "project.assets.json")
+			};
+
+			foreach (var path in possiblePaths)
+			{
+				if (File.Exists(path))
+				{
+					return path;
+				}
+			}
+
+			// If not found in common locations, search in current directory tree
+			try
+			{
+				var searchDir = currentDir;
+				for (var i = 0; i < 5; i++) // Limit search depth
+				{
+					var assetsPath = Path.Combine(searchDir, "obj", "project.assets.json");
+					if (File.Exists(assetsPath))
+					{
+						return assetsPath;
+					}
+
+					DirectoryInfo parentDir = Directory.GetParent(searchDir);
+					if (parentDir == null)
+					{
+						break;
+					}
+					searchDir = parentDir.FullName;
+				}
+			}
+			catch (Exception)
+			{
+				// If directory traversal fails, return null
+			}
+
 			return null;
 		}
 
@@ -199,7 +268,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If we can't write cache, just continue without caching
-				return;
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -43,8 +44,9 @@ class Foo
 		{
 			var analyzer = new LicenseAnalyzer();
 			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> descriptors = analyzer.SupportedDiagnostics;
-			Assert.HasCount(1, descriptors);
-			Assert.AreEqual("PH2155", descriptors[0].Id);
+			Assert.HasCount(2, descriptors);
+			Assert.IsTrue(descriptors.Any(d => d.Id == "PH2155"));
+			Assert.IsTrue(descriptors.Any(d => d.Id == "PH2155_INFO"));
 		}
 
 		[TestMethod]
@@ -189,7 +191,7 @@ namespace TestNamespace
 			var analyzer = new LicenseAnalyzer();
 			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> supportedDiagnostics = analyzer.SupportedDiagnostics;
 			Assert.IsFalse(supportedDiagnostics.IsDefault);
-			Assert.HasCount(1, supportedDiagnostics);
+			Assert.HasCount(2, supportedDiagnostics);
 
 			// The analyzer should be designed to work at compilation level
 			// since it needs to analyze the entire project's dependencies
