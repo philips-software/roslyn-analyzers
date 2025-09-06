@@ -13,13 +13,42 @@ The MCP server provides streamlined endpoints for essential development tasks:
 ### Helper Discovery (Primary Focus)
 - **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
-### Code Coverage Analysis (New!)
+### Code Formatting (New!)
+- **`/fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
+
+### Code Coverage Analysis
 - **`/analyze_coverage`** - Analyze code coverage and provide actionable suggestions to reach SonarCloud's 80% requirement
 
 ### Build & Test Automation  
 - **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
 - **`/run_tests`** - Execute tests (security-hardened, fixed target)
 - **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
+
+## Code Formatting Assistance
+
+The `/fix_formatting` endpoint specifically addresses the CoPilot Coding Agent's struggle with IDE0055 formatting violations. This repository enforces strict formatting rules:
+
+- **Line endings**: CRLF (Windows-style) - not LF
+- **Indentation**: Tabs (not spaces) with size 4
+- **Braces**: New line before all braces
+- **IDE0055 severity**: Error (build fails on violations)
+
+**Key Benefits:**
+- **Auto-corrects formatting** - Fixes CRLF, tabs, braces, and other .editorconfig violations
+- **Reduces agent struggles** - Prevents 25% of CoPilot effort being spent on formatting
+- **Ensures CI compliance** - Matches the exact formatting that CI requires
+- **Zero-config operation** - Uses existing .editorconfig rules automatically
+
+**Sample Response:**
+```json
+{
+  "status": "success",
+  "return_code": 0,
+  "formatted_files": 15,
+  "message": "Fixed formatting for 15 files",
+  "logs": "..."
+}
+```
 
 ## Coverage Analysis for SonarCloud
 
