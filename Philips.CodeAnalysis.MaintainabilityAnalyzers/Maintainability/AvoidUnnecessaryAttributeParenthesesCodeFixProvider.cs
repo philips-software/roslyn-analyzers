@@ -1,7 +1,5 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-#pragma warning disable IDE0055 // Fix formatting
-
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;

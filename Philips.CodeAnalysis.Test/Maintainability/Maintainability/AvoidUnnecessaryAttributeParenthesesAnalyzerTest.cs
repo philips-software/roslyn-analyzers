@@ -1,6 +1,4 @@
-// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
-
-#pragma warning disable IDE0055 // Fix formatting
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CodeFixes;
