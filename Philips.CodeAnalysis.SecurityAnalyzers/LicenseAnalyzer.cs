@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -363,10 +364,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private static bool HasSubstringIgnoreCase(string source, string value)
 		{
-#pragma warning disable CA2249 // Use IndexOf for cross-framework compatibility
-			// Use IndexOf for compatibility across all target frameworks
-			return source.IndexOf(value, StringComparison.OrdinalIgnoreCase) != -1;
-#pragma warning restore CA2249
+			return source.ToUpper(CultureInfo.InvariantCulture).Contains(value.ToUpper(CultureInfo.InvariantCulture));
 		}
 
 		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
