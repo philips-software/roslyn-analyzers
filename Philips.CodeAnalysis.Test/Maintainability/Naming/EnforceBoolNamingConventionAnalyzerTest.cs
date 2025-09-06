@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("hasFoo", false)]
 		[DataRow("doesFoo", false)]
 		[DataRow("wasFoo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrect(string content, bool isGood)
 		{
@@ -109,7 +109,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("DoesFoo", true)]
 		[DataRow("WasFoo", true)]
 		[DataRow("Is12Foo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameIsCorrectPublic(string content, bool isGood)
 		{
@@ -182,7 +182,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("__isFoo", false)]
 		[DataRow("_isfoo", false)]
 		[DataRow("_is12foo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrect(string content, bool isGood)
 		{
@@ -233,7 +233,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 		[DataRow("foreach(bool doesFoo in new[] { true, false }){}", true)]
 		[DataRow("foreach(bool wasFoo in new[] { true, false }){}", true)]
 		[DataRow("foreach(int i in new[] { 55, 22 }){}", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameIsCorrectForeach(string content, bool isGood)
 		{
@@ -259,7 +259,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 
 		[DataRow("_foo", false)]
 		[DataRow("_isFoo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldVariableNameOfTypeBoolean(string content, bool isGood)
 		{
@@ -283,7 +283,7 @@ class Foo
 
 		[DataRow("foo", false)]
 		[DataRow("isFoo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameOfTypeBoolean(string content, bool isGood)
 		{
@@ -310,7 +310,7 @@ class Foo
 
 		[DataRow("foo", false)]
 		[DataRow("isFoo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LocalVariableNameOfTypeVar(string content, bool isGood)
 		{
@@ -343,7 +343,7 @@ class Foo
 		[DataRow("doesFoo", true)]
 		[DataRow("wasFoo", true)]
 		[DataRow("is12Foo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ParameterNameIsCorrect(string content, bool isGood)
 		{
@@ -376,7 +376,7 @@ class Foo
 		[DataRow("DoesFoo", true)]
 		[DataRow("WasFoo", true)]
 		[DataRow("Is12Foo", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PropertyNameIsCorrect(string content, bool isGood)
 		{

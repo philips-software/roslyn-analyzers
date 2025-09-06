@@ -46,7 +46,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			}
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("typeof(bool)", true),
 		 DataRow("typeof(System.DateTime)", false),
 		 DataRow("null", true),
@@ -67,7 +67,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			await VerifyDiagnostic(testCode, expected);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(typeof(int), false)]
 		[DataRow(typeof(int?), true)]
 		[DataRow(typeof(string), true)]
@@ -79,8 +79,8 @@ namespace Philips.CodeAnalysis.Test.Common
 
 			var testCode = $"public class C {{ public void M() {{ var x = {expression}; }} }}";
 			Document document = CreateDocument(testCode);
-			SyntaxNode root = await document.GetSyntaxRootAsync();
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			SyntaxNode root = await document.GetSyntaxRootAsync(TestContext.CancellationTokenSource.Token);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(TestContext.CancellationTokenSource.Token);
 			VariableDeclaratorSyntax varDecl = root.DescendantNodes().OfType<VariableDeclaratorSyntax>().First();
 			ExpressionSyntax valueExpr = varDecl.Initializer.Value;
 
@@ -115,7 +115,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.AreEqual(expectedValue, value);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("42", true, 42)]
 		[DataRow("\"hello\"", true, "hello")]
 		[DataRow("1.5", true, 1.5)]
@@ -127,8 +127,8 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			var testCode = $"public class C {{ public void M() {{ var x = {expression}; }} }}";
 			Document document = CreateDocument(testCode);
-			SyntaxNode root = await document.GetSyntaxRootAsync();
-			SemanticModel semanticModel = await document.GetSemanticModelAsync();
+			SyntaxNode root = await document.GetSyntaxRootAsync(TestContext.CancellationTokenSource.Token);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(TestContext.CancellationTokenSource.Token);
 			VariableDeclaratorSyntax varDecl = root.DescendantNodes().OfType<VariableDeclaratorSyntax>().First();
 			ExpressionSyntax valueExpr = varDecl.Initializer.Value;
 
@@ -150,5 +150,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		{
 			return new IsLiteralAnalyzer();
 		}
+
+		public TestContext TestContext { get; set; }
 	}
 }

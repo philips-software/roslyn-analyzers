@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 
 		#region Public Interface
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.AreEqual(true, true)")]
 		[DataRow("Assert.AreEqual(false, false)")]
 		[DataRow("Assert.AreEqual(!false, true)")]
@@ -59,7 +59,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			await VerifyError(given).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.AreEqual(true, Get())", "Assert.IsTrue(Get())")]
 		[DataRow("Assert.AreEqual(true, Get(), \"hi\")", "Assert.IsTrue(Get(), \"hi\")")]
 		[DataRow("Assert.AreEqual(false, Get())", "Assert.IsFalse(Get())")]
@@ -87,7 +87,7 @@ static bool Get() { return true; }
 			await VerifyChange(given, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Assert.AreEqual(true, (bool?)true")]
 		[DataRow("Assert.AreEqual(true, Get())")]
 		[DataRow("Assert.AreEqual(false, Get())")]

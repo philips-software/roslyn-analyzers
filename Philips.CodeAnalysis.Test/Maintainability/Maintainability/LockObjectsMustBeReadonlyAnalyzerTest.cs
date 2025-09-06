@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("object _foo", true)]
 		[DataRow("static readonly object _foo", false)]
 		[DataRow("readonly object _foo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LockObjectsMustBeReadonlyAsync(string field, bool isError)
 		{
@@ -48,7 +48,7 @@ class Foo
 		}
 
 		[DataRow("object foo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LockObjectsMustBeReadonlyLocalVariablesAsync(string field, bool isError)
 		{
@@ -73,7 +73,7 @@ class Foo
 		}
 
 		[DataRow("object foo", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task LockObjectsMustBeReadonlyFunctionReturnAsync(string field, bool isError)
 		{

@@ -133,7 +133,7 @@ namespace ForLoopTests {
     }
 }";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectBackwardsLoop, DisplayName = nameof(CorrectBackwardsLoop)),
 		 DataRow(CorrectForwardLoop, DisplayName = nameof(CorrectForwardLoop)),
@@ -145,7 +145,7 @@ namespace ForLoopTests {
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(ViolationPostDecrement, DisplayName = "ViolationPostDecrement"),
 		 DataRow(ViolationPreDecrement, DisplayName = "ViolationPreDecrement"),
 		 DataRow(ViolationSubtractAssignment, DisplayName = "ViolationSubtractAssignment"),
@@ -157,7 +157,7 @@ namespace ForLoopTests {
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g")]
 		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]

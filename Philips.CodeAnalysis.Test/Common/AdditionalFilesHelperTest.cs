@@ -67,10 +67,10 @@ namespace Philips.CodeAnalysis.Test.Common
 			// Act
 			IReadOnlyList<string> actual = helper.ForAdditionalFiles.GetValuesFromEditorConfig(diagnosticId, key);
 			// Assert
-			Assert.AreEqual(0, actual.Count);
+			Assert.IsEmpty(actual);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(false, true)]
 		[DataRow(false, false)]
 		[DataRow(true, true)]

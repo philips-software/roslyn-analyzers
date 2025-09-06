@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow("lockObj", false)]
 		[DataRow("new object()", true)]
 		[DataRow("new object().ToString()", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PreventLockOnUncapturedVariableAsync(string lockText, bool isExpectedError)
 		{

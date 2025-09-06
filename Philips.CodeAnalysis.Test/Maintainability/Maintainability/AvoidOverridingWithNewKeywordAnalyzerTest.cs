@@ -79,7 +79,7 @@ namespace MultiLineConditionUnitTests
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task OverrideVirtualDoesNotTriggersDiagnostics(string input)
@@ -88,7 +88,7 @@ namespace MultiLineConditionUnitTests
 			await VerifySuccessfulCompilation(input).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongMethod, DisplayName = nameof(WrongMethod)),
 		 DataRow(WrongProperty, DisplayName = nameof(WrongProperty))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -100,7 +100,7 @@ namespace MultiLineConditionUnitTests
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongMethod, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile-Method")]
 		[DataRow(WrongProperty, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile-Property")]
 		[TestCategory(TestDefinitions.UnitTests)]

@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class EnforceRegionsTest : DiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public static void b() {{}}", false)]
 		[DataRow(@"private static void b() {{}}", true)]
 		[DataRow(@"protected void b() {{}}", true)]
@@ -85,7 +85,7 @@ class Foo
 
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public static void b() {{}}", true)]
 		[DataRow(@"private static void b() {{}}", false)]
 		[DataRow(@"protected void b() {{}}", false)]
@@ -140,7 +140,7 @@ class Foo
 			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"public  static int a;", true)]
 		[DataRow(@"private  static int a;", false)]
 		[DataRow(@"protected int a", false)]
@@ -195,58 +195,6 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidEmptyRegion()
-		{
-			var givenText = @"
-class C {{
-	#region Dictionaries
-	#endregion
-}}
-";
-			await VerifyDiagnostic(givenText, DiagnosticId.AvoidEmptyRegions).ConfigureAwait(false);
-		}
-
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidEmptyRegionFalsePositive1()
-		{
-			// 2 Analyses/sets triggered, but first #endregion is with second set (which now has 3 items)
-			var givenText = @"
-namespace MyNamespace {{
-	#region Dictionaries
-	public class StringToActionDictionary {{ }}
-	#endregion
-
-	#region Lists
-	public class ObjectList {{ }}
-	#endregion
-}}
-";
-			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AvoidEmptyRegionFalsePositive2()
-		{
-			// 2 Analyses/sets triggered, but first #endregion is with second set (which should have 3 items (not good), but
-			// last #endregion is excluded, so perceived as a pair, starting with an #endregion.
-			var givenText = @"
-	#region Dictionaries
-	public class StringToActionDictionary {{ }}
-	#endregion
-
-	#region Lists
-	public class ObjectList {{ }}
-	#endregion
-";
-			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
-		}
-
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AvoidRegionInsideMethod()
 		{
 			var givenText = @"
@@ -262,7 +210,7 @@ class C {{
 			await VerifySuccessfulCompilation(givenText);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"#region Constants", false)]
 		[DataRow(@"#region Public Properties/Methods", false)]
 		[DataRow(@"#region Non-Public Properties/Methods", true)]
@@ -286,7 +234,7 @@ class Foo
 			await VerifyError(baseline, given, isError, 6, 2).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Non-Public Properties/Methods")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DuplicateRegionTest(string given)

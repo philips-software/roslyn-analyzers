@@ -44,7 +44,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 			return base.GetAdditionalTexts().Add(("NotFile.txt", "data")).Add((AllowedSymbolsTestAnalyzer.AllowedFileName, AllowedSymbolsContent));
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("AllowedNamespace", "SomeType", "SomeMethod"),
 		 DataRow("ANamespace", "AllowedType", "SomeMethod"),
 		 DataRow("ANamespace", "AType", "AllowedMethod"),
@@ -61,7 +61,7 @@ Philips.Detailed.AType.AllowedMethodInFullNamespace
 			await VerifyAsync(file).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("SomeNamespace", "SomeType", "SomeMethod")]
 		[DataRow("ANamespace", "AType", "AllowedMethod2")]
 		[TestCategory(TestDefinitions.UnitTests)]

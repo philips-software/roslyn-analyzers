@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class AvoidOwnerAttributeCodeFixProviderTest : CodeFixVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 16)]
 		[DataRow(@"[TestMethod][Owner(""MK"")]", 16)]
 		[TestCategory(TestDefinitions.UnitTests)]

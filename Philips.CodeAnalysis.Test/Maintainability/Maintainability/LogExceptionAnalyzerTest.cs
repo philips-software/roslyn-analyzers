@@ -143,7 +143,7 @@ public class Program {
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectLogClass, DisplayName = nameof(CorrectLogClass)),
 		 DataRow(CorrectThrow, DisplayName = nameof(CorrectThrow)),
@@ -158,7 +158,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Missing, DisplayName = nameof(Missing))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenExceptionIsNotLoggedDiagnosticIsTriggered(string testCode)
@@ -169,7 +169,7 @@ public class Program {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Missing, "Dummy.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggered(string testCode, string filePath)
