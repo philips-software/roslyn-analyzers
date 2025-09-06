@@ -94,15 +94,63 @@ def run_dogfood() -> Dict[str, Any]:
     backup = None
     violations: List[Dict[str, str]] = []
     try:
+        # Step 1: Build the Dogfood packages
         if props.exists():
             backup = props.with_suffix(".props.backup")
             shutil.copy2(props, backup)
+        
+        # Create Directory.Build.props for dogfood package creation
         props.write_text("""<Project>
-  <PropertyGroup><FileVersion>1.0.0</FileVersion></PropertyGroup>
+  <PropertyGroup>
+    <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+  </PropertyGroup>
+</Project>
+""", encoding="utf-8")
+        
+        # Build to create .Dogfood packages
+        rc, out = _run(["dotnet", "build", "--configuration", "Release"])
+        if rc != 0:
+            return {"status": "failure", "violation_count": 0, "violations": [], "error": "Failed to build dogfood packages", "build_output": out[-2000:]}
+        
+        # Step 2: Prepare to eat Dogfood - add local package source and configure package references
+        packages_dir = BASE_DIR / "Packages"
+        rc, _ = _run(["dotnet", "nuget", "add", "source", str(packages_dir)])
+        
+        # Remove the dogfood build props and create the consumption props
+        props.unlink()
+        props.write_text("""<Project>
+  <PropertyGroup>
+    <FileVersion>1.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.DuplicateCodeAnalyzer.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.SecurityAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.MoqAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>
 """, encoding="utf-8")
 
-        # Build everything (quiet logs), collect warnings/errors marked by CS/PH
+        # Step 3: Eat the Dogfood - build all projects with analyzers applied
+        # First clean to ensure compilation happens
+        _run(["dotnet", "clean"])
+        
         projects = [
             "Philips.CodeAnalysis.Common/Philips.CodeAnalysis.Common.csproj",
             "Philips.CodeAnalysis.DuplicateCodeAnalyzer/Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj",
@@ -116,10 +164,12 @@ def run_dogfood() -> Dict[str, Any]:
         ]
         for proj in projects:
             framework = "net8.0" if proj.endswith(("Test.csproj","Benchmark.csproj","AnalyzerPerformance.csproj")) else "netstandard2.0"
+            # Use normal verbosity to capture warnings/errors
             rc, out = _run(["dotnet", "build", proj, "--configuration", "Debug", "--framework", framework,
-                            "-consoleloggerparameters:NoSummary", "-verbosity:quiet"])
+                            "-consoleloggerparameters:NoSummary", "-verbosity:normal"])
             for ln in (out or "").splitlines():
                 low = ln.lower()
+                # Look for warnings and errors with analyzer codes (CS or PH)
                 if ("warning" in low or "error" in low) and (" cs" in low or " ph" in low):
                     violations.append({"project": proj, "violation": ln.strip()})
         return {"status": "success" if not violations else "failure", "violation_count": len(violations), "violations": violations}
