@@ -128,6 +128,34 @@ def run_dogfood() -> Dict[str, Any]:
         if backup and backup.exists(): shutil.move(backup, props)
 
 @mcp.tool
+def fix_formatting() -> Dict[str, Any]:
+    """Fix code formatting issues using dotnet format. Automatically corrects IDE0055 violations including CRLF line endings and tab indentation."""
+    rc, out = _run([
+        "dotnet", "format", "style", "Philips.CodeAnalysis.sln",
+        "--verbosity", "normal"
+    ])
+    
+    # Count formatted files from output
+    formatted_count = 0
+    if "Formatted" in out:
+        lines = out.splitlines()
+        for line in lines:
+            if line.strip().startswith("Formatted") and "files." in line:
+                # Extract number like "Formatted 15 of 602 files."
+                parts = line.strip().split()
+                if len(parts) >= 2 and parts[1].isdigit():
+                    formatted_count = int(parts[1])
+                    break
+    
+    return {
+        "status": "success" if rc == 0 else "failure",
+        "return_code": rc,
+        "formatted_files": formatted_count,
+        "message": f"Fixed formatting for {formatted_count} files" if formatted_count > 0 else "All files already properly formatted",
+        "logs": out[-4000:] if out else ""
+    }
+
+@mcp.tool
 def analyze_coverage() -> Dict[str, Any]:
     """Collect .NET coverage and summarize uncovered lines (if dotnet-coverage is available, otherwise returns guidance)."""
     # Try to install the coverage tool; ignore failures to keep tool resilient
