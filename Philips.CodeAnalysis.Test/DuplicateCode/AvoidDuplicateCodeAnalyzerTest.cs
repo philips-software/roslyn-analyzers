@@ -368,7 +368,7 @@ namespace MyNamespace
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestDogfoodFalsePositivesAsync()
+		public async Task DogfoodFalsePositivesAsync()
 		{
 			// Test the specific code patterns that were flagged as false positives in the dogfood build
 			var baseline = @"
