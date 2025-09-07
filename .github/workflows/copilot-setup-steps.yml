@@ -15,3 +15,14 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install "fastmcp>=0.4"
 
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/packages.lock.json
+
+      - name: Restore solution (warm cache)
+        run: dotnet restore Philips.CodeAnalysis.sln
+
