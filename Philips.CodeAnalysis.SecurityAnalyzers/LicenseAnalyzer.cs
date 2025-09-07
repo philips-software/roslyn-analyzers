@@ -167,6 +167,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
+			// Report where we found the file (but not the detailed search diagnostics when successful)
+			ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} at: {assetsFilePath}");
+
 			// Load and parse project.assets.json manually to avoid external dependencies
 			List<PackageInfo> packages;
 			try
@@ -200,6 +203,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				// Get license information for this package
 				var licenseInfo = GetPackageLicenseInfo(package, licenseCache);
 
+				// Report the license that was found for each reference (for diagnostic purposes)
+				var displayLicense = string.IsNullOrEmpty(licenseInfo) ? "unknown" : licenseInfo;
+				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}");
+
 				// Check if license is acceptable
 				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
 				{
@@ -230,37 +237,44 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				.Distinct(StringComparer.OrdinalIgnoreCase)
 				.ToList();
 
-			ReportDebugDiagnostic(context, $"Found {sourceDirectories.Count} unique source directories from compilation");
-
 			// Search in each source directory and its parent directories
 			foreach (var sourceDir in sourceDirectories)
 			{
-				ReportDebugDiagnostic(context, $"Searching from source directory: {sourceDir}");
-
-				var foundPath = SearchForAssetsFile(context, sourceDir);
+				var foundPath = SearchForAssetsFile(context, sourceDir, enableDetailedLogging: false);
 				if (foundPath != null)
 				{
-					ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} at: {foundPath}");
 					return foundPath;
 				}
 			}
 
 			// Fallback to current directory search if source paths didn't work
 			var currentDir = Directory.GetCurrentDirectory();
-			ReportDebugDiagnostic(context, $"Source directory search failed, falling back to current directory: {currentDir}");
-
-			var fallbackPath = SearchForAssetsFile(context, currentDir);
+			var fallbackPath = SearchForAssetsFile(context, currentDir, enableDetailedLogging: false);
 			if (fallbackPath != null)
 			{
-				ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} via fallback at: {fallbackPath}");
 				return fallbackPath;
 			}
+
+			// File not found - now show detailed diagnostics to help troubleshoot
+			ReportDebugDiagnostic(context, $"Could not find {ProjectAssetsFileName}. Starting detailed search diagnostics...");
+			ReportDebugDiagnostic(context, $"Found {sourceDirectories.Count} unique source directories from compilation");
+
+			// Re-search with detailed logging enabled
+			foreach (var sourceDir in sourceDirectories)
+			{
+				ReportDebugDiagnostic(context, $"Searching from source directory: {sourceDir}");
+				_ = SearchForAssetsFile(context, sourceDir, enableDetailedLogging: true);
+			}
+
+			// Fallback search with detailed logging
+			ReportDebugDiagnostic(context, $"Source directory search failed, falling back to current directory: {currentDir}");
+			_ = SearchForAssetsFile(context, currentDir, enableDetailedLogging: true);
 
 			ReportDebugDiagnostic(context, $"Exhaustive search completed, {ProjectAssetsFileName} not found");
 			return null;
 		}
 
-		private static string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory)
+		private static string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
 		{
 			// Look for project.assets.json in common locations relative to the start directory
 			var possiblePaths = new[]
@@ -276,7 +290,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				try
 				{
 					var exists = File.Exists(path);
-					ReportDebugDiagnostic(context, $"Checking path: {path} - Exists: {exists}");
+					if (enableDetailedLogging)
+					{
+						ReportDebugDiagnostic(context, $"Checking path: {path} - Exists: {exists}");
+					}
 
 					if (exists)
 					{
@@ -285,7 +302,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				}
 				catch (Exception ex)
 				{
-					ReportDebugDiagnostic(context, $"Exception checking path {path}: {ex.Message}");
+					if (enableDetailedLogging)
+					{
+						ReportDebugDiagnostic(context, $"Exception checking path {path}: {ex.Message}");
+					}
 				}
 			}
 
@@ -300,7 +320,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					try
 					{
 						var exists = File.Exists(assetsPath);
-						ReportDebugDiagnostic(context, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
+						if (enableDetailedLogging)
+						{
+							ReportDebugDiagnostic(context, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
+						}
 
 						if (exists)
 						{
@@ -309,13 +332,19 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					}
 					catch (Exception ex)
 					{
-						ReportDebugDiagnostic(context, $"Exception during tree search at {assetsPath}: {ex.Message}");
+						if (enableDetailedLogging)
+						{
+							ReportDebugDiagnostic(context, $"Exception during tree search at {assetsPath}: {ex.Message}");
+						}
 					}
 
 					DirectoryInfo parentDir = Directory.GetParent(searchDir);
 					if (parentDir == null)
 					{
-						ReportDebugDiagnostic(context, $"Reached root directory at depth {i}, stopping search");
+						if (enableDetailedLogging)
+						{
+							ReportDebugDiagnostic(context, $"Reached root directory at depth {i}, stopping search");
+						}
 						break;
 					}
 
@@ -324,7 +353,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 			catch (Exception ex)
 			{
-				ReportDebugDiagnostic(context, $"Exception during directory tree search: {ex.Message}");
+				if (enableDetailedLogging)
+				{
+					ReportDebugDiagnostic(context, $"Exception during directory tree search: {ex.Message}");
+				}
 			}
 
 			return null;
