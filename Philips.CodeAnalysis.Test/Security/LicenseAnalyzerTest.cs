@@ -95,7 +95,7 @@ class Foo
 			var licensesCacheFileName = LicenseAnalyzer.LicensesCacheFileName;
 
 			Assert.EndsWith(".txt", allowedLicensesFileName);
-			Assert.EndsWith(".json", licensesCacheFileName);
+			Assert.EndsWith(".cache", licensesCacheFileName);
 			Assert.Contains("Allowed", allowedLicensesFileName);
 			Assert.Contains("licenses", licensesCacheFileName);
 		}
@@ -421,8 +421,8 @@ public class GenericClass<T> where T : class
 			// Verify the cache file name constant has a proper value
 			var fileName = LicenseAnalyzer.LicensesCacheFileName;
 			Assert.IsFalse(string.IsNullOrEmpty(fileName));
-			Assert.EndsWith(".json", fileName);
-			Assert.AreEqual("licenses.json", fileName);
+			Assert.EndsWith(".cache", fileName);
+			Assert.AreEqual("licenses.cache", fileName);
 		}
 
 		[TestMethod]

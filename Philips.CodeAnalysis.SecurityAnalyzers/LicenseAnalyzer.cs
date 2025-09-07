@@ -6,14 +6,24 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Newtonsoft.Json;
-using NuGet.ProjectModel;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.SecurityAnalyzers
 {
+	/// <summary>
+	/// Represents a package from project.assets.json
+	/// </summary>
+	internal sealed class PackageInfo
+	{
+		public string Name { get; set; }
+		public string Version { get; set; }
+		public string Type { get; set; }
+		public string Path { get; set; }
+	}
+
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class LicenseAnalyzer : DiagnosticAnalyzer
 	{
@@ -24,7 +34,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 										   @"reviewed before use to ensure compliance with project requirements.";
 
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
-		public const string LicensesCacheFileName = @"licenses.json";
+		public const string LicensesCacheFileName = @"licenses.cache";
 		private const string ProjectAssetsFileName = @"project.assets.json";
 
 		// Default acceptable licenses (permissive licenses that are generally safe to use)
@@ -40,6 +50,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		};
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
+		private static readonly char[] EqualsSeparator = { '=' };
 
 		private static readonly DiagnosticDescriptor Rule = new(
 			DiagnosticId.AvoidUnlicensedPackages.ToId(),
@@ -124,13 +135,12 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			// Load and parse project.assets.json using NuGet.ProjectModel
-			LockFile lockFile;
+			// Load and parse project.assets.json manually to avoid external dependencies
+			List<PackageInfo> packages;
 			try
 			{
-				// Check licenses OFFLINE using project.assets.json and the local global‑packages cache.
-				// Parse project.assets.json using NuGet.ProjectModel as requested
-				lockFile = LockFileUtilities.GetLockFile(assetsFilePath, NuGet.Common.NullLogger.Instance);
+				// Parse project.assets.json manually for better analyzer compatibility
+				packages = ParseProjectAssetsFile(assetsFilePath);
 			}
 			catch (Exception ex)
 			{
@@ -140,7 +150,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return;
 			}
 
-			if (lockFile?.Libraries == null)
+			if (packages == null || packages.Count == 0)
 			{
 				return;
 			}
@@ -148,16 +158,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			// Load or create license cache
 			Dictionary<string, PackageLicenseInfo> licenseCache = LoadLicenseCache(Path.GetDirectoryName(assetsFilePath));
 
-			// Analyze each package library
-			foreach (LockFileLibrary library in lockFile.Libraries)
+			// Analyze each package
+			foreach (PackageInfo package in packages)
 			{
-				if (library.Type != "package")
+				if (package.Type != "package")
 				{
 					continue;
 				}
 
 				// Get license information for this package
-				var licenseInfo = GetPackageLicenseInfo(library, licenseCache);
+				var licenseInfo = GetPackageLicenseInfo(package, licenseCache);
 
 				// Check if license is acceptable
 				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
@@ -165,8 +175,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					var diagnostic = Diagnostic.Create(
 						Rule,
 						Location.None,
-						library.Name,
-						library.Version?.ToString() ?? "unknown",
+						package.Name,
+						package.Version ?? "unknown",
 						licenseInfo);
 
 					context.ReportDiagnostic(diagnostic);
@@ -226,6 +236,77 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return null;
 		}
 
+		private static List<PackageInfo> ParseProjectAssetsFile(string assetsFilePath)
+		{
+			var packages = new List<PackageInfo>();
+
+			try
+			{
+				var content = File.ReadAllText(assetsFilePath);
+
+				// Find the "libraries" section using simple string parsing
+				// This is more reliable than pulling in JSON dependencies for analyzers
+				Match librariesMatch = Regex.Match(content, @"""libraries""\s*:\s*\{");
+				if (!librariesMatch.Success)
+				{
+					return packages;
+				}
+
+				// Find the start of libraries section
+				var startIndex = librariesMatch.Index + librariesMatch.Length;
+				var braceCount = 1;
+				var currentIndex = startIndex;
+
+				// Find the end of the libraries section by counting braces
+				while (currentIndex < content.Length && braceCount > 0)
+				{
+					var c = content[currentIndex];
+					if (c == '{')
+					{
+						braceCount++;
+					}
+					else if (c == '}')
+					{
+						braceCount--;
+					}
+					currentIndex++;
+				}
+
+				if (braceCount != 0)
+				{
+					return packages;
+				}
+
+				// Extract libraries section content
+				var librariesContent = content.Substring(startIndex, currentIndex - startIndex - 1);
+
+				// Parse each package entry using regex
+				MatchCollection packageMatches = Regex.Matches(librariesContent, @"""([^/]+)/([^""]+)""\s*:\s*\{[^}]*""type""\s*:\s*""([^""]+)""[^}]*(?:""path""\s*:\s*""([^""]+)"")?[^}]*\}");
+
+				foreach (Match match in packageMatches)
+				{
+					if (match.Groups.Count >= 4)
+					{
+						var package = new PackageInfo
+						{
+							Name = match.Groups[1].Value,
+							Version = match.Groups[2].Value,
+							Type = match.Groups[3].Value,
+							Path = match.Groups.Count > 4 ? match.Groups[4].Value : null
+						};
+						packages.Add(package);
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// Return empty list on parsing errors
+				return [];
+			}
+
+			return packages;
+		}
+
 		private static Dictionary<string, PackageLicenseInfo> LoadLicenseCache(string projectDirectory)
 		{
 			if (string.IsNullOrEmpty(projectDirectory))
@@ -241,9 +322,22 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 			try
 			{
-				var json = File.ReadAllText(cacheFilePath);
-				return JsonConvert.DeserializeObject<Dictionary<string, PackageLicenseInfo>>(json) ??
-					   [];
+				var cache = new Dictionary<string, PackageLicenseInfo>();
+				var lines = File.ReadAllLines(cacheFilePath);
+				foreach (var line in lines)
+				{
+					if (string.IsNullOrWhiteSpace(line) || !line.Contains('='))
+					{
+						continue;
+					}
+
+					var parts = line.Split(EqualsSeparator, 2);
+					if (parts.Length == 2)
+					{
+						cache[parts[0]] = new PackageLicenseInfo { License = parts[1] };
+					}
+				}
+				return cache;
 			}
 			catch (Exception)
 			{
@@ -262,8 +356,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			try
 			{
 				var cacheFilePath = Path.Combine(projectDirectory, LicensesCacheFileName);
-				var json = JsonConvert.SerializeObject(cache, Formatting.Indented);
-				File.WriteAllText(cacheFilePath, json);
+				IEnumerable<string> lines = cache.Select(kvp => $"{kvp.Key}={kvp.Value.License}");
+				File.WriteAllLines(cacheFilePath, lines);
 			}
 			catch (Exception)
 			{
@@ -272,9 +366,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 		}
 
-		private static string GetPackageLicenseInfo(LockFileLibrary library, Dictionary<string, PackageLicenseInfo> licenseCache)
+		private static string GetPackageLicenseInfo(PackageInfo package, Dictionary<string, PackageLicenseInfo> licenseCache)
 		{
-			var cacheKey = $"{library.Name}#{library.Version}";
+			var cacheKey = $"{package.Name}#{package.Version}";
 
 			// Check cache first
 			if (licenseCache.TryGetValue(cacheKey, out PackageLicenseInfo cachedInfo))
@@ -283,7 +377,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// Try to get license from package metadata in global packages cache
-			var license = ExtractLicenseFromGlobalPackages(library);
+			var license = ExtractLicenseFromGlobalPackages(package);
 
 			// Cache the result (even if null/empty)
 			licenseCache[cacheKey] = new PackageLicenseInfo { License = license ?? string.Empty };
@@ -291,7 +385,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return license;
 		}
 
-		private static string ExtractLicenseFromGlobalPackages(LockFileLibrary library)
+		private static string ExtractLicenseFromGlobalPackages(PackageInfo package)
 		{
 			// Get global packages folder path
 			var globalPackagesPath = GetGlobalPackagesPath();
@@ -300,10 +394,19 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return null;
 			}
 
-			// Construct path to package in global cache
-			var packagePath = Path.Combine(globalPackagesPath,
-				library.Name.ToLowerInvariant(),
-				library.Version?.ToString()?.ToLowerInvariant() ?? "");
+			// Construct path to package in global cache using the package path if available, 
+			// otherwise construct from name and version
+			string packagePath;
+			if (!string.IsNullOrEmpty(package.Path))
+			{
+				packagePath = Path.Combine(globalPackagesPath, package.Path);
+			}
+			else
+			{
+				packagePath = Path.Combine(globalPackagesPath,
+					package.Name.ToLowerInvariant(),
+					package.Version?.ToLowerInvariant() ?? "");
+			}
 
 			if (!Directory.Exists(packagePath))
 			{
@@ -311,7 +414,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			// Look for .nuspec file which contains license information
-			var nuspecPath = Path.Combine(packagePath, $"{library.Name}.nuspec");
+			var nuspecPath = Path.Combine(packagePath, $"{package.Name}.nuspec");
 			if (File.Exists(nuspecPath))
 			{
 				return ExtractLicenseFromNuspec(nuspecPath);
