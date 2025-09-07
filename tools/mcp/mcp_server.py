@@ -10,6 +10,34 @@ from fastmcp import FastMCP
 mcp = FastMCP("roslyn-analyzers-dev")
 BASE_DIR = Path(__file__).resolve().parents[2]  # repo root (../../)
 DEFAULT_TIMEOUT = 900  # 15 minutes for long builds/tests
+STATE_DIR = BASE_DIR / ".mcp_state"
+STATE_DIR.mkdir(exist_ok=True)
+RESTORE_SENTINEL = STATE_DIR / "restored.ok"
+
+def _ensure_restored() -> bool:
+    """
+    Ensure NuGet restore (and initial SDK warmup) has happened once per server session.
+    Returns True if this call performed the restore (i.e., cold start), else False.
+    """
+    if RESTORE_SENTINEL.exists():
+        return False  # already warm
+
+    # Quick SDK warmup to avoid first-time experience overhead
+    _run(["dotnet", "--info"], timeout=60)
+
+    # Restore the whole solution once so later commands can use --no-restore
+    _run(["dotnet", "restore", "Philips.CodeAnalysis.sln"], timeout=600)
+
+    # Optional: compile the test project once, so later we can use --no-build
+    _run([
+        "dotnet", "build",
+        "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
+        "--configuration", "Release",
+        "--no-restore"
+    ], timeout=600)
+
+    RESTORE_SENTINEL.write_text("ok", encoding="utf-8")
+    return True
 
 def _run(cmd: list[str], *, timeout: int = DEFAULT_TIMEOUT) -> tuple[int, str]:
     if (
@@ -71,6 +99,7 @@ def search_helpers() -> Dict[str, Any]:
 @mcp.tool
 def build_strict() -> Dict[str, Any]:
     """dotnet build solution with warnings as errors."""
+    _ensure_restored()
     _run(["dotnet", "clean", "Philips.CodeAnalysis.sln"])
     rc, out = _run([
         "dotnet", "build", "Philips.CodeAnalysis.sln",
@@ -82,12 +111,25 @@ def build_strict() -> Dict[str, Any]:
 @mcp.tool
 def run_tests() -> Dict[str, Any]:
     """Run tests against main test project."""
-    # Use 120s timeout to accommodate both building and testing from clean state
-    # Tests take ~49s including build when starting clean, so 120s provides adequate buffer
-    rc, out = _run([
+    # Warmup/restore on the very first call; returns True if we just did it now.
+    did_restore_now = _ensure_restored()
+    
+    # If we just restored/built, tests will be quick — and we can skip restore/build
+    cmd = [
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
-        "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx"
-    ], timeout=120)
+        "--configuration", "Release",
+        "--logger", "trx;LogFileName=test-results.trx",
+        "--no-restore"
+    ]
+    # If the initial build above succeeded, we can also skip building:
+    test_bin = BASE_DIR / "Philips.CodeAnalysis.Test" / "bin" / "Release"
+    if test_bin.exists():
+        cmd.append("--no-build")
+
+    # Give a bigger timeout only on the first ever run, else be tight
+    timeout = 600 if did_restore_now else 180
+
+    rc, out = _run(cmd, timeout=timeout)
     
     # Parse test results from output
     test_results = {"passed": 0, "failed": 0, "skipped": 0, "total": 0, "duration": ""}
