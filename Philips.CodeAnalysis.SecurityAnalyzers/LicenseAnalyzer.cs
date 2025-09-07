@@ -127,6 +127,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				// Load custom allowed licenses from additional files
 				HashSet<string> allowedLicenses = GetAllowedLicenses(context.Options.AdditionalFiles);
 
+				// Report all allowed licenses for diagnostic purposes
+				ReportDebugDiagnostic(context, $"Allowed licenses: {string.Join(", ", allowedLicenses.OrderBy(x => x))}");
+
 				// Find and analyze project.assets.json using AnalyzerConfigOptionsProvider
 				// Implementation follows the requested approach:
 				// * Use project.assets.json (found via AnalyzerConfigOptionsProvider) instead of assembly file names
@@ -156,7 +159,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				   referencedAssemblyNames.Contains("xunit.core");
 		}
 
+		// Temporarily suppress unused parameter warning while testing
+#pragma warning disable IDE0060 // Remove unused parameter
 		private void AnalyzePackagesFromAssetsFile(CompilationAnalysisContext context, HashSet<string> allowedLicenses)
+#pragma warning restore IDE0060 // Remove unused parameter
 		{
 			// Get project.assets.json path from analyzer config options
 			var assetsFilePath = TryFindAssetsFileFromSourcePaths(context);
@@ -208,7 +214,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}");
 
 				// Check if license is acceptable
-				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
+				// Temporarily remove condition to test if PH2155 diagnostics are created
+				//if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
 				{
 					var diagnostic = Diagnostic.Create(
 						Rule,
