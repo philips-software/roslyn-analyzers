@@ -151,27 +151,24 @@ def run_dogfood() -> Dict[str, Any]:
         # First clean to ensure compilation happens
         _run(["dotnet", "clean"])
         
-        projects = [
-            "Philips.CodeAnalysis.Common/Philips.CodeAnalysis.Common.csproj",
-            "Philips.CodeAnalysis.DuplicateCodeAnalyzer/Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj",
-            "Philips.CodeAnalysis.MaintainabilityAnalyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj",
-            "Philips.CodeAnalysis.MoqAnalyzers/Philips.CodeAnalysis.MoqAnalyzers.csproj",
-            "Philips.CodeAnalysis.MsTestAnalyzers/Philips.CodeAnalysis.MsTestAnalyzers.csproj",
-            "Philips.CodeAnalysis.SecurityAnalyzers/Philips.CodeAnalysis.SecurityAnalyzers.csproj",
-            "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
-            "Philips.CodeAnalysis.Benchmark/Philips.CodeAnalysis.Benchmark.csproj",
-            "Philips.CodeAnalysis.AnalyzerPerformance/Philips.CodeAnalysis.AnalyzerPerformance.csproj"
-        ]
-        for proj in projects:
-            framework = "net8.0" if proj.endswith(("Test.csproj","Benchmark.csproj","AnalyzerPerformance.csproj")) else "netstandard2.0"
-            # Use normal verbosity to capture warnings/errors
-            rc, out = _run(["dotnet", "build", proj, "--configuration", "Debug", "--framework", framework,
-                            "-consoleloggerparameters:NoSummary", "-verbosity:normal"])
-            for ln in (out or "").splitlines():
-                low = ln.lower()
-                # Look for warnings and errors with analyzer codes (CS or PH)
-                if ("warning" in low or "error" in low) and (" cs" in low or " ph" in low):
-                    violations.append({"project": proj, "violation": ln.strip()})
+        # Build all projects at once to detect violations more efficiently
+        rc, out = _run(["dotnet", "build", "--configuration", "Debug", 
+                       "-consoleloggerparameters:NoSummary", "-verbosity:normal"])
+        
+        # Parse output for violations 
+        for ln in (out or "").splitlines():
+            low = ln.lower()
+            # Look for warnings and errors with analyzer codes (CS or PH)
+            if ("warning" in low or "error" in low) and (" cs" in low or " ph" in low):
+                # Extract project from the line format if possible
+                project = "unknown"
+                if "[" in ln and "]" in ln:
+                    bracket_content = ln[ln.rfind("["):ln.rfind("]")+1]
+                    if "/" in bracket_content:
+                        potential_project = bracket_content.split("/")[-1].replace("]", "").split("::")[0]
+                        if potential_project.endswith(".csproj"):
+                            project = potential_project
+                violations.append({"project": project, "violation": ln.strip()})
         return {"status": "success" if not violations else "failure", "violation_count": len(violations), "violations": violations}
     finally:
         if props.exists(): props.unlink()
