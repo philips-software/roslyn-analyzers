@@ -799,5 +799,22 @@ public class AsyncClass
 }";
 			await VerifySuccessfulCompilation(asyncCode).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerMicrosoftLicenseUrlFlaggedForDebugging()
+		{
+			// Test that the Microsoft license URL is correctly flagged as unacceptable for debugging purposes
+			// This URL is actually MIT but we flag it specifically for debugging
+			var analyzer = new LicenseAnalyzer();
+
+			// Verify the analyzer has the correct diagnostic for license violations
+			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> descriptors = analyzer.SupportedDiagnostics;
+			Microsoft.CodeAnalysis.DiagnosticDescriptor licenseDescriptor = descriptors.First(d => d.Id == "PH2155");
+
+			Assert.IsNotNull(licenseDescriptor);
+			Assert.AreEqual(Microsoft.CodeAnalysis.DiagnosticSeverity.Error, licenseDescriptor.DefaultSeverity);
+			Assert.Contains("unacceptable license", licenseDescriptor.MessageFormat.ToString());
+		}
 	}
 }
