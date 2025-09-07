@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
-    <id>Philips.CodeAnalysis.SecurityAnalyzers</id>
+    <id>Philips.CodeAnalysis.MaintainabilityAnalyzers</id>
     <version>1.0.0</version>
     <authors>Brian Collamore, Jean-Paul Mayer and Ynse Hoornenborg</authors>
     <developmentDependency>true</developmentDependency>
@@ -12,10 +12,10 @@
     <readme>README.md</readme>
     <projectUrl>https://github.com/philips-software/roslyn-analyzers</projectUrl>
     <iconUrl>https://avatars3.githubusercontent.com/u/39734771</iconUrl>
-    <description>Roslyn Diagnostic Analyzers for potential security findings</description>
-    <releaseNotes>See Changelog</releaseNotes>
+    <description>Roslyn Diagnostic Analyzers for helping maintainability or readability of C# code</description>
+    <releaseNotes>Added PH2144: AvoidIncorrectForLoopCondition analyzer to detect backwards for-loop boundary check issues</releaseNotes>
     <copyright>©2019-2025 Koninklijke Philips N.V.</copyright>
-    <tags>CSharp Security Roslyn CodeAnalysis analyzers Philips</tags>
+    <tags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</tags>
     <repository type="git" url="https://github.com/philips-software/roslyn-analyzers" commit="d855acb8198870ee98077db9431566cbf41ac65b" />
     <dependencies>
       <group targetFramework="net8.0" />
