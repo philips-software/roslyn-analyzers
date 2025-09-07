@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class PreferCombinatorialTestingAnalyzer : TestMethodDiagnosticAnalyzer
 	{
-		private const string Title = @"Consider using combinatorial testing";
+		private const string Title = @"Use combinatorial testing";
 		public const string MessageFormat = @"Consider using CombinatorialValues instead of {0} DataRow attributes for this single-parameter method.";
 		private const string Description = @"Methods with a single parameter and multiple DataRow attributes can be simplified using CombinatorialValues from the Combinatorial.MSTest package.";
 		private const string Category = Categories.MsTest;
