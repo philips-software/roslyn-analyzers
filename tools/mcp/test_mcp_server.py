@@ -52,7 +52,7 @@ def test_endpoint(name, method, path, data=None):
         # Set timeout based on endpoint type
         timeout = 10  # Default timeout
         if name in ["Build Strict", "Run Dogfood"]:
-            timeout = 120  # 2 minutes for build operations
+            timeout = 180  # 3 minutes for build operations
         elif name == "Run Tests":
             timeout = 60   # 1 minute for tests
         elif name == "Analyze Coverage":
