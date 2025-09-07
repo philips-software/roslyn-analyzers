@@ -15,7 +15,7 @@ def _run(cmd: list[str], *, timeout: int = DEFAULT_TIMEOUT) -> tuple[int, str]:
         not isinstance(cmd, list)
         or not cmd
         or not all(isinstance(x, str) for x in cmd)
-        or any(any(c in x for c in [';', '&', '|', '$', '`', '>', '<']) for x in cmd)
+        or any(any(c in x for c in ['&', '|', '$', '`', '>', '<']) for x in cmd)
     ):
         raise ValueError("Unsafe or invalid command list passed to _run")
     p = subprocess.run(
