@@ -81,10 +81,10 @@ def build_strict() -> Dict[str, Any]:
 
 @mcp.tool
 def run_tests() -> Dict[str, Any]:
-    """Run tests against main test project (no build)."""
+    """Run tests against main test project."""
     rc, out = _run([
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
-        "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx", "--no-build"
+        "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx"
     ])
     
     # Parse test results from output
