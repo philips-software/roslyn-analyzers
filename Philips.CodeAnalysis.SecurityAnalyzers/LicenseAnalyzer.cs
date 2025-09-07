@@ -697,22 +697,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return source.ToUpper(CultureInfo.InvariantCulture).Contains(value.ToUpper(CultureInfo.InvariantCulture));
 		}
 
-		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
-		{
-			if (string.IsNullOrEmpty(license))
-			{
-				return true; // Don't flag packages without license information
-			}
-
-			// For debugging purposes: specifically flag Microsoft license URL as unacceptable
-			// even though it's actually MIT and should normally be allowed
-			if (string.Equals(license, "http://go.microsoft.com/fwlink/?LinkId=329770", StringComparison.OrdinalIgnoreCase))
-			{
-				return false;
-			}
-
-			return allowedLicenses.Contains(license);
-		}
 
 		private static HashSet<string> GetAllowedLicenses(IEnumerable<AdditionalText> additionalFiles)
 		{
