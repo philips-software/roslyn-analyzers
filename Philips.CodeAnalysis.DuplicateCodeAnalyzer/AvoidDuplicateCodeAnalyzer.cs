@@ -153,8 +153,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 					foreach (SyntaxToken token in body.DescendantTokens())
 					{
-						_ = GetShapeDetails(token);
-
 						// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
 						(var hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
 
