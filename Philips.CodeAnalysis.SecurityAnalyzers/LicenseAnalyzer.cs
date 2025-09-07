@@ -46,7 +46,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"BSD-3-Clause",
 			"ISC",
 			"Unlicense",
-			"0BSD"
+			"0BSD",
+			"https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
+			"https://github.com/dotnet/standard/blob/master/LICENSE.TXT"
 		};
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
@@ -80,30 +82,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			context.RegisterCompilationAction(AnalyzeProject);
 		}
 
-		private static bool IsDiagnosticLoggingEnabled(CompilationAnalysisContext context)
+		private void ReportDebugDiagnostic(CompilationAnalysisContext context, string message)
 		{
-			// Check if diagnostic logging is enabled via .editorconfig
-			// Default to enabled since we're not production ready yet
-			if (!context.Compilation.SyntaxTrees.Any())
-			{
-				return true;
-			}
-
-			SyntaxTree tree = context.Compilation.SyntaxTrees.First();
-			AnalyzerConfigOptions analyzerConfigOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(tree);
-
-			if (analyzerConfigOptions.TryGetValue("dotnet_code_quality.PH2155.enable_debug_logging", out var value))
-			{
-				return !string.Equals(value, "false", StringComparison.OrdinalIgnoreCase);
-			}
-
-			// Default to enabled for now since we're far from production ready
-			return true;
-		}
-
-		private static void ReportDebugDiagnostic(CompilationAnalysisContext context, string message)
-		{
-			if (IsDiagnosticLoggingEnabled(context))
+			var helper = new Helper(context.Options, context.Compilation);
+			if (helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155"))
 			{
 				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, message);
 				context.ReportDiagnostic(diagnostic);
@@ -112,7 +94,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private void AnalyzeProject(CompilationAnalysisContext context)
 		{
-			// Skip analysis for test projects to avoid noise during development
 			if (IsTestProject(context.Compilation))
 			{
 				return;
@@ -120,27 +101,18 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 			try
 			{
-				// Report .editorconfig debug logging status
-				var loggingEnabled = IsDiagnosticLoggingEnabled(context);
+				var helper = new Helper(context.Options, context.Compilation);
+				var loggingEnabled = helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155");
 				ReportDebugDiagnostic(context, $"LicenseAnalyzer debug logging: {(loggingEnabled ? "enabled" : "disabled")} (configure via dotnet_code_quality.PH2155.enable_debug_logging=false)");
 
-				// Load custom allowed licenses from additional files
 				HashSet<string> allowedLicenses = GetAllowedLicenses(context.Options.AdditionalFiles);
 
-				// Report all allowed licenses for diagnostic purposes
 				ReportDebugDiagnostic(context, $"Allowed licenses: {string.Join(", ", allowedLicenses.OrderBy(x => x))}");
 
-				// Find and analyze project.assets.json using AnalyzerConfigOptionsProvider
-				// Implementation follows the requested approach:
-				// * Use project.assets.json (found via AnalyzerConfigOptionsProvider) instead of assembly file names
-				// * Parse that file and use Nuget.ProjectModel package
-				// * Build a licenses.json file for performance/caching (configure the file via a diagnostic config option)
-				// * Check licenses OFFLINE using project.assets.json and the local global‑packages cache
 				AnalyzePackagesFromAssetsFile(context, allowedLicenses);
 			}
 			catch (Exception ex)
 			{
-				// Report diagnostic about the error instead of silently failing
 				ReportDebugDiagnostic(context, $"Failed to analyze package licenses: {ex.Message}");
 			}
 		}
@@ -159,46 +131,36 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				   referencedAssemblyNames.Contains("xunit.core");
 		}
 
-		// Temporarily suppress unused parameter warning while testing
-#pragma warning disable IDE0060 // Remove unused parameter
 		private void AnalyzePackagesFromAssetsFile(CompilationAnalysisContext context, HashSet<string> allowedLicenses)
-#pragma warning restore IDE0060 // Remove unused parameter
 		{
-			// Get project.assets.json path from analyzer config options
 			var assetsFilePath = TryFindAssetsFileFromSourcePaths(context);
 			if (string.IsNullOrEmpty(assetsFilePath) || !File.Exists(assetsFilePath))
 			{
-				// Report diagnostic that project.assets.json was not found
 				ReportDebugDiagnostic(context, "Could not find project.assets.json file for license analysis");
 				return;
 			}
 
-			// Report where we found the file (but not the detailed search diagnostics when successful)
 			ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} at: {assetsFilePath}");
 
-			// Load and parse project.assets.json manually to avoid external dependencies
 			List<PackageInfo> packages;
 			try
 			{
-				// Parse project.assets.json manually for better analyzer compatibility
 				packages = ParseProjectAssetsFile(assetsFilePath);
 			}
 			catch (Exception ex)
 			{
-				// Report diagnostic about parsing failure instead of silently failing
 				ReportDebugDiagnostic(context, $"Failed to parse project.assets.json: {ex.Message}");
 				return;
 			}
 
 			if (packages == null || packages.Count == 0)
 			{
+				ReportDebugDiagnostic(context, "No packages found in project.assets.json");
 				return;
 			}
 
-			// Load or create license cache
 			Dictionary<string, PackageLicenseInfo> licenseCache = LoadLicenseCache(Path.GetDirectoryName(assetsFilePath));
 
-			// Analyze each package
 			foreach (PackageInfo package in packages)
 			{
 				if (package.Type != "package")
@@ -206,16 +168,12 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					continue;
 				}
 
-				// Get license information for this package
 				var licenseInfo = GetPackageLicenseInfo(package, licenseCache);
 
-				// Report the license that was found for each reference (for diagnostic purposes)
 				var displayLicense = string.IsNullOrEmpty(licenseInfo) ? "unknown" : licenseInfo;
 				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}");
 
-				// Check if license is acceptable
-				// Temporarily remove condition to test if PH2155 diagnostics are created
-				//if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
+				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
 				{
 					var diagnostic = Diagnostic.Create(
 						Rule,
@@ -228,23 +186,13 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				}
 			}
 
-			// Save updated license cache
 			SaveLicenseCache(licenseCache, Path.GetDirectoryName(assetsFilePath));
 		}
 
-		private static string TryFindAssetsFileFromSourcePaths(CompilationAnalysisContext context)
+		private string TryFindAssetsFileFromSourcePaths(CompilationAnalysisContext context)
 		{
-			// Search for project.assets.json using actual source file paths from the compilation
-			// instead of Directory.GetCurrentDirectory() which points to VS install directory
+			List<string> sourceDirectories = GetSourceDirectories(context);
 
-			var sourceDirectories = context.Compilation.SyntaxTrees
-				.Where(tree => !string.IsNullOrEmpty(tree.FilePath))
-				.Select(tree => Path.GetDirectoryName(tree.FilePath))
-				.Where(dir => !string.IsNullOrEmpty(dir))
-				.Distinct(StringComparer.OrdinalIgnoreCase)
-				.ToList();
-
-			// Search in each source directory and its parent directories
 			foreach (var sourceDir in sourceDirectories)
 			{
 				var foundPath = SearchForAssetsFile(context, sourceDir, enableDetailedLogging: false);
@@ -254,7 +202,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				}
 			}
 
-			// Fallback to current directory search if source paths didn't work
 			var currentDir = Directory.GetCurrentDirectory();
 			var fallbackPath = SearchForAssetsFile(context, currentDir, enableDetailedLogging: false);
 			if (fallbackPath != null)
@@ -262,26 +209,38 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return fallbackPath;
 			}
 
-			// File not found - now show detailed diagnostics to help troubleshoot
+			ReportDetailedSearchDiagnostics(context, sourceDirectories, currentDir);
+			return null;
+		}
+
+		private static List<string> GetSourceDirectories(CompilationAnalysisContext context)
+		{
+			return context.Compilation.SyntaxTrees
+				.Where(tree => !string.IsNullOrEmpty(tree.FilePath))
+				.Select(tree => Path.GetDirectoryName(tree.FilePath))
+				.Where(dir => !string.IsNullOrEmpty(dir))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList();
+		}
+
+		private void ReportDetailedSearchDiagnostics(CompilationAnalysisContext context, List<string> sourceDirectories, string currentDir)
+		{
 			ReportDebugDiagnostic(context, $"Could not find {ProjectAssetsFileName}. Starting detailed search diagnostics...");
 			ReportDebugDiagnostic(context, $"Found {sourceDirectories.Count} unique source directories from compilation");
 
-			// Re-search with detailed logging enabled
 			foreach (var sourceDir in sourceDirectories)
 			{
 				ReportDebugDiagnostic(context, $"Searching from source directory: {sourceDir}");
 				_ = SearchForAssetsFile(context, sourceDir, enableDetailedLogging: true);
 			}
 
-			// Fallback search with detailed logging
 			ReportDebugDiagnostic(context, $"Source directory search failed, falling back to current directory: {currentDir}");
 			_ = SearchForAssetsFile(context, currentDir, enableDetailedLogging: true);
 
 			ReportDebugDiagnostic(context, $"Exhaustive search completed, {ProjectAssetsFileName} not found");
-			return null;
 		}
 
-		private static string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
+		private string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
 		{
 			// Look for project.assets.json in common locations relative to the start directory
 			var possiblePaths = new[]
@@ -377,20 +336,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				var content = File.ReadAllText(assetsFilePath);
 
-				// Find the "libraries" section using simple string parsing
-				// This is more reliable than pulling in JSON dependencies for analyzers
-				Match librariesMatch = Regex.Match(content, @"""libraries""\s*:\s*\{");
+				Match librariesMatch = Regex.Match(content, @"""libraries""\s*:\s*\{", RegexOptions.None, TimeSpan.FromSeconds(30));
 				if (!librariesMatch.Success)
 				{
 					return packages;
 				}
 
-				// Find the start of libraries section
 				var startIndex = librariesMatch.Index + librariesMatch.Length;
 				var braceCount = 1;
 				var currentIndex = startIndex;
 
-				// Find the end of the libraries section by counting braces
 				while (currentIndex < content.Length && braceCount > 0)
 				{
 					var c = content[currentIndex];
@@ -410,30 +365,26 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					return packages;
 				}
 
-				// Extract libraries section content
 				var librariesContent = content.Substring(startIndex, currentIndex - startIndex - 1);
 
-				// Parse each package entry using regex
-				MatchCollection packageMatches = Regex.Matches(librariesContent, @"""([^/]+)/([^""]+)""\s*:\s*\{[^}]*""type""\s*:\s*""([^""]+)""[^}]*(?:""path""\s*:\s*""([^""]+)"")?[^}]*\}");
+				MatchCollection packageMatches = Regex.Matches(librariesContent, @"""([^/]+)/([^""]+)""\s*:\s*\{[^}]*""type""\s*:\s*""([^""]+)""[^}]*(?:""path""\s*:\s*""([^""]+)"")?[^}]*\}", RegexOptions.None, TimeSpan.FromSeconds(30));
 
 				foreach (Match match in packageMatches)
 				{
 					if (match.Groups.Count >= 4)
 					{
-						var package = new PackageInfo
+						packages.Add(new PackageInfo
 						{
 							Name = match.Groups[1].Value,
 							Version = match.Groups[2].Value,
 							Type = match.Groups[3].Value,
 							Path = match.Groups.Count > 4 ? match.Groups[4].Value : null
-						};
-						packages.Add(package);
+						});
 					}
 				}
 			}
 			catch (Exception)
 			{
-				// Return empty list on parsing errors
 				return [];
 			}
 
@@ -520,15 +471,12 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private static string ExtractLicenseFromGlobalPackages(PackageInfo package)
 		{
-			// Get global packages folder path
 			var globalPackagesPath = GetGlobalPackagesPath();
 			if (string.IsNullOrEmpty(globalPackagesPath))
 			{
 				return null;
 			}
 
-			// Construct path to package in global cache using the package path if available, 
-			// otherwise construct from name and version
 			string packagePath;
 			if (!string.IsNullOrEmpty(package.Path))
 			{
@@ -546,7 +494,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return null;
 			}
 
-			// Look for .nuspec file which contains license information
 			var nuspecPath = Path.Combine(packagePath, $"{package.Name}.nuspec");
 			if (File.Exists(nuspecPath))
 			{
@@ -558,24 +505,21 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private static string GetGlobalPackagesPath()
 		{
-			// Try to get from NuGet configuration
 			var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 			var defaultPath = Path.Combine(userProfile, ".nuget", "packages");
 
-			// Check if default path exists
 			if (Directory.Exists(defaultPath))
 			{
 				return defaultPath;
 			}
 
-			// Could also check NUGET_PACKAGES environment variable
 			var nugetPackagesEnv = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
 			if (!string.IsNullOrEmpty(nugetPackagesEnv) && Directory.Exists(nugetPackagesEnv))
 			{
 				return nugetPackagesEnv;
 			}
 
-			return defaultPath; // Return default even if it doesn't exist
+			return defaultPath;
 		}
 
 		private static string ExtractLicenseFromNuspec(string nuspecPath)
@@ -584,19 +528,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				var content = File.ReadAllText(nuspecPath);
 
-				// Try to extract license from <license> element first
 				var licenseFromElement = ExtractLicenseElement(content);
 				if (!string.IsNullOrEmpty(licenseFromElement))
 				{
 					return licenseFromElement;
 				}
 
-				// Fall back to extracting from <licenseUrl> element
 				return ExtractLicenseUrl(content);
 			}
 			catch (Exception)
 			{
-				// If we can't parse the nuspec, return null
 				return null;
 			}
 		}
@@ -697,6 +638,22 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return source.ToUpper(CultureInfo.InvariantCulture).Contains(value.ToUpper(CultureInfo.InvariantCulture));
 		}
 
+
+		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
+		{
+			if (string.IsNullOrEmpty(license))
+			{
+				return false;
+			}
+
+			// For debugging purposes, specifically flag Microsoft license URL as unacceptable
+			if (license.Equals("http://go.microsoft.com/fwlink/?LinkId=329770", StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+
+			return allowedLicenses.Contains(license);
+		}
 
 		private static HashSet<string> GetAllowedLicenses(IEnumerable<AdditionalText> additionalFiles)
 		{
