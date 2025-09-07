@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import subprocess
 import shutil
 from pathlib import Path
@@ -85,7 +86,63 @@ def run_tests() -> Dict[str, Any]:
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
         "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx", "--no-build"
     ])
-    return {"status": "success" if rc == 0 else "failure", "return_code": rc, "results": out[-8000:]}
+    
+    # Parse test results from output
+    test_results = {"passed": 0, "failed": 0, "skipped": 0, "total": 0, "duration": ""}
+    test_summary = ""
+    
+    lines = out.splitlines()
+    for line in lines:
+        # Look for the test results summary line like:
+        # "Passed!  - Failed:     0, Passed:  2015, Skipped:     0, Total:  2015, Duration: 40 s"
+        # "Failed!  - Failed:     5, Passed:  2010, Skipped:     0, Total:  2015, Duration: 40 s"
+        if ("Passed!" in line or "Failed!" in line) and "Total:" in line:
+            test_summary = line.strip()
+            # Parse the numeric values
+            failed_match = re.search(r'Failed:\s*(\d+)', line)
+            passed_match = re.search(r'Passed:\s*(\d+)', line)
+            skipped_match = re.search(r'Skipped:\s*(\d+)', line)
+            total_match = re.search(r'Total:\s*(\d+)', line)
+            duration_match = re.search(r'Duration:\s*([^-]+?)(?:\s*-|$)', line)
+            
+            if failed_match:
+                test_results["failed"] = int(failed_match.group(1))
+            if passed_match:
+                test_results["passed"] = int(passed_match.group(1))
+            if skipped_match:
+                test_results["skipped"] = int(skipped_match.group(1))
+            if total_match:
+                test_results["total"] = int(total_match.group(1))
+            if duration_match:
+                test_results["duration"] = duration_match.group(1).strip()
+            break
+    
+    # Filter out noise - keep only test-related output
+    filtered_lines = []
+    for line in lines:
+        # Skip .NET welcome messages and similar noise
+        if any(noise in line for noise in [
+            "Welcome to .NET", "SDK Version:", "development certificate",
+            "Write your first app:", "Find out what's new:", "Explore documentation:",
+            "Report issues and find source", "Use 'dotnet --help'"
+        ]):
+            continue
+        # Keep test execution related lines
+        if any(test_keyword in line for test_keyword in [
+            "Test run for", "Test Execution Command Line Tool", "Starting test execution",
+            "test files matched", "Results File:", "Passed!", "Failed!", "Warning:", "Error:"
+        ]) or line.strip() == "":
+            filtered_lines.append(line)
+    
+    filtered_output = "\n".join(filtered_lines).strip()
+    
+    return {
+        "status": "success" if rc == 0 else "failure",
+        "return_code": rc,
+        "test_results": test_results,
+        "summary": test_summary if test_summary else f"{test_results['passed']} passed, {test_results['failed']} failed, {test_results['skipped']} skipped, {test_results['total']} total",
+        "logs": filtered_output[-4000:] if filtered_output else ""
+    }
 
 @mcp.tool
 def run_dogfood() -> Dict[str, Any]:
