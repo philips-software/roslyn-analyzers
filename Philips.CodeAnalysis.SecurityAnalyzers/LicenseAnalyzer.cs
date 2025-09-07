@@ -126,7 +126,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void AnalyzePackagesFromAssetsFile(CompilationAnalysisContext context, HashSet<string> allowedLicenses)
 		{
 			// Get project.assets.json path from analyzer config options
-			var assetsFilePath = TryFindAssetsFileFromSourcePaths();
+			var assetsFilePath = TryFindAssetsFileFromSourcePaths(context);
 			if (string.IsNullOrEmpty(assetsFilePath) || !File.Exists(assetsFilePath))
 			{
 				// Report diagnostic that project.assets.json was not found
@@ -187,11 +187,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			SaveLicenseCache(licenseCache, Path.GetDirectoryName(assetsFilePath));
 		}
 
-		private static string TryFindAssetsFileFromSourcePaths()
+		private static string TryFindAssetsFileFromSourcePaths(CompilationAnalysisContext context)
 		{
 			// For .NET Standard 2.0 compatibility, use alternative approaches to find project.assets.json
 			// Try common locations relative to the current working directory
 			var currentDir = Directory.GetCurrentDirectory();
+
+			// Report debug information about search starting point
+			var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Searching for {ProjectAssetsFileName} starting from directory: {currentDir}");
+			context.ReportDiagnostic(diagnostic);
 
 			// Look for project.assets.json in common locations
 			var possiblePaths = new[]
@@ -201,38 +205,64 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				Path.Combine(currentDir, "..", "..", "obj", ProjectAssetsFileName)
 			};
 
+			// Report each path being checked
+			foreach (var path in possiblePaths)
+			{
+				var exists = File.Exists(path);
+				var diagnostic2 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Checking path: {path} - Exists: {exists}");
+				context.ReportDiagnostic(diagnostic2);
+			}
+
 			var foundPath = possiblePaths.Where(File.Exists).FirstOrDefault();
 			if (foundPath != null)
 			{
+				var diagnostic3 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Found {ProjectAssetsFileName} at: {foundPath}");
+				context.ReportDiagnostic(diagnostic3);
 				return foundPath;
 			}
 
 			// If not found in common locations, search in current directory tree
 			try
 			{
+				var diagnostic4 = Diagnostic.Create(InfoDiagnostic, Location.None, "Common paths failed, searching directory tree...");
+				context.ReportDiagnostic(diagnostic4);
+
 				var searchDir = currentDir;
 				for (var i = 0; i < 5; i++) // Limit search depth
 				{
 					var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
-					if (File.Exists(assetsPath))
+					var exists = File.Exists(assetsPath);
+
+					var diagnostic5 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
+					context.ReportDiagnostic(diagnostic5);
+
+					if (exists)
 					{
+						var diagnostic6 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Found {ProjectAssetsFileName} via tree search at: {assetsPath}");
+						context.ReportDiagnostic(diagnostic6);
 						return assetsPath;
 					}
 
 					DirectoryInfo parentDir = Directory.GetParent(searchDir);
 					if (parentDir == null)
 					{
+						var diagnostic7 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Reached root directory at depth {i}, stopping search");
+						context.ReportDiagnostic(diagnostic7);
 						break;
 					}
 					searchDir = parentDir.FullName;
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// If directory traversal fails, return null
+				// Report diagnostic about directory traversal failure
+				var diagnostic8 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Directory traversal failed: {ex.Message}");
+				context.ReportDiagnostic(diagnostic8);
 				return null;
 			}
 
+			var diagnostic9 = Diagnostic.Create(InfoDiagnostic, Location.None, $"{ProjectAssetsFileName} not found after exhaustive search");
+			context.ReportDiagnostic(diagnostic9);
 			return null;
 		}
 
