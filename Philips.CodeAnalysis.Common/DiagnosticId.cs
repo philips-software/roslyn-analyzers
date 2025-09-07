@@ -144,6 +144,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidUnusedToString = 2153,
 		AvoidUnlicensedPackages = 2155,
 		AvoidPkcsPaddingWithRsaEncryption = 2158,
-		AvoidRetryAttribute = 2159,
+		AvoidRetryAttribute = 2161,
 	}
 }

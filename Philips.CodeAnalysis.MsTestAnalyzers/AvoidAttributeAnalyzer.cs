@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static readonly ImmutableDictionary<string, ImmutableArray<AttributeModel>> Attributes = GetAttributeModels();
 
 		private static readonly DiagnosticDescriptor RetryBaseAttributeRule = new(
-			"PH2159",
+			"PH2161",
 			"Retry attribute not allowed",
 			"Tests may not use attributes that derive from RetryBaseAttribute.",
 			Categories.Maintainability,
