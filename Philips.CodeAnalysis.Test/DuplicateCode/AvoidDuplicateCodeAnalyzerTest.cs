@@ -423,5 +423,68 @@ namespace MyNamespace
 				}
 			).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task TestDogfoodFalsePositivesAsync()
+		{
+			// Test the specific code patterns that were flagged as false positives in the dogfood build
+			var baseline = @"
+using System;
+using System.Linq;
+using System.Collections.Generic;
+
+class TestClass 
+{
+	public void TestMethod1()
+	{
+		// Similar to DiagnosticVerifier.Helper.cs pattern around line 321-335
+		var trustedAssembliesPaths = new string[] { ""test1"", ""test2"" };
+		var neededAssemblies = new[] { ""System.Runtime"", ""mscorlib"" };
+		
+		foreach (var references in trustedAssembliesPaths.Where(p => neededAssemblies.Contains(p)))
+		{
+			Console.WriteLine(references);
+		}
+		
+		var count = 0;
+		var data = new[] { ""test"" }.Select(x =>
+		{
+			var newFileName = string.Format(""{0}{1}.{2}"", ""prefix"", count == 0 ? string.Empty : count.ToString(), ""ext"");
+			count++;
+			return newFileName;
+		});
+	}
+	
+	public void TestMethod2()
+	{
+		// Similar to CodeFixVerifier.cs pattern around line 99-129
+		var actions = new List<object>();
+		var analyzerDiagnostics = new[] { ""diagnostic1"" };
+		var firstDiagnostic = analyzerDiagnostics.First();
+		
+		if (actions.Count == 0)
+		{
+			return;
+		}
+		
+		if (true) // Similar to scope == FixAllScope.Custom
+		{
+			var document = ""test"";
+		}
+		else
+		{
+			var document = ""test2"";
+		}
+		
+		var newDiagnostics = new object[0];
+		var newCompilerDiagnostics = new object[0];
+	}
+}
+";
+
+			// This should NOT show any duplicates - if it does, we have a false positive
+			await VerifySuccessfulCompilation(baseline).ConfigureAwait(false);
+		}
 	}
 }
