@@ -80,6 +80,36 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			context.RegisterCompilationAction(AnalyzeProject);
 		}
 
+		private static bool IsDiagnosticLoggingEnabled(CompilationAnalysisContext context)
+		{
+			// Check if diagnostic logging is enabled via .editorconfig
+			// Default to enabled since we're not production ready yet
+			if (!context.Compilation.SyntaxTrees.Any())
+			{
+				return true;
+			}
+
+			SyntaxTree tree = context.Compilation.SyntaxTrees.First();
+			AnalyzerConfigOptions analyzerConfigOptions = context.Options.AnalyzerConfigOptionsProvider.GetOptions(tree);
+
+			if (analyzerConfigOptions.TryGetValue("dotnet_code_quality.PH2155.enable_debug_logging", out var value))
+			{
+				return !string.Equals(value, "false", StringComparison.OrdinalIgnoreCase);
+			}
+
+			// Default to enabled for now since we're far from production ready
+			return true;
+		}
+
+		private static void ReportDebugDiagnostic(CompilationAnalysisContext context, string message)
+		{
+			if (IsDiagnosticLoggingEnabled(context))
+			{
+				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, message);
+				context.ReportDiagnostic(diagnostic);
+			}
+		}
+
 		private void AnalyzeProject(CompilationAnalysisContext context)
 		{
 			// Skip analysis for test projects to avoid noise during development
@@ -90,6 +120,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 			try
 			{
+				// Report .editorconfig debug logging status
+				var loggingEnabled = IsDiagnosticLoggingEnabled(context);
+				ReportDebugDiagnostic(context, $"LicenseAnalyzer debug logging: {(loggingEnabled ? "enabled" : "disabled")} (configure via dotnet_code_quality.PH2155.enable_debug_logging=false)");
+
 				// Load custom allowed licenses from additional files
 				HashSet<string> allowedLicenses = GetAllowedLicenses(context.Options.AdditionalFiles);
 
@@ -104,8 +138,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception ex)
 			{
 				// Report diagnostic about the error instead of silently failing
-				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Failed to analyze package licenses: {ex.Message}");
-				context.ReportDiagnostic(diagnostic);
+				ReportDebugDiagnostic(context, $"Failed to analyze package licenses: {ex.Message}");
 			}
 		}
 
@@ -130,8 +163,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			if (string.IsNullOrEmpty(assetsFilePath) || !File.Exists(assetsFilePath))
 			{
 				// Report diagnostic that project.assets.json was not found
-				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, "Could not find project.assets.json file for license analysis");
-				context.ReportDiagnostic(diagnostic);
+				ReportDebugDiagnostic(context, "Could not find project.assets.json file for license analysis");
 				return;
 			}
 
@@ -145,8 +177,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception ex)
 			{
 				// Report diagnostic about parsing failure instead of silently failing
-				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Failed to parse project.assets.json: {ex.Message}");
-				context.ReportDiagnostic(diagnostic);
+				ReportDebugDiagnostic(context, $"Failed to parse project.assets.json: {ex.Message}");
 				return;
 			}
 
@@ -189,80 +220,113 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private static string TryFindAssetsFileFromSourcePaths(CompilationAnalysisContext context)
 		{
-			// For .NET Standard 2.0 compatibility, use alternative approaches to find project.assets.json
-			// Try common locations relative to the current working directory
+			// Search for project.assets.json using actual source file paths from the compilation
+			// instead of Directory.GetCurrentDirectory() which points to VS install directory
+
+			var sourceDirectories = context.Compilation.SyntaxTrees
+				.Where(tree => !string.IsNullOrEmpty(tree.FilePath))
+				.Select(tree => Path.GetDirectoryName(tree.FilePath))
+				.Where(dir => !string.IsNullOrEmpty(dir))
+				.Distinct(StringComparer.OrdinalIgnoreCase)
+				.ToList();
+
+			ReportDebugDiagnostic(context, $"Found {sourceDirectories.Count} unique source directories from compilation");
+
+			// Search in each source directory and its parent directories
+			foreach (var sourceDir in sourceDirectories)
+			{
+				ReportDebugDiagnostic(context, $"Searching from source directory: {sourceDir}");
+
+				var foundPath = SearchForAssetsFile(context, sourceDir);
+				if (foundPath != null)
+				{
+					ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} at: {foundPath}");
+					return foundPath;
+				}
+			}
+
+			// Fallback to current directory search if source paths didn't work
 			var currentDir = Directory.GetCurrentDirectory();
+			ReportDebugDiagnostic(context, $"Source directory search failed, falling back to current directory: {currentDir}");
 
-			// Report debug information about search starting point
-			var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, $"Searching for {ProjectAssetsFileName} starting from directory: {currentDir}");
-			context.ReportDiagnostic(diagnostic);
+			var fallbackPath = SearchForAssetsFile(context, currentDir);
+			if (fallbackPath != null)
+			{
+				ReportDebugDiagnostic(context, $"Found {ProjectAssetsFileName} via fallback at: {fallbackPath}");
+				return fallbackPath;
+			}
 
-			// Look for project.assets.json in common locations
+			ReportDebugDiagnostic(context, $"Exhaustive search completed, {ProjectAssetsFileName} not found");
+			return null;
+		}
+
+		private static string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory)
+		{
+			// Look for project.assets.json in common locations relative to the start directory
 			var possiblePaths = new[]
 			{
-				Path.Combine(currentDir, "obj", ProjectAssetsFileName),
-				Path.Combine(currentDir, "..", "obj", ProjectAssetsFileName),
-				Path.Combine(currentDir, "..", "..", "obj", ProjectAssetsFileName)
+				Path.Combine(startDirectory, "obj", ProjectAssetsFileName),
+				Path.Combine(startDirectory, "..", "obj", ProjectAssetsFileName),
+				Path.Combine(startDirectory, "..", "..", "obj", ProjectAssetsFileName)
 			};
 
-			// Report each path being checked
+			// Check each possible path
 			foreach (var path in possiblePaths)
 			{
-				var exists = File.Exists(path);
-				var diagnostic2 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Checking path: {path} - Exists: {exists}");
-				context.ReportDiagnostic(diagnostic2);
-			}
-
-			var foundPath = possiblePaths.Where(File.Exists).FirstOrDefault();
-			if (foundPath != null)
-			{
-				var diagnostic3 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Found {ProjectAssetsFileName} at: {foundPath}");
-				context.ReportDiagnostic(diagnostic3);
-				return foundPath;
-			}
-
-			// If not found in common locations, search in current directory tree
-			try
-			{
-				var diagnostic4 = Diagnostic.Create(InfoDiagnostic, Location.None, "Common paths failed, searching directory tree...");
-				context.ReportDiagnostic(diagnostic4);
-
-				var searchDir = currentDir;
-				for (var i = 0; i < 5; i++) // Limit search depth
+				try
 				{
-					var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
-					var exists = File.Exists(assetsPath);
-
-					var diagnostic5 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
-					context.ReportDiagnostic(diagnostic5);
+					var exists = File.Exists(path);
+					ReportDebugDiagnostic(context, $"Checking path: {path} - Exists: {exists}");
 
 					if (exists)
 					{
-						var diagnostic6 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Found {ProjectAssetsFileName} via tree search at: {assetsPath}");
-						context.ReportDiagnostic(diagnostic6);
-						return assetsPath;
+						return path;
+					}
+				}
+				catch (Exception ex)
+				{
+					ReportDebugDiagnostic(context, $"Exception checking path {path}: {ex.Message}");
+				}
+			}
+
+			// If not found in common locations, search up the directory tree
+			try
+			{
+				var searchDir = startDirectory;
+				for (var i = 0; i < 5; i++) // Limit search depth
+				{
+					var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
+
+					try
+					{
+						var exists = File.Exists(assetsPath);
+						ReportDebugDiagnostic(context, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
+
+						if (exists)
+						{
+							return assetsPath;
+						}
+					}
+					catch (Exception ex)
+					{
+						ReportDebugDiagnostic(context, $"Exception during tree search at {assetsPath}: {ex.Message}");
 					}
 
 					DirectoryInfo parentDir = Directory.GetParent(searchDir);
 					if (parentDir == null)
 					{
-						var diagnostic7 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Reached root directory at depth {i}, stopping search");
-						context.ReportDiagnostic(diagnostic7);
+						ReportDebugDiagnostic(context, $"Reached root directory at depth {i}, stopping search");
 						break;
 					}
+
 					searchDir = parentDir.FullName;
 				}
 			}
 			catch (Exception ex)
 			{
-				// Report diagnostic about directory traversal failure
-				var diagnostic8 = Diagnostic.Create(InfoDiagnostic, Location.None, $"Directory traversal failed: {ex.Message}");
-				context.ReportDiagnostic(diagnostic8);
-				return null;
+				ReportDebugDiagnostic(context, $"Exception during directory tree search: {ex.Message}");
 			}
 
-			var diagnostic9 = Diagnostic.Create(InfoDiagnostic, Location.None, $"{ProjectAssetsFileName} not found after exhaustive search");
-			context.ReportDiagnostic(diagnostic9);
 			return null;
 		}
 
