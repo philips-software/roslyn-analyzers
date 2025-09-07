@@ -705,6 +705,7 @@ class InvalidClass
 			{
 				// It's okay if this fails compilation due to syntax errors
 				// The important thing is that the analyzer doesn't crash
+				return;
 			}
 		}
 

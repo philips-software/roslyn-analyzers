@@ -25,6 +25,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
 		public const string LicensesCacheFileName = @"licenses.json";
+		private const string ProjectAssetsFileName = @"project.assets.json";
 
 		// Default acceptable licenses (permissive licenses that are generally safe to use)
 		private static readonly HashSet<string> DefaultAcceptableLicenses = new(StringComparer.OrdinalIgnoreCase)
@@ -185,17 +186,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			// Look for project.assets.json in common locations
 			var possiblePaths = new[]
 			{
-				Path.Combine(currentDir, "obj", "project.assets.json"),
-				Path.Combine(currentDir, "..", "obj", "project.assets.json"),
-				Path.Combine(currentDir, "..", "..", "obj", "project.assets.json")
+				Path.Combine(currentDir, "obj", ProjectAssetsFileName),
+				Path.Combine(currentDir, "..", "obj", ProjectAssetsFileName),
+				Path.Combine(currentDir, "..", "..", "obj", ProjectAssetsFileName)
 			};
 
-			foreach (var path in possiblePaths)
+			var foundPath = possiblePaths.Where(File.Exists).FirstOrDefault();
+			if (foundPath != null)
 			{
-				if (File.Exists(path))
-				{
-					return path;
-				}
+				return foundPath;
 			}
 
 			// If not found in common locations, search in current directory tree
@@ -204,7 +203,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				var searchDir = currentDir;
 				for (var i = 0; i < 5; i++) // Limit search depth
 				{
-					var assetsPath = Path.Combine(searchDir, "obj", "project.assets.json");
+					var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
 					if (File.Exists(assetsPath))
 					{
 						return assetsPath;
@@ -269,6 +268,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If we can't write cache, just continue without caching
+				return;
 			}
 		}
 
@@ -348,54 +348,79 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				var content = File.ReadAllText(nuspecPath);
 
-				// Simple XML parsing to extract license information
-				// Look for <license> or <licenseUrl> elements
-				var licenseStart = content.IndexOf("<license", StringComparison.OrdinalIgnoreCase);
-				if (licenseStart >= 0)
+				// Try to extract license from <license> element first
+				var licenseFromElement = ExtractLicenseElement(content);
+				if (!string.IsNullOrEmpty(licenseFromElement))
 				{
-					var typeStart = content.IndexOf("type=\"", licenseStart, StringComparison.OrdinalIgnoreCase);
-					if (typeStart >= 0)
-					{
-						typeStart += 6; // Skip 'type="'
-						var typeEnd = content.IndexOf("\"", typeStart, StringComparison.OrdinalIgnoreCase);
-						if (typeEnd > typeStart)
-						{
-							var licenseType = content.Substring(typeStart, typeEnd - typeStart);
-							if (licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
-							{
-								// Extract SPDX expression
-								var contentStart = content.IndexOf(">", licenseStart) + 1;
-								var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
-								if (contentEnd > contentStart)
-								{
-									return content.Substring(contentStart, contentEnd - contentStart).Trim();
-								}
-							}
-						}
-					}
+					return licenseFromElement;
 				}
 
-				// Fall back to looking for licenseUrl
-				var licenseUrlStart = content.IndexOf("<licenseUrl>", StringComparison.OrdinalIgnoreCase);
-				if (licenseUrlStart >= 0)
-				{
-					licenseUrlStart += 12; // Skip '<licenseUrl>'
-					var licenseUrlEnd = content.IndexOf("</licenseUrl>", licenseUrlStart, StringComparison.OrdinalIgnoreCase);
-					if (licenseUrlEnd > licenseUrlStart)
-					{
-						var licenseUrl = content.Substring(licenseUrlStart, licenseUrlEnd - licenseUrlStart).Trim();
-						// Extract license name from common URLs
-						return ExtractLicenseFromUrl(licenseUrl);
-					}
-				}
+				// Fall back to extracting from <licenseUrl> element
+				return ExtractLicenseUrl(content);
 			}
 			catch (Exception)
 			{
 				// If we can't parse the nuspec, return null
 				return null;
 			}
+		}
 
-			return null;
+		private static string ExtractLicenseElement(string content)
+		{
+			var licenseStart = content.IndexOf("<license", StringComparison.OrdinalIgnoreCase);
+			if (licenseStart < 0)
+			{
+				return null;
+			}
+
+			var typeStart = content.IndexOf("type=\"", licenseStart, StringComparison.OrdinalIgnoreCase);
+			if (typeStart < 0)
+			{
+				return null;
+			}
+
+			typeStart += 6; // Skip 'type="'
+			var typeEnd = content.IndexOf("\"", typeStart, StringComparison.OrdinalIgnoreCase);
+			if (typeEnd <= typeStart)
+			{
+				return null;
+			}
+
+			var licenseType = content.Substring(typeStart, typeEnd - typeStart);
+			if (!licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
+			{
+				return null;
+			}
+
+			// Extract SPDX expression
+			var contentStart = content.IndexOf(">", licenseStart) + 1;
+			var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
+			if (contentEnd <= contentStart)
+			{
+				return null;
+			}
+
+			return content.Substring(contentStart, contentEnd - contentStart).Trim();
+		}
+
+		private static string ExtractLicenseUrl(string content)
+		{
+			var licenseUrlStart = content.IndexOf("<licenseUrl>", StringComparison.OrdinalIgnoreCase);
+			if (licenseUrlStart < 0)
+			{
+				return null;
+			}
+
+			licenseUrlStart += 12; // Skip '<licenseUrl>'
+			var licenseUrlEnd = content.IndexOf("</licenseUrl>", licenseUrlStart, StringComparison.OrdinalIgnoreCase);
+			if (licenseUrlEnd <= licenseUrlStart)
+			{
+				return null;
+			}
+
+			var licenseUrl = content.Substring(licenseUrlStart, licenseUrlEnd - licenseUrlStart).Trim();
+			// Extract license name from common URLs
+			return ExtractLicenseFromUrl(licenseUrl);
 		}
 
 		private static string ExtractLicenseFromUrl(string licenseUrl)
