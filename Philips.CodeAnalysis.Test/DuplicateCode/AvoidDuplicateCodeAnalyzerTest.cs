@@ -1,5 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -262,6 +264,36 @@ Foo.WhitelistedFunction";
 			Assert.AreEqual(r.HashCode, s.HashCode);
 		}
 
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void EvidenceLazyEvaluationTest()
+		{
+			// Test that Evidence lazy evaluation works correctly
+			var componentsCalled = false;
+			var components = new List<int> { 10, 20, 30 };
+
+			List<int> LazyComponents()
+			{
+				componentsCalled = true;
+				return components;
+			}
+
+			var evidence = new Evidence(null, LazyComponents, 60);
+
+			// Components should not be called yet
+			Assert.IsFalse(componentsCalled, "Components should not be evaluated eagerly");
+
+			// Create another evidence for comparison
+			var evidence2 = new Evidence(null, () => new List<int> { 10, 20, 30 }, 60);
+
+			// Now call IsDuplicate which should trigger lazy evaluation
+			var isDuplicate = evidence.IsDuplicate(evidence2);
+
+			// Components should now be called
+			Assert.IsTrue(componentsCalled, "Components should be evaluated when needed");
+			Assert.IsTrue(isDuplicate, "Evidence objects with same components should be duplicates");
+		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
