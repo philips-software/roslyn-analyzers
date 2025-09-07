@@ -94,38 +94,113 @@ def run_dogfood() -> Dict[str, Any]:
     backup = None
     violations: List[Dict[str, str]] = []
     try:
+        # Step 1: Build the Dogfood packages
         if props.exists():
             backup = props.with_suffix(".props.backup")
             shutil.copy2(props, backup)
+        
+        # Create Directory.Build.props for dogfood package creation
         props.write_text("""<Project>
-  <PropertyGroup><FileVersion>1.0.0</FileVersion></PropertyGroup>
+  <PropertyGroup>
+    <PackageId>$(MSBuildProjectName).Dogfood</PackageId>
+  </PropertyGroup>
+</Project>
+""", encoding="utf-8")
+        
+        # Build to create .Dogfood packages
+        rc, out = _run(["dotnet", "build", "--configuration", "Release"])
+        if rc != 0:
+            return {"status": "failure", "violation_count": 0, "violations": [], "error": "Failed to build dogfood packages", "build_output": out[-2000:]}
+        
+        # Step 2: Prepare to eat Dogfood - add local package source and configure package references
+        packages_dir = BASE_DIR / "Packages"
+        rc, _ = _run(["dotnet", "nuget", "add", "source", str(packages_dir)])
+        
+        # Remove the dogfood build props and create the consumption props
+        props.unlink()
+        props.write_text("""<Project>
+  <PropertyGroup>
+    <FileVersion>1.0.0</FileVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Philips.CodeAnalysis.MaintainabilityAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.DuplicateCodeAnalyzer.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.SecurityAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.MsTestAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Philips.CodeAnalysis.MoqAnalyzers.Dogfood" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>
 """, encoding="utf-8")
 
-        # Build everything (quiet logs), collect warnings/errors marked by CS/PH
-        projects = [
-            "Philips.CodeAnalysis.Common/Philips.CodeAnalysis.Common.csproj",
-            "Philips.CodeAnalysis.DuplicateCodeAnalyzer/Philips.CodeAnalysis.DuplicateCodeAnalyzer.csproj",
-            "Philips.CodeAnalysis.MaintainabilityAnalyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj",
-            "Philips.CodeAnalysis.MoqAnalyzers/Philips.CodeAnalysis.MoqAnalyzers.csproj",
-            "Philips.CodeAnalysis.MsTestAnalyzers/Philips.CodeAnalysis.MsTestAnalyzers.csproj",
-            "Philips.CodeAnalysis.SecurityAnalyzers/Philips.CodeAnalysis.SecurityAnalyzers.csproj",
-            "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
-            "Philips.CodeAnalysis.Benchmark/Philips.CodeAnalysis.Benchmark.csproj",
-            "Philips.CodeAnalysis.AnalyzerPerformance/Philips.CodeAnalysis.AnalyzerPerformance.csproj"
-        ]
-        for proj in projects:
-            framework = "net8.0" if proj.endswith(("Test.csproj","Benchmark.csproj","AnalyzerPerformance.csproj")) else "netstandard2.0"
-            rc, out = _run(["dotnet", "build", proj, "--configuration", "Debug", "--framework", framework,
-                            "-consoleloggerparameters:NoSummary", "-verbosity:quiet"])
-            for ln in (out or "").splitlines():
-                low = ln.lower()
-                if ("warning" in low or "error" in low) and (" cs" in low or " ph" in low):
-                    violations.append({"project": proj, "violation": ln.strip()})
+        # Step 3: Eat the Dogfood - build all projects with analyzers applied
+        # First clean to ensure compilation happens
+        _run(["dotnet", "clean"])
+        
+        # Build all projects at once to detect violations more efficiently
+        rc, out = _run(["dotnet", "build", "--configuration", "Debug", 
+                       "-consoleloggerparameters:NoSummary", "-verbosity:normal"])
+        
+        # Parse output for violations 
+        for ln in (out or "").splitlines():
+            low = ln.lower()
+            # Look for warnings and errors with analyzer codes (CS or PH)
+            if ("warning" in low or "error" in low) and (" cs" in low or " ph" in low):
+                # Extract project from the line format if possible
+                project = "unknown"
+                if "[" in ln and "]" in ln:
+                    bracket_content = ln[ln.rfind("["):ln.rfind("]")+1]
+                    if "/" in bracket_content:
+                        potential_project = bracket_content.split("/")[-1].replace("]", "").split("::")[0]
+                        if potential_project.endswith(".csproj"):
+                            project = potential_project
+                violations.append({"project": project, "violation": ln.strip()})
         return {"status": "success" if not violations else "failure", "violation_count": len(violations), "violations": violations}
     finally:
         if props.exists(): props.unlink()
         if backup and backup.exists(): shutil.move(backup, props)
+
+@mcp.tool
+def fix_formatting() -> Dict[str, Any]:
+    """Fix code formatting issues using dotnet format. Automatically corrects IDE0055 violations including CRLF line endings and tab indentation."""
+    rc, out = _run([
+        "dotnet", "format", "style", "Philips.CodeAnalysis.sln",
+        "--verbosity", "normal"
+    ])
+    
+    # Count formatted files from output
+    formatted_count = 0
+    if "Formatted" in out:
+        lines = out.splitlines()
+        for line in lines:
+            if line.strip().startswith("Formatted") and "files." in line:
+                # Extract number like "Formatted 15 of 602 files."
+                parts = line.strip().split()
+                if len(parts) >= 2 and parts[1].isdigit():
+                    formatted_count = int(parts[1])
+                    break
+    
+    return {
+        "status": "success" if rc == 0 else "failure",
+        "return_code": rc,
+        "formatted_files": formatted_count,
+        "message": f"Fixed formatting for {formatted_count} files" if formatted_count > 0 else "All files already properly formatted",
+        "logs": out[-4000:] if out else ""
+    }
 
 @mcp.tool
 def analyze_coverage() -> Dict[str, Any]:
