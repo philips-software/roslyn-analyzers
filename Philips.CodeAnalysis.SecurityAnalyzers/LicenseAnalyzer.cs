@@ -58,7 +58,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			MessageFormat,
 			Categories.Security,
 			DiagnosticSeverity.Error,
-			isEnabledByDefault: false,
+			isEnabledByDefault: true,
 			Description,
 			DiagnosticId.AvoidUnlicensedPackages.ToHelpLinkUrl());
 

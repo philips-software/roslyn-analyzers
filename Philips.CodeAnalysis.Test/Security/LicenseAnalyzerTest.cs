@@ -60,11 +60,11 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LicenseAnalyzerIsDisabledByDefault()
+		public void LicenseAnalyzerIsEnabledByDefault()
 		{
 			var analyzer = new LicenseAnalyzer();
 			Microsoft.CodeAnalysis.DiagnosticDescriptor descriptor = analyzer.SupportedDiagnostics[0];
-			Assert.IsFalse(descriptor.IsEnabledByDefault);
+			Assert.IsTrue(descriptor.IsEnabledByDefault);
 		}
 
 		[TestMethod]
@@ -772,7 +772,7 @@ public class УникодIdentifier
 			Assert.IsGreaterThan(0, descriptor.MessageFormat.ToString().Length);
 			Assert.IsGreaterThan(0, descriptor.Description.ToString().Length);
 			Assert.AreEqual("Philips Security", descriptor.Category);
-			Assert.IsFalse(descriptor.IsEnabledByDefault);
+			Assert.IsTrue(descriptor.IsEnabledByDefault);
 		}
 
 		[TestMethod]
