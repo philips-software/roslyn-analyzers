@@ -153,8 +153,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 					foreach (SyntaxToken token in body.DescendantTokens())
 					{
-						_ = GetShapeDetails(token);
-
 						// For every set of token_count contiguous tokens, create a hash and add it to a dictionary with some evidence.
 						(var hash, Evidence evidence) = rollingTokenSet.Add(new TokenInfo(token));
 
@@ -447,11 +445,12 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class Evidence
 	{
 		private readonly Func<LocationEnvelope> _materializeEnvelope;
+		private readonly Func<List<int>> _materializeComponents;
 
-		public Evidence(Func<LocationEnvelope> materializeEnvelope, List<int> components, int componentSum)
+		public Evidence(Func<LocationEnvelope> materializeEnvelope, Func<List<int>> materializeComponents, int componentSum)
 		{
 			_materializeEnvelope = materializeEnvelope;
-			Components = components;
+			_materializeComponents = materializeComponents;
 			Hash = componentSum;
 		}
 
@@ -461,7 +460,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		}
 
 		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
-		private List<int> Components { get; }
+		private List<int> Components { get { return _materializeComponents(); } }
 
 		public int Hash { get; }
 	}
@@ -560,6 +559,16 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return (componentHashes, sum);
 		}
 
+		public int GetComponentHashSum()
+		{
+			var sum = 0;
+			foreach (T token in _components)
+			{
+				sum += token.GetHashCode();
+			}
+			return sum;
+		}
+
 		public int MaxItems { get; private set; }
 		public int HashCode { get; protected set; }
 
@@ -651,10 +660,18 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 
-			(List<int> components, var hash) = _hashCalculator.ToComponentHashes();
+			// Use lazy evaluation to avoid computing component hashes unless needed for duplicate checking
+			List<int> componentHashesFunc()
+			{
+				return _hashCalculator.ToComponentHashes().components;
+			}
 
 			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
-			Evidence e = new(locationEnvelope, components, hash);
+
+			// Only compute the simple hash sum, avoid creating the component list until needed
+			var simpleHash = _hashCalculator.GetComponentHashSum();
+
+			Evidence e = new(locationEnvelope, componentHashesFunc, simpleHash);
 
 			return (_hashCalculator.HashCode, e);
 		}
