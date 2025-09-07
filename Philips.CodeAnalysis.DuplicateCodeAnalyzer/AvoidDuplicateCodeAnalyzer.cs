@@ -445,12 +445,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 	public class Evidence
 	{
 		private readonly Func<LocationEnvelope> _materializeEnvelope;
-		private readonly Func<List<int>> _materializeComponents;
 
-		public Evidence(Func<LocationEnvelope> materializeEnvelope, Func<List<int>> materializeComponents, int componentSum)
+		public Evidence(Func<LocationEnvelope> materializeEnvelope, List<int> components, int componentSum)
 		{
 			_materializeEnvelope = materializeEnvelope;
-			_materializeComponents = materializeComponents;
+			Components = components;
 			Hash = componentSum;
 		}
 
@@ -460,7 +459,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		}
 
 		public LocationEnvelope LocationEnvelope { get { return _materializeEnvelope(); } }
-		private List<int> Components { get { return _materializeComponents(); } }
+		private List<int> Components { get; }
 
 		public int Hash { get; }
 	}
@@ -559,16 +558,6 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 			return (componentHashes, sum);
 		}
 
-		public int GetComponentHashSum()
-		{
-			var sum = 0;
-			foreach (T token in _components)
-			{
-				sum += token.GetHashCode();
-			}
-			return sum;
-		}
-
 		public int MaxItems { get; private set; }
 		public int HashCode { get; protected set; }
 
@@ -660,18 +649,10 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		{
 			TokenInfo firstToken = _hashCalculator.Add(token);
 
-			// Use lazy evaluation to avoid computing component hashes unless needed for duplicate checking
-			List<int> componentHashesFunc()
-			{
-				return _hashCalculator.ToComponentHashes().components;
-			}
+			(List<int> components, var hash) = _hashCalculator.ToComponentHashes();
 
 			Func<LocationEnvelope> locationEnvelope = MakeFullLocationEnvelope(firstToken, token);
-
-			// Only compute the simple hash sum, avoid creating the component list until needed
-			var simpleHash = _hashCalculator.GetComponentHashSum();
-
-			Evidence e = new(locationEnvelope, componentHashesFunc, simpleHash);
+			Evidence e = new(locationEnvelope, components, hash);
 
 			return (_hashCalculator.HashCode, e);
 		}
