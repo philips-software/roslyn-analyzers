@@ -82,12 +82,12 @@ def build_strict() -> Dict[str, Any]:
 @mcp.tool
 def run_tests() -> Dict[str, Any]:
     """Run tests against main test project."""
-    # Use shorter timeout (3 minutes) for more reliable MCP execution
-    # Tests take ~48s, building takes ~1m21s, so 3 min provides buffer
+    # Use 90s timeout to stay well below MCP framework timeout
+    # Tests take ~41s when build artifacts exist, so 90s provides adequate buffer
     rc, out = _run([
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
         "--configuration", "Release", "--logger", "trx;LogFileName=test-results.trx"
-    ], timeout=180)
+    ], timeout=90)
     
     # Parse test results from output
     test_results = {"passed": 0, "failed": 0, "skipped": 0, "total": 0, "duration": ""}
