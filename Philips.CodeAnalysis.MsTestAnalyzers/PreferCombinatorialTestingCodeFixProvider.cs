@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			SyntaxNode root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			var attributeListsToKeep = new List<AttributeListSyntax>();
 
-			foreach (AttributeListSyntax attributeList in method.AttributeLists)
+			foreach (AttributeListSyntax attributeList in node.AttributeLists)
 			{
 				var attributesToKeep = new List<AttributeSyntax>();
 				foreach (AttributeSyntax attribute in attributeList.Attributes)
@@ -46,14 +46,14 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			}
 
 			// Remove all DataRow attributes
-			MethodDeclarationSyntax updatedMethod = method.WithAttributeLists(SyntaxFactory.List(attributeListsToKeep));
+			MethodDeclarationSyntax updatedMethod = node.WithAttributeLists(SyntaxFactory.List(attributeListsToKeep));
 
 			// Add a comment suggesting manual conversion to CombinatorialValues
 			updatedMethod = updatedMethod.WithLeadingTrivia(
 				SyntaxFactory.Comment("// TODO: Add CombinatorialValues attributes to parameters and remove this comment"),
 				SyntaxFactory.CarriageReturnLineFeed);
 
-			SyntaxNode newRoot = root.ReplaceNode(method, updatedMethod);
+			SyntaxNode newRoot = root.ReplaceNode(node, updatedMethod);
 			return document.WithSyntaxRoot(newRoot);
 		}
 	}
