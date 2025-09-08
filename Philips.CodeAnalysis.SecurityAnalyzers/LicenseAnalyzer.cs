@@ -175,7 +175,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				}
 			}
 
-			SaveLicenseCache(licenseCache, Path.GetDirectoryName(assetsFilePath));
+			SaveLicenseCache(context, licenseCache, Path.GetDirectoryName(assetsFilePath));
 		}
 
 		private string TryFindAssetsFileFromSourcePaths(CompilationAnalysisContext context)
@@ -434,7 +434,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 		}
 
-		private static void SaveLicenseCache(Dictionary<string, PackageLicenseInfo> cache, string projectDirectory)
+		private void SaveLicenseCache(CompilationAnalysisContext context, Dictionary<string, PackageLicenseInfo> cache, string projectDirectory)
 		{
 			if (string.IsNullOrEmpty(projectDirectory))
 			{
@@ -447,9 +447,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				IEnumerable<string> lines = cache.Select(kvp => $"{kvp.Key}={kvp.Value.License}");
 				File.WriteAllLines(cacheFilePath, lines);
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// If we can't write cache, just continue without caching
+				ReportDebugDiagnostic(context, $"Failed to write license cache: {ex.Message}");
 			}
 		}
 
