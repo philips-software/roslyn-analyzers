@@ -48,7 +48,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"Unlicense",
 			"0BSD",
 			"https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-			"https://github.com/dotnet/standard/blob/master/LICENSE.TXT"
+			"https://github.com/dotnet/standard/blob/master/LICENSE.TXT",
+			"http://go.microsoft.com/fwlink/?LinkId=329770",
+			"https://aka.ms/deprecateLicenseUrl"
 		};
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
@@ -64,16 +66,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			Description,
 			DiagnosticId.AvoidUnlicensedPackages.ToHelpLinkUrl());
 
-		private static readonly DiagnosticDescriptor InfoDiagnostic = new(
-			"PH2155_INFO",
-			"License analysis information",
+		private static readonly DiagnosticDescriptor DebugDiagnostic = new(
+			DiagnosticId.AvoidUnlicensedPackages.ToId() + "_DEBUG",
+			"License analysis debug information",
 			"{0}",
 			Categories.Security,
 			DiagnosticSeverity.Info,
 			isEnabledByDefault: true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
-			ImmutableArray.Create(Rule, InfoDiagnostic);
+			ImmutableArray.Create(Rule, DebugDiagnostic);
 
 		public override void Initialize(AnalysisContext context)
 		{
@@ -87,21 +89,22 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			var helper = new Helper(context.Options, context.Compilation);
 			if (helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155"))
 			{
-				var diagnostic = Diagnostic.Create(InfoDiagnostic, Location.None, message);
+				var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
 				context.ReportDiagnostic(diagnostic);
 			}
 		}
 
 		private void AnalyzeProject(CompilationAnalysisContext context)
 		{
-			if (IsTestProject(context.Compilation))
+			if (TestHelper.IsTestProject(context.Compilation))
 			{
 				return;
 			}
 
+			var helper = new Helper(context.Options, context.Compilation);
+
 			try
 			{
-				var helper = new Helper(context.Options, context.Compilation);
 				var loggingEnabled = helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155");
 				ReportDebugDiagnostic(context, $"LicenseAnalyzer debug logging: {(loggingEnabled ? "enabled" : "disabled")} (configure via dotnet_code_quality.PH2155.enable_debug_logging=false)");
 
@@ -115,20 +118,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				ReportDebugDiagnostic(context, $"Failed to analyze package licenses: {ex.Message}");
 			}
-		}
-
-		private static bool IsTestProject(Compilation compilation)
-		{
-			// Check if this is a test project by looking for common test framework references
-			var referencedAssemblyNames = new HashSet<string>(
-				compilation.ReferencedAssemblyNames.Select(name => name.Name),
-				StringComparer.OrdinalIgnoreCase);
-
-			return referencedAssemblyNames.Contains("Microsoft.VisualStudio.TestPlatform.TestFramework") ||
-				   referencedAssemblyNames.Contains("MSTest.TestFramework") ||
-				   referencedAssemblyNames.Contains("NUnit.Framework") ||
-				   referencedAssemblyNames.Contains("xunit") ||
-				   referencedAssemblyNames.Contains("xunit.core");
 		}
 
 		private void AnalyzePackagesFromAssetsFile(CompilationAnalysisContext context, HashSet<string> allowedLicenses)
@@ -242,7 +231,19 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		private string SearchForAssetsFile(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
 		{
-			// Look for project.assets.json in common locations relative to the start directory
+			// First, check common locations
+			var foundPath = CheckCommonLocations(context, startDirectory, enableDetailedLogging);
+			if (foundPath != null)
+			{
+				return foundPath;
+			}
+
+			// If not found, search up the directory tree
+			return SearchDirectoryTree(context, startDirectory, enableDetailedLogging);
+		}
+
+		private string CheckCommonLocations(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
+		{
 			var possiblePaths = new[]
 			{
 				Path.Combine(startDirectory, "obj", ProjectAssetsFileName),
@@ -250,7 +251,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				Path.Combine(startDirectory, "..", "..", "obj", ProjectAssetsFileName)
 			};
 
-			// Check each possible path
 			foreach (var path in possiblePaths)
 			{
 				try
@@ -275,7 +275,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				}
 			}
 
-			// If not found in common locations, search up the directory tree
+			return null;
+		}
+
+		private string SearchDirectoryTree(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
+		{
 			try
 			{
 				var searchDir = startDirectory;
@@ -446,7 +450,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			catch (Exception)
 			{
 				// If we can't write cache, just continue without caching
-				return;
 			}
 		}
 
@@ -642,12 +645,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
 		{
 			if (string.IsNullOrEmpty(license))
-			{
-				return false;
-			}
-
-			// For debugging purposes, specifically flag Microsoft license URL as unacceptable
-			if (license.Equals("http://go.microsoft.com/fwlink/?LinkId=329770", StringComparison.OrdinalIgnoreCase))
 			{
 				return false;
 			}

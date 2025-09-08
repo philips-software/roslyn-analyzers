@@ -1,5 +1,6 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -46,7 +47,7 @@ class Foo
 			System.Collections.Immutable.ImmutableArray<Microsoft.CodeAnalysis.DiagnosticDescriptor> descriptors = analyzer.SupportedDiagnostics;
 			Assert.HasCount(2, descriptors);
 			Assert.IsTrue(descriptors.Any(d => d.Id == "PH2155"));
-			Assert.IsTrue(descriptors.Any(d => d.Id == "PH2155_INFO"));
+			Assert.IsTrue(descriptors.Any(d => d.Id == "PH2155_DEBUG"));
 		}
 
 		[TestMethod]
