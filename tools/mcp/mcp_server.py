@@ -83,22 +83,23 @@ def build_strict() -> Dict[str, Any]:
 def run_tests() -> Dict[str, Any]:
     """Run tests against main test project."""
     
-    # Simple and reliable test execution - assume environment is pre-warmed
+    # Build base command without --no-restore to allow restore + build from clean state
     cmd = [
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
         "--configuration", "Release",
-        "--logger", "trx;LogFileName=test-results.trx",
-        "--no-restore"
+        "--logger", "trx;LogFileName=test-results.trx"
     ]
     
-    # Check if build artifacts exist, if not remove --no-build flag
+    # Check if build artifacts exist - if so, skip both restore and build for speed
     test_bin = BASE_DIR / "Philips.CodeAnalysis.Test" / "bin" / "Release"
     if test_bin.exists():
-        cmd.append("--no-build")
+        cmd.extend(["--no-restore", "--no-build"])
 
-    # Use safe timeout that's well below MCP framework limits
-    # Tests complete in ~43s when build artifacts exist, so 50s is safe
-    timeout = 50
+    # Use timeout that accommodates restore + build + test from clean state
+    # Clean state: restore (~30s) + build (~1m 21s) + test (~46s) = ~2m 37s
+    # With artifacts: test only (~46s)
+    # Use 150s to provide safety margin for MCP framework
+    timeout = 150
 
     rc, out = _run(cmd, timeout=timeout)
     
