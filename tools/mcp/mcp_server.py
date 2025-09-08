@@ -118,7 +118,7 @@ def run_tests() -> Dict[str, Any]:
             passed_match = re.search(r'Passed:\s*(\d+)', line)
             skipped_match = re.search(r'Skipped:\s*(\d+)', line)
             total_match = re.search(r'Total:\s*(\d+)', line)
-            duration_match = re.search(r'Duration:\s*([^-]+?)(?:\s*-|$)', line)
+            duration_match = re.search(r'Duration:\s*(\d+\s*[a-zA-Z]+)', line)
             
             if failed_match:
                 test_results["failed"] = int(failed_match.group(1))
