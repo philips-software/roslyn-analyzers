@@ -95,11 +95,10 @@ def run_tests() -> Dict[str, Any]:
     if test_bin.exists():
         cmd.extend(["--no-restore", "--no-build"])
 
-    # Use timeout that accommodates restore + build + test from clean state
-    # Clean state: restore (~30s) + build (~1m 21s) + test (~46s) = ~2m 37s
-    # With artifacts: test only (~46s)
-    # Use 150s to provide safety margin for MCP framework
-    timeout = 150
+    # Use timeout that works within MCP framework limits
+    # MCP framework appears to timeout around 60s, so use 45s for safety
+    # Tests only take ~40s, but from clean state needs build first
+    timeout = 45
 
     rc, out = _run(cmd, timeout=timeout)
     
