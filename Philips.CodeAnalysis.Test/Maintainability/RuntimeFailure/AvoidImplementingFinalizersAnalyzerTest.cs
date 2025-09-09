@@ -81,7 +81,7 @@ namespace FinalizerTest {
 			await VerifySuccessfulCompilation(CorrectWithDispose).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoDispose, DisplayName = nameof(WrongNoDispose)),
 		 DataRow(WrongReferenceCall, DisplayName = nameof(WrongReferenceCall)),
 		 DataRow(WrongFieldAssignment, DisplayName = nameof(WrongFieldAssignment)),

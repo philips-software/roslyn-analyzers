@@ -22,7 +22,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 			OtherClassSyntax = @"class TestDescriptions { public const string longDescription = ""stringlongerthantwentyfivecharacters"";  public const string shortDescription = ""shortString"";};";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestMethod, Description(TestDescriptions.longDescription)]", "[TestMethod]")]
 		[DataRow("[TestMethod, Description(\"asdfasdkfasdfkasd\")]", "[TestMethod]")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -32,7 +32,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestMethod][Description(TestDescriptions.shortDescription)]")]
 		[DataRow("[TestMethod, Description(TestDescriptions.shortDescription)]")]
 		[TestCategory(TestDefinitions.UnitTests)]

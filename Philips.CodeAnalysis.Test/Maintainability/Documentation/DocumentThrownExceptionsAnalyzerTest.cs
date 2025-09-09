@@ -253,7 +253,7 @@ public class Foo
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectNoThrow, DisplayName = nameof(CorrectNoThrow)),
 		 DataRow(CorrectWithThrow, DisplayName = nameof(CorrectWithThrow)),
 		 DataRow(CorrectWithAlias, DisplayName = nameof(CorrectWithAlias)),
@@ -267,7 +267,7 @@ public class Foo
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoCref, FixedNoCref, DisplayName = nameof(WrongNoCref))]
 		[DataRow(WrongEmptyCref, FixedEmptyCref, DisplayName = nameof(WrongEmptyCref))]
 		[DataRow(WrongType, FixedWrongType, DisplayName = nameof(WrongType))]
@@ -278,7 +278,7 @@ public class Foo
 			await VerifyFix(testCode, fixedCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNoDoc, DisplayName = nameof(WrongNoDoc))]
 		[DataRow(WrongInProperty, DisplayName = nameof(WrongInProperty))]
 		[DataRow(WrongRethrow, DisplayName = nameof(WrongRethrow))]

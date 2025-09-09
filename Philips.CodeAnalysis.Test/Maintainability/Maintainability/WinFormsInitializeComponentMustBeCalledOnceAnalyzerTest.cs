@@ -166,7 +166,7 @@ class ContainerControl
 
 		#region Public Interface
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"InitializeComponent();", @"InitializeComponent();", true, false)]
 		[DataRow(@"", @"", true, true)]
 		[DataRow(@"InitializeComponent();", @"", false, true)]

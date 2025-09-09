@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRange(string declaration, string countLengthMethod)
 		{
@@ -76,7 +76,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckElseClause(string declaration, string countLengthMethod)
 		{
@@ -109,7 +109,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNestedRange(string declaration, string countLengthMethod)
 		{
@@ -168,7 +168,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNestedRange2(string declaration, string countLengthMethod)
 		{
@@ -239,7 +239,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckNestedRange3(string declaration, string countLengthMethod)
 		{
@@ -281,7 +281,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRangeBraces(string declaration, string countLengthMethod)
 		{
@@ -326,7 +326,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRangeNoBraces(string declaration, string countLengthMethod)
 		{
@@ -369,7 +369,7 @@ class Foo
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRange2(string declaration, string countLengthMethod)
 		{
@@ -401,7 +401,7 @@ public void test()
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRange3(string declaration, string countLengthMethod)
 		{
@@ -431,7 +431,7 @@ public void test()
 		[DataRow("int[] data = new int[0]", "Count()")]
 		[DataRow("List<int> data = new List<int>()", "Count")]
 		[DataRow("List<int> data = new List<int>()", "Count()")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CheckArrayRange4(string declaration, string countLengthMethod)
 		{
@@ -483,7 +483,7 @@ public void test(string data)
 			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("data == null")]
 		[DataRow("data == data")]
 		[DataRow("data.Length == 4")]

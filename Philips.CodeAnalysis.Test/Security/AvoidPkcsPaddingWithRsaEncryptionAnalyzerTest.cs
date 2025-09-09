@@ -59,7 +59,7 @@ namespace AvoidPkcsPaddingWithRsaEncryptionTest
 ";
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);")]
 		[DataRow(@"byte[] decrypted = rsa.Decrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);")]
 		[DataRow(@"RSAEncryptionPadding padding = RSAEncryptionPadding.Pkcs1;")]
@@ -73,7 +73,7 @@ namespace AvoidPkcsPaddingWithRsaEncryptionTest
 			await VerifyDiagnostic(testCode, DiagnosticId.AvoidPkcsPaddingWithRsaEncryption).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA1);")]
 		[DataRow(@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);")]
 		[DataRow(@"byte[] decrypted = rsa.Decrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);")]
@@ -114,7 +114,7 @@ public class Foo
 			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(
 			@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.Pkcs1);",
 			@"byte[] encrypted = rsa.Encrypt(dataToEncrypt, RSAEncryptionPadding.OaepSHA256);")]

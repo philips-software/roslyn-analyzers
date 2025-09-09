@@ -30,7 +30,7 @@ public class Foo
 }
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CorrectCodeShouldNotTriggerAnyDiagnosticsAsync(string testCode)

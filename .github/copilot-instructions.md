@@ -109,15 +109,19 @@ Philips.CodeAnalysis.sln - Main solution file
 
 ## Development Guidelines
 
-### Code Formatting Requirements
-All code must strictly follow the .editorconfig rules:
-- **Indentation**: Tabs with size 4  
-- **Line endings**: CRLF (Windows-style)
-- **Encoding**: UTF-8 with BOM for C# files
-- **Braces**: New line before all braces
-- **Naming**: Parameters must be camelCase
+### ⚠️ CRITICAL: Code Formatting Requirements ⚠️
+**The #1 cause of CoPilot Coding Agent struggles is formatting violations (IDE0055)**
 
-The formatting check will fail the build if any violations exist. DO NOT suppress formatting warnings.
+All code MUST strictly follow these .editorconfig rules:
+- **❗ Line endings**: CRLF (Windows-style) - NOT LF
+- **❗ Indentation**: Tabs with size 4 - NOT spaces  
+- **❗ Encoding**: UTF-8 with BOM for C# files
+- **❗ Braces**: New line before all braces
+- **❗ Naming**: Parameters must be camelCase
+
+**FORMATTING IS ZERO-TOLERANCE**: Any violation fails the build (IDE0055.severity = error)
+
+**Auto-fix tool available**: Use the MCP server `fix_formatting` tool to auto-correct all formatting issues instead of manual fixes.
 
 ### Creating New Analyzers
 When creating new analyzers:
@@ -171,6 +175,19 @@ dotnet clean  # Removes packages automatically
 - **Development tips**: `./copilot-instructions.md` (existing file with additional guidelines)
 
 ## Troubleshooting
+
+### Troubleshooting
+
+### ⚠️ Formatting Issues (IDE0055)
+**Most common CoPilot failure**: Formatting violations that consume 25% of agent effort.
+
+**SOLUTION**: Use the MCP server `fix_formatting` tool:
+1. Automatically corrects CRLF line endings (not LF)
+2. Fixes indentation to tabs (not spaces)
+3. Applies all .editorconfig rules
+4. Ensures CI compliance
+
+**Manual check**: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
 
 ### Build Failures
 If builds fail:

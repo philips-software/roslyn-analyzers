@@ -44,7 +44,7 @@ class TestDefinitions
 				.Add($"dotnet_code_quality.{TestHasTimeoutAnalyzer.Rule.Id}.Smoke", "TestTimeouts.Smoke");
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, Owner(\"\")]", "[TestMethod, Owner(\"\")]\r\n    [Timeout(1000)]")]
@@ -56,7 +56,7 @@ class TestDefinitions
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[STATestMethod]", "[STATestMethod]\r\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod]", "[TestMethod]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -65,7 +65,7 @@ class TestDefinitions
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[STATestMethod, TestCategory(\"foo\")]", "[STATestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
 		[DataRow("[TestMethod, TestCategory(\"foo\")]", "[TestMethod, TestCategory(\"foo\")]\r\n    [Timeout(1000)]")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -74,7 +74,7 @@ class TestDefinitions
 			await VerifyChange(string.Empty, string.Empty, methodAttributes, expectedMethodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.Integration)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(TestTimeouts.CiAppropriate)]")]
@@ -85,7 +85,7 @@ class TestDefinitions
 			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(1234)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.IntegrationTests), Timeout(5678)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.SmokeTests), Timeout(9999)]")]
@@ -95,7 +95,7 @@ class TestDefinitions
 			await VerifyError(string.Empty, methodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[STATestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[DataTestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
 		[DataRow("[TestMethod, TestCategory(TestDefinitions.UnitTests), Timeout(TestTimeouts.CiAppropriate)]")]
@@ -109,7 +109,7 @@ class TestDefinitions
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestMethod][Timeout(1)]")]
 		[DataRow("[Timeout(1)][TestMethod]")]
 		[DataRow("[TestMethod, Timeout(1)]")]
@@ -122,7 +122,7 @@ class TestDefinitions
 			await VerifyNoChange(methodBody: string.Empty, methodAttributes: methodAttributes).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("[TestInitialize]")]
 		[DataRow("[TestCleanup]")]
 		[DataRow("[AssemblyInitialize]")]

@@ -65,7 +65,7 @@ public static class Foo
 }}
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectWithComments, DisplayName = nameof(CorrectWithComments)),
 		 DataRow(CorrectWithCommentsOnSeparateLine, DisplayName = nameof(CorrectWithCommentsOnSeparateLine))]
@@ -100,7 +100,7 @@ public static class Foo
 }}
 ";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WhereOnSameLine, DisplayName = nameof(WhereOnSameLine)),
 		 DataRow(SelectOnSameLine, DisplayName = nameof(SelectOnSameLine))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -113,7 +113,7 @@ public static class Foo
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WhereOnSameLine, "Dummy.Designer", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)

@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 	[TestClass]
 	public class TestHasCategoryAnalyzerTest : CodeFixVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"[TestMethod, Owner(""MK"")]", 15)]
 		[DataRow(@"[Owner(""MK""), TestMethod]", 15)]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -46,7 +46,7 @@ class Foo
 			await VerifyDiagnostic(givenText, expected).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"UnitTest", false)]
 		[DataRow(@"ManualTest", false)]
 		[DataRow(@"NightlyTest", true)]
@@ -67,7 +67,7 @@ class Foo
 			await VerifyErrorAsync(baseline, category, isError).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"UnitTests", false)]
 		[DataRow(@"ManualTests", false)]
 		[DataRow(@"NightlyTest", true)]
@@ -95,7 +95,7 @@ class Foo
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"Foo1", false)]
 		[DataRow(@"Foo2", true)]
 		[TestCategory(TestDefinitions.UnitTests)]

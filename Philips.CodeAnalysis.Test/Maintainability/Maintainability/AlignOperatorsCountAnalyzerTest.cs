@@ -245,7 +245,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(CorrectNumberOfIncrementDecrement, DisplayName = nameof(CorrectNumberOfIncrementDecrement)),
 		 DataRow(CorrectNumberOfPlusMinus, DisplayName = nameof(CorrectNumberOfPlusMinus)),
@@ -264,7 +264,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongNumberOfIncrementDecrement, DiagnosticId.AlignNumberOfIncrementAndDecrementOperators, DisplayName = nameof(WrongNumberOfIncrementDecrement)),
 		 DataRow(WrongNumberOfPlusMinus, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinus)),
 		 DataRow(WrongNumberOfPlusMinusOnStruct, DiagnosticId.AlignNumberOfPlusAndMinusOperators, DisplayName = nameof(WrongNumberOfPlusMinusOnStruct)),
@@ -282,7 +282,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g")]
 		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]

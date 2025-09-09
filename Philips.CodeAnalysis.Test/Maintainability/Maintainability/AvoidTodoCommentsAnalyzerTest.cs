@@ -17,7 +17,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidTodoCommentsAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"// This is a regular comment")]
 		[DataRow(@"/* This is a multi-line comment */")]
 		[DataRow(@"// This comment mentions a to-do item but not the keyword")]
@@ -34,7 +34,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"// TODO: This needs to be done", DisplayName = "Single line TODO")]
 		[DataRow(@"// TODO:", DisplayName = "TODO with colon only")]
 		[DataRow(@"// todo: lowercase version", DisplayName = "Lowercase todo")]

@@ -1,3 +1,45 @@
+### [1.9.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.0...v1.9.1) (2025-08-27)
+
+
+### Bug Fixes
+
+* PH2141 false positive for regions containing copyright comments ([#961](https://github.com/philips-software/roslyn-analyzers/issues/961)) ([cc26e84](https://github.com/philips-software/roslyn-analyzers/commit/cc26e845dfa5e245604e0da31b0855508474ade6))
+
+
+### Tests
+
+* Update MSTest and run MSTEST auto-fixers ([#959](https://github.com/philips-software/roslyn-analyzers/issues/959)) ([6edac6e](https://github.com/philips-software/roslyn-analyzers/commit/6edac6ed02ff94f008935d9d0bc5786f3cc8aff8))
+
+
+
+## [1.9.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.8.0...v1.9.0) (2025-08-27)
+
+
+### Features
+
+* Add analyzer to avoid problematic using statement patterns (PH2149) ([#855](https://github.com/philips-software/roslyn-analyzers/issues/855)) ([8db5abc](https://github.com/philips-software/roslyn-analyzers/commit/8db5abcef88984f8270d4129023e03602e7c94d3))
+
+
+### Bug Fixes
+
+* analyzer packages to include tools for old-style projects ([#942](https://github.com/philips-software/roslyn-analyzers/issues/942)) ([d597931](https://github.com/philips-software/roslyn-analyzers/commit/d59793133efda4c718f618412e5339854ce12fc5))
+* PH2102 CodeFixer for multiple XML documentation instances in same document ([#926](https://github.com/philips-software/roslyn-analyzers/issues/926)) ([f26e17b](https://github.com/philips-software/roslyn-analyzers/commit/f26e17b72ff1708a443b1d97d2c33ba72b435a7d))
+* PH2115 CodeFixer for nested lambda scenarios like Moq verification calls  ([#922](https://github.com/philips-software/roslyn-analyzers/issues/922)) ([da838dc](https://github.com/philips-software/roslyn-analyzers/commit/da838dc6d1a4452a13c08eec240b7d92ff28629d))
+* PH2149 false positive for out parameter declarations in using statements ([#955](https://github.com/philips-software/roslyn-analyzers/issues/955)) ([3f440a8](https://github.com/philips-software/roslyn-analyzers/commit/3f440a81cff3faf78dec076614172c4f17c88752))
+* Redesign AvoidEmptyRegionsAnalyzer with region-focused approach to eliminate nested class false positives ([#940](https://github.com/philips-software/roslyn-analyzers/issues/940)) ([3e662b4](https://github.com/philips-software/roslyn-analyzers/commit/3e662b4ec62d46ca43eda8d2c139d63d14cb24b3))
+
+
+### Code Refactoring
+
+* Remove LanguageExt.Core dependency from MaintainabilityAnalyzers ([#936](https://github.com/philips-software/roslyn-analyzers/issues/936)) ([f05c034](https://github.com/philips-software/roslyn-analyzers/commit/f05c0348df3ee6e52bf754d18c8ff3cc344c4d5c))
+
+
+### Build Systems
+
+* Bump amannn/action-semantic-pull-request from 5.5.3 to 6.0.1 ([#929](https://github.com/philips-software/roslyn-analyzers/issues/929)) ([a4e3c16](https://github.com/philips-software/roslyn-analyzers/commit/a4e3c16ee67eb0306615e3c04be6764e2869dbc5))
+
+
+
 ## [1.8.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.7.0...v1.8.0) (2025-08-13)
 
 

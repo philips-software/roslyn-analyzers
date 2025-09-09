@@ -13,7 +13,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	{
 		private readonly CodeFixHelper _helper = new();
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("private static readonly", false),
 		 DataRow("private static", false),
 		 DataRow("private const", false),

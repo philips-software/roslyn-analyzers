@@ -21,7 +21,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[DataRow("byte")]
 		[DataRow("int")]
 		[DataRow("string")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithOnlyDefaultCaseIsFlagged(string type)
 		{
@@ -82,7 +82,7 @@ public class Foo
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsFlagged(string type, string value)
 		{
@@ -108,7 +108,7 @@ public static class Foo
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchWithMultipleCasesIsIgnored(string type, string value)
 		{
@@ -136,7 +136,7 @@ public static class Foo
 		[DataRow("byte")]
 		[DataRow("int")]
 		[DataRow("string")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithOnlyDefaultCaseIsFlagged(string type)
 		{
@@ -159,7 +159,7 @@ public static class Foo
 		[DataRow("byte", "1")]
 		[DataRow("int", "1")]
 		[DataRow("string", "\"foo\"")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task SwitchExpressionWithMultipleCasesIsIgnored(string type, string value)
 		{

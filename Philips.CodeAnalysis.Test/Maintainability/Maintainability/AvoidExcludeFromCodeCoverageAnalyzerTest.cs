@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidExcludeFromCodeCoverageAnalyzerTest : DiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"ExcludeFromCodeCoverage")]
 		[DataRow(@"ExcludeFromCodeCoverageAttribute")]
 		[DataRow(@"System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage")]
@@ -36,7 +36,7 @@ class Foo
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"ExcludeFromCodeCoverage")]
 		[DataRow(@"ExcludeFromCodeCoverageAttribute")]
 		[DataRow(@"System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage")]
