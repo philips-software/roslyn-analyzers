@@ -124,7 +124,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
         }
     }";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectTernary, DisplayName = nameof(CorrectTernary)),
@@ -139,7 +139,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Violation, DisplayName = "Violation"),
 		 DataRow(ViolationTernary, DisplayName = "ViolationTernary")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -148,7 +148,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifyDiagnostic(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g")]
 		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -157,7 +157,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(Violation, filePath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g")]
 		[DataRow("GlobalSuppressions")]
 		[TestCategory(TestDefinitions.UnitTests)]

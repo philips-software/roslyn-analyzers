@@ -57,7 +57,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("int.TryParse(\"3\", out int i);")]
 		[DataRow("float.TryParse(\"3.00\", out float i);")]
 		[DataRow("double.TryParse(\"3.00\", out double i);")]
@@ -68,7 +68,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("int.TryParse(\"3\", NumberStyles.Any, CultureInfo.InvariantCulture, out int i);")]
 		[DataRow("float.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out float i);")]
 		[DataRow("double.TryParse(\"3.00\", NumberStyles.Any, CultureInfo.InvariantCulture, out double i);")]
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("TestParser.TryParse(\"3\", out TestParser tp);")]
 		[DataRow("TestParser.TryParse();")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifyDiagnostic(code).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("TestParser.TryParse(\"3\", NumberStyles.Any, CultureInfo.InvariantCulture, out TestParser tp);")]
 		[DataRow("TestParser.TryParse(\"3\", CultureInfo.InvariantCulture, out TestParser tp);")]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -101,7 +101,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(code).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("String.IsNullOrEmpty(String.Empty);")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DoNotFlagOtherMethods(string s)

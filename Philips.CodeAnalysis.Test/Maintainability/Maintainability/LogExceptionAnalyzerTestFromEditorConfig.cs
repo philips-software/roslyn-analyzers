@@ -42,7 +42,7 @@ public class Program {
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(CorrectCode, DisplayName = "CorrectCode")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenExceptionIsLoggedNoDiagnosticShouldBeTriggeredAsync(string testCode)

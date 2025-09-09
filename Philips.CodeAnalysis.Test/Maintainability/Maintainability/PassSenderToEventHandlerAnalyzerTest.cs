@@ -52,7 +52,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", DisplayName = "Empty"),
 		 DataRow(Correct, DisplayName = nameof(Correct))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -64,7 +64,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// Diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongSender, Correct, DisplayName = nameof(WrongSender)),
 		 DataRow(WrongArgs, Correct, DisplayName = nameof(WrongArgs))]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -77,7 +77,7 @@ namespace PassSenderTests {
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("File.g", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string filePath)

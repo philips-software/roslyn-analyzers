@@ -24,7 +24,7 @@ namespace {0} {{
 			return new NamespaceMatchAssemblyNameAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "Philips.Production")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.Production")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis.TestFramework")]
@@ -39,7 +39,7 @@ namespace {0} {{
 			await VerifyDiagnostic(code, assemblyName: assemblyName).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "")]
 		[DataRow("Philips.Test", "Philips.Test")]
 		[DataRow("Philips.CodeAnalysis.Test", "Philips.CodeAnalysis")]

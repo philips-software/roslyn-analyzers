@@ -117,7 +117,7 @@ namespace Philips.CodeAnalysis.Test.Common
 		[DataRow(false, true, false, false)]
 		[DataRow(false, false, true, false)]
 		[DataRow(false, false, false, true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NonGeneratedCodeIsFlaggedAsync(bool shouldAnalyzeTree, bool shouldAnalyzeStruct, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
@@ -196,7 +196,7 @@ public class Foo
 		[DataRow(@"Foo.g", true, false, false)]
 		[DataRow(@"Foo.g", false, true, false)]
 		[DataRow(@"Foo.g", false, false, true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task GeneratedFilesNamesAreNotFlaggedAsync(string fileNamePrefix, bool shouldAnalyzeTree, bool shouldAnalyzeConstructor, bool shouldAnalyzeSwitch)
 		{
@@ -208,7 +208,7 @@ public class Foo
 
 		[DataRow(@"Foo")]
 		[DataRow(@"Foo.xyz")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NonGeneratedFilesAreFlaggedAsync(string fileNamePrefix)
 		{

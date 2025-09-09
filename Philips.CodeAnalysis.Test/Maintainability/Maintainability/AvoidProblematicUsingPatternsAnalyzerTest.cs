@@ -171,6 +171,69 @@ class TestClass
 			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenUsingOutParameterNoDiagnosticIsTriggeredAsync()
+		{
+			var source = @"
+using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+
+class TestClass 
+{
+    public void TestMethod() 
+    {
+        TryProcessResult(out X509Certificate2 issuedCertificate);
+        using (issuedCertificate)
+        {
+            // Do something
+        }
+    }
+
+    private bool TryProcessResult(out X509Certificate2 certificate)
+    {
+        certificate = new X509Certificate2();
+        return true;
+    }
+}";
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task WhenUsingComplexOutParameterNoDiagnosticIsTriggeredAsync()
+		{
+			var source = @"
+using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
+
+class TestClass 
+{
+    public void TestMethod() 
+    {
+        string response = ""test"";
+        string challengePassword = ""password"";
+        
+        TryProcessResult(response, challengePassword, out X509Certificate2 issuedCertificate, new object(), out var other);
+        
+        using (issuedCertificate)
+        {
+            // Do something with certificate
+        }
+    }
+
+    private bool TryProcessResult(string resp, string pwd, out X509Certificate2 cert, object attacher, out object other)
+    {
+        cert = new X509Certificate2();
+        other = new object();
+        return true;
+    }
+}";
+			await VerifySuccessfulCompilation(source).ConfigureAwait(false);
+		}
+
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidProblematicUsingPatternsAnalyzer();

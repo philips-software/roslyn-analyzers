@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new AvoidDuplicateStringsAnalyzer();
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("", "", false)]
 		[DataRow("test123", "test345", true)]
 		[DataRow("test123", "test345", false)]
@@ -115,7 +115,7 @@ namespace DuplicateStringsTest {{
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("test123", true)]
 		[DataRow("test123", false)]
 		[TestCategory(TestDefinitions.UnitTests)]

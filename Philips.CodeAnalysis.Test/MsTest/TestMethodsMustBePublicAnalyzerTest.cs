@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("private", false)]
 		[DataRow("protected", false)]
 		[DataRow("public", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MustBeInTestClassAsync(string modifier, bool isCorrect)
 		{

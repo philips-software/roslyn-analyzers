@@ -36,7 +36,7 @@ namespace Philips.CodeAnalysis.Test.Moq
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
@@ -200,7 +200,7 @@ public static class Bar
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DelegateConstructorsMustExistViaNewMockAsync(string arguments, bool isError)
 		{
@@ -231,7 +231,7 @@ public static class Bar
 		[DataRow("{ TestProperty = string.Empty }", false)]
 		[DataRow("(MockBehavior.Default) { TestProperty = string.Empty }", false)]
 		[DataRow("(1, 2) { TestProperty = string.Empty }", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DelegateConstructorsMustHandleNoArgumentListAsync(string arguments, bool isError)
 		{
@@ -265,7 +265,7 @@ public static class Bar
 		[DataRow("-1, false", false)]
 		[DataRow("string.Empty, false", false)]
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorHandlesTypesCorrectlyAsync(string arguments, bool isError)
 		{
@@ -300,7 +300,7 @@ public static class Bar
 		[DataRow("string.Empty, false", false)]
 		[DataRow("It.IsAny<string>(), It.IsAny<bool>()", false)]
 		[DataRow("DateTime.Now, false", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorHandlesGenericsTypesCorrectlyAsync(string arguments, bool isError)
 		{
@@ -335,7 +335,7 @@ public static class Bar
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorsMustExistViaCreateAsync(string arguments, bool isError)
 		{
@@ -367,7 +367,7 @@ public static class Bar
 		}
 
 		[DataRow("", false)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorsMustExistViaMockOfAsync(string arguments, bool isError)
 		{
@@ -406,7 +406,7 @@ public static class Bar
 		[DataRow("Mockable m = repo.Create<")]
 		[DataRow("Mockable m = repo.Create<Mockable")]
 		[DataRow("Mockable m = repo.Create<Mockable>")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorsMustNotCauseCrashAsync(string statement)
 		{
@@ -432,7 +432,7 @@ public static class Bar
 		[DataRow("", false)]
 		[DataRow("MockBehavior.Default", false)]
 		[DataRow("1, 2", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CanMockInterfacesAsync(string arguments, bool isError)
 		{
@@ -465,7 +465,7 @@ public static class Bar
 		[DataRow("string.Empty", false)]
 		[DataRow("null", false)]
 		[DataRow("int.MaxValue", true)]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstructorsMustHaveCorrectTypeParametersAsync(string arguments, bool isError)
 		{

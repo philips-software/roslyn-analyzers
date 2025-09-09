@@ -143,7 +143,8 @@ namespace Philips.CodeAnalysis.Common
 		AvoidTodoComments = 2151,
 		AvoidUnnecessaryTypedDiscard = 2152,
 		AvoidUnusedToString = 2153,
-		AvoidUnlicensedPackages = 2154,
-		AvoidPkcsPaddingWithRsaEncryption = 2155,
+		AvoidUnlicensedPackages = 2155,
+		AvoidPkcsPaddingWithRsaEncryption = 2158,
+		AvoidUnnecessaryAttributeParentheses = 2159,
 	}
 }

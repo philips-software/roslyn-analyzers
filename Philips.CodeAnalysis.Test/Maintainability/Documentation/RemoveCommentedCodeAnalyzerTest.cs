@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			int j = 1;
 			";
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"")]
 		[DataRow(@"// Some comment")]
 		[DataRow(@"// Some comment ending with a dot.")]
@@ -39,7 +39,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Documentation
 			await VerifySuccessfulCompilation(content).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongCommentedLine, DisplayName = nameof(WrongCommentedLine)),
 		 DataRow(WrongCommentedChunk, DisplayName = nameof(WrongCommentedChunk))]
 		[TestCategory(TestDefinitions.UnitTests)]

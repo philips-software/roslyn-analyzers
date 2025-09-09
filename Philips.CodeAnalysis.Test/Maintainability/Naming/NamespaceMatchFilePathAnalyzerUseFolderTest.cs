@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			return base.GetAdditionalAnalyzerConfigOptions().Add($@"dotnet_code_quality.{DiagnosticId.NamespaceMatchFilePath.ToId()}.folder_in_namespace", "true");
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "C:\\Philips.Test\\MyTest.cs")]
 		[DataRow("Philips.Test", "C:\\Philips.Test\\")]
 		[DataRow("Philips.Test.Src", "C:\\Philips.Test\\Src\\MyTest.cs")]
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			await VerifySuccessfulCompilation(code, sanitizedPath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.Test", "C:\\development\\Philips.Production\\code\\MyTest.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.Production\\MyAnalyzer.cs")]
 		[DataRow("Philips.CodeAnalysis.Test", "C:\\Philips.CodeAnalysis.TestFramework\\MyHelper.cs")]
@@ -79,7 +79,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Naming
 			await VerifyDiagnostic(code, expected, sanitizedPath).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 1")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\blah.cs", DisplayName = "Folder Match Included 2")]
 		[DataRow("Philips.CodeAnalysis.Test.Maintainability.Foo", "C:\\repos\\Philips.CodeAnalysis.Test\\Maintainability\\Foo\\blah.cs", DisplayName = "Folder Match Included 2")]

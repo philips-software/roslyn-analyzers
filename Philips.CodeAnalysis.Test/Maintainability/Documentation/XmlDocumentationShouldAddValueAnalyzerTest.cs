@@ -205,7 +205,7 @@ public enum TestEnumeration
 		[DataRow("Gets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassInvalidTestsAsync(string text)
 		{
@@ -226,7 +226,7 @@ public class Foo
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddClassValidTestsAsync(string text)
 		{
@@ -248,7 +248,7 @@ public class Foo
 		[DataRow("Gets an dummy Foo")]
 		[DataRow("Gets a rom")]
 		[DataRow("Gets a roms")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodInvalidTestsAsync(string text)
 		{
@@ -266,7 +266,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddMethodValidTestsAsync(string text)
 		{
@@ -290,7 +290,7 @@ public class TestClass
 		[DataRow("Gets/sets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyInvalidTestsAsync(string text)
 		{
@@ -309,7 +309,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddPropertyValidTestsAsync(string text)
 		{
@@ -334,7 +334,7 @@ public class TestClass
 		[DataRow("Gets the Foo")]
 		[DataRow("Get an instance of Foo")]
 		[DataRow("Gets an instance of Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldInvalidTestsAsync(string text)
 		{
@@ -350,7 +350,7 @@ public class TestClass
 		}
 
 		[DataRow("Get an instance of Foo to please Bar")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddFieldValidTestsAsync(string text)
 		{
@@ -371,7 +371,7 @@ public class TestClass
 		[DataRow("Fires the Foo event")]
 		[DataRow("Raise Foo")]
 		[DataRow("Raises an instance of the Foo event")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventInvalidTestsAsync(string text)
 		{
@@ -387,7 +387,7 @@ public class TestClass
 		}
 
 		[DataRow("Raised when Foo happens")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEventValidTestsAsync(string text)
 		{
@@ -403,7 +403,7 @@ public class TestClass
 
 		[DataRow("On Foo")]
 		[DataRow("It is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumTestsAsync(string text)
 		{
@@ -419,7 +419,7 @@ public enum Foo
 		}
 
 		[DataRow("When it is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumValidTestsAsync(string text)
 		{
@@ -436,7 +436,7 @@ public enum Foo
 
 		[DataRow("On Foo")]
 		[DataRow("It is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberInvalidTestsAsync(string text)
 		{
@@ -451,7 +451,7 @@ public enum TestEnumeration
 		}
 
 		[DataRow("When it is Foo")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ValueAddEnumMemberValidTestsAsync(string text)
 		{
@@ -470,7 +470,7 @@ public enum TestEnumeration
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixEmptyTests(string text)
 		{
@@ -499,7 +499,7 @@ public class TestClass
 		[DataRow("void Foo() { }")]
 		[DataRow("int field;")]
 		[DataRow("int Property { get; }")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task CodeFixValueTests(string text)
 		{

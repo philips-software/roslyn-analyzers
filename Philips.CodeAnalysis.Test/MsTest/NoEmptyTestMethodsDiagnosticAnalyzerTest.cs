@@ -44,7 +44,7 @@ public class DerivedTestMethod : TestMethodAttribute
 		[DataRow("TestCleanup")]
 		[DataRow("ClassCleanup")]
 		[DataRow("AssemblyCleanup")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyMethodTriggersAnalyzerAsync(string attribute)
 		{

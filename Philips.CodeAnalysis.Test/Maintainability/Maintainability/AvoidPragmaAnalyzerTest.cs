@@ -12,7 +12,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 	[TestClass]
 	public class AvoidPragmaAnalyzerTest : DiagnosticVerifier
 	{
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"#pragma warning disable 100")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PragmaWarningNotAvoidedTestAsync(string test)
@@ -47,7 +47,7 @@ class Foo
 			await VerifySuccessfulCompilation(text).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"#pragma warning disable 100")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task PragmaAllowedGeneratedCodeAsync(string test)

@@ -280,7 +280,7 @@ namespace MultiLineConditionUnitTests
 		/// <summary>
 		/// No diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Correct, DisplayName = nameof(Correct)),
 		 DataRow(CorrectStartOnSameLine, DisplayName = nameof(CorrectStartOnSameLine)),
 		 DataRow(CorrectClose, DisplayName = nameof(CorrectClose)),
@@ -299,7 +299,7 @@ namespace MultiLineConditionUnitTests
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongBreak, null, 11, 22, DisplayName = nameof(WrongBreak))]
 		[DataRow(WrongMultiLine, CorrectMultiLine, 13, 26, DisplayName = nameof(WrongMultiLine))]
 		[DataRow(WrongAssignmentToBool, CorrectAssignmentToBool, 11, 22, DisplayName = nameof(WrongAssignmentToBool))]
@@ -333,7 +333,7 @@ namespace MultiLineConditionUnitTests
 		/// <summary>
 		/// Diagnostics expected to show up.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(Wrong4Violations, 3, DisplayName = nameof(Wrong4Violations))
 		]
 		[TestCategory(TestDefinitions.UnitTests)]
@@ -356,7 +356,7 @@ namespace MultiLineConditionUnitTests
 		/// <summary>
 		/// No diagnostics expected to show up 
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(WrongBreak, "GlobalSuppressions", DisplayName = "OutOfScopeSourceFile")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task WhenSourceFileIsOutOfScopeNoDiagnosticIsTriggeredAsync(string testCode, string filePath)

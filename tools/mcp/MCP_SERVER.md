@@ -13,13 +13,42 @@ The MCP server provides streamlined endpoints for essential development tasks:
 ### Helper Discovery (Primary Focus)
 - **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
-### Code Coverage Analysis (New!)
+### Code Formatting (New!)
+- **`/fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
+
+### Code Coverage Analysis
 - **`/analyze_coverage`** - Analyze code coverage and provide actionable suggestions to reach SonarCloud's 80% requirement
 
 ### Build & Test Automation  
 - **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
 - **`/run_tests`** - Execute tests (security-hardened, fixed target)
 - **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
+
+## Code Formatting Assistance
+
+The `/fix_formatting` endpoint specifically addresses the CoPilot Coding Agent's struggle with IDE0055 formatting violations. This repository enforces strict formatting rules:
+
+- **Line endings**: CRLF (Windows-style) - not LF
+- **Indentation**: Tabs (not spaces) with size 4
+- **Braces**: New line before all braces
+- **IDE0055 severity**: Error (build fails on violations)
+
+**Key Benefits:**
+- **Auto-corrects formatting** - Fixes CRLF, tabs, braces, and other .editorconfig violations
+- **Reduces agent struggles** - Prevents 25% of CoPilot effort being spent on formatting
+- **Ensures CI compliance** - Matches the exact formatting that CI requires
+- **Zero-config operation** - Uses existing .editorconfig rules automatically
+
+**Sample Response:**
+```json
+{
+  "status": "success",
+  "return_code": 0,
+  "formatted_files": 15,
+  "message": "Fixed formatting for 15 files",
+  "logs": "..."
+}
+```
 
 ## Coverage Analysis for SonarCloud
 
@@ -118,12 +147,15 @@ This endpoint helps reach SonarCloud's 80% coverage requirement by:
 
 The dogfood process (`/run_dogfood`) automates the complete self-analysis workflow:
 
-1. **Build Packages**: Creates `.Dogfood` versions of all analyzer packages
-2. **Configure**: Creates temporary `Directory.Build.props` with dogfood package references
-3. **Apply Analyzers**: Builds all projects with the analyzers applied to themselves
-4. **Report Violations**: Returns any analyzer warnings/errors found
+1. **Build Dogfood Packages**: Creates `.Dogfood` versions of all analyzer packages by setting `PackageId=$(MSBuildProjectName).Dogfood` in Directory.Build.props and building with Release configuration
+2. **Add Package Source**: Adds the local `Packages/` directory as a NuGet source for consuming the dogfood packages
+3. **Configure Consumption**: Creates Directory.Build.props with package references to all dogfood analyzer packages with proper `PrivateAssets` and `IncludeAssets` settings
+4. **Apply Analyzers**: Cleans and builds all projects (Debug configuration) with the dogfood analyzers applied to themselves
+5. **Report Violations**: Returns any analyzer warnings/errors found (CS or PH codes)
 
-This process ensures that the analyzers work correctly and that the codebase follows its own rules.
+This process follows the same workflow as `.github/workflows/dogfood.yml` to ensure that the analyzers work correctly and that the codebase follows its own rules.
+
+**Testing the Dogfood Implementation**: Since the main codebase currently has no dogfood violations, you can test the implementation by temporarily introducing a known violation (such as an empty catch block) in a source file, running the dogfood analysis, and verifying that it detects the violation. The implementation successfully detects analyzer codes like PH2097 (empty statement blocks) and PH2098 (empty catch blocks).
 
 ## Development
 

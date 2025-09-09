@@ -1,6 +1,7 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -72,13 +73,20 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 					return true;
 				}
 
-				if (symbolInfo.Symbol is ILocalSymbol)
+				if (symbolInfo.Symbol is ILocalSymbol localSymbol)
 				{
+					// Check if this local symbol is declared as an out parameter
+					if (localSymbol.IsOutParameterDeclaration())
+					{
+						return false; // Out parameters are safe to use
+					}
 					return true;
 				}
 			}
 
 			return false;
 		}
+
+
 	}
 }

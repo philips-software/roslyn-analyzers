@@ -54,7 +54,7 @@ public class DerivedTestMethod : TestMethod
 		[DataRow(false, "[TestClass]", "object", "abstract", "[AssemblyCleanup]")]
 		[DataRow(false, "[TestClass]", "object", "abstract", "[ClassInitialize]")]
 		[DataRow(false, "[TestClass]", "object", "abstract", "[ClassCleanup]")]
-		[DataTestMethod]
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MethodsMustBeInTestClassAsync(bool isError, string testClassAttribute, string baseClass, string classQualifier, string testType)
 		{

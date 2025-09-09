@@ -25,7 +25,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		}
 
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"if (1==1) { if(1==1) {} else {} }", DisplayName = "Has else clause")]
 		[DataRow(@"if (1==1) { int x; if (1==1) {} }", DisplayName = "Has multiple statements")]
 		[DataRow(@"if (1==1) { if (1==1) {} ; int x}", DisplayName = "Has multiple statements")]
@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			await VerifySuccessfulCompilation(testCode).ConfigureAwait(false);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(@"if(1==1) { if (2==2) {} }", @"if (1 == 1 && 2 == 2)")]
 		[DataRow(@"if (3==3) if (4==4) {}", @"if (3 == 3 && 4 == 4)")]
 		[TestCategory(TestDefinitions.UnitTests)]

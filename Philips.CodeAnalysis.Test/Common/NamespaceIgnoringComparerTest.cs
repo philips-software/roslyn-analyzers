@@ -11,7 +11,7 @@ namespace Philips.CodeAnalysis.Test.Common
 	public class NamespaceIgnoringComparerTest
 	{
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("System.Exception", "System.Exception"),
 		 DataRow("System.Exception", "Exception"),
 		 DataRow("System.IO.IOException", "IOException"),
@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.IsTrue(isEqual);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(null, "System.Exception"),
 		 DataRow("System.Exception", null),
 		 DataRow("System.IO.IOException", ""),
@@ -45,7 +45,7 @@ namespace Philips.CodeAnalysis.Test.Common
 			Assert.IsFalse(isEqual);
 		}
 
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow("System.Exception"),
 		 DataRow("System.IO.IOException"),
 		 DataRow("")]

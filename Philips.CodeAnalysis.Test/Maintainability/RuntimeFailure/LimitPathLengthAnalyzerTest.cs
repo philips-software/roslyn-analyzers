@@ -57,7 +57,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// No diagnostics expected to show up
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(ShortName, DisplayName = "ShortName"),
 		 DataRow(ShortAbsolutePath, DisplayName = "ShortAbsolutePath"),
 		 DataRow(ShortRelativePath, DisplayName = "ShortRelativePath")]
@@ -70,7 +70,7 @@ namespace PathTooLongUnitTest {
 		/// <summary>
 		/// Diagnostics should show up hare.
 		/// </summary>
-		[DataTestMethod]
+		[TestMethod]
 		[DataRow(LongName, DisplayName = "LongName"),
 		 DataRow(LongAbsolutePath, DisplayName = "LongAbsolutePath"),
 		 DataRow(LongRelativePath, DisplayName = "LongRelativePath"),
