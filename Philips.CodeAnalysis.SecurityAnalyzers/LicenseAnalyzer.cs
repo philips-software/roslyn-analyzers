@@ -64,7 +64,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			MessageFormat,
 			Categories.Security,
 			DiagnosticSeverity.Error,
-			isEnabledByDefault: false,
+			isEnabledByDefault: true,
 			Description,
 			DiagnosticId.AvoidUnlicensedPackages.ToHelpLinkUrl());
 
@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"{0}",
 			Categories.Security,
 			DiagnosticSeverity.Info,
-			isEnabledByDefault: true);
+			isEnabledByDefault: false);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Rule, DebugDiagnostic);
