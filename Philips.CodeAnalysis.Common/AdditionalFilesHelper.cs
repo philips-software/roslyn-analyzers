@@ -117,5 +117,26 @@ namespace Philips.CodeAnalysis.Common
 
 			return values;
 		}
+
+		/// <summary>
+		/// Checks if debug logging is enabled for a specific diagnostic ID.
+		/// Default to enabled since we're not production ready yet.
+		/// </summary>
+		public virtual bool IsDebugLoggingEnabled(string diagnosticId)
+		{
+			if (!_compilation.SyntaxTrees.Any())
+			{
+				return true;
+			}
+
+			var value = GetValueFromEditorConfig(diagnosticId, "enable_debug_logging");
+			if (!string.IsNullOrEmpty(value))
+			{
+				return !string.Equals(value, "false", StringComparison.OrdinalIgnoreCase);
+			}
+
+			// Default to enabled for now since we're far from production ready
+			return true;
+		}
 	}
 }

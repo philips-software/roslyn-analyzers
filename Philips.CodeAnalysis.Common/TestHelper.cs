@@ -1,5 +1,8 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -70,6 +73,20 @@ namespace Philips.CodeAnalysis.Common
 				}
 			}
 			return hasAttribute;
+		}
+
+		public static bool IsTestProject(Compilation compilation)
+		{
+			// Check if this is a test project by looking for common test framework references
+			var referencedAssemblyNames = new HashSet<string>(
+				compilation.ReferencedAssemblyNames.Select(name => name.Name),
+				StringComparer.OrdinalIgnoreCase);
+
+			return referencedAssemblyNames.Contains("Microsoft.VisualStudio.TestPlatform.TestFramework") ||
+				   referencedAssemblyNames.Contains("MSTest.TestFramework") ||
+				   referencedAssemblyNames.Contains("NUnit.Framework") ||
+				   referencedAssemblyNames.Contains("xunit") ||
+				   referencedAssemblyNames.Contains("xunit.core");
 		}
 	}
 }
