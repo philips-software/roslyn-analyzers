@@ -37,8 +37,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public const string LicensesCacheFileName = @"licenses.cache";
 		private const string ProjectAssetsFileName = @"project.assets.json";
 
-		// Default acceptable licenses (permissive licenses that are generally safe to use)
-		private static readonly HashSet<string> DefaultAcceptableLicenses = new(StringComparer.OrdinalIgnoreCase)
+		// Default acceptable licenses (permissive licenses)
+		private static readonly HashSet<string> DefaultAcceptableLicenses =
+			new(StringComparer.OrdinalIgnoreCase)
 		{
 			"MIT",
 			"Apache-2.0",
@@ -47,10 +48,11 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"ISC",
 			"Unlicense",
 			"0BSD",
-			"https://github.com/dotnet/corefx/blob/master/LICENSE.TXT",
-			"https://github.com/dotnet/standard/blob/master/LICENSE.TXT",
-			"http://go.microsoft.com/fwlink/?LinkId=329770",
-			"https://aka.ms/deprecateLicenseUrl"
+			"github.com/dotnet/corefx/blob/master/LICENSE.TXT",
+			"github.com/dotnet/standard/blob/master/LICENSE.TXT",
+			"go.microsoft.com/fwlink/?LinkId=329770",
+			"aka.ms/deprecateLicenseUrl",
+			"www.bouncycastle.org/csharp/licence.html"
 		};
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
@@ -62,7 +64,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			MessageFormat,
 			Categories.Security,
 			DiagnosticSeverity.Error,
-			isEnabledByDefault: true,
+			isEnabledByDefault: false,
 			Description,
 			DiagnosticId.AvoidUnlicensedPackages.ToHelpLinkUrl());
 
@@ -282,44 +284,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		{
 			try
 			{
-				var searchDir = startDirectory;
-				for (var i = 0; i < 5; i++) // Limit search depth
-				{
-					var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
-
-					try
-					{
-						var exists = File.Exists(assetsPath);
-						if (enableDetailedLogging)
-						{
-							ReportDebugDiagnostic(context, $"Tree search depth {i}: checking {assetsPath} - Exists: {exists}");
-						}
-
-						if (exists)
-						{
-							return assetsPath;
-						}
-					}
-					catch (Exception ex)
-					{
-						if (enableDetailedLogging)
-						{
-							ReportDebugDiagnostic(context, $"Exception during tree search at {assetsPath}: {ex.Message}");
-						}
-					}
-
-					DirectoryInfo parentDir = Directory.GetParent(searchDir);
-					if (parentDir == null)
-					{
-						if (enableDetailedLogging)
-						{
-							ReportDebugDiagnostic(context, $"Reached root directory at depth {i}, stopping search");
-						}
-						break;
-					}
-
-					searchDir = parentDir.FullName;
-				}
+				return SearchUpDirectoryHierarchy(context, startDirectory, enableDetailedLogging);
 			}
 			catch (Exception ex)
 			{
@@ -330,6 +295,56 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			return null;
+		}
+
+		private string SearchUpDirectoryHierarchy(CompilationAnalysisContext context, string startDirectory, bool enableDetailedLogging)
+		{
+			var searchDir = startDirectory;
+			for (var i = 0; i < 5; i++) // Limit search depth
+			{
+				var foundPath = CheckDirectoryForAssetsFile(context, searchDir, i, enableDetailedLogging);
+				if (foundPath != null)
+				{
+					return foundPath;
+				}
+
+				DirectoryInfo parentDir = Directory.GetParent(searchDir);
+				if (parentDir == null)
+				{
+					if (enableDetailedLogging)
+					{
+						ReportDebugDiagnostic(context, $"Reached root directory at depth {i}, stopping search");
+					}
+					break;
+				}
+
+				searchDir = parentDir.FullName;
+			}
+			return null;
+		}
+
+		private string CheckDirectoryForAssetsFile(CompilationAnalysisContext context, string searchDir, int depth, bool enableDetailedLogging)
+		{
+			var assetsPath = Path.Combine(searchDir, "obj", ProjectAssetsFileName);
+
+			try
+			{
+				var exists = File.Exists(assetsPath);
+				if (enableDetailedLogging)
+				{
+					ReportDebugDiagnostic(context, $"Tree search depth {depth}: checking {assetsPath} - Exists: {exists}");
+				}
+
+				return exists ? assetsPath : null;
+			}
+			catch (Exception ex)
+			{
+				if (enableDetailedLogging)
+				{
+					ReportDebugDiagnostic(context, $"Exception during tree search at {assetsPath}: {ex.Message}");
+				}
+				return null;
+			}
 		}
 
 		private static List<PackageInfo> ParseProjectAssetsFile(string assetsFilePath)
