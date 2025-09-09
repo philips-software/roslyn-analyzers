@@ -48,7 +48,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 			catch (Exception)
 			{
-				// Silently ignore errors in project file analysis to avoid breaking compilation
+				// Silently ignore errors to avoid breaking compilation
 				return;
 			}
 		}
@@ -83,6 +83,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			catch (Exception)
 			{
 				// Silently ignore XML parsing errors
+				return;
 			}
 		}
 
