@@ -145,5 +145,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidUnlicensedPackages = 2155,
 		AvoidPkcsPaddingWithRsaEncryption = 2158,
 		AvoidUnnecessaryAttributeParentheses = 2159,
+		AvoidNoWarnAnalyzerSuppression = 2163,
 	}
 }
