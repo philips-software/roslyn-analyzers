@@ -23,6 +23,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"// This comment mentions a to-do item but not the keyword")]
 		[DataRow(@"// FIXME: This needs to be fixed")]
 		[DataRow(@"// NOTE: This is important")]
+		[DataRow(@"// BedIdToDomainGroupContextMap")]
+		[DataRow(@"/* BedIdToDomainGroupContextMap */")]
+		[DataRow(@"// The methodName should be camelCased")]
+		[DataRow(@"// This contains TODOs but not the exact word")]
 		[DataRow(@"")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AcceptableCommentsAreFineAsync(string content)
@@ -32,6 +36,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		[TestMethod]
 		[DataRow(@"// TODO: This needs to be done", DisplayName = "Single line TODO")]
+		[DataRow(@"// TODO:", DisplayName = "TODO with colon only")]
 		[DataRow(@"// todo: lowercase version", DisplayName = "Lowercase todo")]
 		[DataRow(@"// Todo: Mixed case", DisplayName = "Mixed case Todo")]
 		[DataRow(@"// TODO This needs to be done", DisplayName = "TODO without colon")]
@@ -39,6 +44,10 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[DataRow(@"/* 
 		TODO: This spans multiple lines 
 		*/", DisplayName = "Multi-line comment with TODO")]
+		[DataRow(@"// TODO", DisplayName = "TODO alone")]
+		[DataRow(@"/* TODO */", DisplayName = "TODO alone in multiline")]
+		[DataRow(@"// (TODO) This is in parentheses", DisplayName = "TODO in parentheses")]
+		[DataRow(@"// TODO-item", DisplayName = "TODO with hyphen")]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TodoCommentsShouldTriggerDiagnosticAsync(string content)
 		{

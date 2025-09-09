@@ -1,7 +1,9 @@
 ﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -24,26 +26,34 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 	public class AvoidTodoCommentsSyntaxNodeAction : SyntaxNodeAction<CompilationUnitSyntax>
 	{
+		private static readonly Regex TodoWordRegex = new(@"(?<=\W|^)TODO(?=\W|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+
 		public override void Analyze()
 		{
 			IEnumerable<SyntaxTrivia> comments = Node.DescendantTrivia()
 				.Where(trivia => trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) ||
 								 trivia.IsKind(SyntaxKind.MultiLineCommentTrivia));
 
-			if (!comments.Any())
-			{
-				return;
-			}
-
 			foreach (SyntaxTrivia comment in comments)
 			{
 				var commentText = comment.ToString();
-				if (commentText.ToUpperInvariant().Contains("TODO"))
+				if (ContainsTodoAsWord(commentText))
 				{
 					Location location = comment.GetLocation();
 					ReportDiagnostic(location);
 				}
 			}
+		}
+
+		private static bool ContainsTodoAsWord(string text)
+		{
+			// Performance optimization: quick IndexOf check before expensive regex
+			if (text.IndexOf("TODO", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+
+			return TodoWordRegex.IsMatch(text);
 		}
 	}
 }
