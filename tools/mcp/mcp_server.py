@@ -3,8 +3,10 @@ import os
 import re
 import subprocess
 import shutil
+import requests
+import base64
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Set
 from fastmcp import FastMCP
 
 mcp = FastMCP("roslyn-analyzers-dev")
@@ -37,6 +39,70 @@ def _coverage_exe() -> str:
     home = Path.home()
     candidate = home / ".dotnet" / "tools" / ("dotnet-coverage.exe" if os.name == "nt" else "dotnet-coverage")
     return str(candidate) if candidate.exists() else "dotnet-coverage"
+
+def _parse_diagnostic_ids_from_csharp(content: str) -> Set[int]:
+    """Parse diagnostic ID numbers from C# enum content."""
+    diagnostic_ids = set()
+    
+    # Look for enum member assignments like "SomeName = 2159,"
+    pattern = r'\s*\w+\s*=\s*(\d+)\s*[,}]'
+    matches = re.findall(pattern, content)
+    
+    for match in matches:
+        try:
+            diagnostic_id = int(match)
+            # Only include IDs in the expected range (2000+)
+            if diagnostic_id >= 2000:
+                diagnostic_ids.add(diagnostic_id)
+        except ValueError:
+            continue
+    
+    return diagnostic_ids
+
+def _get_github_api_url(endpoint: str) -> str:
+    """Build GitHub API URL for the roslyn-analyzers repository."""
+    return f"https://api.github.com/repos/philips-software/roslyn-analyzers{endpoint}"
+
+def _make_github_request(url: str, headers: Optional[Dict[str, str]] = None) -> Optional[Dict]:
+    """Make a GitHub API request with error handling."""
+    try:
+        if headers is None:
+            headers = {}
+        
+        # Add User-Agent header as required by GitHub API
+        headers['User-Agent'] = 'roslyn-analyzers-mcp-server'
+        
+        # Add GitHub token if available from environment
+        github_token = os.environ.get('GITHUB_TOKEN')
+        if github_token:
+            headers['Authorization'] = f'token {github_token}'
+        
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()
+        return response.json()
+    except Exception as e:
+        # Return None on error, let calling code handle it
+        return None
+
+def _get_open_prs() -> List[Dict]:
+    """Get list of open pull requests."""
+    url = _get_github_api_url("/pulls?state=open&per_page=100")
+    result = _make_github_request(url)
+    return result if result else []
+
+def _get_file_content_from_pr(pr_head_sha: str, file_path: str) -> Optional[str]:
+    """Get file content from a specific PR commit."""
+    url = _get_github_api_url(f"/contents/{file_path}?ref={pr_head_sha}")
+    result = _make_github_request(url)
+    
+    if result and 'content' in result:
+        try:
+            # GitHub API returns base64-encoded content
+            content = base64.b64decode(result['content']).decode('utf-8')
+            return content
+        except Exception:
+            return None
+    return None
     
 @mcp.tool
 def search_helpers() -> Dict[str, Any]:
@@ -322,6 +388,85 @@ def analyze_coverage() -> Dict[str, Any]:
                 analysis["suggestions"].append({"type": "test_template",
                     "message": f"Add unit test exercising {u['file']}:{u['line']}"})
     return analysis
+
+@mcp.tool
+def next_diagnosticId() -> Dict[str, Any]:
+    """Get the next available DiagnosticId by checking main branch and all open PRs."""
+    try:
+        # Step 1: Get diagnostic IDs from main branch
+        main_diagnostic_file = BASE_DIR / "Philips.CodeAnalysis.Common" / "DiagnosticId.cs"
+        if not main_diagnostic_file.exists():
+            return {
+                "status": "failure",
+                "error": "DiagnosticId.cs file not found in main branch",
+                "next_id": None
+            }
+        
+        main_content = main_diagnostic_file.read_text(encoding='utf-8')
+        main_ids = _parse_diagnostic_ids_from_csharp(main_content)
+        
+        if not main_ids:
+            return {
+                "status": "failure", 
+                "error": "No diagnostic IDs found in main branch",
+                "next_id": None
+            }
+        
+        max_main_id = max(main_ids)
+        
+        # Step 2: Get open PRs and check for new diagnostic IDs
+        open_prs = _get_open_prs()
+        pr_ids = set()
+        pr_details = []
+        
+        for pr in open_prs:
+            pr_number = pr.get('number', 'unknown')
+            pr_title = pr.get('title', 'Unknown PR')
+            pr_head_sha = pr.get('head', {}).get('sha')
+            
+            if not pr_head_sha:
+                continue
+            
+            # Get DiagnosticId.cs from this PR
+            pr_content = _get_file_content_from_pr(pr_head_sha, "Philips.CodeAnalysis.Common/DiagnosticId.cs")
+            
+            if pr_content:
+                pr_diagnostic_ids = _parse_diagnostic_ids_from_csharp(pr_content)
+                
+                # Find IDs that are new in this PR (not in main)
+                new_ids_in_pr = pr_diagnostic_ids - main_ids
+                
+                if new_ids_in_pr:
+                    pr_ids.update(new_ids_in_pr)
+                    pr_details.append({
+                        "pr_number": pr_number,
+                        "pr_title": pr_title,
+                        "new_ids": sorted(list(new_ids_in_pr))
+                    })
+        
+        # Step 3: Calculate the next available ID
+        all_used_ids = main_ids.union(pr_ids)
+        max_used_id = max(all_used_ids)
+        next_id = max_used_id + 1
+        
+        return {
+            "status": "success",
+            "next_id": next_id,
+            "max_main_id": max_main_id,
+            "max_used_id": max_used_id,
+            "total_open_prs": len(open_prs),
+            "prs_with_new_ids": len(pr_details),
+            "pr_details": pr_details,
+            "diagnostic_id_string": f"PH{next_id}",
+            "all_used_ids_count": len(all_used_ids)
+        }
+        
+    except Exception as e:
+        return {
+            "status": "failure",
+            "error": f"Unexpected error: {str(e)}",
+            "next_id": None
+        }
 
 if __name__ == "__main__":
     mcp.run()

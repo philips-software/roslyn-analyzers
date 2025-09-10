@@ -18,7 +18,8 @@
         "run_tests",
         "run_dogfood",
         "analyze_coverage",
-        "fix_formatting"
+        "fix_formatting",
+        "next_diagnosticId"
       ]
     }
   }
