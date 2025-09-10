@@ -13,6 +13,9 @@ The MCP server provides streamlined endpoints for essential development tasks:
 ### Helper Discovery (Primary Focus)
 - **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
+### Diagnostic ID Management
+- **`/next_diagnosticId`** - Get the next available DiagnosticId by checking main branch and all open PRs to avoid conflicts
+
 ### Code Formatting (New!)
 - **`/fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
 
@@ -130,6 +133,38 @@ curl -X POST "http://localhost:8000/run_tests"
 #### Run Dogfood Process
 ```bash
 curl -X POST "http://localhost:8000/run_dogfood"
+```
+
+#### Get Next Available Diagnostic ID (New!)
+```bash
+curl -X POST "http://localhost:8000/next_diagnosticId"
+```
+
+This endpoint solves the common problem where multiple PRs try to claim the same "next" diagnostic ID. It:
+- Examines the DiagnosticId enum in the main branch to find the current maximum ID
+- Scans all open Pull Requests using the GitHub API
+- Parses the DiagnosticId enum in each PR to detect new IDs being added
+- Returns the true "next" available ID by taking the maximum from both main and all open PRs, then incrementing
+
+**Sample Response:**
+```json
+{
+  "status": "success",
+  "next_id": 2160,
+  "max_main_id": 2159,
+  "max_used_id": 2159,
+  "total_open_prs": 3,
+  "prs_with_new_ids": 1,
+  "pr_details": [
+    {
+      "pr_number": 1234,
+      "pr_title": "Add new analyzer for method naming",
+      "new_ids": [2160]
+    }
+  ],
+  "diagnostic_id_string": "PH2161",
+  "all_used_ids_count": 140
+}
 ```
 
 #### Analyze Code Coverage (New!)

@@ -98,6 +98,7 @@ def run_tests():
             ("Run Tests", "POST", "/run_tests", None),
             ("Run Dogfood", "POST", "/run_dogfood", None),
             ("Analyze Coverage", "POST", "/analyze_coverage", None),
+            ("Next Diagnostic ID", "POST", "/next_diagnosticId", None),
         ]
         
         passed = 0
@@ -133,6 +134,13 @@ def run_tests():
                     coverage = result.get("overall_coverage", 0)
                     suggestions = len(result.get("suggestions", []))
                     print(f"   📊 Coverage {status}, {coverage:.1f}% coverage, {suggestions} suggestions")
+                
+                elif name == "Next Diagnostic ID" and result:
+                    status = result.get("status", "unknown")
+                    next_id = result.get("next_id", "unknown")
+                    diagnostic_string = result.get("diagnostic_id_string", "unknown")
+                    open_prs = result.get("total_open_prs", 0)
+                    print(f"   🆔 Next ID {status}, next ID: {next_id} ({diagnostic_string}), {open_prs} open PRs")
         
         print(f"\n📊 Test Results: {passed}/{total} tests passed")
         
