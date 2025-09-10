@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -16,13 +14,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class AvoidNoWarnAnalyzerSuppressionAnalyzer : SolutionAnalyzer
 	{
 		private const string Title = @"Avoid NoWarn for analyzer suppression";
-		private const string MessageFormat = @"Use .editorconfig instead of NoWarn project setting to suppress analyzer '{0}'. Configure with 'dotnet_diagnostic.{0}.severity = none'.";
-		private const string Description = @"NoWarn project settings should be avoided for analyzer suppression. Use .editorconfig files for better maintainability and team consistency.";
-
-		private static readonly char[] SeparatorChars = { ';', ',' };
+		private const string MessageFormat = @"Use .editorconfig instead of NoWarn project setting to suppress diagnostics. Configure with 'dotnet_diagnostic.{id}.severity = none'.";
+		private const string Description = @"NoWarn project settings should be avoided for diagnostic suppression. Use .editorconfig files for better maintainability and team consistency.";
 
 		public AvoidNoWarnAnalyzerSuppressionAnalyzer()
-			: base(DiagnosticId.AvoidNoWarnAnalyzerSuppression, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: false)
+			: base(DiagnosticId.AvoidNoWarnAnalyzerSuppression, Title, MessageFormat, Description, Categories.Maintainability, isEnabled: true)
 		{
 		}
 
@@ -36,76 +32,26 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private void AnalyzeCompilation(CompilationAnalysisContext context)
 		{
-			try
+			var projectFilePath = TryFindProjectFileFromSourcePaths(context);
+			if (string.IsNullOrEmpty(projectFilePath) || !File.Exists(projectFilePath))
 			{
-				var projectFilePath = TryFindProjectFileFromSourcePaths(context);
-				if (string.IsNullOrEmpty(projectFilePath) || !File.Exists(projectFilePath))
-				{
-					return;
-				}
-
-				AnalyzeProjectFile(context, projectFilePath);
-			}
-			catch (Exception)
-			{
-				// Silently ignore errors to avoid breaking compilation
 				return;
 			}
+
+			AnalyzeProjectFile(context, projectFilePath);
 		}
 
 		private void AnalyzeProjectFile(CompilationAnalysisContext context, string projectFilePath)
 		{
-			try
+			var content = File.ReadAllText(projectFilePath);
+
+			// Simple check for NoWarn elements - avoid XDocument overhead
+			var lowerContent = content.ToLowerInvariant();
+			if (lowerContent.Contains("<nowarn>") || lowerContent.Contains("<nowarn "))
 			{
-				var content = File.ReadAllText(projectFilePath);
-				var document = XDocument.Parse(content);
-
-				IEnumerable<XElement> noWarnElements = document.Descendants()
-					.Where(e => e.Name.LocalName.Equals("NoWarn", StringComparison.OrdinalIgnoreCase));
-
-				foreach (XElement noWarnElement in noWarnElements)
-				{
-					var noWarnValue = noWarnElement.Value;
-					if (string.IsNullOrWhiteSpace(noWarnValue))
-					{
-						continue;
-					}
-
-					// Find PH analyzer codes in NoWarn value
-					List<string> phCodes = ExtractAnalyzerCodes(noWarnValue);
-					foreach (var phCode in phCodes)
-					{
-						var diagnostic = Diagnostic.Create(Rule, Location.None, phCode);
-						context.ReportDiagnostic(diagnostic);
-					}
-				}
+				var diagnostic = Diagnostic.Create(Rule, Location.None);
+				context.ReportDiagnostic(diagnostic);
 			}
-			catch (Exception)
-			{
-				// Silently ignore XML parsing errors
-				return;
-			}
-		}
-
-		private static List<string> ExtractAnalyzerCodes(string noWarnValue)
-		{
-			var codes = new List<string>();
-
-			// Split by semicolons and commas, common separators in NoWarn values
-			var parts = noWarnValue.Split(SeparatorChars,
-											StringSplitOptions.RemoveEmptyEntries);
-
-			foreach (var part in parts)
-			{
-				var trimmedPart = part.Trim();
-				// Look for PH codes (PH followed by digits)
-				if (Regex.IsMatch(trimmedPart, @"^PH\d+$", RegexOptions.IgnoreCase))
-				{
-					codes.Add(trimmedPart.ToUpperInvariant());
-				}
-			}
-
-			return codes;
 		}
 
 		private string TryFindProjectFileFromSourcePaths(CompilationAnalysisContext context)
