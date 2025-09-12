@@ -891,17 +891,60 @@ public class AsyncClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LicenseAnalyzerDeprecatedUrlNoLongerAcceptable()
+		public void LicenseAnalyzerManualValidationOfIssueScenarios()
 		{
-			// Test that "aka.ms/deprecateLicenseUrl" is no longer in default acceptable licenses
-			var analyzer = new LicenseAnalyzer();
+			// Test 1: The exact scenario from the issue - should return UNKNOWN_FILE_LICENSE
+			const string issueScenario = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+  </metadata>
+</package>";
 
-			// This is an indirect test - we can't directly access the private DefaultAcceptableLicenses,
-			// but we've removed it from the list, so this test documents the change
-			Assert.IsNotNull(analyzer);
+			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(issueScenario);
+			Assert.AreEqual("UNKNOWN_FILE_LICENSE", result1, "type='file' should return UNKNOWN_FILE_LICENSE");
 
-			// The actual behavior will be tested through integration testing
-			// when packages with this URL will now trigger findings
+			// Test 2: Only deprecated URL (no license element) - should return the URL itself
+			const string onlyDeprecatedUrl = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+  </metadata>
+</package>";
+
+			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(onlyDeprecatedUrl);
+			Assert.AreEqual("https://aka.ms/deprecateLicenseUrl", result2, "Should return deprecated URL for further checking");
+
+			// Test 3: MIT via SPDX expression should still work
+			const string mitExpression = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""expression"">MIT</license>
+  </metadata>
+</package>";
+
+			var result3 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(mitExpression);
+			Assert.AreEqual("MIT", result3, "SPDX expressions should continue to work");
+
+			// Test 4: MIT via license URL should still work
+			const string mitUrl = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result4 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(mitUrl);
+			Assert.AreEqual("MIT", result4, "Recognizable license URLs should continue to work");
 		}
 
 		[TestMethod]
