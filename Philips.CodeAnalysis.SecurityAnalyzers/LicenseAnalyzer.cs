@@ -51,7 +51,6 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"github.com/dotnet/corefx/blob/master/LICENSE.TXT",
 			"github.com/dotnet/standard/blob/master/LICENSE.TXT",
 			"go.microsoft.com/fwlink/?LinkId=329770",
-			"aka.ms/deprecateLicenseUrl",
 			"www.bouncycastle.org/csharp/licence.html"
 		};
 
@@ -545,19 +544,24 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			try
 			{
 				var content = File.ReadAllText(nuspecPath);
-
-				var licenseFromElement = ExtractLicenseElement(content);
-				if (!string.IsNullOrEmpty(licenseFromElement))
-				{
-					return licenseFromElement;
-				}
-
-				return ExtractLicenseUrl(content);
+				return ExtractLicenseFromNuspecContent(content);
 			}
 			catch (Exception)
 			{
 				return null;
 			}
+		}
+
+		// Public method for testing license extraction logic
+		public static string ExtractLicenseFromNuspecContent(string content)
+		{
+			var licenseFromElement = ExtractLicenseElement(content);
+			if (!string.IsNullOrEmpty(licenseFromElement))
+			{
+				return licenseFromElement;
+			}
+
+			return ExtractLicenseUrl(content);
 		}
 
 		private static string ExtractLicenseElement(string content)
@@ -582,20 +586,27 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			var licenseType = content.Substring(typeStart, typeEnd - typeStart);
-			if (!licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
+			if (licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
 			{
-				return null;
+				// Extract SPDX expression
+				var contentStart = content.IndexOf(">", licenseStart) + 1;
+				var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
+				if (contentEnd <= contentStart)
+				{
+					return null;
+				}
+
+				return content.Substring(contentStart, contentEnd - contentStart).Trim();
+			}
+			else if (licenseType.Equals("file", StringComparison.OrdinalIgnoreCase))
+			{
+				// For type="file", we can't determine the actual license content from just the file path
+				// Return a special value to indicate this is an unknown license that should trigger a finding
+				return "UNKNOWN_FILE_LICENSE";
 			}
 
-			// Extract SPDX expression
-			var contentStart = content.IndexOf(">", licenseStart) + 1;
-			var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
-			if (contentEnd <= contentStart)
-			{
-				return null;
-			}
-
-			return content.Substring(contentStart, contentEnd - contentStart).Trim();
+			// Unknown license type
+			return null;
 		}
 
 		private static string ExtractLicenseUrl(string content)
