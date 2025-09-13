@@ -865,8 +865,8 @@ public class AsyncClass
 
 			var result = LicenseAnalyzer.ExtractLicenseFromNuspecContent(nuspecContent);
 
-			// Should return the URL itself since it's not a recognized license pattern
-			Assert.AreEqual("https://aka.ms/deprecateLicenseUrl", result);
+			// Should return the normalized URL (without https://) since it's not a recognized license pattern
+			Assert.AreEqual("aka.ms/deprecateLicenseUrl", result);
 		}
 
 		[TestMethod]
@@ -918,7 +918,7 @@ public class AsyncClass
 </package>";
 
 			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(onlyDeprecatedUrl);
-			Assert.AreEqual("https://aka.ms/deprecateLicenseUrl", result2, "Should return deprecated URL for further checking");
+			Assert.AreEqual("aka.ms/deprecateLicenseUrl", result2, "Should return normalized deprecated URL for further checking");
 
 			// Test 3: MIT via SPDX expression should still work
 			const string mitExpression = @"<?xml version=""1.0""?>
@@ -971,6 +971,100 @@ public class AsyncClass
 			// The actual license checking happens during package analysis, not code analysis
 			// This test validates the analyzer can handle the code analysis without issues
 			await VerifySuccessfulCompilation(GetTestCode()).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerAcceptsValidLicenseUrlWhenNoLicenseElement()
+		{
+			// Test the specific scenario reported in the comment:
+			// When there's only a <licenseUrl> tag (no <license> tag) and the licenseUrl 
+			// is in the acceptable licenses list, it should be accepted
+
+			// Test case 1: License URL that should be recognized as MIT
+			const string mitUrlNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(mitUrlNuspec);
+			Assert.AreEqual("MIT", result1, "MIT license URL should be recognized as MIT");
+
+			// Test case 2: License URL that should be recognized as Apache-2.0
+			const string apacheUrlNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+  </metadata>
+</package>";
+
+			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(apacheUrlNuspec);
+			Assert.AreEqual("Apache-2.0", result2, "Apache license URL should be recognized as Apache-2.0");
+
+			// Test case 3: A known acceptable license URL from the default list
+			const string dotnetNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result3 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(dotnetNuspec);
+			Assert.AreEqual("github.com/dotnet/corefx/blob/master/LICENSE.TXT", result3, "License URL should be normalized to match acceptable licenses format");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerUrlNormalizationWorksCorrectly()
+		{
+			// Test URL normalization with various prefixes
+
+			// Test case 1: HTTPS URL normalization
+			const string httpsNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(httpsNuspec);
+			Assert.AreEqual("github.com/dotnet/corefx/blob/master/LICENSE.TXT", result1, "HTTPS prefix should be removed");
+
+			// Test case 2: HTTP URL normalization
+			const string httpNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>http://www.bouncycastle.org/csharp/licence.html</licenseUrl>
+  </metadata>
+</package>";
+
+			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(httpNuspec);
+			Assert.AreEqual("www.bouncycastle.org/csharp/licence.html", result2, "HTTP prefix should be removed");
+
+			// Test case 3: URL without prefix should remain unchanged
+			const string noProtocolNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>go.microsoft.com/fwlink/?LinkId=329770</licenseUrl>
+  </metadata>
+</package>";
+
+			var result3 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(noProtocolNuspec);
+			Assert.AreEqual("go.microsoft.com/fwlink/?LinkId=329770", result3, "URL without protocol should remain unchanged");
 		}
 
 		private string GetTestCode()

@@ -658,8 +658,34 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return "LGPL";
 			}
 
-			// Return the URL itself if we can't identify it
-			return licenseUrl;
+			// Return the URL itself but try to normalize it to match the acceptable licenses format
+			// Remove common prefixes to match the format used in DefaultAcceptableLicenses
+			var normalizedUrl = NormalizeLicenseUrl(licenseUrl);
+			return normalizedUrl;
+		}
+
+		private static string NormalizeLicenseUrl(string licenseUrl)
+		{
+			if (string.IsNullOrEmpty(licenseUrl))
+			{
+				return licenseUrl;
+			}
+
+			// Remove common URL prefixes to match the format in DefaultAcceptableLicenses
+			var normalized = licenseUrl;
+
+			// Remove https:// prefix
+			if (normalized.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				normalized = normalized.Substring(8);
+			}
+			// Remove http:// prefix
+			else if (normalized.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+			{
+				normalized = normalized.Substring(7);
+			}
+
+			return normalized;
 		}
 
 		private static bool HasSubstringIgnoreCase(string source, string value)
