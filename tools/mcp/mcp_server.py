@@ -16,6 +16,7 @@ def _mod():
         mod = importlib.import_module(MODULE_NAME)
         mod.set_base_dir(str(BASE_DIR))
     return mod
+
 @mcp.tool
 def hot_reload() -> Dict[str, Any]:
     """Reload tool implementations from disk without restarting the MCP server."""
