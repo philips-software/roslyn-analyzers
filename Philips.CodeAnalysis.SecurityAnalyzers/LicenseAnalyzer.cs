@@ -178,7 +178,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}, ProjectUrl = {displayProjectUrl}");
 
-				if (!string.IsNullOrEmpty(license) && !IsLicenseAcceptable(context, license, projectUrl, allowedLicenses))
+				if (!string.IsNullOrEmpty(license) && !IsLicenseAcceptable(context, license, package.Name, allowedLicenses))
 				{
 					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License '{license}' is NOT acceptable - triggering finding");
 					var diagnostic = Diagnostic.Create(
@@ -808,7 +808,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		}
 
 
-		private bool IsLicenseAcceptable(CompilationAnalysisContext context, string license, string projectUrl, HashSet<string> allowedLicenses)
+		private bool IsLicenseAcceptable(CompilationAnalysisContext context, string license, string packageName, HashSet<string> allowedLicenses)
 		{
 			if (string.IsNullOrEmpty(license))
 			{
@@ -826,14 +826,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return true;
 			}
 
-			// If license is not acceptable by itself, also check if projectUrl is in the allowed list
-			// This handles cases where two packages have the same license file but different project URLs
-			if (!string.IsNullOrEmpty(projectUrl))
+			// If license is not acceptable by itself, also check if packageName is in the allowed list
+			// This handles cases where specific packages need to be whitelisted by name rather than by license
+			// This is safer than checking license file names since package names are unique identifiers
+			if (!string.IsNullOrEmpty(packageName))
 			{
-				var isProjectUrlAcceptable = allowedLicenses.Contains(projectUrl);
-				ReportDebugDiagnostic(context, $"License not found, checking project URL '{projectUrl}': {(isProjectUrlAcceptable ? "FOUND" : "NOT FOUND")}");
+				var isPackageNameAcceptable = allowedLicenses.Contains(packageName);
+				ReportDebugDiagnostic(context, $"License not found, checking package name '{packageName}': {(isPackageNameAcceptable ? "FOUND" : "NOT FOUND")}");
 
-				if (isProjectUrlAcceptable)
+				if (isPackageNameAcceptable)
 				{
 					return true;
 				}
