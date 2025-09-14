@@ -694,9 +694,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 			else if (licenseType.Equals("file", StringComparison.OrdinalIgnoreCase))
 			{
-				// For type="file", we can't determine the actual license content from just the file path
-				// Return a special value to indicate this is an unknown license that should trigger a finding
-				return "UNKNOWN_FILE_LICENSE";
+				// For type="file", extract the file name so users can whitelist it in combined entries
+				// e.g., <license type="file">LICENSE.md</license> returns "LICENSE.md"
+				var contentStart = content.IndexOf(">", licenseStart) + 1;
+				var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
+				if (contentEnd <= contentStart)
+				{
+					return null;
+				}
+
+				return content.Substring(contentStart, contentEnd - contentStart).Trim();
 			}
 
 			// Unknown license type

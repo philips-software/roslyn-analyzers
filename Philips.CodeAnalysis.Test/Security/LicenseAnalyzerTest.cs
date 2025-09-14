@@ -830,7 +830,7 @@ public class AsyncClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LicenseAnalyzerExtractsTypeFileAsUnknown()
+		public void LicenseAnalyzerExtractsTypeFileAsFileName()
 		{
 			// Test the specific scenario mentioned in the issue:
 			// <license type="file">LICENSE.md</license>
@@ -847,8 +847,8 @@ public class AsyncClass
 
 			var result = LicenseAnalyzer.ExtractLicenseFromNuspecContent(nuspecContent);
 
-			// Should return our special marker for type="file" licenses
-			Assert.AreEqual("UNKNOWN_FILE_LICENSE", result);
+			// Should return the actual file name for type="file" licenses
+			Assert.AreEqual("LICENSE.md", result);
 		}
 
 		[TestMethod]
@@ -895,7 +895,7 @@ public class AsyncClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void LicenseAnalyzerManualValidationOfIssueScenarios()
 		{
-			// Test 1: The exact scenario from the issue - should return UNKNOWN_FILE_LICENSE
+			// Test 1: The exact scenario from the issue - should return the file name
 			const string issueScenario = @"<?xml version=""1.0""?>
 <package>
   <metadata>
@@ -907,7 +907,7 @@ public class AsyncClass
 </package>";
 
 			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(issueScenario);
-			Assert.AreEqual("UNKNOWN_FILE_LICENSE", result1, "type='file' should return UNKNOWN_FILE_LICENSE");
+			Assert.AreEqual("LICENSE.md", result1, "type='file' should return the actual file name");
 
 			// Test 2: Only deprecated URL (no license element) - should return the URL itself
 			const string onlyDeprecatedUrl = @"<?xml version=""1.0""?>
@@ -1305,7 +1305,7 @@ class TestClass
 </package>";
 
 			LicenseAnalyzer.PackageLicenseInfo licenseInfo = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(nuspecWithBoth);
-			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo.License, "License should be extracted as UNKNOWN_FILE_LICENSE for type='file'");
+			Assert.AreEqual("LICENSE.md", licenseInfo.License, "License should be extracted as the file name for type='file'");
 			Assert.AreEqual("github.com/example/project", licenseInfo.ProjectUrl, "Project URL should be extracted and normalized");
 		}
 
@@ -1531,7 +1531,7 @@ class TestClass
 				"Microsoft.Extensions.Logging MIT",  // Combined entry - only supported format
 				"SomeCommercialPackage CommercialLicense-V1",  // Combined commercial license
 				"Newtonsoft.Json MIT",  // Another combined entry
-				"TestPackage UNKNOWN_FILE_LICENSE"  // Combined entry for file license
+				"TestPackage LICENSE.md"  // Combined entry for file license using actual file name
 			};
 
 			// Verify that the HashSet contains the expected combined entries
@@ -1572,7 +1572,7 @@ class TestClass
 				"Newtonsoft.Json MIT",
 				"Microsoft.EntityFramework Apache-2.0",
 				"SomeVendorPackage CommercialLicense-2024",
-				"TestPackage UNKNOWN_FILE_LICENSE"  // Even file licenses can be whitelisted specifically
+				"TestPackage LICENSE.md"  // File licenses use actual file name for specific whitelisting
 			};
 
 			// Each entry represents a specific package + license combination
@@ -1609,7 +1609,7 @@ class TestClass
 				"Telerik.UI.Controls CommercialLicense-Telerik",
 				
 				// Legacy packages that need special handling
-				"OldLegacyPackage UNKNOWN_FILE_LICENSE",  // Accept known legacy package even with file license
+				"OldLegacyPackage LICENSE.txt",  // Accept known legacy package with specific file license
 				
 				// Packages that changed license but we verified it's still acceptable
 				"SomePackageThatChangedLicense BSD-2-Clause"
@@ -1618,7 +1618,7 @@ class TestClass
 			// Verify realistic scenarios
 			Assert.Contains("Newtonsoft.Json MIT", realisticAllowedLicenses);
 			Assert.Contains("DevExpress.ComponentOne CommercialLicense-2024", realisticAllowedLicenses);
-			Assert.Contains("OldLegacyPackage UNKNOWN_FILE_LICENSE", realisticAllowedLicenses);
+			Assert.Contains("OldLegacyPackage LICENSE.txt", realisticAllowedLicenses);
 
 			// Test case insensitivity for real-world usage
 			Assert.Contains("newtonsoft.json mit", realisticAllowedLicenses);
@@ -1769,15 +1769,15 @@ class TestClass
 			LicenseAnalyzer.PackageLicenseInfo licenseInfo1 = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(package1Nuspec);
 			LicenseAnalyzer.PackageLicenseInfo licenseInfo2 = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(package2Nuspec);
 
-			// Both should have UNKNOWN_FILE_LICENSE for the license
-			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo1.License, "Package 1 should have UNKNOWN_FILE_LICENSE");
-			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo2.License, "Package 2 should have UNKNOWN_FILE_LICENSE");
+			// Both should have the actual file name for the license
+			Assert.AreEqual("LICENSE.md", licenseInfo1.License, "Package 1 should have the actual file name");
+			Assert.AreEqual("LICENSE.md", licenseInfo2.License, "Package 2 should have the actual file name");
 
 			// But different normalized project URLs
 			Assert.AreEqual("github.com/good-project/package1", licenseInfo1.ProjectUrl, "Package 1 project URL should be normalized");
 			Assert.AreEqual("github.com/bad-project/package2", licenseInfo2.ProjectUrl, "Package 2 project URL should be normalized");
 
-			// The user can now add "github.com/good-project/package1" to Allowed.Licenses.txt
+			// The user can now add "Package1 LICENSE.md" to Allowed.Licenses.txt
 			// to accept package1 while still triggering findings for package2
 		}
 
@@ -1818,7 +1818,7 @@ class TestClass
 			// Test that the package name whitelisting approach is safer than license file name whitelisting
 			// This addresses the scenario where two packages have the same LICENSE.md file but only one should be accepted
 
-			// Scenario: Two packages with same license file (UNKNOWN_FILE_LICENSE) but different names
+			// Scenario: Two packages with same license file name but different names
 			// User can whitelist specific package by name rather than by generic license file name
 			var analyzer = new LicenseAnalyzer();
 
@@ -1887,17 +1887,157 @@ class TestClass
 			// was dangerous because it could accidentally whitelist packages
 
 			// The old approach checked:
-			// 1. License (e.g., "UNKNOWN_FILE_LICENSE")  
+			// 1. License (e.g., "LICENSE.md")  
 			// 2. ProjectUrl (e.g., "github.com/example/project")
 			//
 			// The new approach checks:
-			// 1. License (e.g., "UNKNOWN_FILE_LICENSE")
+			// 1. License (e.g., "LICENSE.md")
 			// 2. Package Name (e.g., "Newtonsoft.Json") - safer because unique
 
 			var analyzer = new LicenseAnalyzer();
 
 			// Document that package name approach is now used instead of projectUrl approach
 			Assert.IsNotNull(analyzer, "Analyzer should support package name whitelisting for safer package acceptance");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerHandlesThreeLicenseScenarios()
+		{
+			// Test the three scenarios requested by the user:
+			// 1. No license element - use licenseUrl
+			// 2. License type="file" - use the file name
+			// 3. License type="expression" - use the expression
+
+			// Scenario 1: No license element, use licenseUrl
+			const string noLicenseElement = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage1</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+  </metadata>
+</package>";
+
+			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(noLicenseElement);
+			Assert.AreEqual("aka.ms/deprecateLicenseUrl", result1, "Should use normalized licenseUrl when no license element");
+
+			// Scenario 2: License type="file" - use the file name
+			const string fileTypeLicense = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage2</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+  </metadata>
+</package>";
+
+			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(fileTypeLicense);
+			Assert.AreEqual("LICENSE.md", result2, "Should use the file name for type='file'");
+
+			// Scenario 3: License type="expression" - use the expression
+			const string expressionTypeLicense = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage3</id>
+    <version>1.0.0</version>
+    <license type=""expression"">PostgreSQL</license>
+  </metadata>
+</package>";
+
+			var result3 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(expressionTypeLicense);
+			Assert.AreEqual("PostgreSQL", result3, "Should use the expression for type='expression'");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerCombinedEntriesForAllScenarios()
+		{
+			// Test how combined entries would work for all three scenarios:
+			// User should add to Allowed.Licenses.txt:
+			// 1. "TestPackage1 aka.ms/deprecateLicenseUrl" (for licenseUrl scenario)
+			// 2. "TestPackage2 LICENSE.md" (for file scenario)  
+			// 3. "TestPackage3 PostgreSQL" (for expression scenario)
+
+			var expectedCombinedEntries = new[]
+			{
+				"TestPackage1 aka.ms/deprecateLicenseUrl",  // licenseUrl case
+				"TestPackage2 LICENSE.md",                  // type="file" case
+				"TestPackage3 PostgreSQL"                   // type="expression" case
+			};
+
+			// Verify the format is correct for all scenarios
+			foreach (var entry in expectedCombinedEntries)
+			{
+				var parts = entry.Split(' ', 2);
+				Assert.AreEqual(2, parts.Length, $"Combined entry '{entry}' should have exactly two parts");
+
+				var packageName = parts[0];
+				var license = parts[1];
+
+				Assert.IsFalse(string.IsNullOrEmpty(packageName), "Package name should not be empty");
+				Assert.IsFalse(string.IsNullOrEmpty(license), "License should not be empty");
+			}
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerDocumentsImprovedUserExperience()
+		{
+			// Document the improved user experience:
+			// Before: Users had to add "Microsoft.Data.SqlClient.SNI.runtime aka.ms/deprecateLicenseUrl"
+			// After: Users should add the actual license content based on what's extracted:
+			//   - For type="file": "Microsoft.Data.SqlClient.SNI.runtime LICENSE.txt"
+			//   - For type="expression": "Microsoft.Data.SqlClient.SNI.runtime MIT"
+			//   - For licenseUrl only: "Microsoft.Data.SqlClient.SNI.runtime aka.ms/deprecateLicenseUrl"
+
+			// This provides more meaningful and accurate whitelisting
+			var improvedExamples = new[]
+			{
+				"Microsoft.Data.SqlClient.SNI.runtime LICENSE.txt",     // File license
+				"Newtonsoft.Json MIT",                                   // Expression license
+				"LegacyPackage aka.ms/deprecateLicenseUrl"              // URL-only license
+			};
+
+			// All examples follow the secure combined format
+			foreach (var example in improvedExamples)
+			{
+				Assert.Contains(" ", example, "Combined entry should contain space separator");
+				var parts = example.Split(' ', 2);
+				Assert.AreEqual(2, parts.Length, "Should have package name and license");
+			}
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerExtractsVariousFileNames()
+		{
+			// Test that various file names are correctly extracted for type="file"
+			var testCases = new[]
+			{
+				new { FileName = "LICENSE.md", Expected = "LICENSE.md" },
+				new { FileName = "LICENSE.txt", Expected = "LICENSE.txt" },
+				new { FileName = "LICENSE", Expected = "LICENSE" },
+				new { FileName = "License.pdf", Expected = "License.pdf" },
+				new { FileName = "COPYING", Expected = "COPYING" },
+				new { FileName = "legal/LICENSE.md", Expected = "legal/LICENSE.md" }
+			};
+
+			foreach (var testCase in testCases)
+			{
+				var nuspec = $@"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""file"">{testCase.FileName}</license>
+  </metadata>
+</package>";
+
+				var result = LicenseAnalyzer.ExtractLicenseFromNuspecContent(nuspec);
+				Assert.AreEqual(testCase.Expected, result, $"File name '{testCase.FileName}' should be extracted correctly");
+			}
 		}
 	}
 }
