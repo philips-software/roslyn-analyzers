@@ -488,6 +488,14 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			// Check cache first
 			if (licenseCache.TryGetValue(cacheKey, out PackageLicenseInfo cachedInfo))
 			{
+				// Ensure cached URLs are normalized to fix legacy cache entries
+				// that may contain non-normalized URLs from before the fix
+				var normalizedCachedLicense = NormalizeCachedLicenseUrl(cachedInfo.License);
+				if (normalizedCachedLicense != cachedInfo.License)
+				{
+					// Update cache with normalized value
+					cachedInfo.License = normalizedCachedLicense;
+				}
 				return cachedInfo.License;
 			}
 
@@ -700,6 +708,26 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			return normalized;
+		}
+
+		private static string NormalizeCachedLicenseUrl(string cachedLicense)
+		{
+			if (string.IsNullOrEmpty(cachedLicense))
+			{
+				return cachedLicense;
+			}
+
+			// Handle cached URLs that may have been stored before URL normalization was implemented
+			// Only normalize if it looks like a URL (contains known URL patterns)
+			if (cachedLicense.Contains("://"))
+			{
+				// Apply the same normalization logic used for fresh extractions
+				return NormalizeLicenseUrl(cachedLicense);
+			}
+
+			// Also handle special license identifiers that are already normalized
+			// but might need consistency checks
+			return cachedLicense;
 		}
 
 		private static bool HasSubstringIgnoreCase(string source, string value)

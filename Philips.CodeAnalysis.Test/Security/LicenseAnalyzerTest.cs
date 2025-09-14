@@ -1114,5 +1114,88 @@ class TestClass
 			// this valid license is still triggering a finding. Since the extraction works,
 			// the issue might be in the license comparison logic or how packages are being processed.
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerUserReportedIssueSpecificUrls()
+		{
+			// Test the specific URLs mentioned by the user that should work but are failing
+
+			// Test 1: Microsoft license URL that's in the default acceptable list
+			const string microsoftUrlNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>Microsoft.NETCore.Platforms</id>
+    <version>1.1.0</version>
+    <licenseUrl>http://go.microsoft.com/fwlink/?LinkId=329770</licenseUrl>
+  </metadata>
+</package>";
+
+			var result1 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(microsoftUrlNuspec);
+			Assert.AreEqual("go.microsoft.com/fwlink/?LinkId=329770", result1,
+				"Microsoft license URL should be normalized correctly");
+
+			// Test 2: .NET Standard license URL
+			const string standardUrlNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>NETStandard.Library</id>
+    <version>2.0.3</version>
+    <licenseUrl>https://github.com/dotnet/standard/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result2 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(standardUrlNuspec);
+			Assert.AreEqual("github.com/dotnet/standard/blob/master/LICENSE.TXT", result2,
+				"Standard license URL should be normalized correctly");
+
+			// Test 3: CoreFx license URL
+			const string corefxUrlNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>System.Collections</id>
+    <version>4.3.0</version>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			var result3 = LicenseAnalyzer.ExtractLicenseFromNuspecContent(corefxUrlNuspec);
+			Assert.AreEqual("github.com/dotnet/corefx/blob/master/LICENSE.TXT", result3,
+				"CoreFx license URL should be normalized correctly");
+
+			// Debug output should show the normalized versions, not the full URLs
+			// If the user is seeing full URLs in debug output, there's a cache issue or the
+			// normalization isn't happening correctly somewhere in the pipeline
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerCacheNormalizationHandlesLegacyEntries()
+		{
+			// Test that cached license URLs from before the normalization fix are properly handled
+
+			// These represent URLs that might have been cached before the normalization fix
+			var testCases = new[]
+			{
+				new { Input = "http://go.microsoft.com/fwlink/?LinkId=329770", Expected = "go.microsoft.com/fwlink/?LinkId=329770" },
+				new { Input = "https://github.com/dotnet/standard/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/standard/blob/master/LICENSE.TXT" },
+				new { Input = "https://github.com/dotnet/corefx/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/corefx/blob/master/LICENSE.TXT" },
+				new { Input = "MIT", Expected = "MIT" }, // Already normalized license identifiers should remain unchanged
+				new { Input = "Apache-2.0", Expected = "Apache-2.0" },
+				new { Input = "github.com/dotnet/corefx/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/corefx/blob/master/LICENSE.TXT" } // Already normalized URLs should remain unchanged
+			};
+
+			foreach (var testCase in testCases)
+			{
+				// Use reflection to test the private NormalizeCachedLicenseUrl method
+				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeCachedLicenseUrl",
+					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				Assert.IsNotNull(method, "NormalizeCachedLicenseUrl method should exist");
+
+				var result = (string)method.Invoke(null, new object[] { testCase.Input });
+				Assert.AreEqual(testCase.Expected, result,
+					$"Cached license '{testCase.Input}' should normalize to '{testCase.Expected}'");
+			}
+		}
 	}
 }
