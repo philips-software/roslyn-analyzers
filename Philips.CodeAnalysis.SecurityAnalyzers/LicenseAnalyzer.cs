@@ -816,7 +816,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return false;
 			}
 
-			// First check if the license itself is acceptable
+			// First check if the license itself is acceptable (backward compatibility)
 			var isLicenseAcceptable = allowedLicenses.Contains(license);
 			ReportDebugDiagnostic(context, $"Checking license '{license}' against {allowedLicenses.Count} allowed licenses: {(isLicenseAcceptable ? "FOUND" : "NOT FOUND")}");
 
@@ -826,13 +826,24 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return true;
 			}
 
-			// If license is not acceptable by itself, also check if packageName is in the allowed list
-			// This handles cases where specific packages need to be whitelisted by name rather than by license
-			// This is safer than checking license file names since package names are unique identifiers
+			// Check for combined package name + license format (new safer approach)
+			// Format: "packagename license" provides both package identity and license verification
 			if (!string.IsNullOrEmpty(packageName))
 			{
+				var combinedEntry = $"{packageName} {license}";
+				var isCombinedEntryAcceptable = allowedLicenses.Contains(combinedEntry);
+				ReportDebugDiagnostic(context, $"Checking combined entry '{combinedEntry}': {(isCombinedEntryAcceptable ? "FOUND" : "NOT FOUND")}");
+
+				if (isCombinedEntryAcceptable)
+				{
+					return true;
+				}
+
+				// Also check if packageName is in the allowed list (backward compatibility)
+				// This handles cases where specific packages need to be whitelisted by name rather than by license
+				// This is safer than checking license file names since package names are unique identifiers
 				var isPackageNameAcceptable = allowedLicenses.Contains(packageName);
-				ReportDebugDiagnostic(context, $"License not found, checking package name '{packageName}': {(isPackageNameAcceptable ? "FOUND" : "NOT FOUND")}");
+				ReportDebugDiagnostic(context, $"Checking package name '{packageName}': {(isPackageNameAcceptable ? "FOUND" : "NOT FOUND")}");
 
 				if (isPackageNameAcceptable)
 				{
