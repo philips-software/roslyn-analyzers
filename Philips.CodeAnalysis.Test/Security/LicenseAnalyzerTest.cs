@@ -1516,10 +1516,9 @@ class TestClass
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void LicenseAnalyzerSupportsCombinedPackageNameAndLicenseFormat()
 		{
-			// Test the new combined format: "packagename license"
+			// Test the combined format: "packagename license"
 			// This provides the safest whitelisting approach by requiring both package identity and license verification
 
-			// Test 1: Combined entry should be more specific than individual entries
 			// A combined entry "Newtonsoft.Json MIT" should only accept Newtonsoft.Json with MIT license
 
 			// This test verifies the parsing and matching logic for combined entries
@@ -1529,10 +1528,10 @@ class TestClass
 			// Test that the format parsing would work correctly
 			var sampleAllowedLicenses = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
-				"MIT",  // License-only entry (backward compatibility)
-				"Newtonsoft.Json",  // Package-only entry (backward compatibility) 
-				"Microsoft.Extensions.Logging MIT",  // Combined entry - safest approach
-				"SomeCommercialPackage CommercialLicense-V1"  // Combined commercial license
+				"Microsoft.Extensions.Logging MIT",  // Combined entry - only supported format
+				"SomeCommercialPackage CommercialLicense-V1",  // Combined commercial license
+				"Newtonsoft.Json MIT",  // Another combined entry
+				"TestPackage UNKNOWN_FILE_LICENSE"  // Combined entry for file license
 			};
 
 			// Verify that the HashSet contains the expected combined entries
@@ -1593,52 +1592,14 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public void LicenseAnalyzerCombinedFormatBackwardCompatibility()
-		{
-			// Test that the new combined format maintains backward compatibility
-			// with existing license-only and package-only entries
-
-			var mixedAllowedLicenses = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-			{
-				// Legacy license-only entries (should still work)
-				"MIT",
-				"Apache-2.0",
-				"BSD-3-Clause",
-				
-				// Legacy package-only entries (should still work)
-				"SomeLegacyPackage",
-				"AnotherWhitelistedPackage",
-				
-				// New combined entries (enhanced security)
-				"Newtonsoft.Json MIT",
-				"Microsoft.Extensions.Logging Apache-2.0",
-				"CommercialPackage CommercialLicense-V1"
-			};
-
-			// Verify all formats are preserved in the set
-			Assert.Contains("MIT", mixedAllowedLicenses, "Legacy license-only entries should work");
-			Assert.Contains("SomeLegacyPackage", mixedAllowedLicenses, "Legacy package-only entries should work");
-			Assert.Contains("Newtonsoft.Json MIT", mixedAllowedLicenses, "New combined entries should work");
-
-			// Verify the set has the expected count
-			Assert.HasCount(8, mixedAllowedLicenses, "All entries should be preserved");
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
 		public void LicenseAnalyzerCombinedFormatExamples()
 		{
 			// Test realistic examples of how users would configure Allowed.Licenses.txt
-			// with the new combined format
+			// with the combined format (only supported format)
 
 			var realisticAllowedLicenses = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 			{
-				// Standard permissive licenses (auto-accepted)
-				"MIT",
-				"Apache-2.0",
-				"BSD-3-Clause",
-				
-				// Specific packages with specific licenses (safest approach)
+				// Specific packages with specific licenses (only supported approach)
 				"Newtonsoft.Json MIT",  // Only accept Newtonsoft.Json if it has MIT
 				"Microsoft.Extensions.Configuration Apache-2.0",  // Only accept if Apache-2.0
 				"EntityFramework Apache-2.0",  // Only accept if Apache-2.0

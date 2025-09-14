@@ -29,7 +29,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 	{
 		private const string Title = @"Avoid Packages with Unacceptable Licenses";
 		public const string MessageFormat = @"Package '{0}' version '{1}' has an unacceptable license '{2}'. " +
-											 @"Consider adding to Allowed.Licenses.txt if license is acceptable.";
+											 @"Add '{0} {2}' to Allowed.Licenses.txt if this specific package and license combination is acceptable.";
 		private const string Description = @"Packages with unacceptable licenses (e.g., copyleft licenses like GPL) should be " +
 										   @"reviewed before use to ensure compliance with project requirements.";
 
@@ -816,39 +816,22 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return false;
 			}
 
-			// First check if the license itself is acceptable (backward compatibility)
-			var isLicenseAcceptable = allowedLicenses.Contains(license);
-			ReportDebugDiagnostic(context, $"Checking license '{license}' against {allowedLicenses.Count} allowed licenses: {(isLicenseAcceptable ? "FOUND" : "NOT FOUND")}");
-
-			// If license is already acceptable, return true
-			if (isLicenseAcceptable)
+			if (string.IsNullOrEmpty(packageName))
 			{
-				return true;
+				ReportDebugDiagnostic(context, $"Package name is null or empty - not acceptable");
+				return false;
 			}
 
-			// Check for combined package name + license format (new safer approach)
-			// Format: "packagename license" provides both package identity and license verification
-			if (!string.IsNullOrEmpty(packageName))
+			// Check for combined package name + license format: "packagename license"
+			// This provides both package identity and license verification, preventing
+			// both license change vulnerabilities and license file name collisions
+			var combinedEntry = $"{packageName} {license}";
+			var isCombinedEntryAcceptable = allowedLicenses.Contains(combinedEntry);
+			ReportDebugDiagnostic(context, $"Checking combined entry '{combinedEntry}': {(isCombinedEntryAcceptable ? "FOUND" : "NOT FOUND")}");
+
+			if (isCombinedEntryAcceptable)
 			{
-				var combinedEntry = $"{packageName} {license}";
-				var isCombinedEntryAcceptable = allowedLicenses.Contains(combinedEntry);
-				ReportDebugDiagnostic(context, $"Checking combined entry '{combinedEntry}': {(isCombinedEntryAcceptable ? "FOUND" : "NOT FOUND")}");
-
-				if (isCombinedEntryAcceptable)
-				{
-					return true;
-				}
-
-				// Also check if packageName is in the allowed list (backward compatibility)
-				// This handles cases where specific packages need to be whitelisted by name rather than by license
-				// This is safer than checking license file names since package names are unique identifiers
-				var isPackageNameAcceptable = allowedLicenses.Contains(packageName);
-				ReportDebugDiagnostic(context, $"Checking package name '{packageName}': {(isPackageNameAcceptable ? "FOUND" : "NOT FOUND")}");
-
-				if (isPackageNameAcceptable)
-				{
-					return true;
-				}
+				return true;
 			}
 
 			// For debugging, show first few allowed licenses to help troubleshoot
