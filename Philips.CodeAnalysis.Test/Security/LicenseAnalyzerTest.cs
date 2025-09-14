@@ -1439,16 +1439,26 @@ class TestClass
 				new { Input = "HTTP://example.com", Expected = "example.com" } // case insensitive
 			};
 
-			foreach (var testCase in testCases)
-			{
-				// Use reflection to test the private NormalizeLicenseUrl method
-				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeLicenseUrl",
-					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-				Assert.IsNotNull(method, "NormalizeLicenseUrl method should exist");
+			TestUrlNormalizationMethod("NormalizeLicenseUrl", testCases, "URL");
+		}
 
-				var result = (string)method.Invoke(null, new object[] { testCase.Input });
-				Assert.AreEqual(testCase.Expected, result,
-					$"URL '{testCase.Input}' should normalize to '{testCase.Expected}'");
+		private void TestUrlNormalizationMethod<T>(string methodName, T[] testCases, string parameterType) where T : class
+		{
+			foreach (T testCase in testCases)
+			{
+				// Use reflection to test the private method
+				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod(methodName,
+					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				Assert.IsNotNull(method, $"{methodName} method should exist");
+
+				System.Reflection.PropertyInfo inputProperty = typeof(T).GetProperty("Input");
+				System.Reflection.PropertyInfo expectedProperty = typeof(T).GetProperty("Expected");
+				var input = inputProperty.GetValue(testCase);
+				var expected = expectedProperty.GetValue(testCase);
+
+				var result = (string)method.Invoke(null, new object[] { input });
+				Assert.AreEqual(expected, result,
+					$"{parameterType} '{input}' should normalize to '{expected}'");
 			}
 		}
 
@@ -1484,17 +1494,7 @@ class TestClass
 				new { Input = "github.com/dotnet/corefx/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/corefx/blob/master/LICENSE.TXT" } // already normalized
 			};
 
-			foreach (var testCase in testCases)
-			{
-				// Use reflection to test the private NormalizeCachedLicenseUrl method
-				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeCachedLicenseUrl",
-					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-				Assert.IsNotNull(method, "NormalizeCachedLicenseUrl method should exist");
-
-				var result = (string)method.Invoke(null, new object[] { testCase.Input });
-				Assert.AreEqual(testCase.Expected, result,
-					$"Cached license '{testCase.Input}' should normalize to '{testCase.Expected}'");
-			}
+			TestUrlNormalizationMethod("NormalizeCachedLicenseUrl", testCases, "Cached license");
 		}
 
 		private string GetTestCode()
