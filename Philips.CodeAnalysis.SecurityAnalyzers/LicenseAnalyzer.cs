@@ -822,7 +822,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return false;
 			}
 
-			// Check for combined package name + license format: "packagename license"
+			// First check: Is this license in the built-in acceptable licenses?
+			var isBuiltInLicenseAcceptable = DefaultAcceptableLicenses.Contains(license);
+			ReportDebugDiagnostic(context, $"Checking built-in license '{license}': {(isBuiltInLicenseAcceptable ? "FOUND" : "NOT FOUND")}");
+
+			if (isBuiltInLicenseAcceptable)
+			{
+				return true;
+			}
+
+			// Second check: Is there a combined package name + license entry?
 			// This provides both package identity and license verification, preventing
 			// both license change vulnerabilities and license file name collisions
 			var combinedEntry = $"{packageName} {license}";
