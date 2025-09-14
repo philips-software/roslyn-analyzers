@@ -13,6 +13,7 @@
         "DOTNET_NOLOGO": "1"
       },
       "tools": [
+        "hot_reload",
         "search_helpers",
         "build_strict",
         "run_tests",
