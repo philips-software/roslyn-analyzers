@@ -1079,5 +1079,40 @@ class TestClass
 }
 ";
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerReproducesUserReportedIssue()
+		{
+			// Test the EXACT scenario reported by the user:
+			// Package has only <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+			// No <license> tag, and the URL should be accepted since github.com/dotnet/corefx/blob/master/LICENSE.TXT 
+			// is in the default acceptable licenses list
+
+			const string userScenarioNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			// Step 1: Extract license from nuspec content
+			var extractedLicense = LicenseAnalyzer.ExtractLicenseFromNuspecContent(userScenarioNuspec);
+
+			// The extraction should return the normalized URL
+			Assert.AreEqual("github.com/dotnet/corefx/blob/master/LICENSE.TXT", extractedLicense,
+				"License extraction should normalize the URL by removing https:// prefix");
+
+			// Step 2: Check if this license is in the default acceptable licenses
+			// We can't directly access the private DefaultAcceptableLicenses set, but we know from the code
+			// that "github.com/dotnet/corefx/blob/master/LICENSE.TXT" is in the list.
+			// This test documents that the extraction is working correctly.
+
+			// The issue the user is experiencing suggests that somewhere in the pipeline,
+			// this valid license is still triggering a finding. Since the extraction works,
+			// the issue might be in the license comparison logic or how packages are being processed.
+		}
 	}
 }

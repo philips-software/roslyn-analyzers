@@ -73,7 +73,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"{0}",
 			Categories.Security,
 			DiagnosticSeverity.Info,
-			isEnabledByDefault: false);
+			isEnabledByDefault: true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Rule, DebugDiagnostic);
@@ -92,6 +92,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			{
 				var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
 				context.ReportDiagnostic(diagnostic);
+			}
+			else
+			{
+				// Always show critical debugging information for troubleshooting license issues
+				if (message.Contains("License = ") || message.Contains("not acceptable") || message.Contains("acceptable"))
+				{
+					var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
+					context.ReportDiagnostic(diagnostic);
+				}
 			}
 		}
 
@@ -163,8 +172,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				var displayLicense = string.IsNullOrEmpty(licenseInfo) ? "unknown" : licenseInfo;
 				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}");
 
-				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
+				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(context, licenseInfo, allowedLicenses))
 				{
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License '{licenseInfo}' is NOT acceptable - triggering finding");
 					var diagnostic = Diagnostic.Create(
 						Rule,
 						Location.None,
@@ -173,6 +183,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 						licenseInfo);
 
 					context.ReportDiagnostic(diagnostic);
+				}
+				else if (!string.IsNullOrEmpty(licenseInfo))
+				{
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License '{licenseInfo}' is acceptable - no finding");
 				}
 			}
 
@@ -694,14 +708,25 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		}
 
 
-		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
+		private bool IsLicenseAcceptable(CompilationAnalysisContext context, string license, HashSet<string> allowedLicenses)
 		{
 			if (string.IsNullOrEmpty(license))
 			{
+				ReportDebugDiagnostic(context, $"License is null or empty - not acceptable");
 				return false;
 			}
 
-			return allowedLicenses.Contains(license);
+			var isAcceptable = allowedLicenses.Contains(license);
+			ReportDebugDiagnostic(context, $"Checking license '{license}' against {allowedLicenses.Count} allowed licenses: {(isAcceptable ? "FOUND" : "NOT FOUND")}");
+
+			if (!isAcceptable)
+			{
+				// For debugging, show first few allowed licenses to help troubleshoot
+				var first5Licenses = string.Join(", ", allowedLicenses.Take(5));
+				ReportDebugDiagnostic(context, $"Sample allowed licenses: {first5Licenses}...");
+			}
+
+			return isAcceptable;
 		}
 
 		private static HashSet<string> GetAllowedLicenses(IEnumerable<AdditionalText> additionalFiles)
