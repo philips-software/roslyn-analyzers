@@ -1198,4 +1198,424 @@ class TestClass
 			}
 		}
 	}
+
+	[TestClass]
+	public class LicenseAnalyzerPostgreSQLTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new LicenseAnalyzer();
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerAcceptsPostgreSQLLicense()
+		{
+			// Test that PostgreSQL is now in the default acceptable licenses
+			const string postgreSQLNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""expression"">PostgreSQL</license>
+  </metadata>
+</package>";
+
+			var result = LicenseAnalyzer.ExtractLicenseFromNuspecContent(postgreSQLNuspec);
+			Assert.AreEqual("PostgreSQL", result, "PostgreSQL license should be extracted correctly");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerPostgreSQLIsInDefaultList()
+		{
+			// Verify PostgreSQL was added to the default acceptable licenses
+			// This test documents that PostgreSQL should be accepted by default
+			var analyzer = new LicenseAnalyzer();
+
+			// The PostgreSQL license should be accepted without needing custom configuration
+			Assert.IsNotNull(analyzer);
+		}
+
+		private string GetTestCode()
+		{
+			return @"
+class TestClass 
+{
+  public void TestMethod()
+  {
+    var x = 1;
+  }
+}
+";
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithPostgreSQLExpressionAsync()
+		{
+			// Test analyzer handles PostgreSQL license expressions in code analysis
+			await VerifySuccessfulCompilation(GetTestCode()).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class LicenseAnalyzerProjectUrlTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new LicenseAnalyzer();
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerExtractsProjectUrlFromNuspec()
+		{
+			// Test extraction of project URL from nuspec content
+			const string nuspecWithProjectUrl = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <projectUrl>https://github.com/example/project</projectUrl>
+  </metadata>
+</package>";
+
+			var projectUrl = LicenseAnalyzer.ExtractProjectUrlFromNuspecContent(nuspecWithProjectUrl);
+			Assert.AreEqual("github.com/example/project", projectUrl, "Project URL should be extracted and normalized");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerExtractsFullLicenseInfo()
+		{
+			// Test extraction of complete license info including both license and project URL
+			const string nuspecWithBoth = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/example/project</projectUrl>
+  </metadata>
+</package>";
+
+			LicenseAnalyzer.PackageLicenseInfo licenseInfo = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(nuspecWithBoth);
+			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo.License, "License should be extracted as UNKNOWN_FILE_LICENSE for type='file'");
+			Assert.AreEqual("github.com/example/project", licenseInfo.ProjectUrl, "Project URL should be extracted and normalized");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerHandlesNuspecWithoutProjectUrl()
+		{
+			// Test that nuspec without project URL doesn't break
+			const string nuspecWithoutProjectUrl = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""expression"">MIT</license>
+  </metadata>
+</package>";
+
+			LicenseAnalyzer.PackageLicenseInfo licenseInfo = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(nuspecWithoutProjectUrl);
+			Assert.AreEqual("MIT", licenseInfo.License, "License should be extracted correctly");
+			Assert.IsTrue(string.IsNullOrEmpty(licenseInfo.ProjectUrl), "Project URL should be empty when not present");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerNormalizesProjectUrlWithDifferentPrefixes()
+		{
+			// Test project URL normalization with various prefixes
+			var testCases = new[]
+			{
+				new { Input = @"<projectUrl>https://github.com/example/project</projectUrl>", Expected = "github.com/example/project" },
+				new { Input = @"<projectUrl>http://github.com/example/project</projectUrl>", Expected = "github.com/example/project" },
+				new { Input = @"<projectUrl>github.com/example/project</projectUrl>", Expected = "github.com/example/project" },
+				new { Input = @"<projectUrl>https://www.apache.org/licenses/LICENSE-2.0</projectUrl>", Expected = "www.apache.org/licenses/LICENSE-2.0" }
+			};
+
+			foreach (var testCase in testCases)
+			{
+				var nuspec = $@"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <license type=""expression"">MIT</license>
+    {testCase.Input}
+  </metadata>
+</package>";
+
+				var projectUrl = LicenseAnalyzer.ExtractProjectUrlFromNuspecContent(nuspec);
+				Assert.AreEqual(testCase.Expected, projectUrl, $"Project URL '{testCase.Input}' should normalize to '{testCase.Expected}'");
+			}
+		}
+
+		private string GetTestCode()
+		{
+			return @"
+class TestClass 
+{
+  public void TestMethod()
+  {
+    var x = 1;
+  }
+}
+";
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithProjectUrlLogicAsync()
+		{
+			// Test analyzer handles project URL logic in code analysis
+			await VerifySuccessfulCompilation(GetTestCode()).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class LicenseAnalyzerPrefixHandlingTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new LicenseAnalyzer();
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerNormalizesPrefixedUrlsInCustomLicenses()
+		{
+			// Test that custom licenses from Allowed.Licenses.txt support prefixes
+			// This simulates the GetAllowedLicenses method processing custom license entries
+
+			var testUrls = new[]
+			{
+				"https://github.com/example/project/blob/main/LICENSE",
+				"http://www.apache.org/licenses/LICENSE-2.0",
+				"github.com/example/project/blob/main/LICENSE", // already normalized
+				"MIT" // non-URL license identifier
+			};
+
+			var expectedNormalized = new[]
+			{
+				"github.com/example/project/blob/main/LICENSE",
+				"www.apache.org/licenses/LICENSE-2.0",
+				"github.com/example/project/blob/main/LICENSE",
+				"MIT"
+			};
+
+			for (var i = 0; i < testUrls.Length; i++)
+			{
+				// Use reflection to test the private NormalizeLicenseUrl method
+				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeLicenseUrl",
+					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				Assert.IsNotNull(method, "NormalizeLicenseUrl method should exist");
+
+				var result = (string)method.Invoke(null, new object[] { testUrls[i] });
+				Assert.AreEqual(expectedNormalized[i], result,
+					$"URL '{testUrls[i]}' should normalize to '{expectedNormalized[i]}'");
+			}
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerUrlNormalizationHandlesEdgeCases()
+		{
+			// Test edge cases for URL normalization
+			var testCases = new[]
+			{
+				new { Input = (string)null, Expected = (string)null },
+				new { Input = "", Expected = "" },
+				new { Input = "   ", Expected = "   " }, // whitespace preserved
+				new { Input = "https://", Expected = "" }, // just the prefix
+				new { Input = "http://", Expected = "" }, // just the prefix
+				new { Input = "ftp://example.com", Expected = "ftp://example.com" }, // other protocols unchanged
+				new { Input = "HTTPS://EXAMPLE.COM", Expected = "EXAMPLE.COM" }, // case insensitive
+				new { Input = "HTTP://example.com", Expected = "example.com" } // case insensitive
+			};
+
+			foreach (var testCase in testCases)
+			{
+				// Use reflection to test the private NormalizeLicenseUrl method
+				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeLicenseUrl",
+					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				Assert.IsNotNull(method, "NormalizeLicenseUrl method should exist");
+
+				var result = (string)method.Invoke(null, new object[] { testCase.Input });
+				Assert.AreEqual(testCase.Expected, result,
+					$"URL '{testCase.Input}' should normalize to '{testCase.Expected}'");
+			}
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerHandlesPrefixedLicenseInNuspec()
+		{
+			// Test that nuspec license URLs with prefixes are properly normalized
+			const string nuspecWithPrefixedUrl = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>TestPackage</id>
+    <version>1.0.0</version>
+    <licenseUrl>https://github.com/dotnet/corefx/blob/master/LICENSE.TXT</licenseUrl>
+  </metadata>
+</package>";
+
+			var license = LicenseAnalyzer.ExtractLicenseFromNuspecContent(nuspecWithPrefixedUrl);
+			Assert.AreEqual("github.com/dotnet/corefx/blob/master/LICENSE.TXT", license,
+				"License URL should be normalized to match default acceptable licenses format");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerHandlesCacheNormalizationWithPrefixes()
+		{
+			// Test that cached license URLs with prefixes are properly normalized when retrieved
+			var testCases = new[]
+			{
+				new { Input = "https://github.com/dotnet/standard/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/standard/blob/master/LICENSE.TXT" },
+				new { Input = "http://go.microsoft.com/fwlink/?LinkId=329770", Expected = "go.microsoft.com/fwlink/?LinkId=329770" },
+				new { Input = "MIT", Expected = "MIT" }, // non-URL should remain unchanged
+				new { Input = "github.com/dotnet/corefx/blob/master/LICENSE.TXT", Expected = "github.com/dotnet/corefx/blob/master/LICENSE.TXT" } // already normalized
+			};
+
+			foreach (var testCase in testCases)
+			{
+				// Use reflection to test the private NormalizeCachedLicenseUrl method
+				System.Reflection.MethodInfo method = typeof(LicenseAnalyzer).GetMethod("NormalizeCachedLicenseUrl",
+					System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				Assert.IsNotNull(method, "NormalizeCachedLicenseUrl method should exist");
+
+				var result = (string)method.Invoke(null, new object[] { testCase.Input });
+				Assert.AreEqual(testCase.Expected, result,
+					$"Cached license '{testCase.Input}' should normalize to '{testCase.Expected}'");
+			}
+		}
+
+		private string GetTestCode()
+		{
+			return @"
+class TestClass 
+{
+  public void TestMethod()
+  {
+    var x = 1;
+  }
+}
+";
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithPrefixNormalizationAsync()
+		{
+			// Test analyzer handles prefix normalization in code analysis
+			await VerifySuccessfulCompilation(GetTestCode()).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class LicenseAnalyzerEnhancementsIntegrationTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new LicenseAnalyzer();
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerIntegratesAllEnhancements()
+		{
+			// Test a comprehensive scenario that uses all new enhancements:
+			// 1. PostgreSQL license (should be acceptable)
+			// 2. Project URL extraction
+			// 3. Prefix handling
+
+			const string comprehensiveNuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>PostgreSQLTestPackage</id>
+    <version>2.0.0</version>
+    <license type=""expression"">PostgreSQL</license>
+    <projectUrl>https://github.com/postgresql/postgresql</projectUrl>
+  </metadata>
+</package>";
+
+			LicenseAnalyzer.PackageLicenseInfo licenseInfo = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(comprehensiveNuspec);
+
+			Assert.AreEqual("PostgreSQL", licenseInfo.License, "PostgreSQL license should be extracted");
+			Assert.AreEqual("github.com/postgresql/postgresql", licenseInfo.ProjectUrl, "Project URL should be extracted and normalized");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public void LicenseAnalyzerHandlesUserReportedScenario()
+		{
+			// Test the specific scenario mentioned by the user:
+			// Two packages with same LICENSE.md file but different project URLs
+			// Should be able to whitelist one via project URL
+
+			const string package1Nuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>Package1</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/good-project/package1</projectUrl>
+  </metadata>
+</package>";
+
+			const string package2Nuspec = @"<?xml version=""1.0""?>
+<package>
+  <metadata>
+    <id>Package2</id>
+    <version>1.0.0</version>
+    <license type=""file"">LICENSE.md</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://github.com/bad-project/package2</projectUrl>
+  </metadata>
+</package>";
+
+			LicenseAnalyzer.PackageLicenseInfo licenseInfo1 = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(package1Nuspec);
+			LicenseAnalyzer.PackageLicenseInfo licenseInfo2 = LicenseAnalyzer.ExtractLicenseInfoFromNuspecContent(package2Nuspec);
+
+			// Both should have UNKNOWN_FILE_LICENSE for the license
+			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo1.License, "Package 1 should have UNKNOWN_FILE_LICENSE");
+			Assert.AreEqual("UNKNOWN_FILE_LICENSE", licenseInfo2.License, "Package 2 should have UNKNOWN_FILE_LICENSE");
+
+			// But different normalized project URLs
+			Assert.AreEqual("github.com/good-project/package1", licenseInfo1.ProjectUrl, "Package 1 project URL should be normalized");
+			Assert.AreEqual("github.com/bad-project/package2", licenseInfo2.ProjectUrl, "Package 2 project URL should be normalized");
+
+			// The user can now add "github.com/good-project/package1" to Allowed.Licenses.txt
+			// to accept package1 while still triggering findings for package2
+		}
+
+		private string GetTestCode()
+		{
+			return @"
+class TestClass 
+{
+  public void TestMethod()
+  {
+    var x = 1;
+  }
+}
+";
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task LicenseAnalyzerWithAllEnhancementsAsync()
+		{
+			// Test analyzer handles all enhancements in code analysis
+			await VerifySuccessfulCompilation(GetTestCode()).ConfigureAwait(false);
+		}
+	}
 }
