@@ -34,8 +34,9 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 										   @"reviewed before use to ensure compliance with project requirements.";
 
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
-		public const string LicensesCacheFileName = @"licenses.cache";
+		public const string LicensesCacheFileName = @"ph2155_licenses.cache";
 		private const string ProjectAssetsFileName = @"project.assets.json";
+		private const string UnknownValue = "unknown";
 
 		// Default acceptable licenses (permissive licenses)
 		private static readonly HashSet<string> DefaultAcceptableLicenses =
@@ -89,19 +90,13 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void ReportDebugDiagnostic(CompilationAnalysisContext context, string message)
 		{
 			var helper = new Helper(context.Options, context.Compilation);
-			if (helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155"))
+			var shouldReport = helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155") ||
+				message.Contains("License = ") || message.Contains("not acceptable") || message.Contains("acceptable");
+
+			if (shouldReport)
 			{
 				var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
 				context.ReportDiagnostic(diagnostic);
-			}
-			else
-			{
-				// Always show critical debugging information for troubleshooting license issues
-				if (message.Contains("License = ") || message.Contains("not acceptable") || message.Contains("acceptable"))
-				{
-					var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
-					context.ReportDiagnostic(diagnostic);
-				}
 			}
 		}
 
@@ -173,26 +168,26 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				var license = licenseInfo?.License;
 				var projectUrl = licenseInfo?.ProjectUrl;
 
-				var displayLicense = string.IsNullOrEmpty(license) ? "unknown" : license;
+				var displayLicense = string.IsNullOrEmpty(license) ? UnknownValue : license;
 				var displayProjectUrl = string.IsNullOrEmpty(projectUrl) ? "none" : projectUrl;
 
-				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}, ProjectUrl = {displayProjectUrl}");
+				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License = {displayLicense}, ProjectUrl = {displayProjectUrl}");
 
 				if (!string.IsNullOrEmpty(license) && !IsLicenseAcceptable(context, license, package.Name, allowedLicenses))
 				{
-					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License '{license}' is NOT acceptable - triggering finding");
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License '{license}' is NOT acceptable - triggering finding");
 					var diagnostic = Diagnostic.Create(
 						Rule,
 						Location.None,
 						package.Name,
-						package.Version ?? "unknown",
+						package.Version ?? UnknownValue,
 						license);
 
 					context.ReportDiagnostic(diagnostic);
 				}
 				else if (!string.IsNullOrEmpty(license))
 				{
-					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License '{license}' is acceptable - no finding");
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License '{license}' is acceptable - no finding");
 				}
 			}
 

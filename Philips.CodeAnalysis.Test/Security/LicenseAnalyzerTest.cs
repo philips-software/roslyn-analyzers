@@ -420,11 +420,12 @@ public class GenericClass<T> where T : class
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void LicenseAnalyzerCacheFileNameConstant()
 		{
-			// Verify the cache file name constant has a proper value
+			// Verify the cache file name constant has a proper value with PH2155 prefix
 			var fileName = LicenseAnalyzer.LicensesCacheFileName;
 			Assert.IsFalse(string.IsNullOrEmpty(fileName));
 			Assert.EndsWith(".cache", fileName);
-			Assert.AreEqual("licenses.cache", fileName);
+			Assert.AreEqual("ph2155_licenses.cache", fileName);
+			Assert.StartsWith("ph2155_", fileName);
 		}
 
 		[TestMethod]
