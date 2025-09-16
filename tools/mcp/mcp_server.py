@@ -60,5 +60,10 @@ def analyze_coverage() -> Dict[str, Any]:
     """Collect .NET coverage and summarize uncovered lines (if dotnet-coverage is available, otherwise returns guidance)."""
     return _mod().analyze_coverage()
 
+@mcp.tool
+def next_diagnosticId() -> Dict[str, Any]:
+    """Determine the next available DiagnosticId by examining main branch and all open PRs to avoid conflicts."""
+    return _mod().next_diagnosticId()
+
 if __name__ == "__main__":
     mcp.run()
