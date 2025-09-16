@@ -29,13 +29,14 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 	{
 		private const string Title = @"Avoid Packages with Unacceptable Licenses";
 		public const string MessageFormat = @"Package '{0}' version '{1}' has an unacceptable license '{2}'. " +
-											 @"Consider adding to Allowed.Licenses.txt if license is acceptable.";
+											 @"Add '{0} {2}' to Allowed.Licenses.txt if this specific package and license combination is acceptable.";
 		private const string Description = @"Packages with unacceptable licenses (e.g., copyleft licenses like GPL) should be " +
 										   @"reviewed before use to ensure compliance with project requirements.";
 
 		public const string AllowedLicensesFileName = @"Allowed.Licenses.txt";
-		public const string LicensesCacheFileName = @"licenses.cache";
+		public const string LicensesCacheFileName = @"ph2155_licenses.cache";
 		private const string ProjectAssetsFileName = @"project.assets.json";
+		private const string UnknownValue = "unknown";
 
 		// Default acceptable licenses (permissive licenses)
 		private static readonly HashSet<string> DefaultAcceptableLicenses =
@@ -48,10 +49,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"ISC",
 			"Unlicense",
 			"0BSD",
+			"PostgreSQL",
 			"github.com/dotnet/corefx/blob/master/LICENSE.TXT",
 			"github.com/dotnet/standard/blob/master/LICENSE.TXT",
 			"go.microsoft.com/fwlink/?LinkId=329770",
-			"aka.ms/deprecateLicenseUrl",
 			"www.bouncycastle.org/csharp/licence.html"
 		};
 
@@ -74,7 +75,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"{0}",
 			Categories.Security,
 			DiagnosticSeverity.Info,
-			isEnabledByDefault: false);
+			isEnabledByDefault: true);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
 			ImmutableArray.Create(Rule, DebugDiagnostic);
@@ -89,7 +90,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		private void ReportDebugDiagnostic(CompilationAnalysisContext context, string message)
 		{
 			var helper = new Helper(context.Options, context.Compilation);
-			if (helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155"))
+			var shouldReport = helper.ForAdditionalFiles.IsDebugLoggingEnabled("PH2155") ||
+				message.Contains("License = ") || message.Contains("not acceptable") || message.Contains("acceptable");
+
+			if (shouldReport)
 			{
 				var diagnostic = Diagnostic.Create(DebugDiagnostic, Location.None, message);
 				context.ReportDiagnostic(diagnostic);
@@ -159,21 +163,31 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					continue;
 				}
 
-				var licenseInfo = GetPackageLicenseInfo(package, licenseCache);
+				PackageLicenseInfo licenseInfo = GetPackageLicenseInfo(package, licenseCache);
 
-				var displayLicense = string.IsNullOrEmpty(licenseInfo) ? "unknown" : licenseInfo;
-				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? "unknown"}: License = {displayLicense}");
+				var license = licenseInfo?.License;
+				var projectUrl = licenseInfo?.ProjectUrl;
 
-				if (!string.IsNullOrEmpty(licenseInfo) && !IsLicenseAcceptable(licenseInfo, allowedLicenses))
+				var displayLicense = string.IsNullOrEmpty(license) ? UnknownValue : license;
+				var displayProjectUrl = string.IsNullOrEmpty(projectUrl) ? "none" : projectUrl;
+
+				ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License = {displayLicense}, ProjectUrl = {displayProjectUrl}");
+
+				if (!string.IsNullOrEmpty(license) && !IsLicenseAcceptable(context, license, package.Name, allowedLicenses))
 				{
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License '{license}' is NOT acceptable - triggering finding");
 					var diagnostic = Diagnostic.Create(
 						Rule,
 						Location.None,
 						package.Name,
-						package.Version ?? "unknown",
-						licenseInfo);
+						package.Version ?? UnknownValue,
+						license);
 
 					context.ReportDiagnostic(diagnostic);
+				}
+				else if (!string.IsNullOrEmpty(license))
+				{
+					ReportDebugDiagnostic(context, $"Package {package.Name} {package.Version ?? UnknownValue}: License '{license}' is acceptable - no finding");
 				}
 			}
 
@@ -437,7 +451,17 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 					var parts = line.Split(EqualsSeparator, 2);
 					if (parts.Length == 2)
 					{
-						cache[parts[0]] = new PackageLicenseInfo { License = parts[1] };
+						// Check if the value contains project URL (separated by |)
+						var value = parts[1];
+						var valueParts = value.Split('|');
+
+						var licenseInfo = new PackageLicenseInfo
+						{
+							License = valueParts[0] ?? string.Empty,
+							ProjectUrl = valueParts.Length > 1 ? valueParts[1] : string.Empty
+						};
+
+						cache[parts[0]] = licenseInfo;
 					}
 				}
 				return cache;
@@ -459,7 +483,15 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			try
 			{
 				var cacheFilePath = Path.Combine(projectDirectory, LicensesCacheFileName);
-				IEnumerable<string> lines = cache.Select(kvp => $"{kvp.Key}={kvp.Value.License}");
+				IEnumerable<string> lines = cache.Select(kvp =>
+				{
+					var license = kvp.Value.License ?? string.Empty;
+					var projectUrl = kvp.Value.ProjectUrl ?? string.Empty;
+					// Use | as delimiter to separate license from project URL
+					return string.IsNullOrEmpty(projectUrl)
+						? $"{kvp.Key}={license}"
+						: $"{kvp.Key}={license}|{projectUrl}";
+				});
 				File.WriteAllLines(cacheFilePath, lines);
 			}
 			catch (Exception ex)
@@ -468,31 +500,50 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 		}
 
-		private static string GetPackageLicenseInfo(PackageInfo package, Dictionary<string, PackageLicenseInfo> licenseCache)
+		private static PackageLicenseInfo GetPackageLicenseInfo(PackageInfo package, Dictionary<string, PackageLicenseInfo> licenseCache)
 		{
 			var cacheKey = $"{package.Name}#{package.Version}";
 
 			// Check cache first
 			if (licenseCache.TryGetValue(cacheKey, out PackageLicenseInfo cachedInfo))
 			{
-				return cachedInfo.License;
+				// Ensure cached URLs are normalized to fix legacy cache entries
+				// that may contain non-normalized URLs from before the fix
+				var normalizedCachedLicense = NormalizeCachedLicenseUrl(cachedInfo.License);
+				if (normalizedCachedLicense != cachedInfo.License)
+				{
+					// Update cache with normalized value
+					cachedInfo.License = normalizedCachedLicense;
+				}
+
+				// Also normalize project URL if present
+				if (!string.IsNullOrEmpty(cachedInfo.ProjectUrl))
+				{
+					var normalizedProjectUrl = NormalizeCachedLicenseUrl(cachedInfo.ProjectUrl);
+					if (normalizedProjectUrl != cachedInfo.ProjectUrl)
+					{
+						cachedInfo.ProjectUrl = normalizedProjectUrl;
+					}
+				}
+
+				return cachedInfo;
 			}
 
-			// Try to get license from package metadata in global packages cache
-			var license = ExtractLicenseFromGlobalPackages(package);
+			// Try to get license info from package metadata in global packages cache
+			PackageLicenseInfo licenseInfo = ExtractLicenseFromGlobalPackages(package);
 
-			// Cache the result (even if null/empty)
-			licenseCache[cacheKey] = new PackageLicenseInfo { License = license ?? string.Empty };
+			// Cache the result (even if empty)
+			licenseCache[cacheKey] = licenseInfo;
 
-			return license;
+			return licenseInfo;
 		}
 
-		private static string ExtractLicenseFromGlobalPackages(PackageInfo package)
+		private static PackageLicenseInfo ExtractLicenseFromGlobalPackages(PackageInfo package)
 		{
 			var globalPackagesPath = GetGlobalPackagesPath();
 			if (string.IsNullOrEmpty(globalPackagesPath))
 			{
-				return null;
+				return new PackageLicenseInfo();
 			}
 
 			string packagePath;
@@ -509,16 +560,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 			if (!Directory.Exists(packagePath))
 			{
-				return null;
+				return new PackageLicenseInfo();
 			}
 
 			var nuspecPath = Path.Combine(packagePath, $"{package.Name}.nuspec");
 			if (File.Exists(nuspecPath))
 			{
-				return ExtractLicenseFromNuspec(nuspecPath);
+				return ExtractLicenseInfoFromNuspec(nuspecPath);
 			}
 
-			return null;
+			return new PackageLicenseInfo();
 		}
 
 		private static string GetGlobalPackagesPath()
@@ -540,24 +591,66 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return defaultPath;
 		}
 
-		private static string ExtractLicenseFromNuspec(string nuspecPath)
+		private static PackageLicenseInfo ExtractLicenseInfoFromNuspec(string nuspecPath)
 		{
 			try
 			{
 				var content = File.ReadAllText(nuspecPath);
-
-				var licenseFromElement = ExtractLicenseElement(content);
-				if (!string.IsNullOrEmpty(licenseFromElement))
-				{
-					return licenseFromElement;
-				}
-
-				return ExtractLicenseUrl(content);
+				return ExtractLicenseInfoFromNuspecContent(content);
 			}
 			catch (Exception)
 			{
+				return new PackageLicenseInfo();
+			}
+		}
+
+		// Public method for testing complete license info extraction logic
+		public static PackageLicenseInfo ExtractLicenseInfoFromNuspecContent(string content)
+		{
+			var licenseInfo = new PackageLicenseInfo
+			{
+				License = ExtractLicenseFromNuspecContent(content),
+				ProjectUrl = ExtractProjectUrlFromNuspecContent(content)
+			};
+			return licenseInfo;
+		}
+
+		// Public method for testing license extraction logic
+		public static string ExtractLicenseFromNuspecContent(string content)
+		{
+			var licenseFromElement = ExtractLicenseElement(content);
+			if (!string.IsNullOrEmpty(licenseFromElement))
+			{
+				return licenseFromElement;
+			}
+
+			return ExtractLicenseUrl(content);
+		}
+
+		// Public method for testing project URL extraction logic
+		public static string ExtractProjectUrlFromNuspecContent(string content)
+		{
+			return ExtractProjectUrl(content);
+		}
+
+		private static string ExtractProjectUrl(string content)
+		{
+			var projectUrlStart = content.IndexOf("<projectUrl>", StringComparison.OrdinalIgnoreCase);
+			if (projectUrlStart < 0)
+			{
 				return null;
 			}
+
+			projectUrlStart += 12; // Skip '<projectUrl>'
+			var projectUrlEnd = content.IndexOf("</projectUrl>", projectUrlStart, StringComparison.OrdinalIgnoreCase);
+			if (projectUrlEnd <= projectUrlStart)
+			{
+				return null;
+			}
+
+			var projectUrl = content.Substring(projectUrlStart, projectUrlEnd - projectUrlStart).Trim();
+			// Normalize project URL using the same logic as license URLs
+			return NormalizeLicenseUrl(projectUrl);
 		}
 
 		private static string ExtractLicenseElement(string content)
@@ -582,20 +675,34 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			}
 
 			var licenseType = content.Substring(typeStart, typeEnd - typeStart);
-			if (!licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
+			if (licenseType.Equals("expression", StringComparison.OrdinalIgnoreCase))
 			{
-				return null;
+				// Extract SPDX expression
+				var contentStart = content.IndexOf(">", licenseStart) + 1;
+				var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
+				if (contentEnd <= contentStart)
+				{
+					return null;
+				}
+
+				return content.Substring(contentStart, contentEnd - contentStart).Trim();
+			}
+			else if (licenseType.Equals("file", StringComparison.OrdinalIgnoreCase))
+			{
+				// For type="file", extract the file name so users can whitelist it in combined entries
+				// e.g., <license type="file">LICENSE.md</license> returns "LICENSE.md"
+				var contentStart = content.IndexOf(">", licenseStart) + 1;
+				var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
+				if (contentEnd <= contentStart)
+				{
+					return null;
+				}
+
+				return content.Substring(contentStart, contentEnd - contentStart).Trim();
 			}
 
-			// Extract SPDX expression
-			var contentStart = content.IndexOf(">", licenseStart) + 1;
-			var contentEnd = content.IndexOf("</license>", contentStart, StringComparison.OrdinalIgnoreCase);
-			if (contentEnd <= contentStart)
-			{
-				return null;
-			}
-
-			return content.Substring(contentStart, contentEnd - contentStart).Trim();
+			// Unknown license type
+			return null;
 		}
 
 		private static string ExtractLicenseUrl(string content)
@@ -647,8 +754,54 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 				return "LGPL";
 			}
 
-			// Return the URL itself if we can't identify it
-			return licenseUrl;
+			// Return the URL itself but try to normalize it to match the acceptable licenses format
+			// Remove common prefixes to match the format used in DefaultAcceptableLicenses
+			var normalizedUrl = NormalizeLicenseUrl(licenseUrl);
+			return normalizedUrl;
+		}
+
+		private static string NormalizeLicenseUrl(string licenseUrl)
+		{
+			if (string.IsNullOrEmpty(licenseUrl))
+			{
+				return licenseUrl;
+			}
+
+			// Remove common URL prefixes to match the format in DefaultAcceptableLicenses
+			var normalized = licenseUrl;
+
+			// Remove https:// prefix
+			if (normalized.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				normalized = normalized.Substring(8);
+			}
+			// Remove http:// prefix
+			else if (normalized.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
+			{
+				normalized = normalized.Substring(7);
+			}
+
+			return normalized;
+		}
+
+		private static string NormalizeCachedLicenseUrl(string cachedLicense)
+		{
+			if (string.IsNullOrEmpty(cachedLicense))
+			{
+				return cachedLicense;
+			}
+
+			// Handle cached URLs that may have been stored before URL normalization was implemented
+			// Only normalize if it looks like a URL (contains known URL patterns)
+			if (cachedLicense.Contains("://"))
+			{
+				// Apply the same normalization logic used for fresh extractions
+				return NormalizeLicenseUrl(cachedLicense);
+			}
+
+			// Also handle special license identifiers that are already normalized
+			// but might need consistency checks
+			return cachedLicense;
 		}
 
 		private static bool HasSubstringIgnoreCase(string source, string value)
@@ -657,14 +810,46 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		}
 
 
-		private static bool IsLicenseAcceptable(string license, HashSet<string> allowedLicenses)
+		private bool IsLicenseAcceptable(CompilationAnalysisContext context, string license, string packageName, HashSet<string> allowedLicenses)
 		{
 			if (string.IsNullOrEmpty(license))
 			{
+				ReportDebugDiagnostic(context, $"License is null or empty - not acceptable");
 				return false;
 			}
 
-			return allowedLicenses.Contains(license);
+			if (string.IsNullOrEmpty(packageName))
+			{
+				ReportDebugDiagnostic(context, $"Package name is null or empty - not acceptable");
+				return false;
+			}
+
+			// First check: Is this license in the built-in acceptable licenses?
+			var isBuiltInLicenseAcceptable = DefaultAcceptableLicenses.Contains(license);
+			ReportDebugDiagnostic(context, $"Checking built-in license '{license}': {(isBuiltInLicenseAcceptable ? "FOUND" : "NOT FOUND")}");
+
+			if (isBuiltInLicenseAcceptable)
+			{
+				return true;
+			}
+
+			// Second check: Is there a combined package name + license entry?
+			// This provides both package identity and license verification, preventing
+			// both license change vulnerabilities and license file name collisions
+			var combinedEntry = $"{packageName} {license}";
+			var isCombinedEntryAcceptable = allowedLicenses.Contains(combinedEntry);
+			ReportDebugDiagnostic(context, $"Checking combined entry '{combinedEntry}': {(isCombinedEntryAcceptable ? "FOUND" : "NOT FOUND")}");
+
+			if (isCombinedEntryAcceptable)
+			{
+				return true;
+			}
+
+			// For debugging, show first few allowed licenses to help troubleshoot
+			var first5Licenses = string.Join(", ", allowedLicenses.Take(5));
+			ReportDebugDiagnostic(context, $"Sample allowed licenses: {first5Licenses}...");
+
+			return false;
 		}
 
 		private static HashSet<string> GetAllowedLicenses(IEnumerable<AdditionalText> additionalFiles)
@@ -686,7 +871,16 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 					foreach (var license in customLicenses)
 					{
-						_ = allowedLicenses.Add(license);
+						// Normalize the license from the file to handle both prefixed and non-prefixed URLs
+						// This allows users to include https:// and http:// prefixes in their Allowed.Licenses.txt files
+						var normalizedLicense = NormalizeLicenseUrl(license);
+						_ = allowedLicenses.Add(normalizedLicense);
+
+						// Also add the original license in case it's not a URL but a license identifier
+						if (normalizedLicense != license)
+						{
+							_ = allowedLicenses.Add(license);
+						}
 					}
 				}
 			}
@@ -694,9 +888,10 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			return allowedLicenses;
 		}
 
-		private sealed class PackageLicenseInfo
+		public sealed class PackageLicenseInfo
 		{
 			public string License { get; set; } = string.Empty;
+			public string ProjectUrl { get; set; } = string.Empty;
 		}
 	}
 }
