@@ -341,7 +341,7 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			ImmutableArray<(string name, string content)> additionalSourceCode = GetAdditionalSourceCode();
 			IEnumerable<(string name, string content)> data = sources.Select(x =>
 			{
-				var newFileName = string.Format("{0}{1}.{2}", filenamePrefix, count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString(), fileExt);
+				var newFileName = $"{filenamePrefix}{(count == 0 ? (isCustomPrefix ? string.Empty : count.ToString()) : count.ToString())}.{fileExt}";
 
 				count++;
 
