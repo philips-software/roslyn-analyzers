@@ -16,13 +16,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"String-keyed collections should explicitly specify a StringComparer (or IComparer<string> for sorted collections) to avoid culture-dependent or case-sensitivity surprises.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.StringDictionaryNeedsComparer.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: false, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.StringDictionaryNeedsComparer.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
 			var wellKnownTypes = new WellKnownTypes(context.Compilation);
+
+			// Debug: Only proceed if we have the basic types
+			if (wellKnownTypes.String == null || wellKnownTypes.Dictionary_T2 == null)
+			{
+				return;
+			}
 
 			context.RegisterOperationAction(ctx => AnalyzeObjectCreation(ctx, wellKnownTypes), OperationKind.ObjectCreation);
 			context.RegisterOperationAction(ctx => AnalyzeInvocation(ctx, wellKnownTypes), OperationKind.Invocation);
@@ -73,7 +79,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			IMethodSymbol targetMethod = invocation.TargetMethod;
 
 			// ImmutableDictionary.Create<TKey, TValue>(...) without comparer
-			if (targetMethod.ContainingType.Equals(types.ImmutableDictionary, SymbolEqualityComparer.Default))
+			if (types.ImmutableDictionary != null && targetMethod.ContainingType.Equals(types.ImmutableDictionary, SymbolEqualityComparer.Default))
 			{
 				if (targetMethod.Name is "Create" or "CreateRange")
 				{
@@ -102,7 +108,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			requires = default;
 
 			// HashSet<string>
-			if (constructed.ConstructedFrom.Equals(types.HashSet_T, SymbolEqualityComparer.Default))
+			if (types.HashSet_T != null && constructed.ConstructedFrom.Equals(types.HashSet_T, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 1 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -114,7 +120,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// Dictionary<string, TValue>
-			if (constructed.ConstructedFrom.Equals(types.Dictionary_T2, SymbolEqualityComparer.Default))
+			if (types.Dictionary_T2 != null && constructed.ConstructedFrom.Equals(types.Dictionary_T2, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 2 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -126,7 +132,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// ConcurrentDictionary<string, TValue>
-			if (constructed.ConstructedFrom.Equals(types.ConcurrentDictionary_T2, SymbolEqualityComparer.Default))
+			if (types.ConcurrentDictionary_T2 != null && constructed.ConstructedFrom.Equals(types.ConcurrentDictionary_T2, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 2 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -138,7 +144,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// SortedDictionary<string, TValue>
-			if (constructed.ConstructedFrom.Equals(types.SortedDictionary_T2, SymbolEqualityComparer.Default))
+			if (types.SortedDictionary_T2 != null && constructed.ConstructedFrom.Equals(types.SortedDictionary_T2, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 2 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -150,7 +156,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// SortedSet<string>
-			if (constructed.ConstructedFrom.Equals(types.SortedSet_T, SymbolEqualityComparer.Default))
+			if (types.SortedSet_T != null && constructed.ConstructedFrom.Equals(types.SortedSet_T, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 1 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -162,7 +168,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			}
 
 			// ImmutableDictionary<string, TValue>
-			if (constructed.ConstructedFrom.Equals(types.ImmutableDictionary_T2, SymbolEqualityComparer.Default))
+			if (types.ImmutableDictionary_T2 != null && constructed.ConstructedFrom.Equals(types.ImmutableDictionary_T2, SymbolEqualityComparer.Default))
 			{
 				if (constructed.TypeArguments.Length == 2 && SymbolEqualityComparer.Default.Equals(constructed.TypeArguments[0], types.String))
 				{
@@ -181,6 +187,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			foreach (IParameterSymbol param in method.Parameters)
 			{
 				if (requires == RequiredComparer.IEqualityComparer &&
+					types.IEqualityComparer_T != null &&
 					param.Type is INamedTypeSymbol p &&
 					p.OriginalDefinition.Equals(types.IEqualityComparer_T, SymbolEqualityComparer.Default) &&
 					p.TypeArguments.Length == 1 && SymbolEqualityComparer.Default.Equals(p.TypeArguments[0], types.String))
@@ -189,6 +196,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 
 				if (requires == RequiredComparer.IComparer &&
+					types.IComparer_T != null &&
 					param.Type is INamedTypeSymbol p2 &&
 					p2.OriginalDefinition.Equals(types.IComparer_T, SymbolEqualityComparer.Default) &&
 					p2.TypeArguments.Length == 1 && SymbolEqualityComparer.Default.Equals(p2.TypeArguments[0], types.String))
