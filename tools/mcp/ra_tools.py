@@ -3,6 +3,9 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.request
+import urllib.error
+import json
 from pathlib import Path
 from typing import Dict, Any, List
 
@@ -268,3 +271,172 @@ def analyze_coverage() -> Dict[str, Any]:
                 analysis["suggestions"].append({"type": "test_template",
                     "message": f"Add unit test exercising {u['file']}:{u['line']}"})
     return analysis
+
+def _parse_diagnostic_ids_from_content(content: str) -> List[int]:
+    """Parse DiagnosticId enum values from C# file content."""
+    ids = []
+    # Match pattern like "SomeName = 2159," - must be within enum context
+    # Look for valid C# identifier followed by = number,
+    pattern = r'^\s*[A-Za-z_][A-Za-z0-9_]*\s*=\s*(\d+)\s*,?\s*$'
+    
+    # Only parse lines that look like enum entries (indented, with identifiers)
+    for line in content.splitlines():
+        # Skip lines that don't look like enum entries
+        stripped = line.strip()
+        if not stripped or '//' in stripped or stripped.startswith('namespace') or stripped.startswith('public') or stripped.startswith('{') or stripped.startswith('}'):
+            continue
+            
+        match = re.match(pattern, line)
+        if match:
+            ids.append(int(match.group(1)))
+    return ids
+
+def _get_github_api_token() -> str:
+    """Get GitHub API token from environment variables."""
+    # Check common environment variable names for GitHub tokens
+    for var_name in ['GITHUB_TOKEN', 'GH_TOKEN', 'GITHUB_API_TOKEN']:
+        token = os.environ.get(var_name)
+        if token:
+            return token
+    return ""
+
+def _github_api_request(url: str) -> Dict[str, Any]:
+    """Make a GitHub API request with authentication if available."""
+    token = _get_github_api_token()
+    
+    try:
+        req = urllib.request.Request(url)
+        if token:
+            req.add_header('Authorization', f'token {token}')
+        req.add_header('Accept', 'application/vnd.github.v3+json')
+        req.add_header('User-Agent', 'roslyn-analyzers-mcp-tool')
+        
+        with urllib.request.urlopen(req, timeout=30) as response:
+            return json.loads(response.read().decode('utf-8'))
+    except urllib.error.HTTPError as e:
+        if e.code == 403:
+            # Rate limit or authentication issue
+            raise Exception(f"GitHub API rate limit or authentication error: {e}")
+        elif e.code == 404:
+            # Not found
+            return {}
+        else:
+            raise Exception(f"GitHub API error {e.code}: {e}")
+    except Exception as e:
+        raise Exception(f"Error accessing GitHub API: {e}")
+
+def _get_file_content_from_pr(owner: str, repo: str, pr_number: int, file_path: str) -> str:
+    """Get file content from a specific PR."""
+    try:
+        # Get PR details to find the head SHA
+        pr_url = f"https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}"
+        pr_data = _github_api_request(pr_url)
+        
+        if not pr_data or 'head' not in pr_data:
+            return ""
+        
+        head_sha = pr_data['head']['sha']
+        
+        # Get file content from the PR's head commit
+        file_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}?ref={head_sha}"
+        file_data = _github_api_request(file_url)
+        
+        if not file_data or 'content' not in file_data:
+            return ""
+        
+        # Decode base64 content
+        import base64
+        content = base64.b64decode(file_data['content']).decode('utf-8')
+        return content
+    except Exception:
+        # If we can't get the file content, just return empty
+        return ""
+
+def next_diagnosticId() -> Dict[str, Any]:
+    """Determine the next available DiagnosticId by examining main branch and all open PRs."""
+    
+    try:
+        # Step 1: Parse current DiagnosticId enum from main branch (local)
+        diagnostic_file = BASE_DIR / "Philips.CodeAnalysis.Common" / "DiagnosticId.cs"
+        if not diagnostic_file.exists():
+            return {"status": "error", "message": "DiagnosticId.cs file not found"}
+        
+        main_content = diagnostic_file.read_text(encoding="utf-8", errors="replace")
+        main_ids = _parse_diagnostic_ids_from_content(main_content)
+        
+        if not main_ids:
+            return {"status": "error", "message": "No diagnostic IDs found in main branch"}
+        
+        main_max = max(main_ids)
+        
+        # Step 2: Scan open PRs for new DiagnosticId values
+        pr_ids = []
+        pr_conflicts = []
+        
+        # Determine repository owner and name from git remote
+        try:
+            rc, git_output = _run(["git", "remote", "get-url", "origin"], timeout=10)
+            if rc == 0 and git_output:
+                # Parse git URL to get owner/repo (handle both SSH and HTTPS)
+                git_url = git_output.strip()
+                if "github.com" in git_url:
+                    if git_url.startswith("git@"):
+                        # SSH format: git@github.com:owner/repo.git
+                        parts = git_url.split(":")[-1].replace(".git", "").split("/")
+                    else:
+                        # HTTPS format: https://github.com/owner/repo.git
+                        parts = git_url.split("github.com/")[-1].replace(".git", "").split("/")
+                    
+                    if len(parts) >= 2:
+                        owner, repo = parts[0], parts[1]
+                        
+                        # Get open PRs
+                        prs_url = f"https://api.github.com/repos/{owner}/{repo}/pulls?state=open&per_page=100"
+                        prs_data = _github_api_request(prs_url)
+                        
+                        if isinstance(prs_data, list):
+                            for pr in prs_data:
+                                pr_number = pr.get('number')
+                                pr_title = pr.get('title', '')
+                                
+                                # Get DiagnosticId.cs content from this PR
+                                pr_content = _get_file_content_from_pr(owner, repo, pr_number, "Philips.CodeAnalysis.Common/DiagnosticId.cs")
+                                
+                                if pr_content:
+                                    pr_ids_for_this_pr = _parse_diagnostic_ids_from_content(pr_content)
+                                    # Find new IDs not in main branch
+                                    new_ids = [id for id in pr_ids_for_this_pr if id not in main_ids]
+                                    if new_ids:
+                                        pr_ids.extend(new_ids)
+                                        pr_conflicts.append({
+                                            "pr_number": pr_number,
+                                            "pr_title": pr_title,
+                                            "new_ids": new_ids
+                                        })
+        
+        except Exception as e:
+            # If GitHub API fails, we can still work with main branch
+            pr_conflicts.append({"error": f"Could not scan PRs: {str(e)}"})
+        
+        # Step 3: Calculate next available ID
+        all_ids = main_ids + pr_ids
+        next_id = max(all_ids) + 1 if all_ids else 2160
+        
+        # Step 4: Return results
+        return {
+            "status": "success",
+            "next_diagnostic_id": next_id,
+            "main_branch_max": main_max,
+            "main_branch_count": len(main_ids),
+            "pr_conflicts": pr_conflicts,
+            "pr_new_ids": pr_ids,
+            "recommendation": f"Use DiagnosticId = {next_id}",
+            "note": "This accounts for both main branch and open PRs to avoid conflicts"
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error", 
+            "message": f"Error determining next DiagnosticId: {str(e)}",
+            "fallback_recommendation": "Check DiagnosticId.cs manually and use the next sequential number"
+        }
