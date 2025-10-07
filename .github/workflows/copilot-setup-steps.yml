@@ -14,4 +14,14 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install "fastmcp>=0.4"
-
+      - name: Setup .NET
+        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # @v5.0.0
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: |
+            **/*.csproj
+            **/packages.lock.json
+      - name: Restore solution
+        run: dotnet restore
+        

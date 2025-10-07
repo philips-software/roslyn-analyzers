@@ -54,9 +54,15 @@ dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx" 
 
 # 3. Check formatting
 dotnet format style --verify-no-changes --no-restore --verbosity detailed  # NEVER CANCEL: ~23s
+
+# 4. Run dogfooding process (validate analyzers work on own codebase)
+# Use MCP server run_dogfood tool or manual process via CI workflow
+
+# 5. Verify code coverage meets 80% SonarCloud requirement
+# Use MCP server analyze_coverage tool to check coverage gaps
 ```
 
-Total validation time: ~2m 32s - NEVER CANCEL these commands.
+Total validation time: ~2m 32s + dogfood/coverage checks - NEVER CANCEL these commands.
 
 ### Dogfooding Process
 This repository uses a "dogfooding" process where the analyzers analyze their own code:
@@ -64,10 +70,18 @@ This repository uses a "dogfooding" process where the analyzers analyze their ow
 - Analyzers are then applied to the codebase itself
 - All analyzer violations must be fixed, not suppressed
 
+### Code Coverage Requirements
+SonarCloud enforces **80% code coverage** and will fail the build if this threshold is not met:
+- Current coverage is over 90%, so maintain this high standard
+- Use the **MCP server `analyze_coverage` tool** to identify coverage gaps and get actionable suggestions
+- Tool provides specific test templates and prioritizes areas needing coverage
+- Focus testing on error handling, edge cases, and complex logic paths
+
 ### Mandatory CI Requirements
 The CI process enforces these checks that will cause build failures:
 - All tests must pass (1903 tests)
 - Code formatting must be perfect (no deviations from .editorconfig)
+- **80% code coverage minimum** (enforced by SonarCloud)
 - All analyzer warnings must be addressed (no suppressions allowed)
 - Dogfood process must complete successfully
 
@@ -109,15 +123,19 @@ Philips.CodeAnalysis.sln - Main solution file
 
 ## Development Guidelines
 
-### Code Formatting Requirements
-All code must strictly follow the .editorconfig rules:
-- **Indentation**: Tabs with size 4  
-- **Line endings**: CRLF (Windows-style)
-- **Encoding**: UTF-8 with BOM for C# files
-- **Braces**: New line before all braces
-- **Naming**: Parameters must be camelCase
+### ⚠️ CRITICAL: Code Formatting Requirements ⚠️
+**The #1 cause of CoPilot Coding Agent struggles is formatting violations (IDE0055)**
 
-The formatting check will fail the build if any violations exist. DO NOT suppress formatting warnings.
+All code MUST strictly follow these .editorconfig rules:
+- **❗ Line endings**: CRLF (Windows-style) - NOT LF
+- **❗ Indentation**: Tabs with size 4 - NOT spaces  
+- **❗ Encoding**: UTF-8 with BOM for C# files
+- **❗ Braces**: New line before all braces
+- **❗ Naming**: Parameters must be camelCase
+
+**FORMATTING IS ZERO-TOLERANCE**: Any violation fails the build (IDE0055.severity = error)
+
+**Auto-fix available**: Use the MCP server `fix_formatting` tool to auto-correct all formatting violations.
 
 ### Creating New Analyzers
 When creating new analyzers:
@@ -140,6 +158,7 @@ Analyzers run during compilation and must be performant:
 - **Title format**: Must follow Conventional Commits (feat:, fix:, docs:, etc.)
 - **All tests pass**: 1903 tests must pass
 - **Formatting perfect**: Zero formatting violations
+- **80% code coverage**: Maintained or improved coverage required
 - **No suppressions**: Fix underlying issues, don't suppress warnings
 - **Documentation**: Update relevant docs in Documentation/ folder
 
@@ -172,11 +191,21 @@ dotnet clean  # Removes packages automatically
 
 ## Troubleshooting
 
+### Troubleshooting
+
+### Formatting Issues (IDE0055)
+**Common CoPilot failure**: Formatting violations consume significant agent effort.
+
+**Quick fix**: Use the MCP server `fix_formatting` tool to automatically correct CRLF line endings, tabs, braces, and other .editorconfig violations.
+
+**Manual check**: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
+
 ### Build Failures
 If builds fail:
-1. Check formatting first: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
-2. Run clean build: `dotnet clean && dotnet build --configuration Release`
+1. Run clean build: `dotnet clean && dotnet build --configuration Release`
+2. Check formatting: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
 3. Review analyzer violations - fix the code, don't suppress warnings
+4. Verify code coverage meets 80% requirement
 
 ### Test Failures  
 If tests fail:

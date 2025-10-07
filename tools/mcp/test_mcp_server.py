@@ -52,7 +52,7 @@ def test_endpoint(name, method, path, data=None):
         # Set timeout based on endpoint type
         timeout = 10  # Default timeout
         if name in ["Build Strict", "Run Dogfood"]:
-            timeout = 120  # 2 minutes for build operations
+            timeout = 180  # 3 minutes for build operations
         elif name == "Run Tests":
             timeout = 60   # 1 minute for tests
         elif name == "Analyze Coverage":
@@ -94,6 +94,7 @@ def run_tests():
             ("Root Info", "GET", "/", None),
             ("Manifest", "GET", "/manifest", None),
             ("Search Helpers", "POST", "/search_helpers", None),
+            ("Next Diagnostic ID", "POST", "/next_diagnosticId", None),
             ("Build Strict", "POST", "/build_strict", None),
             ("Run Tests", "POST", "/run_tests", None),
             ("Run Dogfood", "POST", "/run_dogfood", None),
@@ -113,6 +114,12 @@ def run_tests():
                     helpers = result.get("helpers", [])
                     count = result.get("helpers_count", 0)
                     print(f"   🔍 Found {count} helper methods")
+                    
+                elif name == "Next Diagnostic ID" and result:
+                    status = result.get("status", "unknown")
+                    next_id = result.get("next_diagnostic_id", "unknown")
+                    main_max = result.get("main_branch_max", "unknown")
+                    print(f"   🆔 Next ID {next_id} (main max: {main_max})")
                     
                 elif name == "Build Strict" and result:
                     status = result.get("status", "unknown")
