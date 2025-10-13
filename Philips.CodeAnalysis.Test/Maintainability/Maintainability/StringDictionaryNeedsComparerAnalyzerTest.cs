@@ -1,8 +1,6 @@
 // © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System.Collections.Immutable;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -20,23 +18,6 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 			return new StringDictionaryNeedsComparerAnalyzer();
 		}
 
-		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
-		{
-			// Enable the analyzer for testing since it's disabled by default
-			var key = $"dotnet_diagnostic.{DiagnosticId.StringDictionaryNeedsComparer.ToId()}.severity";
-			return base.GetAdditionalAnalyzerConfigOptions().Add(key, "warning");
-		}
-
-		private static DiagnosticResult GetExpectedDiagnostic(int line, int column)
-		{
-			return new DiagnosticResult
-			{
-				Id = DiagnosticId.StringDictionaryNeedsComparer.ToId(),
-				Severity = DiagnosticSeverity.Warning,
-				Locations = new[] { new DiagnosticResultLocation("Test0.cs", line, column) }
-			};
-		}
-
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DictionaryWithStringKeyWithoutComparerTriggersAsync()
@@ -51,7 +32,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 14)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -86,7 +67,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 13)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -121,7 +102,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 14)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -156,7 +137,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 14)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -191,7 +172,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 13)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -226,7 +207,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 14)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -297,7 +278,7 @@ class Foo
 	}
 }
 ";
-			await VerifyDiagnostic(template, GetExpectedDiagnostic(7, 14)).ConfigureAwait(false);
+			await VerifyDiagnostic(template, DiagnosticId.StringDictionaryNeedsComparer).ConfigureAwait(false);
 		}
 
 		[TestMethod]

@@ -16,7 +16,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		private const string Description = @"String-keyed collections should explicitly specify a StringComparer (or IComparer<string> for sorted collections) to avoid culture-dependent or case-sensitivity surprises.";
 		private const string Category = Categories.Maintainability;
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.StringDictionaryNeedsComparer.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: false, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.StringDictionaryNeedsComparer.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
@@ -79,26 +79,23 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 			IMethodSymbol targetMethod = invocation.TargetMethod;
 
 			// ImmutableDictionary.Create<TKey, TValue>(...) without comparer
-			if (types.ImmutableDictionary != null && targetMethod.ContainingType.Equals(types.ImmutableDictionary, SymbolEqualityComparer.Default))
+			if (types.ImmutableDictionary != null && targetMethod.ContainingType.Equals(types.ImmutableDictionary, SymbolEqualityComparer.Default) &&
+				targetMethod.Name is "Create" or "CreateRange")
 			{
-				if (targetMethod.Name is "Create" or "CreateRange")
+				ImmutableArray<ITypeSymbol> typeArgs = targetMethod.TypeArguments;
+				if (typeArgs.Length == 2 && SymbolEqualityComparer.Default.Equals(typeArgs[0], types.String) &&
+					!HasRequiredComparerParameter(targetMethod, RequiredComparer.IEqualityComparer, types))
 				{
-					ImmutableArray<ITypeSymbol> typeArgs = targetMethod.TypeArguments;
-					if (typeArgs.Length == 2 && SymbolEqualityComparer.Default.Equals(typeArgs[0], types.String))
-					{
-						if (!HasRequiredComparerParameter(targetMethod, RequiredComparer.IEqualityComparer, types))
-						{
-							var collectionDisplay = $"ImmutableDictionary<{typeArgs[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}, {typeArgs[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}>";
-							context.ReportDiagnostic(Diagnostic.Create(
-								Rule,
-								invocation.Syntax.GetLocation(),
-								collectionDisplay,
-								"StringComparer/IEqualityComparer<string>"));
-						}
-					}
+					var collectionDisplay = $"ImmutableDictionary<{typeArgs[0].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}, {typeArgs[1].ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat)}>";
+					context.ReportDiagnostic(Diagnostic.Create(
+						Rule,
+						invocation.Syntax.GetLocation(),
+						collectionDisplay,
+						"StringComparer/IEqualityComparer<string>"));
 				}
 			}
 		}
+
 
 		private enum RequiredComparer { IEqualityComparer, IComparer }
 
