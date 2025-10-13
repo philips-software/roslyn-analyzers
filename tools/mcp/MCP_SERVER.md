@@ -13,7 +13,10 @@ The MCP server provides streamlined endpoints for essential development tasks:
 ### Helper Discovery (Primary Focus)
 - **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
-### Code Formatting (New!)
+### Diagnostic ID Management (New!)
+- **`/next_diagnosticId`** - Determine the next available DiagnosticId by examining main branch and all open PRs to avoid conflicts
+
+### Code Formatting
 - **`/fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
 
 ### Code Coverage Analysis
@@ -23,6 +26,36 @@ The MCP server provides streamlined endpoints for essential development tasks:
 - **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
 - **`/run_tests`** - Execute tests (security-hardened, fixed target)
 - **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
+
+## Diagnostic ID Management
+
+The `/next_diagnosticId` endpoint solves the problem of concurrent Pull Requests trying to claim the same diagnostic ID number. When multiple developers work on new analyzers in parallel, they often pick the same "next" ID, causing conflicts during code review.
+
+**Key Benefits:**
+- **Conflict prevention** - Scans both main branch and open PRs to find truly available IDs
+- **Automated analysis** - Parses DiagnosticId.cs enum automatically  
+- **GitHub API integration** - Uses GitHub API to check open PRs for ID conflicts
+- **Graceful fallback** - Works even without GitHub API access by analyzing main branch
+
+**Sample Response:**
+```json
+{
+  "status": "success", 
+  "next_diagnostic_id": 2160,
+  "main_branch_max": 2159,
+  "main_branch_count": 140,
+  "pr_conflicts": [
+    {
+      "pr_number": 123,
+      "pr_title": "Add new analyzer PH2160", 
+      "new_ids": [2160]
+    }
+  ],
+  "pr_new_ids": [2160],
+  "recommendation": "Use DiagnosticId = 2161",
+  "note": "This accounts for both main branch and open PRs to avoid conflicts"
+}
+```
 
 ## Code Formatting Assistance
 
