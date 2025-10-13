@@ -89,7 +89,9 @@ def run_tests() -> Dict[str, Any]:
     test_bin = BASE_DIR/"Philips.CodeAnalysis.Test"/"bin"/"Release"
     if test_bin.exists():
         cmd.append("--no-build")
-    timeout = 600 if did_restore_now else 180
+    # Tests take ~48 seconds to run 1903 tests. Use 240 seconds (4 minutes) to ensure completion.
+    # If restore was just done, allow 600 seconds (10 minutes) total.
+    timeout = 600 if did_restore_now else 240
     rc, out = _run(cmd, timeout=timeout)
 
     test_results = {"passed":0,"failed":0,"skipped":0,"total":0,"duration":""}
@@ -230,13 +232,14 @@ def analyze_coverage() -> Dict[str, Any]:
     _run(["dotnet", "tool", "install", "--global", "dotnet-coverage", "--version", "17.9.6"], timeout=300)
 
     coverage_bin = _coverage_exe()
+    # Coverage collection with test execution takes longer than regular tests (~60-90 seconds)
     rc, out = _run([
         coverage_bin, "collect",
         "dotnet", "test", "Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj",
         "--configuration", "Release", "--no-build",
         "--logger", "trx;LogFileName=coverage-test-results.trx",
         "--output-format", "xml", "--output", "coverage.xml"
-    ])
+    ], timeout=300)
 
     analysis = {"status": "success" if rc == 0 else "failure", "overall_coverage": 0.0, "uncovered_lines": [], "suggestions": []}
     xml_path = BASE_DIR / "coverage.xml"

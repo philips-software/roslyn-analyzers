@@ -41,7 +41,7 @@ def build_strict() -> Dict[str, Any]:
     """dotnet build solution with warnings as errors."""
     return _mod().build_strict()
 
-@mcp.tool
+@mcp.tool(annotations={"timeout": 240})
 def run_tests() -> Dict[str, Any]:
     """Run tests against main test project."""
     return _mod().run_tests()
