@@ -90,7 +90,7 @@ class Test
 	{
 		var firstName = ""John"";
 		var lastName = ""Doe"";
-		var result = string.Format(""Hello {0} {1}"", firstName, lastName);
+		var result = $""Hello {firstName} {lastName}"";
 	}
 }
 ";
