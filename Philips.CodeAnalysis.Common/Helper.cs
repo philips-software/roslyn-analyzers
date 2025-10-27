@@ -10,5 +10,7 @@ namespace Philips.CodeAnalysis.Common
 		public AllowedSymbols ForAllowedSymbols { get; } = new AllowedSymbols(compilation);
 
 		public AdditionalFilesHelper ForAdditionalFiles { get; } = new AdditionalFilesHelper(options, compilation);
+
+		public AttributeHelper AttributeHelper { get; } = new AttributeHelper();
 	}
 }
