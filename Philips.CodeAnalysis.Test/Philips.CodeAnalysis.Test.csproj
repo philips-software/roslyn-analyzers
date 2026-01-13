@@ -2,7 +2,7 @@
   <Import Project="..\Directory.Build.Common.props" />
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ReportAnalyzer>true</ReportAnalyzer>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0</FileVersion>
