@@ -4,9 +4,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ReportAnalyzer>true</ReportAnalyzer>
-    <Version>1.0.0</Version>
-    <FileVersion>1.0.0</FileVersion>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <Version>2.0.0</Version>
+    <FileVersion>2.0.0</FileVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
   </PropertyGroup>
   
   <ItemGroup>
