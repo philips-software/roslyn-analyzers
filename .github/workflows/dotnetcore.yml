@@ -42,7 +42,7 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
       - name: Upload MaintainabilityAnalyzers Artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: Philips.CodeAnalysis.MaintainabilityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -51,7 +51,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.snupkg
 
       - name: Upload DuplicateCodeAnalyzer Artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: Philips.CodeAnalysis.DuplicateCodeAnalyzer-${{ inputs.new_tag }}
           retention-days: 1
@@ -60,7 +60,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.snupkg
 
       - name: Upload MoqAnalyzers Artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: Philips.CodeAnalysis.MoqAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -69,7 +69,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.snupkg
 
       - name: Upload MsTestAnalyzers Artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: Philips.CodeAnalysis.MsTestAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -78,7 +78,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.snupkg
 
       - name: Upload SecurityAnalyzers Artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
         with:
           name: Philips.CodeAnalysis.SecurityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
