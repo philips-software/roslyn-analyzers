@@ -10,6 +10,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5
         
       - name: Ensure SHA pinned actions
-        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@9e9574ef04ea69da568d6249bd69539ccc704e74 # ratchet:zgosalvez/github-actions-ensure-sha-pinned-actions@v4.0.0
+        uses: zgosalvez/github-actions-ensure-sha-pinned-actions@d5d20e15f2736816ee0e001ba8b24b54d9ffcff4 # ratchet:zgosalvez/github-actions-ensure-sha-pinned-actions@v5.0.0
         with:
           allowlist: philips-software/roslyn-analyzers
