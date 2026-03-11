@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -120,6 +121,88 @@ namespace Philips.CodeAnalysis.Common
 		public bool IsDataRowAttribute(AttributeSyntax attribute, SyntaxNodeAnalysisContext context)
 		{
 			return IsAttribute(attribute, context, MsTestFrameworkDefinitions.DataRowAttribute, out _, out _);
+		}
+
+		/// <summary>
+		/// Checks if any attribute of the specified types appears after any attribute of the other specified types.
+		/// </summary>
+		/// <param name="attributeLists">The attribute lists to examine</param>
+		/// <param name="context">The syntax node analysis context</param>
+		/// <param name="attributesToFind">The attributes to look for that should appear first</param>
+		/// <param name="attributesToCheckAfter">The attributes that should not appear before attributesToFind</param>
+		/// <returns>True if any attributesToFind appears after any attributesToCheckAfter</returns>
+		public bool HasAttributeAfterOther(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, INamedTypeSymbol[] attributesToFind, INamedTypeSymbol[] attributesToCheckAfter)
+		{
+			var allAttributes = attributeLists
+				.SelectMany((list, listIndex) =>
+					list.Attributes.Select((attr, attrIndex) => new
+					{
+						Attribute = attr,
+						Position = (listIndex, attrIndex),
+						Symbol = context.SemanticModel.GetSymbolInfo(attr).Symbol?.ContainingType
+					}))
+				.Where(x => x.Symbol != null)
+				.ToArray();
+
+			(int listIndex, int attrIndex)? firstCheckAfterPosition = allAttributes
+				.Where(x => attributesToCheckAfter.Any(attr => AttributeMatches(x.Symbol, attr)))
+				.Select(x => x.Position)
+				.FirstOrDefault();
+
+			if (firstCheckAfterPosition == null)
+			{
+				return false;
+			}
+
+			return allAttributes
+				.Where(x => attributesToFind.Any(attr => AttributeMatches(x.Symbol, attr)))
+				.Any(x => x.Position.CompareTo(firstCheckAfterPosition.Value) > 0);
+		}
+
+		/// <summary>
+		/// Categorizes attributes into groups based on the provided type predicates.
+		/// </summary>
+		/// <param name="attributeLists">The attribute lists to categorize</param>
+		/// <param name="context">The syntax node analysis context</param>
+		/// <param name="categorizers">Functions that determine which category an attribute belongs to</param>
+		/// <returns>A dictionary mapping category names to lists of attributes</returns>
+		public Dictionary<string, List<AttributeSyntax>> CategorizeAttributes(SyntaxList<AttributeListSyntax> attributeLists, SyntaxNodeAnalysisContext context, Dictionary<string, Func<INamedTypeSymbol, bool>> categorizers)
+		{
+			var result = new Dictionary<string, List<AttributeSyntax>>();
+			foreach (var category in categorizers.Keys)
+			{
+				result[category] = [];
+			}
+
+			foreach (AttributeListSyntax attributeList in attributeLists)
+			{
+				foreach (AttributeSyntax attribute in attributeList.Attributes)
+				{
+					INamedTypeSymbol attributeSymbol = context.SemanticModel.GetSymbolInfo(attribute).Symbol?.ContainingType;
+					if (attributeSymbol != null)
+					{
+						KeyValuePair<string, Func<INamedTypeSymbol, bool>>? matchingCategorizer = categorizers.Where(c => c.Value(attributeSymbol)).FirstOrDefault();
+						if (matchingCategorizer.HasValue)
+						{
+							result[matchingCategorizer.Value.Key].Add(attribute);
+						}
+					}
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Checks if an attribute symbol matches a target symbol (including inheritance).
+		/// </summary>
+		/// <param name="attributeSymbol">The attribute symbol to check</param>
+		/// <param name="targetSymbol">The target symbol to match against</param>
+		/// <returns>True if the symbols match or if attributeSymbol is derived from targetSymbol</returns>
+		private static bool AttributeMatches(INamedTypeSymbol attributeSymbol, INamedTypeSymbol targetSymbol)
+		{
+			return SymbolEqualityComparer.Default.Equals(attributeSymbol, targetSymbol) ||
+				   attributeSymbol.IsDerivedFrom(targetSymbol);
 		}
 
 		public bool TryExtractAttributeArgument<T>(AttributeArgumentSyntax argumentSyntax, SyntaxNodeAnalysisContext context, out string argumentString, out T value)
