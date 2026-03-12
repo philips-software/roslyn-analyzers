@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.Common;
@@ -60,7 +61,7 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task OutParameterNamedUnderscoreShouldNotFlag()
+		public async Task OutParameterNamedUnderscoreShouldFlag()
 		{
 			var test = @"
 using System;
@@ -78,7 +79,7 @@ class TestClass
 	}
 }";
 
-			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+			await VerifyDiagnostic(test, DiagnosticId.AvoidUnnecessaryTypedDiscard).ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -272,6 +273,156 @@ class MyNetwork
 }";
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryTypedDiscardShouldFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// Typed discard when anonymous discard would work
+		GetValue(out string _);
+		TryParseHelper(""123"", out int _);
+	}
+
+	private void GetValue(out string value)
+	{
+		value = ""test"";
+	}
+	
+	private bool TryParseHelper(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+}";
+
+			DiagnosticResult[] expected = CreateTypedDiscardDiagnostics(
+				(9, 23), (10, 33)
+			);
+
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NecessaryTypedDiscardForOverloadResolutionShouldNotFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// These typed discards are needed for overload resolution
+		Parse(""123"", out int _);    // Disambiguates from Parse(string, out string)
+		Parse(""test"", out string _); // Disambiguates from Parse(string, out int)
+	}
+
+	private bool Parse(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+	
+	private bool Parse(string input, out string result)
+	{
+		result = input;
+		return true;
+	}
+}";
+
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnnecessaryTypedDiscardWithNamedArgumentsShouldFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// Typed discard with named argument when anonymous discard would work
+		GetStringValue(value: out string _);
+		TryParseInt(input: ""123"", result: out int _);
+	}
+
+	private void GetStringValue(out string value)
+	{
+		value = ""test"";
+	}
+	
+	private bool TryParseInt(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+}";
+
+			DiagnosticResult[] expected = CreateTypedDiscardDiagnostics(
+				(9, 36), (10, 45)
+			);
+
+			await VerifyDiagnostic(test, expected).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NecessaryTypedDiscardWithNamedArgumentsForOverloadResolutionShouldNotFlag()
+		{
+			var test = @"
+using System;
+
+class TestClass
+{
+	public void TestMethod()
+	{
+		// These typed discards with named arguments are needed for overload resolution
+		Parse(input: ""123"", result: out int _);    // Disambiguates from Parse(string, out string)
+		Parse(input: ""test"", result: out string _); // Disambiguates from Parse(string, out int)
+	}
+
+	private bool Parse(string input, out int result)
+	{
+		result = 42;
+		return true;
+	}
+	
+	private bool Parse(string input, out string result)
+	{
+		result = input;
+		return true;
+	}
+}";
+
+			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		private static DiagnosticResult[] CreateTypedDiscardDiagnostics(params (int line, int column)[] locations)
+		{
+			var results = new DiagnosticResult[locations.Length];
+			for (var i = 0; i < locations.Length; i++)
+			{
+				results[i] = new DiagnosticResult()
+				{
+					Id = DiagnosticId.AvoidUnnecessaryTypedDiscard.ToId(),
+					Location = new DiagnosticResultLocation("Test0.cs", locations[i].line, locations[i].column),
+					Message = new System.Text.RegularExpressions.Regex(".*"),
+					Severity = DiagnosticSeverity.Error,
+				};
+			}
+			return results;
 		}
 	}
 }
