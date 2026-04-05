@@ -1,3 +1,12 @@
+## [1.11.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.10.0...v1.11.0) (2026-04-05)
+
+
+### Features
+
+* Add CodeFixer for PH2153 (AvoidUnusedToString) ([#1075](https://github.com/philips-software/roslyn-analyzers/issues/1075)) ([374eada](https://github.com/philips-software/roslyn-analyzers/commit/374eada06154fdadd455311cac0fe4781c24a24e))
+
+
+
 ## [1.10.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.1...v1.10.0) (2026-04-05)
 
 
