@@ -28,19 +28,41 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return document;
 			}
 
-			// Case 1: Standalone expression statement (expr.ToString();) - remove the entire statement
+			ExpressionSyntax receiver = memberAccess.Expression;
+
+			// Case 1: Standalone expression statement (expr.ToString();)
 			if (node.Parent is ExpressionStatementSyntax expressionStatement)
 			{
-				rootNode = rootNode.RemoveNode(expressionStatement, SyntaxRemoveOptions.KeepDirectives);
+				// Only remove the entire statement when the receiver is known to be side-effect free:
+				// local variable, parameter, or 'this'.
+				if (IsSideEffectFree(receiver))
+				{
+					rootNode = rootNode.RemoveNode(expressionStatement, SyntaxRemoveOptions.KeepDirectives);
+				}
+				else
+				{
+					// Keep the receiver expression as a standalone statement to preserve side effects.
+					ExpressionStatementSyntax newStatement = expressionStatement
+						.WithExpression(receiver.WithoutTrivia())
+						.WithLeadingTrivia(expressionStatement.GetLeadingTrivia())
+						.WithTrailingTrivia(expressionStatement.GetTrailingTrivia())
+						.WithAdditionalAnnotations(Formatter.Annotation);
+					rootNode = rootNode.ReplaceNode(expressionStatement, newStatement);
+				}
+
 				return document.WithSyntaxRoot(rootNode);
 			}
 
 			// Case 2: Assignment to discard (_ = expr.ToString()) - replace with just the expression
-			ExpressionSyntax expression = memberAccess.Expression;
 			SyntaxTriviaList trivia = node.GetLeadingTrivia();
-			ExpressionSyntax newExpression = expression.WithLeadingTrivia(trivia).WithAdditionalAnnotations(Formatter.Annotation);
+			ExpressionSyntax newExpression = receiver.WithLeadingTrivia(trivia).WithAdditionalAnnotations(Formatter.Annotation);
 			rootNode = rootNode.ReplaceNode(node, newExpression);
 			return document.WithSyntaxRoot(rootNode);
+		}
+
+		private static bool IsSideEffectFree(ExpressionSyntax expression)
+		{
+			return expression is IdentifierNameSyntax or ThisExpressionSyntax;
 		}
 	}
 }

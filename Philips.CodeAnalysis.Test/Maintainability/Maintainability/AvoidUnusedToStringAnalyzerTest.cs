@@ -182,7 +182,59 @@ class TestClass
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FixStandaloneToStringRemovesEntireStatement()
+		public async Task FixStandaloneLocalVariableToStringRemovesEntireStatement()
+		{
+			var test = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+		node.ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixStandaloneThisToStringRemovesEntireStatement()
+		{
+			var test = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		this.ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixStandaloneMethodCallToStringKeepsMethodCall()
 		{
 			var test = @"
 class TestClass
@@ -200,6 +252,7 @@ class TestClass
 	public string GetNode() => ""test"";
 	public void TestMethod()
 	{
+		GetNode();
 	}
 }";
 
