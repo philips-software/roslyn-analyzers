@@ -13,6 +13,7 @@ jobs:
         with:
           dotnet-version: |
             8.0.x
+            10.0.x
 
       - name: Build Dogfood
         run: |
@@ -110,7 +111,7 @@ jobs:
         
       - name: Analyze Performance
         run: |
-          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net8.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog Philips.CodeAnalysis >> PerformanceSummary.txt
+          ./Philips.CodeAnalysis.AnalyzerPerformance/bin/Release/net10.0/Philips.CodeAnalysis.AnalyzerPerformance msbuild.binlog Philips.CodeAnalysis >> PerformanceSummary.txt
           cat ./PerformanceSummary.txt
           cat ./PerformanceSummary.txt >> $GITHUB_STEP_SUMMARY
 
