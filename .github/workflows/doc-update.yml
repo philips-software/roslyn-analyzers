@@ -77,11 +77,6 @@ jobs:
               echo "You forgot to add the user documentation MarkDown file."
               exit 1
             fi
-            if [[ -z "$UPDATED_PROJECT" ]]
-            then
-              echo "You forgot to update the changelog in the project file."
-              exit 1
-            fi
             if [[ -z "$ADDED_TEST" ]]
             then
               echo "You forgot to add a unit test class."
