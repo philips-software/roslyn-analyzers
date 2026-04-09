@@ -123,44 +123,46 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			return mockedType.AllInterfaces.Any(x => SymbolEqualityComparer.Default.Equals(x, disposableType));
 		}
 
-		private static bool HasVirtualDisposeBool(ITypeSymbol mockedType)
+		private bool HasVirtualDisposeBool(ITypeSymbol mockedType)
 		{
 			for (ITypeSymbol current = mockedType; current != null; current = current.BaseType)
 			{
 				foreach (IMethodSymbol method in current.GetMembers(nameof(System.IDisposable.Dispose)).OfType<IMethodSymbol>())
 				{
-					if (method.MethodKind != MethodKind.Ordinary)
+					if (IsVirtualDisposeBool(method))
 					{
-						continue;
-					}
-
-					if (method.Parameters.Length != 1)
-					{
-						continue;
-					}
-
-					if (method.Parameters[0].Type == null || method.Parameters[0].Type.SpecialType != SpecialType.System_Boolean)
-					{
-						continue;
-					}
-
-					switch (method.DeclaredAccessibility)
-					{
-						case Accessibility.Protected:
-						case Accessibility.ProtectedOrInternal:
-						case Accessibility.ProtectedAndInternal:
-							if (method.IsVirtual || method.IsOverride)
-							{
-								return true;
-							}
-							break;
-						default:
-							break;
+						return true;
 					}
 				}
 			}
 
 			return false;
+		}
+
+		private bool IsVirtualDisposeBool(IMethodSymbol method)
+		{
+			if (method.MethodKind != MethodKind.Ordinary)
+			{
+				return false;
+			}
+
+			if (method.Parameters.Length != 1)
+			{
+				return false;
+			}
+
+			if (method.Parameters[0].Type == null || method.Parameters[0].Type.SpecialType != SpecialType.System_Boolean)
+			{
+				return false;
+			}
+
+			return method.DeclaredAccessibility switch
+			{
+				Accessibility.Protected or
+				Accessibility.ProtectedOrInternal or
+				Accessibility.ProtectedAndInternal => method.IsVirtual || method.IsOverride,
+				_ => false,
+			};
 		}
 
 		private bool HasDisposeSetupInSameContainingMember(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax)
@@ -301,17 +303,15 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return literalExpressionSyntax.Token.ValueText == nameof(System.IDisposable.Dispose);
 			}
 
-			if (expressionSyntax is InvocationExpressionSyntax invocationExpressionSyntax)
+			if (expressionSyntax is InvocationExpressionSyntax invocationExpressionSyntax &&
+				invocationExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax &&
+				identifierNameSyntax.Identifier.ValueText == "nameof" &&
+				invocationExpressionSyntax.ArgumentList != null &&
+				invocationExpressionSyntax.ArgumentList.Arguments.Count == 1)
 			{
-				if (invocationExpressionSyntax.Expression is IdentifierNameSyntax identifierNameSyntax &&
-					identifierNameSyntax.Identifier.ValueText == "nameof" &&
-					invocationExpressionSyntax.ArgumentList != null &&
-					invocationExpressionSyntax.ArgumentList.Arguments.Count == 1)
-				{
-					var argumentText = invocationExpressionSyntax.ArgumentList.Arguments[0].ToString();
-					return argumentText == nameof(System.IDisposable.Dispose) ||
-						argumentText.EndsWith("." + nameof(System.IDisposable.Dispose));
-				}
+				var argumentText = invocationExpressionSyntax.ArgumentList.Arguments[0].ToString();
+				return argumentText == nameof(System.IDisposable.Dispose) ||
+					argumentText.EndsWith("." + nameof(System.IDisposable.Dispose));
 			}
 
 			return false;
