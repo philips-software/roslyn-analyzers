@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private sealed class CompilationAnalyzer
 		{
 			private readonly DuplicateDetector _library = new();
-			private readonly List<Diagnostic> _diagnostics = [];
+			private readonly Diagnostic _configurationError;
 			private readonly int _duplicateTokenThreshold;
 			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
@@ -118,10 +118,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				_duplicateTokenThreshold = duplicateTokenThreshold;
 				_helper = helper;
 				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
-				if (configurationError != null)
-				{
-					_diagnostics.Add(configurationError);
-				}
+				_configurationError = configurationError;
 			}
 
 			private string ToPrettyReference(FileLinePositionSpan fileSpan)
@@ -163,7 +160,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 							{
 								Location location = evidence.LocationEnvelope.Contents();
 								Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
-								CreateDuplicateDiagnostic(location, existingEvidenceLocation, token, methodDeclarationSyntax);
+								ReportDuplicateDiagnostic(obj, location, existingEvidenceLocation, token, methodDeclarationSyntax);
 
 								// Don't pile on.  Move on to the next method.
 								return;
@@ -173,11 +170,11 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 				catch (Exception ex)
 				{
-					CreateExceptionDiagnostic(ex, obj);
+					ReportExceptionDiagnostic(obj, ex);
 				}
 			}
 
-			private void CreateDuplicateDiagnostic(Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
+			private void ReportDuplicateDiagnostic(SyntaxNodeAnalysisContext context, Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
 			{
 				// We found a duplicate, but if it's partially duplicated with itself, ignore it.
 				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
@@ -186,7 +183,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					FileLinePositionSpan existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
 					var reference = ToPrettyReference(existingEvidenceLineSpan);
 
-					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
+					context.ReportDiagnostic(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
 					if (_shouldGenerateExceptionsFile)
 					{
@@ -195,7 +192,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 			}
 
-			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
+			private void ReportExceptionDiagnostic(SyntaxNodeAnalysisContext context, Exception ex)
 			{
 				StringBuilder builder = new();
 				var lines = ex.StackTrace.Split(separator, StringSplitOptions.RemoveEmptyEntries);
@@ -215,15 +212,15 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
 				}
 
-				Location location = syntaxNodeAnalysisContext.Node.GetLocation();
-				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
+				Location location = context.Node.GetLocation();
+				context.ReportDiagnostic(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)
 			{
-				foreach (Diagnostic diagnostic in _diagnostics)
+				if (_configurationError != null)
 				{
-					context.ReportDiagnostic(diagnostic);
+					context.ReportDiagnostic(_configurationError);
 				}
 			}
 
