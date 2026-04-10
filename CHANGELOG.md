@@ -1,3 +1,17 @@
+### [1.11.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.0...v1.11.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* Report PH2071 diagnostics inline for IDE support ([#1084](https://github.com/philips-software/roslyn-analyzers/issues/1084)) ([b0d17db](https://github.com/philips-software/roslyn-analyzers/commit/b0d17db26779bbdc8f2cb041645909f284b39825))
+
+
+### Continuous Integration
+
+* Update SonarCloud workflow to use token variable ([#1077](https://github.com/philips-software/roslyn-analyzers/issues/1077)) ([de84bf8](https://github.com/philips-software/roslyn-analyzers/commit/de84bf8acef2878fef29c4d3a46770feb9ed7382))
+
+
+
 ## [1.11.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.10.0...v1.11.0) (2026-04-05)
 
 
