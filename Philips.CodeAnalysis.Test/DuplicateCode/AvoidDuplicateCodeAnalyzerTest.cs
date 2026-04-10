@@ -395,6 +395,49 @@ namespace MyNamespace
 	}
 
 	[TestClass]
+	public class AvoidDuplicateCodeInvalidTokenCountTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.token_count", @"abc");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateCodeReportsInvalidTokenCountAsync()
+		{
+			var source = @"
+namespace MyNamespace
+{{
+  class FooClass
+  {{
+    public void Foo()
+    {{
+	  object obj = new object();
+    }}
+  }}
+}}
+";
+
+			await VerifyDiagnostic(source,
+				new DiagnosticResult()
+				{
+					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+					Message = new Regex(".+invalid.+"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = [],
+				}
+			).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
 	public class AvoidDuplicateCodeGenerateExceptionsFileTest : AvoidDuplicateCodeAnalyzerTest
 	{
 		private const string GeneratedFileName = @"DuplicateCode.Allowed.GENERATED.txt";

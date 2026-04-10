@@ -170,7 +170,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 				catch (Exception ex)
 				{
-					ReportExceptionDiagnostic(obj, ex);
+					CreateExceptionDiagnostic(ex, obj);
 				}
 			}
 
@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 			}
 
-			private void ReportExceptionDiagnostic(SyntaxNodeAnalysisContext context, Exception ex)
+			private void CreateExceptionDiagnostic(Exception ex, SyntaxNodeAnalysisContext syntaxNodeAnalysisContext)
 			{
 				StringBuilder builder = new();
 				var lines = ex.StackTrace.Split(separator, StringSplitOptions.RemoveEmptyEntries);
@@ -212,8 +212,8 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					result = ex.StackTrace.Replace(Environment.NewLine, " ## ");
 				}
 
-				Location location = context.Node.GetLocation();
-				context.ReportDiagnostic(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
+				Location location = syntaxNodeAnalysisContext.Node.GetLocation();
+				syntaxNodeAnalysisContext.ReportDiagnostic(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)
