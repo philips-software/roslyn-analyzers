@@ -1,3 +1,14 @@
+## [1.12.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.1...v1.12.0) (2026-04-11)
+
+
+### Features
+
+* CodeFixer for PH2160 Mock<T> -> DisposableObjectMock<T> ([#1088](https://github.com/philips-software/roslyn-analyzers/issues/1088)) ([9ff77a2](https://github.com/philips-software/roslyn-analyzers/commit/9ff77a201edbf36a502845e60642e88682f72cb1))
+* ILRepack Common.dll into each analyzer for independent versioning ([#1086](https://github.com/philips-software/roslyn-analyzers/issues/1086)) ([92d401c](https://github.com/philips-software/roslyn-analyzers/commit/92d401ccd5dc6333d107185d6fdbddbdc47f4625))
+* Introduce PH2160 v1 ([#1083](https://github.com/philips-software/roslyn-analyzers/issues/1083)) ([0464ad5](https://github.com/philips-software/roslyn-analyzers/commit/0464ad5f284bc52a1195ac59d9a1bfb3b2d0352b))
+
+
+
 ### [1.11.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.0...v1.11.1) (2026-04-10)
 
 
