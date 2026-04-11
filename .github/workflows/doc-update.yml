@@ -50,6 +50,11 @@ jobs:
               UPDATED_MARKDOWN="true"
               echo "Modified markdown file: $file"
             fi
+            if [[ "$file" =~ ^.+\.md$ ]] && [[ "$status" == "A" ]]
+            then
+              ADDED_MARKDOWN="true"
+              echo "Added markdown file: $file"
+            fi
             if [[ "$file" =~ ^.+\.csproj$ ]] && [[ "$status" == "M" ]]
             then
               UPDATED_PROJECT="true"
@@ -67,14 +72,9 @@ jobs:
           echo "Conclusion:"
           if [[ ! -z "$ADDED_ANALYZER" ]]
           then
-            if [[ -z "$UPDATED_MARKDOWN" ]]
+            if [[ -z "$ADDED_MARKDOWN" ]]
             then
-              echo "You forgot to update the user documentation MarkDown file."
-              exit 1
-            fi
-            if [[ -z "$UPDATED_PROJECT" ]]
-            then
-              echo "You forgot to update the changelog in the project file."
+              echo "You forgot to add the user documentation MarkDown file."
               exit 1
             fi
             if [[ -z "$ADDED_TEST" ]]
