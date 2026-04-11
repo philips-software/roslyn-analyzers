@@ -40,14 +40,40 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.6.0" PrivateAssets="all" />
     <PackageReference Update="NETStandard.Library" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+    <PackageReference Include="ILRepack.Lib.MSBuild.Task" Version="2.0.34.2" PrivateAssets="all" ExcludeAssets="build" />
   </ItemGroup>
+
+  <!-- ILRepack: merge Common.dll (and Mono.Cecil if present) into the analyzer DLL so each package is self-contained.
+       This allows each analyzer package to be versioned independently without Common.dll conflicts at runtime. -->
+  <UsingTask AssemblyFile="$(NuGetPackageRoot)ilrepack.lib.msbuild.task\2.0.34.2\build\ILRepack.Lib.MSBuild.Task.dll" TaskName="ILRepack" />
+  <Target Name="ILRepackMerge" AfterTargets="Build" Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ItemGroup>
+      <ILRepackInput Include="$(OutputPath)$(AssemblyName).dll" />
+      <ILRepackInput Include="$(OutputPath)Philips.CodeAnalysis.Common.dll" />
+      <ILRepackInput Include="$(OutputPath)Mono.Cecil.dll" Condition="Exists('$(OutputPath)Mono.Cecil.dll')" />
+      <ILRepackInput Include="$(OutputPath)Mono.Cecil.Mdb.dll" Condition="Exists('$(OutputPath)Mono.Cecil.Mdb.dll')" />
+      <ILRepackInput Include="$(OutputPath)Mono.Cecil.Pdb.dll" Condition="Exists('$(OutputPath)Mono.Cecil.Pdb.dll')" />
+      <ILRepackInput Include="$(OutputPath)Mono.Cecil.Rocks.dll" Condition="Exists('$(OutputPath)Mono.Cecil.Rocks.dll')" />
+    </ItemGroup>
+    <ItemGroup>
+      <ILRepackSearchDir Include="$(OutputPath)" />
+      <ILRepackSearchDir Include="@(ReferencePath->'%(RootDir)%(Directory)')" />
+    </ItemGroup>
+    <ILRepack
+      Parallel="true"
+      DebugInfo="true"
+      Internalize="true"
+      InputAssemblies="@(ILRepackInput)"
+      LibraryPath="@(ILRepackSearchDir)"
+      TargetKind="SameAsPrimaryAssembly"
+      OutputFile="$(OutputPath)$(AssemblyName).dll" />
+  </Target>
 
   <ItemGroup>
     <None Include="..\packageicon.png" Pack="true" PackagePath="\" />
     <None Include="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="tools" />
     <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     <None Include="$(OutputPath)\netstandard2.0\$(AssemblyName).pdb" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)\netstandard2.0\Philips.CodeAnalysis.Common.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
     <None Include="..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>

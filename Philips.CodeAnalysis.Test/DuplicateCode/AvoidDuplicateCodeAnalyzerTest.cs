@@ -1,6 +1,7 @@
 ﻿// © 2019 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -390,6 +391,117 @@ namespace MyNamespace
 					}
 				}
 			).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class AvoidDuplicateCodeInvalidTokenCountTest : DiagnosticVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new AvoidDuplicateCodeAnalyzer() { DefaultDuplicateTokenThreshold = 100 };
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.token_count", @"abc");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateCodeReportsInvalidTokenCountAsync()
+		{
+			var source = @"
+namespace MyNamespace
+{{
+  class FooClass
+  {{
+    public void Foo()
+    {{
+	  object obj = new object();
+    }}
+  }}
+}}
+";
+
+			await VerifyDiagnostic(source,
+				new DiagnosticResult()
+				{
+					Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+					Message = new Regex(".+invalid.+"),
+					Severity = DiagnosticSeverity.Error,
+					Locations = [],
+				}
+			).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class AvoidDuplicateCodeGenerateExceptionsFileTest : AvoidDuplicateCodeAnalyzerTest
+	{
+		private const string GeneratedFileName = @"DuplicateCode.Allowed.GENERATED.txt";
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($@"dotnet_code_quality.{AvoidDuplicateCodeAnalyzer.Rule.Id}.generate_exceptions_file", @"true");
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AvoidDuplicateCodeGeneratesExceptionsFileAsync()
+		{
+			// Ensure clean state
+			if (File.Exists(GeneratedFileName))
+			{
+				File.Delete(GeneratedFileName);
+			}
+
+			var source = @"
+namespace MyNamespace
+{{
+  class FooClass
+  {{
+    public void Foo()
+    {{
+	  object obj = new object(); object obj2 = new object(); object obj3 = new object();
+    }}
+    public void Bar()
+    {{
+	  object obj = new object(); object obj2 = new object(); object obj3 = new object();
+    }}
+  }}
+}}
+";
+
+			try
+			{
+				await VerifyDiagnostic(source,
+					new DiagnosticResult()
+					{
+						Id = AvoidDuplicateCodeAnalyzer.Rule.Id,
+						Message = new Regex("Duplicate shape found.+"),
+						Severity = DiagnosticSeverity.Error,
+						Locations = new[]
+						{
+							new DiagnosticResultLocation("Test0.cs", null, null),
+							new DiagnosticResultLocation("Test0.cs", null, null),
+						}
+					}
+				).ConfigureAwait(false);
+
+				Assert.IsTrue(File.Exists(GeneratedFileName), $"Expected {GeneratedFileName} to be generated when generate_exceptions_file is enabled.");
+				var content = File.ReadAllText(GeneratedFileName);
+				Assert.Contains("Bar", content);
+			}
+			finally
+			{
+				if (File.Exists(GeneratedFileName))
+				{
+					File.Delete(GeneratedFileName);
+				}
+			}
 		}
 	}
 }
