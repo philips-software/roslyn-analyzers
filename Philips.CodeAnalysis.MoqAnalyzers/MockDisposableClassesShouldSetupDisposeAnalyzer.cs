@@ -1,5 +1,6 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,8 +13,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 	[DiagnosticAnalyzer(LanguageNames.CSharp)]
 	public class MockDisposableClassesShouldSetupDisposeAnalyzer : SingleDiagnosticAnalyzer
 	{
+		public const string PreferredDisposableMockTypeProperty = "PreferredDisposableMockType";
 		private const string MockName = "Mock";
-
 		private const string Title = @"Mock<T> of disposable concrete class should setup virtual Dispose(bool)";
 		private const string MessageFormat = @"Mock<{0}> may suppress real disposal because Moq does not call base implementations by default";
 		private const string Description = @"Mocking a disposable concrete class without configuring protected Dispose may prevent cleanup from executing";
@@ -80,7 +81,21 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreationExpressionSyntax.GetLocation(), mockedType.Name));
+			ReportDiagnostic(context, objectCreationExpressionSyntax, mockedType);
+		}
+
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax, ITypeSymbol mockedType)
+		{
+			// Pass the preferred disposable mock type from editorconfig as additional property, so that code fix can use it to determine which type to suggest in the code fix message and when applying the code fix.
+			var preferredDisposableMockType = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "preferred_disposable_mock_type");
+
+			ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty;
+			if (!string.IsNullOrWhiteSpace(preferredDisposableMockType))
+			{
+				properties = properties.Add(PreferredDisposableMockTypeProperty, preferredDisposableMockType.Trim());
+			}
+
+			context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreationExpressionSyntax.GetLocation(), properties, mockedType.Name));
 		}
 
 		private bool TryGetMockedType(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax, out ITypeSymbol mockedType)
