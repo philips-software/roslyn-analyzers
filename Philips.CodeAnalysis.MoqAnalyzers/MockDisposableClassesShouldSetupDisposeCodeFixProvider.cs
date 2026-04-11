@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 			TypeSyntax replacementType = replacementTypeSyntax.WithAdditionalAnnotations(Formatter.Annotation);
 
-			SyntaxNode newRoot = rootNode;
+			SyntaxNode newRoot;
 			TypeSyntax declaredTypeToReplace = GetDeclaredTypeToReplace(node, objectCreationGenericName);
 
 			if (declaredTypeToReplace != null)
@@ -80,15 +80,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return propertyDeclarationSyntax.Type;
 			}
 
-			FieldDeclarationSyntax fieldDeclarationSyntax = objectCreationSyntax.FirstAncestorOrSelf<FieldDeclarationSyntax>();
-			if (fieldDeclarationSyntax != null &&
-				fieldDeclarationSyntax.Declaration != null &&
-				fieldDeclarationSyntax.Declaration.Type is GenericNameSyntax fieldGenericName &&
-				fieldGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText)
-			{
-				return fieldDeclarationSyntax.Declaration.Type;
-			}
-
 			return null;
 		}
 
@@ -113,31 +104,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			{
 				genericNameSyntax = qualifiedNameSyntax.Right;
 			}
-			else if (configuredNameSyntax is AliasQualifiedNameSyntax aliasQualifiedNameSyntax)
-			{
-				genericNameSyntax = aliasQualifiedNameSyntax.Name;
-			}
 			else
 			{
 				genericNameSyntax = configuredNameSyntax as SimpleNameSyntax;
-			}
-
-			if (genericNameSyntax is GenericNameSyntax configuredGenericName)
-			{
-				// If user accidentally configured a generic form, overwrite its type args with the real ones.
-				GenericNameSyntax rewrittenGenericName = configuredGenericName.WithTypeArgumentList(originalTypeArguments);
-
-				if (configuredNameSyntax is QualifiedNameSyntax qualifiedName)
-				{
-					return qualifiedName.WithRight(rewrittenGenericName);
-				}
-
-				if (configuredNameSyntax is AliasQualifiedNameSyntax aliasQualifiedName)
-				{
-					return SyntaxFactory.AliasQualifiedName(aliasQualifiedName.Alias, rewrittenGenericName);
-				}
-
-				return rewrittenGenericName;
 			}
 
 			GenericNameSyntax appendedGenericName = SyntaxFactory.GenericName(genericNameSyntax.Identifier, originalTypeArguments);
@@ -145,11 +114,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			if (configuredNameSyntax is QualifiedNameSyntax qualifiedConfiguredName)
 			{
 				return qualifiedConfiguredName.WithRight(appendedGenericName);
-			}
-
-			if (configuredNameSyntax is AliasQualifiedNameSyntax aliasQualifiedConfiguredName)
-			{
-				return SyntaxFactory.AliasQualifiedName(aliasQualifiedConfiguredName.Alias, appendedGenericName);
 			}
 
 			return appendedGenericName;
