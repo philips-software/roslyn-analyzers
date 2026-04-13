@@ -1,6 +1,5 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
-using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -21,31 +20,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.MockDisposableObjectsShouldSetupDispose;
 
-		private static string DescribeNode(SyntaxNode node)
-		{
-			if (node == null)
-			{
-				return "<null>";
-			}
-
-			return $"{node.GetType().FullName} | Kind={node.Kind()} | Text={node}";
-		}
-
 		protected override async Task<Document> ApplyFix(Document document, ExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			var configuredTypeName = GetPreferredDisposableMockType(properties);
-
-			TypeSyntax declaredType = GetDeclaredTypeFromContext(node);
-
-			if (node is ImplicitObjectCreationExpressionSyntax)
-			{
-				throw new InvalidOperationException(
-					$"PH2160 DEBUG implicit fixer path reached. " +
-					$"node=[{DescribeNode(node)}], " +
-					$"declaredType=[{DescribeNode(declaredType)}], " +
-					$"configuredTypeName=[{configuredTypeName ?? "<null>"}]");
-			}
-
 			if (string.IsNullOrWhiteSpace(configuredTypeName))
 			{
 				return document;
@@ -57,43 +34,38 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return document;
 			}
 
-			GenericNameSyntax objectCreationGenericName = null;
-
-			if (node is ObjectCreationExpressionSyntax explicitCreation &&
-				explicitCreation.Type is GenericNameSyntax explicitGeneric)
-			{
-				objectCreationGenericName = explicitGeneric;
-			}
-			else if (node is ImplicitObjectCreationExpressionSyntax)
-			{
-				//TypeSyntax declaredType = GetDeclaredTypeFromContext(node);
-				objectCreationGenericName = declaredType as GenericNameSyntax;
-			}
-
-			if (objectCreationGenericName == null)
+			ExpressionSyntax currentNode = FindCurrentNode<ExpressionSyntax>(rootNode, node);
+			if (currentNode == null)
 			{
 				return document;
 			}
 
-			TypeSyntax replacementTypeSyntax = CreateReplacementTypeSyntax(configuredTypeName, objectCreationGenericName.TypeArgumentList);
-			TypeSyntax replacementType = replacementTypeSyntax.WithAdditionalAnnotations(Formatter.Annotation);
+			TypeSyntax declaredTypeToReplace = GetDeclaredTypeFromContext(currentNode);
 
-			SyntaxNode newRoot;
-			TypeSyntax declaredTypeToReplace = GetDeclaredTypeToReplace(node, objectCreationGenericName);
-
-			if (node is ImplicitObjectCreationExpressionSyntax)
+			if (currentNode is ImplicitObjectCreationExpressionSyntax)
 			{
-				if (declaredTypeToReplace == null)
+				if (declaredTypeToReplace is not GenericNameSyntax declaredGenericName)
 				{
 					return document;
 				}
 
-				newRoot = rootNode.ReplaceNode(
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, declaredGenericName.TypeArgumentList)
+					.WithAdditionalAnnotations(Formatter.Annotation);
+
+				SyntaxNode newRoot = rootNode.ReplaceNode(
 					declaredTypeToReplace,
 					replacementType.WithTriviaFrom(declaredTypeToReplace));
+
+				return document.WithSyntaxRoot(newRoot);
 			}
-			else if (node is ObjectCreationExpressionSyntax explicitObjectCreation)
+
+			if (currentNode is ObjectCreationExpressionSyntax explicitObjectCreation &&
+				explicitObjectCreation.Type is GenericNameSyntax explicitGenericName)
 			{
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, explicitGenericName.TypeArgumentList)
+					.WithAdditionalAnnotations(Formatter.Annotation);
+
+				SyntaxNode newRoot;
 				if (declaredTypeToReplace != null)
 				{
 					newRoot = rootNode.ReplaceNodes(
@@ -106,13 +78,23 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 						explicitObjectCreation.Type,
 						replacementType.WithTriviaFrom(explicitObjectCreation.Type));
 				}
-			}
-			else
-			{
-				return document;
+
+				return document.WithSyntaxRoot(newRoot);
 			}
 
-			return document.WithSyntaxRoot(newRoot);
+			return document;
+		}
+
+		private static TNode FindCurrentNode<TNode>(SyntaxNode rootNode, SyntaxNode originalNode)
+			where TNode : SyntaxNode
+		{
+			if (rootNode == null || originalNode == null)
+			{
+				return null;
+			}
+
+			SyntaxNode currentNode = rootNode.FindNode(originalNode.Span, getInnermostNodeForTie: true);
+			return currentNode as TNode;
 		}
 
 		private static TypeSyntax GetDeclaredTypeFromContext(SyntaxNode node)
@@ -129,25 +111,10 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return propertyDeclarationSyntax.Type;
 			}
 
-			return null;
-		}
-
-		private static TypeSyntax GetDeclaredTypeToReplace(SyntaxNode node, GenericNameSyntax originalObjectCreationType)
-		{
-			VariableDeclarationSyntax variableDeclarationSyntax = node.FirstAncestorOrSelf<VariableDeclarationSyntax>();
-			if (variableDeclarationSyntax != null &&
-				variableDeclarationSyntax.Type is GenericNameSyntax declaredGenericName &&
-				declaredGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText)
+			FieldDeclarationSyntax fieldDeclarationSyntax = node.FirstAncestorOrSelf<FieldDeclarationSyntax>();
+			if (fieldDeclarationSyntax != null)
 			{
-				return variableDeclarationSyntax.Type;
-			}
-
-			PropertyDeclarationSyntax propertyDeclarationSyntax = node.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
-			if (propertyDeclarationSyntax != null &&
-				propertyDeclarationSyntax.Type is GenericNameSyntax propertyGenericName &&
-				propertyGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText)
-			{
-				return propertyDeclarationSyntax.Type;
+				return fieldDeclarationSyntax.Declaration?.Type;
 			}
 
 			return null;
