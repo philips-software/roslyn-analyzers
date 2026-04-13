@@ -1,5 +1,6 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System;
 using System.Collections.Immutable;
 using System.Composition;
 using System.Threading;
@@ -20,9 +21,31 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.MockDisposableObjectsShouldSetupDispose;
 
+		private static string DescribeNode(SyntaxNode node)
+		{
+			if (node == null)
+			{
+				return "<null>";
+			}
+
+			return $"{node.GetType().FullName} | Kind={node.Kind()} | Text={node}";
+		}
+
 		protected override async Task<Document> ApplyFix(Document document, ExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			var configuredTypeName = GetPreferredDisposableMockType(properties);
+
+			TypeSyntax declaredType = GetDeclaredTypeFromContext(node);
+
+			if (node is ImplicitObjectCreationExpressionSyntax)
+			{
+				throw new InvalidOperationException(
+					$"PH2160 DEBUG implicit fixer path reached. " +
+					$"node=[{DescribeNode(node)}], " +
+					$"declaredType=[{DescribeNode(declaredType)}], " +
+					$"configuredTypeName=[{configuredTypeName ?? "<null>"}]");
+			}
+
 			if (string.IsNullOrWhiteSpace(configuredTypeName))
 			{
 				return document;
@@ -43,7 +66,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 			else if (node is ImplicitObjectCreationExpressionSyntax)
 			{
-				TypeSyntax declaredType = GetDeclaredTypeFromContext(node);
+				//TypeSyntax declaredType = GetDeclaredTypeFromContext(node);
 				objectCreationGenericName = declaredType as GenericNameSyntax;
 			}
 
