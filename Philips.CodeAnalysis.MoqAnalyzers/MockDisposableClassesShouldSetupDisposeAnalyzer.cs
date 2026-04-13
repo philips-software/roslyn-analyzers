@@ -16,7 +16,9 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 		public const string PreferredDisposableMockTypeProperty = "PreferredDisposableMockType";
 		private const string MockName = "Mock";
 		private const string Title = @"Mock<T> of disposable concrete class should setup virtual Dispose(bool)";
-		private const string MessageFormat = @"Mock<{0}> may suppress real disposal because Moq does not call base implementations by default";
+		//		private const string MessageFormat = @"Mock<{0}> may suppress real disposal because Moq does not call base implementations by default";
+		private const string MessageFormat =
+			@"Mock<{0}> may suppress real disposal because Moq does not call base implementations by default [debug: node={1}, parent={2}, declared={3}]";
 		private const string Description = @"Mocking a disposable concrete class without configuring protected Dispose may prevent cleanup from executing";
 
 		public MockDisposableClassesShouldSetupDisposeAnalyzer()
@@ -79,7 +81,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax, ITypeSymbol mockedType)
 		{
-			// Pass the preferred disposable mock type from editorconfig as additional property, so that code fix can use it to determine which type to suggest in the code fix message and when applying the code fix.
 			var preferredDisposableMockType = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "preferred_disposable_mock_type");
 
 			ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty;
@@ -88,9 +89,58 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				properties = properties.Add(PreferredDisposableMockTypeProperty, preferredDisposableMockType.Trim());
 			}
 
-			context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreationExpressionSyntax.GetLocation(), properties, mockedType.Name));
+			var nodeKind = objectCreationExpressionSyntax?.Kind().ToString() ?? "<null>";
+			var parentKind = objectCreationExpressionSyntax?.Parent?.Kind().ToString() ?? "<null>";
+			var declaredType = GetDeclaredTypeFromContext(objectCreationExpressionSyntax)?.Kind().ToString() ?? "<null>";
+
+			context.ReportDiagnostic(
+				Diagnostic.Create(
+					Rule,
+					objectCreationExpressionSyntax.GetLocation(),
+					properties,
+					mockedType.Name,
+					nodeKind,
+					parentKind,
+					declaredType));
 		}
 
+		private static TypeSyntax GetDeclaredTypeFromContext(SyntaxNode node)
+		{
+			VariableDeclarationSyntax variableDeclarationSyntax = node.FirstAncestorOrSelf<VariableDeclarationSyntax>();
+			if (variableDeclarationSyntax != null)
+			{
+				return variableDeclarationSyntax.Type;
+			}
+
+			PropertyDeclarationSyntax propertyDeclarationSyntax = node.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
+			if (propertyDeclarationSyntax != null)
+			{
+				return propertyDeclarationSyntax.Type;
+			}
+
+			FieldDeclarationSyntax fieldDeclarationSyntax = node.FirstAncestorOrSelf<FieldDeclarationSyntax>();
+			if (fieldDeclarationSyntax != null)
+			{
+				return fieldDeclarationSyntax.Declaration?.Type;
+			}
+
+			return null;
+		}
+		/*
+				private void ReportDiagnostic(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax, ITypeSymbol mockedType)
+				{
+					// Pass the preferred disposable mock type from editorconfig as additional property, so that code fix can use it to determine which type to suggest in the code fix message and when applying the code fix.
+					var preferredDisposableMockType = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "preferred_disposable_mock_type");
+
+					ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty;
+					if (!string.IsNullOrWhiteSpace(preferredDisposableMockType))
+					{
+						properties = properties.Add(PreferredDisposableMockTypeProperty, preferredDisposableMockType.Trim());
+					}
+
+					context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreationExpressionSyntax.GetLocation(), properties, mockedType.Name));
+				}
+		*/
 		private bool TryGetMockedType(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax, out ITypeSymbol mockedType)
 		{
 			mockedType = null;

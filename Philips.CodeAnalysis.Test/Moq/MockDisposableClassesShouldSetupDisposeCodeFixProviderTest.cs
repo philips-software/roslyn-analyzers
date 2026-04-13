@@ -46,11 +46,23 @@ namespace Philips.CodeAnalysis.Test.Moq
 		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
 		{
 			return base.GetAdditionalSourceCode()
-		.Add(("DisposableClass.cs", @"
+.Add(("DisposableClass.cs", @"
 using System;
+
+class Dependency
+{
+}
 
 class DisposableClass : IDisposable
 {
+	public DisposableClass()
+	{
+	}
+
+	public DisposableClass(Dependency dependency)
+	{
+	}
+
 	public void Dispose()
 	{
 		Dispose(true);
@@ -61,7 +73,7 @@ class DisposableClass : IDisposable
 	{
 	}
 }"))
-		.Add(("DisposableObjectMock.cs", @"
+.Add(("DisposableObjectMock.cs", @"
 using Moq;
 using System;
 namespace MyNamespace
@@ -81,6 +93,114 @@ namespace MyNamespace
 		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)
 		{
 			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Document));
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ExplicitLocalMockTypeWithTargetTypedNewAndArgumentsIsReplacedAsync()
+		{
+			const string template = @"
+using Moq;
+
+class Dependency
+{
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Dependency dependency = new();
+		Mock<DisposableClass> mock = new(dependency);
+	}
+}";
+			const string expected = @"
+using Moq;
+
+class Dependency
+{
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Dependency dependency = new();
+		MyNamespace.DisposableObjectMock<DisposableClass> mock = new(dependency);
+	}
+}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ExplicitLocalMockTypeWithTargetTypedNewAndArgumentIsReplacedInWrapperModeAsync()
+		{
+			const string template = @"
+using Moq;
+
+class Dependency
+{
+}
+
+class DisposableClass : System.IDisposable
+{
+	public DisposableClass(Dependency dependency)
+	{
+	}
+
+	public void Dispose()
+	{
+		Dispose(true);
+		System.GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Dependency dependency = new();
+		Mock<DisposableClass> mock = new(dependency);
+	}
+}";
+			const string expected = @"
+using Moq;
+
+class Dependency
+{
+}
+
+class DisposableClass : System.IDisposable
+{
+	public DisposableClass(Dependency dependency)
+	{
+	}
+
+	public void Dispose()
+	{
+		Dispose(true);
+		System.GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Dependency dependency = new();
+		MyNamespace.DisposableObjectMock<DisposableClass> mock = new(dependency);
+	}
+}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 
 		[TestMethod]
