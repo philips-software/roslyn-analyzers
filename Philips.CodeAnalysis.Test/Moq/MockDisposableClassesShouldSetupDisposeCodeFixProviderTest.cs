@@ -298,7 +298,7 @@ namespace MyNamespace
 				}";
 			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
-		/*
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task VarMockTypeOnlyReplacesObjectCreationAsync()
@@ -326,7 +326,7 @@ namespace MyNamespace
 			// Introduces "unnecessary 'using Moq'
 			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
-*/
+
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task FieldInitializerMockTypeIsReplacedAsync()

@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					.WithAdditionalAnnotations(Formatter.Annotation);
 
 				SyntaxNode newRoot;
-				if (declaredTypeToReplace != null)
+				if (IsMatchingMockDeclaredType(declaredTypeToReplace, explicitGenericName))
 				{
 					newRoot = rootNode.ReplaceNodes(
 						new SyntaxNode[] { explicitObjectCreation.Type, declaredTypeToReplace },
@@ -118,6 +118,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			return null;
+		}
+
+		private static bool IsMatchingMockDeclaredType(TypeSyntax declaredTypeSyntax, GenericNameSyntax originalObjectCreationType)
+		{
+			return declaredTypeSyntax is GenericNameSyntax declaredGenericName &&
+				declaredGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText;
 		}
 
 		private static string GetPreferredDisposableMockType(ImmutableDictionary<string, string> properties)
