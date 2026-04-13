@@ -66,7 +66,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 		{
 			var binaryExpressionSyntax = syntaxNode as BinaryExpressionSyntax;
 			return
-				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.Kind() == SyntaxKind.AsKeyword) &&
+				(binaryExpressionSyntax == null || binaryExpressionSyntax.OperatorToken.IsKind(SyntaxKind.AsKeyword)) &&
 				binaryExpressionSyntax != null &&
 				binaryExpressionSyntax.Parent is EqualsValueClauseSyntax equalsValueClauseSyntax &&
 				equalsValueClauseSyntax.Parent is VariableDeclaratorSyntax;

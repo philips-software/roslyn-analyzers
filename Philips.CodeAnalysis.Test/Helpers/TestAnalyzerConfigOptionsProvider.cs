@@ -31,6 +31,8 @@ namespace Philips.CodeAnalysis.Test.Helpers
 			_options = new TestAnalyzerConfigOptions(settings);
 		}
 
+		public override AnalyzerConfigOptions GlobalOptions => _options;
+
 		public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
 		{
 			return _options;
@@ -41,5 +43,4 @@ namespace Philips.CodeAnalysis.Test.Helpers
 			return _options;
 		}
 	}
-
 }

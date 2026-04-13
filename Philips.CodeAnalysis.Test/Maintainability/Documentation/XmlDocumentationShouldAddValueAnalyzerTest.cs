@@ -60,22 +60,27 @@ public class Foo
 		public async Task DefaultWhiteSpaceWithBaseTest()
 		{
 			var content = $@"
-		/// <summary>
-		/// 
-		/// </summary>
-		public DoubleList(int capacity)
-			: base(capacity)
-		{{
-		}}
+public class DoubleList : BaseList
+{{
+	/// <summary>
+	/// 
+	/// </summary>
+	public DoubleList(int capacity)
+		: base(capacity)
+	{{
+	}}
+}}
 ";
 
 			var newContent = $@"
-		public DoubleList(int capacity)
-			: base(capacity)
-		{{
-		}}
+public class DoubleList : BaseList
+{{
+	public DoubleList(int capacity)
+		: base(capacity)
+	{{
+	}}
+}}
 ";
-
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 			await VerifyFix(content, newContent);
 		}

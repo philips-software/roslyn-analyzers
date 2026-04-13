@@ -24,7 +24,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
-			if (Node.Parent.Kind() == SyntaxKind.StructDeclaration)
+			if (Node.Parent.IsKind(SyntaxKind.StructDeclaration))
 			{
 				return;
 			}

@@ -92,7 +92,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 						{
 							var fieldDeclaration = (FieldDeclarationSyntax)variableDeclaration.Parent;
 
-							if (fieldDeclaration.Modifiers.Any(x => x.Kind() == SyntaxKind.PublicKeyword))
+							if (fieldDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.PublicKeyword)))
 							{
 								continue;
 							}

@@ -39,16 +39,25 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			name += StringConstants.TestAttributeName;
 
-			// Get the symbol representing the type to be renamed.
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
+			// Get the symbol representing the method to be renamed.
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
 			IMethodSymbol typeSymbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
 
-			// Produce a new solution that has all references to that type renamed, including the declaration.
-			Solution originalSolution = document.Project.Solution;
-			Microsoft.CodeAnalysis.Options.OptionSet optionSet = originalSolution.Workspace.Options;
-			Solution newSolution = await Renamer.RenameSymbolAsync(document.Project.Solution, typeSymbol, name, optionSet, cancellationToken).ConfigureAwait(false);
+			SymbolRenameOptions renameOptions = new()
+			{
+				RenameOverloads = false,
+				RenameInStrings = false,
+				RenameInComments = false,
+				RenameFile = false,
+			};
 
-			// Return the new solution with the now-uppercase type name.
+			Solution newSolution = await Renamer.RenameSymbolAsync(
+				document.Project.Solution,
+				typeSymbol,
+				renameOptions,
+				name,
+				cancellationToken).ConfigureAwait(false);
+
 			return newSolution;
 		}
 	}
