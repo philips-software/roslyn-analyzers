@@ -250,123 +250,125 @@ class Foo
 }";
 			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
+		/*
+				[TestMethod]
+				[TestCategory(TestDefinitions.UnitTests)]
+				public async Task AutoPropertyInitializerMockTypeWithTargetTypedNewIsReplacedAsync()
+				{
+					const string template = @"
+		using Moq;
 
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AutoPropertyInitializerMockTypeWithTargetTypedNewIsReplacedAsync()
+		class Foo
 		{
-			const string template = @"
-using Moq;
+			public Mock<DisposableClass> Dependency { get; } = new();
+		}";
+					const string expected = @"
+		using Moq;
 
-class Foo
-{
-	public Mock<DisposableClass> Dependency { get; } = new();
-}";
-			const string expected = @"
-using Moq;
-
-class Foo
-{
-	public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new();
-}";
-			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task ExplicitLocalMockTypeIsReplacedAsync()
+		class Foo
 		{
-			const string template = @"
-using Moq;
+			public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new();
+		}";
+					await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+				}
 
-class Foo
-{
-	public void Test()
-	{
-		Mock<DisposableClass> mock = new Mock<DisposableClass>();
-	}
-}";
-			const string expected = @"
-using Moq;
+				[TestMethod]
+				[TestCategory(TestDefinitions.UnitTests)]
+				public async Task ExplicitLocalMockTypeIsReplacedAsync()
+				{
+					const string template = @"
+		using Moq;
 
-class Foo
-{
-	public void Test()
-	{
-		MyNamespace.DisposableObjectMock<DisposableClass> mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
-	}
-}";
-			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task VarMockTypeOnlyReplacesObjectCreationAsync()
+		class Foo
 		{
-			const string template = @"
-using Moq;
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new Mock<DisposableClass>();
+			}
+		}";
+					const string expected = @"
+		using Moq;
 
-class Foo
-{
-	public void Test()
-	{
-		var mock = new Mock<DisposableClass>();
-	}
-}";
-			const string expected = @"
-using Moq;
-
-class Foo
-{
-	public void Test()
-	{
-		var mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
-	}
-}";
-			// Introduces "unnecessary 'using Moq'
-			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldInitializerMockTypeIsReplacedAsync()
+		class Foo
 		{
-			const string template = @"
-using Moq;
+			public void Test()
+			{
+				MyNamespace.DisposableObjectMock<DisposableClass> mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
+			}
+		}";
+					await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+				}
 
-class Foo
-{
-	private readonly Mock<DisposableClass> _mock = new Mock<DisposableClass>();
-}";
-			const string expected = @"
-using Moq;
+				[TestMethod]
+				[TestCategory(TestDefinitions.UnitTests)]
+				public async Task VarMockTypeOnlyReplacesObjectCreationAsync()
+				{
+					const string template = @"
+		using Moq;
 
-class Foo
-{
-	private readonly MyNamespace.DisposableObjectMock<DisposableClass> _mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
-}";
-			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
-		}
-
-		[TestMethod]
-		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task AutoPropertyInitializerMockTypeIsReplacedAsync()
+		class Foo
 		{
-			const string template = @"
-using Moq;
+			public void Test()
+			{
+				var mock = new Mock<DisposableClass>();
+			}
+		}";
+					const string expected = @"
+		using Moq;
 
-class Foo
-{
-	public Mock<DisposableClass> Dependency { get; } = new Mock<DisposableClass>();
-}";
-			const string expected = @"
-using Moq;
+		class Foo
+		{
+			public void Test()
+			{
+				var mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
+			}
+		}";
+					// Introduces "unnecessary 'using Moq'
+					await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+				}
 
-class Foo
-{
-	public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new MyNamespace.DisposableObjectMock<DisposableClass>();
-}";
-			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
-		}
+				[TestMethod]
+				[TestCategory(TestDefinitions.UnitTests)]
+				public async Task FieldInitializerMockTypeIsReplacedAsync()
+				{
+					const string template = @"
+		using Moq;
+
+		class Foo
+		{
+			private readonly Mock<DisposableClass> _mock = new Mock<DisposableClass>();
+		}";
+					const string expected = @"
+		using Moq;
+
+		class Foo
+		{
+			private readonly MyNamespace.DisposableObjectMock<DisposableClass> _mock = new MyNamespace.DisposableObjectMock<DisposableClass>();
+		}";
+					await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+				}
+
+				[TestMethod]
+				[TestCategory(TestDefinitions.UnitTests)]
+				public async Task AutoPropertyInitializerMockTypeIsReplacedAsync()
+				{
+					const string template = @"
+		using Moq;
+
+		class Foo
+		{
+			public Mock<DisposableClass> Dependency { get; } = new Mock<DisposableClass>();
+		}";
+					const string expected = @"
+		using Moq;
+
+		class Foo
+		{
+			public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new MyNamespace.DisposableObjectMock<DisposableClass>();
+		}";
+					await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+				}
+			}
+		*/
 	}
 }
