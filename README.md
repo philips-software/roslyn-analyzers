@@ -35,7 +35,7 @@ The current minimum support version is Visual Studio 2022 17.4.
 
 ## MCP Server for Development
 
-A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
+A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, code coverage, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
 
 ## CI/CD
 [Learn more](./cicd.md) about the CI/CD pipeline.
