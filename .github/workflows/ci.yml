@@ -34,7 +34,6 @@ jobs:
     uses: ./.github/workflows/performance.yml
 
   detect-major-version:
-    if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/detect-major-version.yml
 
   tagversion:
