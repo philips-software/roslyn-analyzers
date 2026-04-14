@@ -102,7 +102,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return false;
 			}
 
-			if (literal.Token.Kind() != SyntaxKind.NumericLiteralToken)
+			if (!literal.Token.IsKind(SyntaxKind.NumericLiteralToken))
 			{
 				return false;
 			}

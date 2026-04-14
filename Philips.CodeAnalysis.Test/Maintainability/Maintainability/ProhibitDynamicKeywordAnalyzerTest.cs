@@ -24,12 +24,12 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 
 		#region Public Interface
 
-		[DataRow(@"void TestMethod() { dynamic i = 5; }")]
-		[DataRow(@"dynamic TestMethod() { return 5; }")]
-		[DataRow(@"void TestMethod(dynamic i) { return 5; }")]
-		[DataRow(@"void TestMethod() { List<dynamic> list = null; }")]
-		[DataRow(@"void TestMethod() { var t = (dynamic)4; }")]
-		[DataRow(@"dynamic TestProperty { get; }")]
+		[DataRow(@"class C { void TestMethod() { dynamic i = 5; } }")]
+		[DataRow(@"class C { dynamic TestMethod() { return 5; } }")]
+		[DataRow(@"class C { void TestMethod(dynamic i) { return 5; } }")]
+		[DataRow(@"class C { void TestMethod() { List<dynamic> list = null; } }")]
+		[DataRow(@"class C { void TestMethod() { var t = (dynamic)4; } }")]
+		[DataRow(@"class C { dynamic TestProperty { get; } }")]
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task DynamicTypeShouldTriggerDiagnostic(string testCode)

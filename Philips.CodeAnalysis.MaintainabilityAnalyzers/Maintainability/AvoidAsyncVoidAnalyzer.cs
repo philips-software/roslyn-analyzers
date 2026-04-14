@@ -42,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		{
 			var lambdaExpressionSyntax = (LambdaExpressionSyntax)context.Node;
 
-			if (lambdaExpressionSyntax.AsyncKeyword.Kind() != SyntaxKind.AsyncKeyword)
+			if (!lambdaExpressionSyntax.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword))
 			{
 				return;
 			}
@@ -70,7 +70,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				return;
 			}
 
-			if (methodDeclaration.ReturnType is not PredefinedTypeSyntax predefinedTypeSyntax || predefinedTypeSyntax.Keyword.Kind() != SyntaxKind.VoidKeyword)
+			if (methodDeclaration.ReturnType is not PredefinedTypeSyntax predefinedTypeSyntax || !predefinedTypeSyntax.Keyword.IsKind(SyntaxKind.VoidKeyword))
 			{
 				return;
 			}

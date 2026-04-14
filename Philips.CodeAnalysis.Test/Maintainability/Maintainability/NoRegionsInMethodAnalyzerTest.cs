@@ -21,42 +21,42 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoRegionNoMethodTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{C(){}}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{C(){}}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task NoRegionTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{C(){}public void foo(){}}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{C(){}public void foo(){}}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task EmptyClassWithRegionTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{	#region testRegion	#endregion	}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{	#region testRegion	#endregion	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionOutsideMethodTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{#region testRegion	public void foo() {int x = 2; }	#endregion}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{#region testRegion	public void foo() {int x = 2; }	#endregion}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionStartsAndEndsInMethodTestAsync()
 		{
-			await VerifyDiagnostic(@"Class C{	public void foo(){#region testRegion int x = 2;	#endregion }}").ConfigureAwait(false);
+			await VerifyDiagnostic(@"class C{	public void foo(){#region testRegion int x = 2;	#endregion }}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionStartsInMethodTestAsync()
 		{
-			await VerifyDiagnostic(@"Class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
+			await VerifyDiagnostic(@"class C{ public void foo(){ #region testRegion int x = 2;}	#endregion
 
 	}").ConfigureAwait(false);
 		}
@@ -65,7 +65,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionEndsInMethodTestAsync()
 		{
-			await VerifyDiagnostic(@"Class C{
+			await VerifyDiagnostic(@"class C{
 	#region testRegion
 	public void foo(){
 		int x = 2;
@@ -78,7 +78,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionCoversMultipleMethodsTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{	#region testRegion	public void foo(){	return;	} public void bar(){	}	#endregion	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -92,7 +92,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task UnnamedRegionTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{	#region #endregion	public void foo(){	return; }public void bar(){}	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
@@ -100,7 +100,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		public async Task RegionStartsInOneMethodEndsInAnotherTestAsync()
 		{
 			await VerifyDiagnostic(@"
-Class C{
+class C{
 	#region 
 	public void foo(){
 		return;
@@ -118,7 +118,7 @@ Class C{
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MalformedCodeTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"Class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"class C{	#region 	public void foo(){		return;	}	#endregion	public void bar(){	}	").ConfigureAwait(false);
 		}
 
 		[TestMethod]
