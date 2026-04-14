@@ -40,7 +40,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			name += StringConstants.TestAttributeName;
 
 			// Get the symbol representing the method to be renamed.
-			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
+			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
 			IMethodSymbol typeSymbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
 
 			SymbolRenameOptions renameOptions = new()

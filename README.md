@@ -28,18 +28,14 @@ Published packages include .snupkg and SourceLink. This allows symbol loading, s
 
 For symbols and stack traces, launch a second instance of Visual Studio, attach the debugger to your primary development instance, and Load Symbols via Debug -> Windows -> Modules, and right-clicking on the Analyzer.
 
-## Visual Studio 2019/2022 Support
+## Visual Studio Supported versions
 
-These packages reference Microsoft.CodeAnalysis version 3.6, which shipped with Visual Studio 2019 16.6.
+Visual Studio 2019 support was dropped in version 2.0.0 of these packages.
+The current minimum support version is Visual Studio 2022 17.4.
 
 ## MCP Server for Development
 
 A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
-
-Quick start:
-```bash
-./tools/mcp/start_mcp_server.sh
-```
 
 ## CI/CD
 [Learn more](./cicd.md) about the CI/CD pipeline.

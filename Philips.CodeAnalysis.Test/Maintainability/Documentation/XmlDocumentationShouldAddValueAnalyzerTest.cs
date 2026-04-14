@@ -62,23 +62,23 @@ public class Foo
 			var content = $@"
 public class DoubleList : BaseList
 {{
-	/// <summary>
-	/// 
-	/// </summary>
-	public DoubleList(int capacity)
-		: base(capacity)
-	{{
-	}}
+		/// <summary>
+		/// 
+		/// </summary>
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
 }}
 ";
 
 			var newContent = $@"
 public class DoubleList : BaseList
 {{
-	public DoubleList(int capacity)
-		: base(capacity)
-	{{
-	}}
+		public DoubleList(int capacity)
+			: base(capacity)
+		{{
+		}}
 }}
 ";
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);

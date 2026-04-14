@@ -49,16 +49,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionStartsAndEndsInMethodTestAsync()
 		{
-			await VerifyDiagnostic(@"
-class C
-{
-	public void foo()
-	{
-#region testRegion
-		int x = 2;
-#endregion
-	}
-}", 2).ConfigureAwait(false);
+			await VerifyDiagnostic(@"class C{	public void foo(){#region testRegion int x = 2;	#endregion }}").ConfigureAwait(false);
 		}
 
 		[TestMethod]
