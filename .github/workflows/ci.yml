@@ -33,15 +33,15 @@ jobs:
   performance:
     uses: ./.github/workflows/performance.yml
 
-  detect-custom-tag:
+  detect-major-version:
     if: ${{ github.event_name == 'push' }}
-    uses: ./.github/workflows/detect-custom-tag.yml
+    uses: ./.github/workflows/detect-major-version.yml
 
   tagversion:
-    needs: [detect-custom-tag]
+    needs: [detect-major-version]
     uses: ./.github/workflows/tagversion.yml
     with:
-      custom_tag: ${{ github.event_name == 'push' && needs.detect-custom-tag.outputs.custom_tag || '' }}
+      custom_tag: ${{ github.event_name == 'push' && needs.detect-major-version.outputs.custom_tag || '' }}
 
   build:
     needs: tagversion
