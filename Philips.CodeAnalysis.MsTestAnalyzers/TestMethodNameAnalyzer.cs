@@ -35,7 +35,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			SyntaxNode methodNode = Node.Parent;
 
 			// Confirm this is actually a method...
-			if (methodNode.Kind() != SyntaxKind.MethodDeclaration)
+			if (!methodNode.IsKind(SyntaxKind.MethodDeclaration))
 			{
 				return;
 			}
@@ -43,7 +43,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var invalidPrefix = string.Empty;
 			foreach (SyntaxToken token in methodNode.ChildTokens())
 			{
-				if (token.Kind() == SyntaxKind.IdentifierToken)
+				if (token.IsKind(SyntaxKind.IdentifierToken))
 				{
 					if (token.ValueText.StartsWith(StringConstants.TestAttributeName))
 					{

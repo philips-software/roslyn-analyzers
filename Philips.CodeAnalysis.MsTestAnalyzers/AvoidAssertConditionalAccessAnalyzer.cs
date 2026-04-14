@@ -50,7 +50,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private static bool InConditionalAccess(ArgumentSyntax argument)
 		{
-			return argument.DescendantNodes().Any(x => x.Kind() == SyntaxKind.ConditionalAccessExpression);
+			return argument.DescendantNodes().Any(x => x.IsKind(SyntaxKind.ConditionalAccessExpression));
 		}
 	}
 }

@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			Location location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
+			Location location = classDeclarationSyntax.Modifiers.First(t => t.IsKind(SyntaxKind.StaticKeyword)).GetLocation();
 			var diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}

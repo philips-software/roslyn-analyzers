@@ -97,6 +97,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				_configOptions = new TestAnalyzerConfigOptions(options);
 			}
 
+			public override AnalyzerConfigOptions GlobalOptions => _configOptions;
+
 			public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
 			{
 				return _configOptions;
