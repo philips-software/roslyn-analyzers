@@ -1,6 +1,7 @@
-﻿// © 2024 Koninklijke Philips N.V. See License.md in the project root for license information.
+﻿// © 2025 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability;
@@ -10,11 +11,16 @@ using Philips.CodeAnalysis.Test.Verifiers;
 namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 {
 	[TestClass]
-	public class AvoidUnusedToStringAnalyzerTest : DiagnosticVerifier
+	public class AvoidUnusedToStringAnalyzerTest : CodeFixVerifier
 	{
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
 		{
 			return new AvoidUnusedToStringAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new AvoidUnusedToStringCodeFixProvider();
 		}
 
 		[TestMethod]
@@ -172,6 +178,114 @@ class TestClass
 }";
 
 			await VerifySuccessfulCompilation(test).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixStandaloneLocalVariableToStringRemovesEntireStatement()
+		{
+			var test = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+		node.ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixStandaloneThisToStringRemovesEntireStatement()
+		{
+			var test = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		this.ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixStandaloneMethodCallToStringKeepsMethodCall()
+		{
+			var test = @"
+class TestClass
+{
+	public string GetNode() => ""test"";
+	public void TestMethod()
+	{
+		GetNode().ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public string GetNode() => ""test"";
+	public void TestMethod()
+	{
+		GetNode();
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixDiscardedToStringRemovesToStringCall()
+		{
+			var test = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+		_ = node.ToString();
+	}
+}";
+
+			var fixedCode = @"
+class TestClass
+{
+	public void TestMethod()
+	{
+		var node = ""test"";
+		_ = node;
+	}
+}";
+
+			await VerifyDiagnostic(test).ConfigureAwait(false);
+			await VerifyFix(test, fixedCode).ConfigureAwait(false);
 		}
 	}
 }

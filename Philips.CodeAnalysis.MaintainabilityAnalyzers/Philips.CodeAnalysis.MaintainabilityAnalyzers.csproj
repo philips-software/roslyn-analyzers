@@ -10,10 +10,5 @@
     <PackageTags>CSharp Maintainability Roslyn CodeAnalysis analyzers Philips</PackageTags>
     <PackageReleaseNotes>Added PH2144: AvoidIncorrectForLoopCondition analyzer to detect backwards for-loop boundary check issues</PackageReleaseNotes>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Mdb.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Pdb.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)\netstandard2.0\Mono.Cecil.Rocks.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-  </ItemGroup>
+  <!-- Mono.Cecil DLLs are now merged into the main analyzer DLL via ILRepack -->
 </Project>
