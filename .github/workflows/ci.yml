@@ -7,6 +7,7 @@ on:
   merge_group:
     types: [checks_requested]
     branches: [main]
+
 jobs:
   pinnedactions:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
@@ -28,16 +29,23 @@ jobs:
     uses: ./.github/workflows/sonarcloud.yml
     secrets:
       sonar-auth-token: ${{ secrets.SONAR_TOKEN }}
-      
+
   performance:
     uses: ./.github/workflows/performance.yml
-    
+
+  detect-major-version:
+    uses: ./.github/workflows/detect-major-version.yml
+
   tagversion:
+    needs: [detect-major-version]
     uses: ./.github/workflows/tagversion.yml
-    
+    with:
+      custom_tag: ${{ github.event_name == 'push' && needs.detect-major-version.outputs.custom_tag || '' }}
+
   build:
     needs: tagversion
     uses: ./.github/workflows/dotnetcore.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
+      

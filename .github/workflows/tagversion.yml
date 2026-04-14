@@ -7,6 +7,10 @@ on:
         type: boolean
         required: false
         default: true
+      custom_tag:
+        type: string
+        required: false
+        default: ''
     outputs:
       new_tag:
         value: ${{ jobs.tagversion.outputs.new_tag }}
@@ -14,36 +18,38 @@ on:
         value: ${{ jobs.tagversion.outputs.new_version }}
       changelog:
         value: ${{ jobs.tagversion.outputs.changelog }}
+
 jobs:
   tagversion:
     runs-on: ubuntu-latest
     name: Tag Version
-    steps:
-    - name: Determine Suffix
-      id: suffix
-      run: |
-        if ${{ inputs.prerelease }}; then
-          echo "CUSTOM_SUFFIX=-prerelease.${{ github.run_number }}" >> $GITHUB_OUTPUT
-        fi
-        
-    - name: Bump version
-      id: tag_version
-      uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # 6.2
-      with:
-        dry_run: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        
-    - name: Results
-      run: |
-        echo "New Tag:  ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
-        echo "New Version:  ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
-        echo "Changelog:"
-        echo "${{ steps.tag_version.outputs.changelog }}"
-        echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "${{ steps.tag_version.outputs.changelog }}" >> $GITHUB_OUTPUT
-        echo "EOF" >> $GITHUB_OUTPUT
-        
     outputs:
       new_tag: ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
       new_version: ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}
       changelog: ${{ steps.tag_version.outputs.changelog }}
+
+    steps:
+      - name: Determine Suffix
+        id: suffix
+        shell: bash
+        run: |
+          if ${{ inputs.prerelease }}; then
+            echo "CUSTOM_SUFFIX=-prerelease.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Bump version
+        id: tag_version
+        uses: mathieudutour/github-tag-action@a22cf08638b34d5badda920f9daf6e72c477b07b # 6.2
+        with:
+          dry_run: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ inputs.custom_tag }}
+
+      - name: Results
+        shell: bash
+        run: |
+          echo "New Tag:  ${{ steps.tag_version.outputs.new_tag }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
+          echo "New Version:  ${{ steps.tag_version.outputs.new_version }}${{ steps.suffix.outputs.CUSTOM_SUFFIX }}"
+          echo "Changelog:"
+          echo "${{ steps.tag_version.outputs.changelog }}"
+          
