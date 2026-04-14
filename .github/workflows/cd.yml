@@ -18,17 +18,17 @@ jobs:
           echo 'This PR changes the CHANGELOG.md file and as such will trigger a release of production software! If this is not your intent, revert the changes to changelog.md. If your intent is to publish software, manually invoke the Prep Release workflow instead.' >> $GITHUB_STEP_SUMMARY
           exit 1
 
-  detect-custom-tag:
+  detect-major-version:
     if: ${{ github.event_name == 'push' }}
-    uses: ./.github/workflows/detect-custom-tag.yml
+    uses: ./.github/workflows/detect-major-version.yml
 
   tagversion:
-    needs: [detect-custom-tag]
+    needs: [detect-major-version]
     if: ${{ github.event_name == 'push' }}
     uses: ./.github/workflows/tagversion.yml
     with:
       prerelease: false
-      custom_tag: ${{ needs.detect-custom-tag.outputs.custom_tag }}
+      custom_tag: ${{ needs.detect-major-version.outputs.custom_tag }}
 
   build:
     needs: [tagversion]
