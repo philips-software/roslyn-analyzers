@@ -1,0 +1,80 @@
+name: Detect Major Version Upgrade
+
+on:
+  workflow_call:
+    outputs:
+      custom_tag:
+        value: ${{ jobs.detect.outputs.custom_tag }}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      custom_tag: ${{ steps.detect.outputs.custom_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect breaking PR titles since previous tag
+        id: detect
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          git fetch --tags --force
+
+          previous_tag=$(git describe --tags --abbrev=0 --match 'v*')
+          echo "Previous tag: $previous_tag"
+
+          range="${previous_tag}..HEAD"
+          echo "Commit range: $range"
+
+          mapfile -t pr_numbers < <(
+            git log --pretty=format:%s "$range" \
+              | sed -nE 's/.*\(#([0-9]+)\)$/\1/p' \
+              | sort -u
+          )
+
+          echo "PR numbers found: ${pr_numbers[*]:-<none>}"
+
+          breaking_found=false
+
+          # Matches:
+          #   feat!: title
+          #   feat(scope)!: title
+          #   fix!: title
+          #   docs(scope)!: title
+          regex='^[a-z]+(\([^)]+\))?!:'
+
+          for pr in "${pr_numbers[@]:-}"; do
+            title=$(gh pr view "$pr" --json title --jq '.title')
+            echo "PR #$pr title: $title"
+
+            if [[ "$title" =~ $regex ]]; then
+              echo "Breaking PR title detected on PR #$pr"
+              breaking_found=true
+              break
+            fi
+          done
+
+          custom_tag=''
+
+          if [[ "$breaking_found" == true ]]; then
+            version="${previous_tag#v}"
+            IFS='.' read -r major minor patch <<< "$version"
+
+            next_major=$((major + 1))
+            custom_tag="v${next_major}.0.0"
+
+            echo "Computed custom_tag=$custom_tag"
+          else
+            echo "No breaking PR titles found."
+          fi
+
+          echo "custom_tag=$custom_tag" >> "$GITHUB_OUTPUT"
+            
