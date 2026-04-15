@@ -40,8 +40,8 @@ jobs:
     needs: [detect-major-version]
     uses: ./.github/workflows/tagversion.yml
     with:
-      custom_tag: ${{ github.event_name == 'push' && needs.detect-major-version.outputs.custom_tag || '' }}
-
+      custom_tag: ${{ needs.detect-major-version.outputs.custom_tag }}
+      
   build:
     needs: tagversion
     uses: ./.github/workflows/dotnetcore.yml
