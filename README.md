@@ -1,5 +1,7 @@
 # Introduction
-Roslyn Diagnostic Analyzers are customized compiler errors providing real-time feedback to C# developers. Many Analyzers include an automatic Code Fixer. While Microsoft (and other organizations) offer many analyzers, the market is nascent. Moreover, many tools offer a rich set of rules, but lack the shift-left integration that Roslyn achieves.
+Roslyn Diagnostic Analyzers are customized compiler errors providing real-time feedback to C# developers. Many Analyzers include an automatic Code Fixer. While Microsoft (and other organizations) offer many analyzers, the market is surprisingly incomplete.
+
+Many others tools, such as Fortify or Coverity, offer a rich set of rules, but lack the shift-left integration that Roslyn achieves.
 
 We have a policy whereby Code Reviewers ask themselves if a review comment can be automated.  If so, and if a Diagnostic Analyzer is the right tool for the scenario in question, and if an Analyzer does not readily exist in the market already, an issue is created to track the need. That is, all analyzers herein are based on real-world code review feedback. This project is the result. It was open-sourced in 2020.
 
@@ -35,7 +37,7 @@ The current minimum support version is Visual Studio 2022 17.4.
 
 ## MCP Server for Development
 
-A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
+A Model Context Protocol (MCP) server is available to automate common development tasks such as dogfooding builds, strict building, code coverage, file navigation, and test execution. See [tools/mcp/MCP_SERVER.md](./tools/mcp/MCP_SERVER.md) for details.
 
 ## CI/CD
 [Learn more](./cicd.md) about the CI/CD pipeline.

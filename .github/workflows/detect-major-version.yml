@@ -1,0 +1,86 @@
+name: Detect Major Version Upgrade
+
+on:
+  workflow_call:
+    outputs:
+      custom_tag:
+        value: ${{ jobs.detect.outputs.custom_tag }}
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      custom_tag: ${{ steps.detect.outputs.custom_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5
+        with:
+          fetch-depth: 0
+
+      - name: Detect breaking change source
+        id: detect
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+
+          regex='^[a-z]+(\([^)]+\))?!:'
+
+          git fetch --tags --force
+          previous_tag=$(git describe --tags --abbrev=0 --match 'v*')
+          echo "Previous tag: $previous_tag"
+
+          custom_tag=''
+          breaking_found=false
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            echo "Current PR title: $PR_TITLE"
+
+            if [[ "$PR_TITLE" =~ $regex ]]; then
+              echo "Breaking PR title detected from current pull request."
+              breaking_found=true
+            else
+              echo "Current PR title is not breaking."
+            fi
+
+          else
+            range="${previous_tag}..HEAD"
+            echo "Commit range: $range"
+
+            mapfile -t pr_numbers < <(
+              git log --pretty=format:%s "$range" \
+                | sed -nE 's/.*\(#([0-9]+)\)$/\1/p' \
+                | sort -u
+            )
+
+            echo "PR numbers found: ${pr_numbers[*]:-<none>}"
+
+            for pr in "${pr_numbers[@]:-}"; do
+              title=$(gh pr view "$pr" --json title --jq '.title')
+              echo "PR #$pr title: $title"
+
+              if [[ "$title" =~ $regex ]]; then
+                echo "Breaking PR title detected on PR #$pr"
+                breaking_found=true
+                break
+              fi
+            done
+          fi
+
+          if [[ "$breaking_found" == true ]]; then
+            version="${previous_tag#v}"
+            IFS='.' read -r major minor patch <<< "$version"
+
+            next_major=$((major + 1))
+            custom_tag="${next_major}.0.0"
+
+            echo "Computed custom_tag=$custom_tag"
+          else
+            echo "No breaking PR titles found."
+          fi
+
+          echo "custom_tag=$custom_tag" >> "$GITHUB_OUTPUT"
