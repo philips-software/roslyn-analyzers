@@ -102,10 +102,6 @@ namespace MyNamespace
 			const string template = @"
 		using Moq;
 
-		class Dependency
-		{
-		}
-
 		class Foo
 		{
 			public void Test()
@@ -116,10 +112,6 @@ namespace MyNamespace
 		}";
 			const string expected = @"
 		using Moq;
-
-		class Dependency
-		{
-		}
 
 		class Foo
 		{
