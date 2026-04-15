@@ -76,7 +76,7 @@ jobs:
             IFS='.' read -r major minor patch <<< "$version"
 
             next_major=$((major + 1))
-            custom_tag="v${next_major}.0.0"
+            custom_tag="${next_major}.0.0"
 
             echo "Computed custom_tag=$custom_tag"
           else
