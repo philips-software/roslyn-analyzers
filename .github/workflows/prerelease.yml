@@ -6,27 +6,33 @@ on:
         type: string
         required: true
         default: Philips.CodeAnalysis.MaintainabilityAnalyzers
-        
+
 jobs:
+  detect-major-version:
+    uses: ./.github/workflows/detect-major-version.yml
+
   tagversion:
+    needs: detect-major-version
     uses: ./.github/workflows/tagversion.yml
-    
+    with:
+      custom_tag: ${{ needs.detect-major-version.outputs.custom_tag }}
+
   build:
     needs: tagversion
     uses: ./.github/workflows/dotnetcore.yml
     with:
       new_tag: ${{ needs.tagversion.outputs.new_tag }}
       new_version: ${{ needs.tagversion.outputs.new_version }}
-      
+
   publish:
     needs: [build, tagversion]
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c #v5
-      with:
-        name: ${{ inputs.package }}-${{ needs.tagversion.outputs.new_tag }}
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c #v5
+        with:
+          name: ${{ inputs.package }}-${{ needs.tagversion.outputs.new_tag }}
 
-    - name: Nuget
-      run: |
-        echo Publishing to Nuget ${{ inputs.package }}-${{ needs.tagversion.outputs.new_tag }} >> $GITHUB_STEP_SUMMARY
+      - name: Nuget
+        run: |
+          echo Publishing to Nuget ${{ inputs.package }}-${{ needs.tagversion.outputs.new_tag }} >> $GITHUB_STEP_SUMMARY
 #        dotnet nuget push ${{ inputs.package }}.*.nupkg --api-key ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json
