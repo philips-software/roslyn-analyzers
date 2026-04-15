@@ -1,3 +1,17 @@
+## [2.0.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.12.0...v2.0.0) (2026-04-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* Migrate to CodeAnalysis 4.4, ending support for VS2019 ([#1095](https://github.com/philips-software/roslyn-analyzers/issues/1095)) ([9a2d73b](https://github.com/philips-software/roslyn-analyzers/commit/9a2d73b80a98ea6f99849b8fe4793282875497eb))
+
+
+### Continuous Integration
+
+* Add workflow to detect major version upgrades ([#1099](https://github.com/philips-software/roslyn-analyzers/issues/1099)) ([dfc3665](https://github.com/philips-software/roslyn-analyzers/commit/dfc366584e37dfd32ef98d5f3daae8a3946b9dba))
+
+
+
 ## [1.12.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.1...v1.12.0) (2026-04-11)
 
 
