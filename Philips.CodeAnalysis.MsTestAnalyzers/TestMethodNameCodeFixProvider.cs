@@ -41,7 +41,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			// Get the symbol representing the method to be renamed.
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-			IMethodSymbol typeSymbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
+			IMethodSymbol methodSymbol = semanticModel.GetDeclaredSymbol(node, cancellationToken);
 
 			SymbolRenameOptions renameOptions = new()
 			{
@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 			Solution newSolution = await Renamer.RenameSymbolAsync(
 				document.Project.Solution,
-				typeSymbol,
+				methodSymbol,
 				renameOptions,
 				name,
 				cancellationToken).ConfigureAwait(false);

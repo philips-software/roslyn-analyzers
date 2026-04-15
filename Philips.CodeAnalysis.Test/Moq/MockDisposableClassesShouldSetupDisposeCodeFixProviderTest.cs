@@ -139,27 +139,6 @@ namespace MyNamespace
 			const string template = @"
 		using Moq;
 
-		class Dependency
-		{
-		}
-
-		class DisposableClass : System.IDisposable
-		{
-			public DisposableClass(Dependency dependency)
-			{
-			}
-
-			public void Dispose()
-			{
-				Dispose(true);
-				System.GC.SuppressFinalize(this);
-			}
-
-			protected virtual void Dispose(bool disposing)
-			{
-			}
-		}
-
 		class Foo
 		{
 			public void Test()
@@ -170,27 +149,6 @@ namespace MyNamespace
 		}";
 			const string expected = @"
 		using Moq;
-
-		class Dependency
-		{
-		}
-
-		class DisposableClass : System.IDisposable
-		{
-			public DisposableClass(Dependency dependency)
-			{
-			}
-
-			public void Dispose()
-			{
-				Dispose(true);
-				System.GC.SuppressFinalize(this);
-			}
-
-			protected virtual void Dispose(bool disposing)
-			{
-			}
-		}
 
 		class Foo
 		{
