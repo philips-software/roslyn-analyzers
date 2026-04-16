@@ -151,6 +151,38 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AssignmentWithTargetTypedNewTriggersAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Mock<DisposableClass> mock;
+		mock = new();
+	}
+}";
+			await VerifyDiagnostic(template, DiagnosticId.MockDisposableObjectsShouldSetupDispose).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MockDisposableConcreteClassTriggersAsync()
 		{
 			const string template = @"
