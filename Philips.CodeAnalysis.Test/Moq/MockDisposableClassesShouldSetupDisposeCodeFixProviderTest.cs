@@ -103,7 +103,31 @@ namespace MyNamespace
 		using Moq;
 
 		class Foo
+	public async Task TargetTypedNewWithMockBehaviorArgumentIsReplacedAsync()
 		{
+			const string template = @\"
+		using Moq;
+
+		class Foo
+		{
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new(MockBehavior.Strict);
+			}
+		}\";
+			const string expected = @\"
+		using Moq;
+
+		class Foo
+		{
+			public void Test()
+			{
+				MyNamespace.DisposableObjectMock<DisposableClass> mock = new(MockBehavior.Strict);
+			}
+		}\";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+```"
 			public void Test()
 			{
 				Dependency dependency = new();
