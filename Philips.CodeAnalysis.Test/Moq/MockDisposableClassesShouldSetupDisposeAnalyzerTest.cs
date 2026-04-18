@@ -30,6 +30,159 @@ namespace Philips.CodeAnalysis.Test.Moq
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MockDisposableConcreteClassWithTargetTypedNewTriggersAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Mock<DisposableClass> mock = new();
+	}
+}";
+			await VerifyDiagnostic(template, DiagnosticId.MockDisposableObjectsShouldSetupDispose).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldInitializerWithTargetTypedNewTriggersAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	private readonly Mock<DisposableClass> _mock = new();
+}";
+			await VerifyDiagnostic(template, DiagnosticId.MockDisposableObjectsShouldSetupDispose).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AutoPropertyInitializerWithTargetTypedNewTriggersAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public Mock<DisposableClass> Dependency { get; } = new();
+}";
+			await VerifyDiagnostic(template, DiagnosticId.MockDisposableObjectsShouldSetupDispose).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task MockDisposableConcreteClassAssignedThenConfiguredWithTargetTypedNewDoesNotTriggerAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+using Moq.Protected;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Mock<DisposableClass> mock;
+		mock = new();
+		mock.Protected().Setup(""Dispose"", ItExpr.IsAny<bool>()).CallBase();
+	}
+}";
+			await VerifySuccessfulCompilation(template).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AssignmentWithTargetTypedNewTriggersAsync()
+		{
+			const string template = @"
+using System;
+using Moq;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}
+
+class Foo
+{
+	public void Test()
+	{
+		Mock<DisposableClass> mock;
+		mock = new();
+	}
+}";
+			await VerifyDiagnostic(template, DiagnosticId.MockDisposableObjectsShouldSetupDispose).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task MockDisposableConcreteClassTriggersAsync()
 		{
 			const string template = @"

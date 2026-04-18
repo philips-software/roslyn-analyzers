@@ -81,7 +81,6 @@ public class DoubleList : BaseList
 		}}
 }}
 ";
-
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 			await VerifyFix(content, newContent);
 		}

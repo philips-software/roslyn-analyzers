@@ -110,7 +110,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 			}
 		}
 
-
 		/// <summary>
 		/// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.
 		/// The returned diagnostics are then ordered by location in the source document.
