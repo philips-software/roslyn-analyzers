@@ -4,11 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Philips.CodeAnalysis.DuplicateCodeAnalyzer;
 
 namespace Philips.CodeAnalysis.Benchmark
