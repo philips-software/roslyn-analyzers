@@ -1,3 +1,12 @@
+## [2.1.0](https://github.com/philips-software/roslyn-analyzers/compare/v2.0.0...v2.1.0) (2026-04-23)
+
+
+### Features
+
+* Detect Implicit Object Creation (Mock<T> myMock = new()) ([#1090](https://github.com/philips-software/roslyn-analyzers/issues/1090)) ([d98ad1f](https://github.com/philips-software/roslyn-analyzers/commit/d98ad1f56166fc62917974da16e96c0d1c8044a8))
+
+
+
 ## [2.0.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.12.0...v2.0.0) (2026-04-15)
 
 
