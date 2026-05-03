@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		private const string Category = Categories.MsTest;
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidAssertConditionalAccess.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidAssertConditionalAccess.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.AvoidAssertConditionalAccess.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

@@ -26,8 +26,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private readonly Regex _formatRegex = new(@"^\{\d+\}$", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-		private static readonly DiagnosticDescriptor NestedRule = new(DiagnosticId.NoNestedStringFormats.ToId(), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription);
-		private static readonly DiagnosticDescriptor UnnecessaryRule = new(DiagnosticId.NoUnnecessaryStringFormats.ToId(), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription);
+		private static readonly DiagnosticDescriptor NestedRule = new(DiagnosticId.NoNestedStringFormats.ToId(), NestedStringFormatTitle, NestedStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: NestedStringFormatDescription, helpLinkUri: DiagnosticId.NoNestedStringFormats.ToHelpLinkUrl());
+		private static readonly DiagnosticDescriptor UnnecessaryRule = new(DiagnosticId.NoUnnecessaryStringFormats.ToId(), UnnecessaryStringFormatTitle, UnnecessaryStringFormatMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: UnnecessaryStringFormatDescription, helpLinkUri: DiagnosticId.NoUnnecessaryStringFormats.ToHelpLinkUrl());
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
