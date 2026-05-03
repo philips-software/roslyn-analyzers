@@ -28,9 +28,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string StatementMessageFormat = StatementTitle;
 		private const string StatementDescription = StatementTitle;
 
-		public DiagnosticDescriptor BlockRule { get; } = new(DiagnosticId.AvoidEmptyStatementBlock.ToId(), BlockTitle, BlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: BlockDescription);
-		public DiagnosticDescriptor CatchRule { get; } = new(DiagnosticId.AvoidEmptyCatchBlock.ToId(), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription);
-		public DiagnosticDescriptor StatementRule { get; } = new(DiagnosticId.AvoidEmptyStatement.ToId(), StatementTitle, StatementMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: StatementDescription);
+		public DiagnosticDescriptor BlockRule { get; } = new(DiagnosticId.AvoidEmptyStatementBlock.ToId(), BlockTitle, BlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: BlockDescription, helpLinkUri: DiagnosticId.AvoidEmptyStatementBlock.ToHelpLinkUrl());
+		public DiagnosticDescriptor CatchRule { get; } = new(DiagnosticId.AvoidEmptyCatchBlock.ToId(), CatchBlockTitle, CatchBlockMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: CatchBlockDescription, helpLinkUri: DiagnosticId.AvoidEmptyCatchBlock.ToHelpLinkUrl());
+		public DiagnosticDescriptor StatementRule { get; } = new(DiagnosticId.AvoidEmptyStatement.ToId(), StatementTitle, StatementMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: StatementDescription, helpLinkUri: DiagnosticId.AvoidEmptyStatement.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(BlockRule, CatchRule, StatementRule); } }
 

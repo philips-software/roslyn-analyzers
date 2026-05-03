@@ -52,7 +52,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: false,
-				description: string.Format(DescriptionFormat, first, second)
+				description: string.Format(DescriptionFormat, first, second),
+				helpLinkUri: diagnosticId.ToHelpLinkUrl()
 			);
 		}
 

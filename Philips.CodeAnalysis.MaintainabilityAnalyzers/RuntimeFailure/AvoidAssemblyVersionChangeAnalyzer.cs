@@ -19,12 +19,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 			DiagnosticId.AvoidAssemblyVersionChange.ToId() +
 			".assembly_version in EditorConfig.";
 
-		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidAssemblyVersionChange.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidAssemblyVersionChange.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.AvoidAssemblyVersionChange.ToHelpLinkUrl());
 
 		private const string InvalidExpectedVersionTitle = @"The assembly_version specified in the EditorConfig is invalid.";
 		private const string InvalidExpectedVersionMessage = @"The assembly_version {0} specified in the EditorConfig is invalid.";
 		private static readonly DiagnosticDescriptor InvalidExpectedVersionRule = new(DiagnosticId.AvoidAssemblyVersionChange.ToId(), InvalidExpectedVersionTitle,
-			InvalidExpectedVersionMessage, Category, DiagnosticSeverity.Error, true, Description);
+			InvalidExpectedVersionMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidAssemblyVersionChange.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule, InvalidExpectedVersionRule); } }
 

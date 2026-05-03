@@ -27,8 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 
 		private const string NotImplementedExceptionType = "NotImplementedException";
 
-		private static readonly DiagnosticDescriptor DocumentRule = new(DiagnosticId.DocumentThrownExceptions.ToId(), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription);
-		private static readonly DiagnosticDescriptor InformationalRule = new(DiagnosticId.ThrowInformationalExceptions.ToId(), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription);
+		private static readonly DiagnosticDescriptor DocumentRule = new(DiagnosticId.DocumentThrownExceptions.ToId(), DocumentTitle, DocumentMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: DocumentDescription, helpLinkUri: DiagnosticId.DocumentThrownExceptions.ToHelpLinkUrl());
+		private static readonly DiagnosticDescriptor InformationalRule = new(DiagnosticId.ThrowInformationalExceptions.ToId(), InformationalTitle, InformationalMessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: InformationalDescription, helpLinkUri: DiagnosticId.ThrowInformationalExceptions.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(DocumentRule, InformationalRule);
 
