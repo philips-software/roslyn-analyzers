@@ -14,6 +14,8 @@ namespace Philips.CodeAnalysis.Test.Common
 	[TestClass]
 	public class DiagnosticHelpLinkTest
 	{
+		private const string DebugDiagnosticSuffix = "_DEBUG";
+
 		private static IEnumerable<object[]> GetAllDiagnosticDescriptors()
 		{
 			Assembly[] analyzerAssemblies =
@@ -37,14 +39,20 @@ namespace Philips.CodeAnalysis.Test.Common
 					{
 						instance = (DiagnosticAnalyzer)Activator.CreateInstance(analyzerType);
 					}
-					catch
+					catch (MissingMethodException)
 					{
+						// Analyzer has no default constructor; skip it.
+						continue;
+					}
+					catch (TypeInitializationException)
+					{
+						// Analyzer type initializer failed; skip it.
 						continue;
 					}
 
 					foreach (DiagnosticDescriptor descriptor in instance.SupportedDiagnostics)
 					{
-						if (descriptor.Id.EndsWith("_DEBUG", StringComparison.OrdinalIgnoreCase))
+						if (descriptor.Id.EndsWith(DebugDiagnosticSuffix, StringComparison.OrdinalIgnoreCase))
 						{
 							continue;
 						}
