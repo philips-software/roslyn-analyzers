@@ -1,3 +1,13 @@
+## Unreleased
+
+
+### Features
+
+* Add PH2161 PreferAssertHasCount analyzer and CodeFix: rewrites `Assert.AreEqual(x.Count, y.Count)` to `Assert.HasCount(x.Count, y)`
+* Extend PH2160 CodeFix with an alternative that inserts `mock.Protected().Setup("Dispose", ItExpr.IsAny<bool>()).CallBase();` when no `preferred_disposable_mock_type` is configured
+
+
+
 ## [2.1.0](https://github.com/philips-software/roslyn-analyzers/compare/v2.0.0...v2.1.0) (2026-04-23)
 
 

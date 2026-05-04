@@ -327,6 +327,35 @@ namespace MyNamespace
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ProtectedSetupFixIsAlwaysOfferedAsSecondOptionAsync()
+		{
+			const string template = @"
+		using Moq;
+
+		class Foo
+		{
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new Mock<DisposableClass>();
+			}
+		}";
+			const string expected = @"
+		using Moq;
+		using Moq.Protected;
+
+		class Foo
+		{
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new Mock<DisposableClass>();
+				mock.Protected().Setup(""Dispose"", ItExpr.IsAny<bool>()).CallBase();
+			}
+		}";
+			await VerifyFix(template, expected, codeFixIndex: 1, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task AutoPropertyInitializerMockTypeIsReplacedAsync()
 		{
 			const string template = @"
@@ -344,6 +373,96 @@ namespace MyNamespace
 					public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new MyNamespace.DisposableObjectMock<DisposableClass>();
 				}";
 			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+	}
+
+	[TestClass]
+	public class MockDisposableClassesShouldSetupDisposeCodeFixProviderNoPreferredTypeTest : CodeFixVerifier
+	{
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new MockDisposableClassesShouldSetupDisposeAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new MockDisposableClassesShouldSetupDisposeCodeFixProvider();
+		}
+
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
+		{
+			var mockReference = typeof(Mock<>).Assembly.Location;
+			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
+			return base.GetMetadataReferences().Add(reference);
+		}
+
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
+		{
+			return base.GetAdditionalSourceCode()
+				.Add(("DisposableClass.cs", @"
+using System;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}"));
+		}
+
+		protected override void AssertFixAllProvider(FixAllProvider fixAllProvider)
+		{
+			Assert.IsTrue(fixAllProvider.GetSupportedFixAllScopes().Contains(FixAllScope.Document));
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ProtectedSetupInsertedAfterMockDeclarationAsync()
+		{
+			const string template = @"
+		using Moq;
+
+		class Foo
+		{
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new Mock<DisposableClass>();
+			}
+		}";
+			const string expected = @"
+		using Moq;
+		using Moq.Protected;
+
+		class Foo
+		{
+			public void Test()
+			{
+				Mock<DisposableClass> mock = new Mock<DisposableClass>();
+				mock.Protected().Setup(""Dispose"", ItExpr.IsAny<bool>()).CallBase();
+			}
+		}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ProtectedSetupSkipsFieldInitializerAsync()
+		{
+			const string template = @"
+		using Moq;
+
+		class Foo
+		{
+			private readonly Mock<DisposableClass> _mock = new Mock<DisposableClass>();
+		}";
+			// Field initializers are not modified by the Protected-setup fix; expect no changes.
+			await VerifyFix(template, template, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 	}
 }

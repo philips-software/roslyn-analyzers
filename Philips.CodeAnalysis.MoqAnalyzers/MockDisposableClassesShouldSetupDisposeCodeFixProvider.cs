@@ -2,32 +2,77 @@
 
 using System.Collections.Immutable;
 using System.Composition;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CodeActions;
 using Microsoft.CodeAnalysis.CodeFixes;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Formatting;
+using Microsoft.CodeAnalysis.Text;
 using Philips.CodeAnalysis.Common;
 
 namespace Philips.CodeAnalysis.MoqAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MockDisposableClassesShouldSetupDisposeCodeFixProvider)), Shared]
-	public class MockDisposableClassesShouldSetupDisposeCodeFixProvider : SingleDiagnosticCodeFixProvider<ExpressionSyntax>
+	public class MockDisposableClassesShouldSetupDisposeCodeFixProvider : CodeFixProvider
 	{
-		protected override string Title => "Use configured disposable mock type";
+		private const string PreferredTypeTitle = "Use configured disposable mock type";
+		private const string ProtectedSetupTitle = "Insert Protected().Setup Dispose CallBase (local variables only; field/property initializers are not modified)";
+		private const string MoqProtectedNamespace = "Moq.Protected";
 
-		protected override DiagnosticId DiagnosticId => DiagnosticId.MockDisposableObjectsShouldSetupDispose;
+		public override ImmutableArray<string> FixableDiagnosticIds => ImmutableArray.Create(DiagnosticId.MockDisposableObjectsShouldSetupDispose.ToId());
 
-		protected override async Task<Document> ApplyFix(Document document, ExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
+		public override FixAllProvider GetFixAllProvider()
 		{
-			var configuredTypeName = GetPreferredDisposableMockType(properties);
-			if (string.IsNullOrWhiteSpace(configuredTypeName))
+			return WellKnownFixAllProviders.BatchFixer;
+		}
+
+		public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+		{
+			SyntaxNode root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+			if (root == null)
 			{
-				return document;
+				return;
 			}
 
+			Diagnostic diagnostic = context.Diagnostics.First();
+			TextSpan diagnosticSpan = diagnostic.Location.SourceSpan;
+
+			SyntaxToken token = root.FindToken(diagnosticSpan.Start);
+			ExpressionSyntax node = token.Parent?.AncestorsAndSelf().OfType<ExpressionSyntax>()
+				.FirstOrDefault(e => e is ObjectCreationExpressionSyntax or ImplicitObjectCreationExpressionSyntax);
+
+			if (node == null)
+			{
+				return;
+			}
+
+			var configuredTypeName = GetPreferredDisposableMockType(diagnostic.Properties);
+
+			if (!string.IsNullOrWhiteSpace(configuredTypeName))
+			{
+				context.RegisterCodeFix(
+					CodeAction.Create(
+						title: PreferredTypeTitle,
+						createChangedDocument: c => ApplyPreferredTypeFix(context.Document, node, configuredTypeName, c),
+						equivalenceKey: PreferredTypeTitle),
+					diagnostic);
+			}
+
+			// Always offer the Protected().Setup("Dispose", ...).CallBase() alternative.
+			context.RegisterCodeFix(
+				CodeAction.Create(
+					title: ProtectedSetupTitle,
+					createChangedDocument: c => ApplyProtectedSetupFix(context.Document, node, c),
+					equivalenceKey: ProtectedSetupTitle),
+				diagnostic);
+		}
+
+		private static async Task<Document> ApplyPreferredTypeFix(Document document, ExpressionSyntax node, string configuredTypeName, CancellationToken cancellationToken)
+		{
 			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 			if (rootNode == null)
 			{
@@ -83,6 +128,145 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			}
 
 			return document;
+		}
+
+		private static async Task<Document> ApplyProtectedSetupFix(Document document, ExpressionSyntax node, CancellationToken cancellationToken)
+		{
+			SyntaxNode rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+			if (rootNode == null)
+			{
+				return document;
+			}
+
+			ExpressionSyntax currentNode = FindCurrentNode<ExpressionSyntax>(rootNode, node);
+			if (currentNode == null)
+			{
+				return document;
+			}
+
+			// Identify the mock identifier from either local variable declaration or assignment.
+			(string mockIdentifier, StatementSyntax containingStatement) result = GetMockIdentifierAndStatement(currentNode);
+			var mockIdentifier = result.mockIdentifier;
+			StatementSyntax containingStatement = result.containingStatement;
+			if (mockIdentifier == null || containingStatement == null)
+			{
+				// Skip field/property initializers: too complex to safely insert in a constructor/TestInitialize.
+				return document;
+			}
+
+			StatementSyntax setupStatement = BuildProtectedSetupStatement(mockIdentifier)
+				.WithAdditionalAnnotations(Formatter.Annotation);
+
+			if (containingStatement.Parent is not BlockSyntax block)
+			{
+				return document;
+			}
+
+			SyntaxList<StatementSyntax> statements = block.Statements;
+			var index = statements.IndexOf(containingStatement);
+			if (index < 0)
+			{
+				return document;
+			}
+
+			SyntaxList<StatementSyntax> newStatements = statements.Insert(index + 1, setupStatement);
+			BlockSyntax newBlock = block.WithStatements(newStatements);
+
+			SyntaxNode newRoot = rootNode.ReplaceNode(block, newBlock);
+
+			// Ensure Moq.Protected using directive is present for ItExpr.
+			newRoot = EnsureUsingDirective(newRoot, MoqProtectedNamespace);
+
+			return document.WithSyntaxRoot(newRoot);
+		}
+
+		private static (string mockIdentifier, StatementSyntax containingStatement) GetMockIdentifierAndStatement(ExpressionSyntax currentNode)
+		{
+			if (currentNode.Parent is EqualsValueClauseSyntax equalsValueClause &&
+				equalsValueClause.Parent is VariableDeclaratorSyntax variableDeclarator &&
+				variableDeclarator.Parent is VariableDeclarationSyntax variableDeclaration &&
+				variableDeclaration.Parent is LocalDeclarationStatementSyntax localDeclaration)
+			{
+				return (variableDeclarator.Identifier.ValueText, localDeclaration);
+			}
+
+			if (currentNode.Parent is AssignmentExpressionSyntax assignment &&
+				assignment.Parent is ExpressionStatementSyntax expressionStatement &&
+				assignment.Left is IdentifierNameSyntax identifierName)
+			{
+				return (identifierName.Identifier.ValueText, expressionStatement);
+			}
+
+			if (currentNode.Parent is AssignmentExpressionSyntax assignmentMember &&
+				assignmentMember.Parent is ExpressionStatementSyntax expressionStatement2 &&
+				assignmentMember.Left is MemberAccessExpressionSyntax memberAccess)
+			{
+				return (memberAccess.ToString(), expressionStatement2);
+			}
+
+			return (null, null);
+		}
+
+		private static ExpressionStatementSyntax BuildProtectedSetupStatement(string mockIdentifier)
+		{
+			// mockIdentifier.Protected().Setup("Dispose", ItExpr.IsAny<bool>()).CallBase();
+			ExpressionSyntax mockExpression = SyntaxFactory.ParseExpression(mockIdentifier);
+
+			InvocationExpressionSyntax protectedInvocation = SyntaxFactory.InvocationExpression(
+				SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					mockExpression,
+					SyntaxFactory.IdentifierName("Protected")));
+
+			ArgumentListSyntax setupArgs = SyntaxFactory.ArgumentList(SyntaxFactory.SeparatedList(new[]
+			{
+				SyntaxFactory.Argument(SyntaxFactory.LiteralExpression(
+					SyntaxKind.StringLiteralExpression,
+					SyntaxFactory.Literal("Dispose"))),
+				SyntaxFactory.Argument(SyntaxFactory.InvocationExpression(
+					SyntaxFactory.MemberAccessExpression(
+						SyntaxKind.SimpleMemberAccessExpression,
+						SyntaxFactory.IdentifierName("ItExpr"),
+						SyntaxFactory.GenericName(SyntaxFactory.Identifier("IsAny"))
+							.WithTypeArgumentList(SyntaxFactory.TypeArgumentList(
+								SyntaxFactory.SingletonSeparatedList<TypeSyntax>(
+									SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword))))))))
+			}));
+
+			InvocationExpressionSyntax setupInvocation = SyntaxFactory.InvocationExpression(
+				SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					protectedInvocation,
+					SyntaxFactory.IdentifierName("Setup")),
+				setupArgs);
+
+			InvocationExpressionSyntax callBaseInvocation = SyntaxFactory.InvocationExpression(
+				SyntaxFactory.MemberAccessExpression(
+					SyntaxKind.SimpleMemberAccessExpression,
+					setupInvocation,
+					SyntaxFactory.IdentifierName("CallBase")),
+				SyntaxFactory.ArgumentList());
+
+			return SyntaxFactory.ExpressionStatement(callBaseInvocation);
+		}
+
+		private static SyntaxNode EnsureUsingDirective(SyntaxNode root, string namespaceName)
+		{
+			if (root is not CompilationUnitSyntax compilationUnit)
+			{
+				return root;
+			}
+
+			var alreadyExists = compilationUnit.Usings.Any(u => u.Name != null && u.Name.ToString() == namespaceName);
+			if (alreadyExists)
+			{
+				return root;
+			}
+
+			UsingDirectiveSyntax newUsing = SyntaxFactory.UsingDirective(SyntaxFactory.ParseName(namespaceName))
+				.WithAdditionalAnnotations(Formatter.Annotation);
+
+			return compilationUnit.AddUsings(newUsing);
 		}
 
 		private static TNode FindCurrentNode<TNode>(SyntaxNode rootNode, SyntaxNode originalNode)
