@@ -35,13 +35,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: false,
-				description: Description
+				description: Description,
+				helpLinkUri: DiagnosticId.LogException.ToHelpLinkUrl()
 			);
 
 		private const string InvalidSetupTitle = @"Log caught exceptions setup";
 		private const string InvalidSetupMessage = @"This analyzer requires an either .editorconfig entry of the form dotnet_code_quality.{0}.{1} specifying a comma-separated list or an <AdditionalFiles> element named {2} specifying a list of allowed method calls inside catch blocks.";
 		private const string InvalidSetupDescription = @"This analyzer requires additional configuration in the .editorconfig or <AdditionalFiles> element.";
-		private static readonly DiagnosticDescriptor InvalidSetupRule = new(DiagnosticId.LogException.ToId(), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription);
+		private static readonly DiagnosticDescriptor InvalidSetupRule = new(DiagnosticId.LogException.ToId(), InvalidSetupTitle, InvalidSetupMessage, Category, DiagnosticSeverity.Error, false, InvalidSetupDescription, DiagnosticId.LogException.ToHelpLinkUrl());
 
 		/// <summary>
 		/// <inheritdoc/>

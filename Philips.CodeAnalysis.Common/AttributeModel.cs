@@ -48,7 +48,8 @@ namespace Philips.CodeAnalysis.Common
 					Category,
 					DiagnosticSeverity.Error,
 					isEnabledByDefault: isEnabledByDefaultFlag,
-					description: Description);
+					description: Description,
+					helpLinkUri: DiagnosticId.ToHelpLinkUrl());
 		}
 	}
 }

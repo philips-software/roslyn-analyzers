@@ -31,7 +31,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: true,
-				description: Description
+				description: Description,
+				helpLinkUri: DiagnosticId.NoSpaceInFilename.ToHelpLinkUrl()
 			);
 
 		/// <summary>
