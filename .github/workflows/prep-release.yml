@@ -1,24 +1,31 @@
 name: Prepare for Release
+
 on:
   workflow_dispatch:
+
 jobs:
+  detect-major-version:
+    uses: ./.github/workflows/detect-major-version.yml
+
   tagversion:
+    needs: detect-major-version
     uses: ./.github/workflows/tagversion.yml
     with:
       prerelease: false
-      
+      custom_tag: ${{ needs.detect-major-version.outputs.custom_tag }}
+
   branch:
     needs: tagversion
     runs-on: ubuntu-latest
     steps:
-    - name: Create Branch
-      id: create-branch
-      uses: peterjgrainger/action-create-branch@10c7d268152480ae859347db45dc69086cef1d9c # @v3.0.0
-      with:
-        branch: 'release-${{ needs.tagversion.outputs.new_version }}'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+      - name: Create Branch
+        id: create-branch
+        uses: peterjgrainger/action-create-branch@10c7d268152480ae859347db45dc69086cef1d9c # @v3.0.0
+        with:
+          branch: 'release-${{ needs.tagversion.outputs.new_version }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   changelog:
     needs: [tagversion, branch]
     uses: ./.github/workflows/changelog.yml
@@ -30,10 +37,15 @@ jobs:
     needs: [tagversion, branch, changelog]
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5
-    
-    - name: Create Pull Request
-      run: |
-        gh pr create -B 'main' -H 'release-${{ needs.tagversion.outputs.new_version }}' --title 'docs: Release ${{ needs.tagversion.outputs.new_version }}' --body 'Merge this PR to Release to production. Only merge if the Merge Queue is empty; otherwise, unintended changes will be included in the release, and the changelog will be missing information. Please abandon this PR and delete the branch if this PR becomes out-of-date. Because PRs created by bots do not trigger workflows, please close and re-open this PR to trigger required workflows to start. Also edit the PR title (e.g., remove the -Prerelease text) to trigger the Semantic Version Required workflow check.'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v5
+
+      - name: Create Pull Request
+        shell: bash
+        run: |
+          gh pr create \
+            -B 'main' \
+            -H 'release-${{ needs.tagversion.outputs.new_version }}' \
+            --title 'docs: Release ${{ needs.tagversion.outputs.new_version }}' \
+            --body 'Merge this PR to Release to production. Only merge if the Merge Queue is empty; otherwise, unintended changes will be included in the release, and the changelog will be missing information. Please abandon this PR and delete the branch if this PR becomes out-of-date. Because PRs created by bots do not trigger workflows, please close and re-open this PR to trigger required workflows to start. Also edit the PR title (e.g., remove the -Prerelease text) to trigger the Semantic Version Required workflow check.'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

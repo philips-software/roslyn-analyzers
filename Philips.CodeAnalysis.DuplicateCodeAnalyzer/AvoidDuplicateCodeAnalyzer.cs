@@ -26,22 +26,22 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public int DefaultDuplicateTokenThreshold { get; set; } = 100;
 
-		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidDuplicateCode.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidDuplicateCode.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
-		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const int MaxTokenCount = 200;
 		private const int MinTokenCount = 20;

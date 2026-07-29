@@ -85,7 +85,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Maintainability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task RegionBeforeClassTestAsync()
 		{
-			await VerifySuccessfulCompilation(@"	#region testRegion	#endregion Class C{	public void foo(){	return; }	public void bar(){	}	}").ConfigureAwait(false);
+			await VerifySuccessfulCompilation(@"	#region testRegion	#endregion class C{	public void foo(){	return; }	public void bar(){	}	}").ConfigureAwait(false);
 		}
 
 		[TestMethod]

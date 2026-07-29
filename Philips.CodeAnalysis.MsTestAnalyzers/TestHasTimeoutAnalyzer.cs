@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 
 		public static readonly string DefaultTimeoutKey = "defaultTimeout";
 
-		public static DiagnosticDescriptor Rule => new(DiagnosticId.TestHasTimeoutAttribute.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+		public static DiagnosticDescriptor Rule => new(DiagnosticId.TestHasTimeoutAttribute.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description, helpLinkUri: DiagnosticId.TestHasTimeoutAttribute.ToHelpLinkUrl());
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

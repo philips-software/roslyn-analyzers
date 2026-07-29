@@ -30,19 +30,12 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return;
 			}
 
-			context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression);
+			context.RegisterSyntaxNodeAction(AnalyzeObjectCreation, SyntaxKind.ObjectCreationExpression, SyntaxKind.ImplicitObjectCreationExpression);
 		}
 
 		private void AnalyzeObjectCreation(SyntaxNodeAnalysisContext context)
 		{
-			var objectCreationExpressionSyntax = (ObjectCreationExpressionSyntax)context.Node;
-
-			if (objectCreationExpressionSyntax.Type is not GenericNameSyntax genericNameSyntax)
-			{
-				return;
-			}
-
-			if (genericNameSyntax.Identifier.ValueText != MockName)
+			if (context.Node is not ExpressionSyntax objectCreationExpressionSyntax)
 			{
 				return;
 			}
@@ -84,9 +77,8 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			ReportDiagnostic(context, objectCreationExpressionSyntax, mockedType);
 		}
 
-		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax, ITypeSymbol mockedType)
+		private void ReportDiagnostic(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax, ITypeSymbol mockedType)
 		{
-			// Pass the preferred disposable mock type from editorconfig as additional property, so that code fix can use it to determine which type to suggest in the code fix message and when applying the code fix.
 			var preferredDisposableMockType = Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, "preferred_disposable_mock_type");
 
 			ImmutableDictionary<string, string> properties = ImmutableDictionary<string, string>.Empty;
@@ -98,7 +90,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			context.ReportDiagnostic(Diagnostic.Create(Rule, objectCreationExpressionSyntax.GetLocation(), properties, mockedType.Name));
 		}
 
-		private bool TryGetMockedType(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax, out ITypeSymbol mockedType)
+		private bool TryGetMockedType(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax, out ITypeSymbol mockedType)
 		{
 			mockedType = null;
 
@@ -180,7 +172,7 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			};
 		}
 
-		private bool HasDisposeSetupInSameContainingMember(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax)
+		private bool HasDisposeSetupInSameContainingMember(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax)
 		{
 			ISymbol mockSymbol = GetAssignedMockSymbol(context, objectCreationExpressionSyntax);
 			if (mockSymbol == null)
@@ -229,16 +221,14 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			return containingMember;
 		}
 
-		private ISymbol GetAssignedMockSymbol(SyntaxNodeAnalysisContext context, ObjectCreationExpressionSyntax objectCreationExpressionSyntax)
+		private ISymbol GetAssignedMockSymbol(SyntaxNodeAnalysisContext context, ExpressionSyntax objectCreationExpressionSyntax)
 		{
-			// Local variable, including "using var mock = ..."
 			var equalsValueClauseSyntax = objectCreationExpressionSyntax.Parent as EqualsValueClauseSyntax;
 			if (equalsValueClauseSyntax?.Parent is VariableDeclaratorSyntax variableDeclaratorSyntax)
 			{
 				return context.SemanticModel.GetDeclaredSymbol(variableDeclaratorSyntax);
 			}
 
-			// Assignment to a field/property/local: mock = new Mock<T>();
 			if (objectCreationExpressionSyntax.Parent is AssignmentExpressionSyntax assignmentExpressionSyntax)
 			{
 				SymbolInfo symbolInfo = context.SemanticModel.GetSymbolInfo(assignmentExpressionSyntax.Left);
@@ -250,10 +240,6 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 
 		private bool IsDisposeSetupInvocation(SyntaxNodeAnalysisContext context, InvocationExpressionSyntax invocationExpressionSyntax, ISymbol expectedMockSymbol)
 		{
-			// Looking for:
-			// mock.Protected().Setup(...Dispose...)
-			// We intentionally do not require CallBase() in v1.
-
 			if (invocationExpressionSyntax.Expression is not MemberAccessExpressionSyntax memberAccessExpressionSyntax)
 			{
 				return false;

@@ -14,13 +14,13 @@ using Philips.CodeAnalysis.Common;
 namespace Philips.CodeAnalysis.MoqAnalyzers
 {
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(MockDisposableClassesShouldSetupDisposeCodeFixProvider)), Shared]
-	public class MockDisposableClassesShouldSetupDisposeCodeFixProvider : SingleDiagnosticCodeFixProvider<ObjectCreationExpressionSyntax>
+	public class MockDisposableClassesShouldSetupDisposeCodeFixProvider : SingleDiagnosticCodeFixProvider<ExpressionSyntax>
 	{
 		protected override string Title => "Use configured disposable mock type";
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.MockDisposableObjectsShouldSetupDispose;
 
-		protected override async Task<Document> ApplyFix(Document document, ObjectCreationExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
+		protected override async Task<Document> ApplyFix(Document document, ExpressionSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
 			var configuredTypeName = GetPreferredDisposableMockType(properties);
 			if (string.IsNullOrWhiteSpace(configuredTypeName))
@@ -34,53 +34,96 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 				return document;
 			}
 
-			if (node.Type is not GenericNameSyntax objectCreationGenericName)
+			ExpressionSyntax currentNode = FindCurrentNode<ExpressionSyntax>(rootNode, node);
+			if (currentNode == null)
 			{
 				return document;
 			}
 
-			TypeSyntax replacementTypeSyntax = CreateReplacementTypeSyntax(configuredTypeName, objectCreationGenericName.TypeArgumentList);
+			TypeSyntax declaredTypeToReplace = GetDeclaredTypeFromContext(currentNode);
 
-			TypeSyntax replacementType = replacementTypeSyntax.WithAdditionalAnnotations(Formatter.Annotation);
-
-			SyntaxNode newRoot;
-			TypeSyntax declaredTypeToReplace = GetDeclaredTypeToReplace(node, objectCreationGenericName);
-
-			if (declaredTypeToReplace != null)
+			if (currentNode is ImplicitObjectCreationExpressionSyntax)
 			{
-				newRoot = rootNode.ReplaceNodes(
-					new SyntaxNode[] { node.Type, declaredTypeToReplace },
-					(original, _) => replacementType.WithTriviaFrom(original));
-			}
-			else
-			{
-				newRoot = rootNode.ReplaceNode(
-					node.Type,
-					replacementType.WithTriviaFrom(node.Type));
+				if (declaredTypeToReplace is not GenericNameSyntax declaredGenericName)
+				{
+					return document;
+				}
+
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, declaredGenericName.TypeArgumentList)
+					.WithAdditionalAnnotations(Formatter.Annotation);
+
+				SyntaxNode newRoot = rootNode.ReplaceNode(
+					declaredTypeToReplace,
+					replacementType.WithTriviaFrom(declaredTypeToReplace));
+
+				return document.WithSyntaxRoot(newRoot);
 			}
 
-			return document.WithSyntaxRoot(newRoot);
+			if (currentNode is ObjectCreationExpressionSyntax explicitObjectCreation &&
+				explicitObjectCreation.Type is GenericNameSyntax explicitGenericName)
+			{
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, explicitGenericName.TypeArgumentList)
+					.WithAdditionalAnnotations(Formatter.Annotation);
+
+				SyntaxNode newRoot;
+				if (IsMatchingMockDeclaredType(declaredTypeToReplace, explicitGenericName))
+				{
+					newRoot = rootNode.ReplaceNodes(
+						new SyntaxNode[] { explicitObjectCreation.Type, declaredTypeToReplace },
+						(original, _) => replacementType.WithTriviaFrom(original));
+				}
+				else
+				{
+					newRoot = rootNode.ReplaceNode(
+						explicitObjectCreation.Type,
+						replacementType.WithTriviaFrom(explicitObjectCreation.Type));
+				}
+
+				return document.WithSyntaxRoot(newRoot);
+			}
+
+			return document;
 		}
 
-		private static TypeSyntax GetDeclaredTypeToReplace(ObjectCreationExpressionSyntax objectCreationSyntax, GenericNameSyntax originalObjectCreationType)
+		private static TNode FindCurrentNode<TNode>(SyntaxNode rootNode, SyntaxNode originalNode)
+			where TNode : SyntaxNode
 		{
-			VariableDeclarationSyntax variableDeclarationSyntax = objectCreationSyntax.FirstAncestorOrSelf<VariableDeclarationSyntax>();
-			if (variableDeclarationSyntax != null &&
-				variableDeclarationSyntax.Type is GenericNameSyntax declaredGenericName &&
-				declaredGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText)
+			if (rootNode == null || originalNode == null)
+			{
+				return null;
+			}
+
+			SyntaxNode currentNode = rootNode.FindNode(originalNode.Span, getInnermostNodeForTie: true);
+			return currentNode as TNode;
+		}
+
+		private static TypeSyntax GetDeclaredTypeFromContext(SyntaxNode node)
+		{
+			VariableDeclarationSyntax variableDeclarationSyntax = node.FirstAncestorOrSelf<VariableDeclarationSyntax>();
+			if (variableDeclarationSyntax != null)
 			{
 				return variableDeclarationSyntax.Type;
 			}
 
-			PropertyDeclarationSyntax propertyDeclarationSyntax = objectCreationSyntax.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
-			if (propertyDeclarationSyntax != null &&
-				propertyDeclarationSyntax.Type is GenericNameSyntax propertyGenericName &&
-				propertyGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText)
+			PropertyDeclarationSyntax propertyDeclarationSyntax = node.FirstAncestorOrSelf<PropertyDeclarationSyntax>();
+			if (propertyDeclarationSyntax != null)
 			{
 				return propertyDeclarationSyntax.Type;
 			}
 
+			FieldDeclarationSyntax fieldDeclarationSyntax = node.FirstAncestorOrSelf<FieldDeclarationSyntax>();
+			if (fieldDeclarationSyntax != null)
+			{
+				return fieldDeclarationSyntax.Declaration?.Type;
+			}
+
 			return null;
+		}
+
+		private static bool IsMatchingMockDeclaredType(TypeSyntax declaredTypeSyntax, GenericNameSyntax originalObjectCreationType)
+		{
+			return declaredTypeSyntax is GenericNameSyntax declaredGenericName &&
+				declaredGenericName.Identifier.ValueText == originalObjectCreationType.Identifier.ValueText;
 		}
 
 		private static string GetPreferredDisposableMockType(ImmutableDictionary<string, string> properties)

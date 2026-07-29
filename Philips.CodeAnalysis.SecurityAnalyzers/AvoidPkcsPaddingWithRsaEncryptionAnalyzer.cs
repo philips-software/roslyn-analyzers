@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 		public static readonly DiagnosticDescriptor Rule = new(
 			DiagnosticId.AvoidPkcsPaddingWithRsaEncryption.ToId(),
 			Title, MessageFormat, Category,
-			DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description);
+			DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description, helpLinkUri: DiagnosticId.AvoidPkcsPaddingWithRsaEncryption.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 

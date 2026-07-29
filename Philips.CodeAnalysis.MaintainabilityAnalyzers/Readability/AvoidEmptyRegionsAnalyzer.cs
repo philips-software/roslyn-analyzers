@@ -23,7 +23,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private const string AvoidEmptyRegionCategory = Categories.Readability;
 
 		private static readonly DiagnosticDescriptor AvoidEmpty = new(DiagnosticId.AvoidEmptyRegions.ToId(), AvoidEmptyRegionTitle,
-			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription);
+			AvoidEmptyRegionMessageFormat, AvoidEmptyRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: AvoidEmptyRegionDescription, helpLinkUri: DiagnosticId.AvoidEmptyRegions.ToHelpLinkUrl());
 
 		private static readonly Regex CopyrightRegex = new(@"©|\uFFFD|Copyright", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 		private static readonly Regex YearRegex = new(@"\d\d\d\d", RegexOptions.Singleline | RegexOptions.Compiled, TimeSpan.FromSeconds(1));

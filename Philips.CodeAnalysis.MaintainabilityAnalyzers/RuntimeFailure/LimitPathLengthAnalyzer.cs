@@ -34,7 +34,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.RuntimeFailure
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: true,
-				description: Description
+				description: Description,
+				helpLinkUri: DiagnosticId.LimitPathLength.ToHelpLinkUrl()
 			);
 
 		/// <summary>

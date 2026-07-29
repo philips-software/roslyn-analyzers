@@ -48,13 +48,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		};
 
 		private static readonly DiagnosticDescriptor EnforceMemberLocation = new(DiagnosticId.EnforceRegions.ToId(), EnforceRegionTitle,
-			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription);
+			EnforceRegionMessageFormat, EnforceRegionCategory, DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceRegionDescription, helpLinkUri: DiagnosticId.EnforceRegions.ToHelpLinkUrl());
 		private static readonly DiagnosticDescriptor EnforceNonDuplicateRegion = new(DiagnosticId.EnforceNonDuplicateRegion.ToId(),
 			EnforceNonDuplicateRegionTitle, EnforceNonDuplicateRegionMessageFormat, EnforceNonDuplicateRegionCategory,
-			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription);
+			DiagnosticSeverity.Error, isEnabledByDefault: true, description: EnforceNonDuplicateRegionDescription, helpLinkUri: DiagnosticId.EnforceNonDuplicateRegion.ToHelpLinkUrl());
 		private static readonly DiagnosticDescriptor NonCheckedMember = new(DiagnosticId.NonCheckedRegionMember.ToId(),
 			NonCheckedRegionMemberTitle, NonCheckedRegionMemberMessageFormat, NonCheckedRegionMemberCategory,
-			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberDescription);
+			DiagnosticSeverity.Info, isEnabledByDefault: true, description: NonCheckedRegionMemberDescription, helpLinkUri: DiagnosticId.NonCheckedRegionMember.ToHelpLinkUrl());
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(EnforceMemberLocation, EnforceNonDuplicateRegion, NonCheckedMember);

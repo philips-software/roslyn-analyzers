@@ -1,7 +1,9 @@
 ﻿// © 2023 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Philips.CodeAnalysis.Common;
@@ -25,18 +27,18 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	{
 		public override void Analyze()
 		{
-			// Specifying Span instead of FullSpan correctly excludes trivia before or after the method
-			System.Collections.Generic.IEnumerable<DirectiveTriviaSyntax> descendants = Node.DescendantNodes(Node.Span, null, descendIntoTrivia: true).OfType<DirectiveTriviaSyntax>();
-			foreach (RegionDirectiveTriviaSyntax regionDirective in descendants.OfType<RegionDirectiveTriviaSyntax>())
-			{
-				Location location = regionDirective.GetLocation();
-				ReportDiagnostic(location);
-			}
+			IEnumerable<DirectiveTriviaSyntax> directives = Node
+				.DescendantTrivia(Node.Span, descendIntoTrivia: true)
+				.Select(trivia => trivia.GetStructure())
+				.OfType<DirectiveTriviaSyntax>();
 
-			foreach (EndRegionDirectiveTriviaSyntax endRegionDirective in descendants.OfType<EndRegionDirectiveTriviaSyntax>())
+			foreach (DirectiveTriviaSyntax directive in directives)
 			{
-				Location location = endRegionDirective.GetLocation();
-				ReportDiagnostic(location);
+				if (directive.IsKind(SyntaxKind.RegionDirectiveTrivia) ||
+					directive.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				{
+					ReportDiagnostic(directive.GetLocation());
+				}
 			}
 		}
 	}
