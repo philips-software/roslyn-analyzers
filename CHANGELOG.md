@@ -1,3 +1,12 @@
+### [2.1.1](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.0...v2.1.1) (2026-07-29)
+
+
+### Bug Fixes
+
+* add helpLinkUri to all DiagnosticDescriptors ([#1109](https://github.com/philips-software/roslyn-analyzers/issues/1109)) ([27e3ebd](https://github.com/philips-software/roslyn-analyzers/commit/27e3ebd6fd92349758965d3fe7835e0f4d5f5578))
+
+
+
 ## [2.1.0](https://github.com/philips-software/roslyn-analyzers/compare/v2.0.0...v2.1.0) (2026-04-23)
 
 
