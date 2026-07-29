@@ -398,5 +398,114 @@ namespace MyNamespace
 			await VerifyFix(template, template, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
 	}
+
+	/// <summary>
+	/// Tests for PH2160 code fix with a global alias (global::TypeName) configured type.
+	/// Reproduces GitHub issue #1122: NullReferenceException in ApplyFix when preferred_disposable_mock_type
+	/// uses a global:: alias without a namespace qualifier.
+	/// </summary>
+	[TestClass]
+	public class MockDisposableClassesShouldSetupDisposeCodeFixProviderGlobalAliasTest : CodeFixVerifier
+	{
+		private const string GlobalAliasConfiguredDisposableMockType = "global::GlobalDisposableObjectMock";
+
+		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
+		{
+			return new MockDisposableClassesShouldSetupDisposeAnalyzer();
+		}
+
+		protected override CodeFixProvider GetCodeFixProvider()
+		{
+			return new MockDisposableClassesShouldSetupDisposeCodeFixProvider();
+		}
+
+		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
+		{
+			return base.GetAdditionalAnalyzerConfigOptions()
+				.Add($@"dotnet_code_quality.{DiagnosticId.MockDisposableObjectsShouldSetupDispose.ToId()}.preferred_disposable_mock_type", GlobalAliasConfiguredDisposableMockType);
+		}
+
+		protected override ImmutableArray<MetadataReference> GetMetadataReferences()
+		{
+			var mockReference = typeof(Mock<>).Assembly.Location;
+			MetadataReference reference = MetadataReference.CreateFromFile(mockReference);
+			return base.GetMetadataReferences().Add(reference);
+		}
+
+		protected override ImmutableArray<(string name, string content)> GetAdditionalSourceCode()
+		{
+			return base.GetAdditionalSourceCode()
+.Add(("DisposableClass.cs", @"
+using System;
+
+class DisposableClass : IDisposable
+{
+	public void Dispose()
+	{
+		Dispose(true);
+		GC.SuppressFinalize(this);
+	}
+
+	protected virtual void Dispose(bool disposing)
+	{
+	}
+}"))
+.Add(("GlobalDisposableObjectMock.cs", @"
+using Moq;
+using System;
+
+public class GlobalDisposableObjectMock<T> : Mock<T>
+	where T : class, IDisposable
+{
+	public GlobalDisposableObjectMock(params object[] args)
+		: base(args)
+	{
+		this.Protected().Setup(""Dispose"", ItExpr.IsAny<bool>()).CallBase();
+	}
+}"));
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ImplicitNewWithGlobalAliasConfigIsHandledAsync()
+		{
+			const string template = @"
+				using Moq;
+
+				class Foo
+				{
+					public Mock<DisposableClass> Dependency { get; } = new();
+				}";
+			const string expected = @"
+				using Moq;
+
+				class Foo
+				{
+					public global::GlobalDisposableObjectMock<DisposableClass> Dependency { get; } = new();
+				}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ExplicitNewWithGlobalAliasConfigIsHandledAsync()
+		{
+			const string template = @"
+				using Moq;
+
+				class Foo
+				{
+					public Mock<DisposableClass> Dependency { get; } = new Mock<DisposableClass>();
+				}";
+			const string expected = @"
+				using Moq;
+
+				class Foo
+				{
+					public global::GlobalDisposableObjectMock<DisposableClass> Dependency { get; } = new global::GlobalDisposableObjectMock<DisposableClass>();
+				}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+	}
 }
 
