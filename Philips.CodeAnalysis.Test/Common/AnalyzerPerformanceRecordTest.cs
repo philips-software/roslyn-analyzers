@@ -49,6 +49,20 @@ namespace Philips.CodeAnalysis.Test.Common
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public void ParsedUnexpectedFormat()
+		{
+			// Arrange
+			const string testName = "Compiler diagnostics";
+
+			// Act
+			var actual = AnalyzerPerformanceRecord.TryParse(testName);
+
+			// Assert
+			Assert.IsNull(actual);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public void SortsLargestTimeFirst()
 		{
 			// Arrange
