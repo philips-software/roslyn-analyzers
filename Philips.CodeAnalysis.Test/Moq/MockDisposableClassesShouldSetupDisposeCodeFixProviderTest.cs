@@ -345,6 +345,58 @@ namespace MyNamespace
 				}";
 			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
 		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AutoPropertyInitializerInDisposableClassWithTargetTypedNewIsReplacedAsync()
+		{
+			const string template = @"
+				using System;
+				using Moq;
+
+				class Foo : IDisposable
+				{
+					public Mock<DisposableClass> Dependency { get; } = new();
+
+					public void Dispose()
+					{
+						Dependency.Object.Dispose();
+					}
+				}";
+			const string expected = @"
+				using System;
+				using Moq;
+
+				class Foo : IDisposable
+				{
+					public MyNamespace.DisposableObjectMock<DisposableClass> Dependency { get; } = new();
+
+					public void Dispose()
+					{
+						Dependency.Object.Dispose();
+					}
+				}";
+			await VerifyFix(template, expected, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AssignmentWithTargetTypedNewIsNotChangedAsync()
+		{
+			const string template = @"
+				using Moq;
+
+				class Foo
+				{
+					private Mock<DisposableClass> _mock;
+
+					public void Test()
+					{
+						_mock = new();
+					}
+				}";
+			await VerifyFix(template, template, null, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
 	}
 }
 
