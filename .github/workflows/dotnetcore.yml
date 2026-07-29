@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # @v5.2.0
+        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # @v5.3.0
         with:
           dotnet-version: |
             8.0.x
@@ -42,7 +42,7 @@ jobs:
         run: dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
         
       - name: Upload MaintainabilityAnalyzers Artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: Philips.CodeAnalysis.MaintainabilityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -51,7 +51,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MaintainabilityAnalyzers.*.snupkg
 
       - name: Upload DuplicateCodeAnalyzer Artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: Philips.CodeAnalysis.DuplicateCodeAnalyzer-${{ inputs.new_tag }}
           retention-days: 1
@@ -60,7 +60,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.snupkg
 
       - name: Upload MoqAnalyzers Artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: Philips.CodeAnalysis.MoqAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -69,7 +69,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MoqAnalyzers.*.snupkg
 
       - name: Upload MsTestAnalyzers Artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: Philips.CodeAnalysis.MsTestAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
@@ -78,7 +78,7 @@ jobs:
             ./Packages/Philips.CodeAnalysis.MsTestAnalyzers.*.snupkg
 
       - name: Upload SecurityAnalyzers Artifact
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4
         with:
           name: Philips.CodeAnalysis.SecurityAnalyzers-${{ inputs.new_tag }}
           retention-days: 1
