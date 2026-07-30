@@ -144,8 +144,9 @@ When creating new analyzers:
 2. **Set `isEnabledByDefault: false`** initially for testing
 3. **Add to appropriate project** (Maintainability, Security, etc.)
 4. **Create comprehensive tests** in Philips.CodeAnalysis.Test
-5. **Update documentation** in Documentation/ folder
-6. **Use current year in copyright** headers: `// © 2025 Koninklijke Philips N.V.`
+5. **Ensure 80% code coverage** minimum for all modified code
+6. **Update documentation** in Documentation/ folder
+7. **Use current year in copyright** headers: `// © 2025 Koninklijke Philips N.V.`
 
 ### Performance Considerations
 Analyzers run during compilation and must be performant:
@@ -157,6 +158,7 @@ Analyzers run during compilation and must be performant:
 ### Pull Request Requirements
 - **Title format**: Must follow Conventional Commits (feat:, fix:, docs:, etc.)
 - **All tests pass**: 1903 tests must pass
+- **Code coverage**: Modified code must have at least 80% coverage
 - **Formatting perfect**: Zero formatting violations
 - **80% code coverage**: Maintained or improved coverage required
 - **No suppressions**: Fix underlying issues, don't suppress warnings
