@@ -49,8 +49,13 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 					return document;
 				}
 
-				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, declaredGenericName.TypeArgumentList)
-					.WithAdditionalAnnotations(Formatter.Annotation);
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, declaredGenericName.TypeArgumentList);
+				if (replacementType == null)
+				{
+					return document;
+				}
+
+				replacementType = replacementType.WithAdditionalAnnotations(Formatter.Annotation);
 
 				SyntaxNode newRoot = rootNode.ReplaceNode(
 					declaredTypeToReplace,
@@ -62,8 +67,13 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			if (currentNode is ObjectCreationExpressionSyntax explicitObjectCreation &&
 				explicitObjectCreation.Type is GenericNameSyntax explicitGenericName)
 			{
-				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, explicitGenericName.TypeArgumentList)
-					.WithAdditionalAnnotations(Formatter.Annotation);
+				TypeSyntax replacementType = CreateReplacementTypeSyntax(configuredTypeName, explicitGenericName.TypeArgumentList);
+				if (replacementType == null)
+				{
+					return document;
+				}
+
+				replacementType = replacementType.WithAdditionalAnnotations(Formatter.Annotation);
 
 				SyntaxNode newRoot;
 				if (IsMatchingMockDeclaredType(declaredTypeToReplace, explicitGenericName))
@@ -147,9 +157,18 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			{
 				genericNameSyntax = qualifiedNameSyntax.Right;
 			}
+			else if (configuredNameSyntax is AliasQualifiedNameSyntax aliasQualifiedNameSyntax)
+			{
+				genericNameSyntax = aliasQualifiedNameSyntax.Name;
+			}
 			else
 			{
 				genericNameSyntax = configuredNameSyntax as SimpleNameSyntax;
+			}
+
+			if (genericNameSyntax == null)
+			{
+				return null;
 			}
 
 			GenericNameSyntax appendedGenericName = SyntaxFactory.GenericName(genericNameSyntax.Identifier, originalTypeArguments);
@@ -157,6 +176,11 @@ namespace Philips.CodeAnalysis.MoqAnalyzers
 			if (configuredNameSyntax is QualifiedNameSyntax qualifiedConfiguredName)
 			{
 				return qualifiedConfiguredName.WithRight(appendedGenericName);
+			}
+
+			if (configuredNameSyntax is AliasQualifiedNameSyntax aliasConfiguredName)
+			{
+				return aliasConfiguredName.WithName(appendedGenericName);
 			}
 
 			return appendedGenericName;
