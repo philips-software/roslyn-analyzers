@@ -1,8 +1,6 @@
 {
   "aliveStatusCodes": [200, 403, 429],
   "ignorePatterns": [
-    { "pattern": "https://www.nuget.org/packages/Philips.CodeAnalysis.SecurityAnalyzers" },
-    { "pattern": "https://github.com/philips-software/roslyn-analyzers/blob/main/Philips.CodeAnalysis.MsTestAnalyzers/AvoidUnderscoresInTestMethodNameAnalyzer.cs" },
-    { "pattern": "https://github.com/philips-software/roslyn-analyzers/blob/main/Philips.CodeAnalysis.MsTestAnalyzers/EnforceUnderscoresInTestMethodNameAnalyzer.cs" }
+    { "pattern": "https://www.nuget.org/packages/Philips.CodeAnalysis.SecurityAnalyzers" }
   ]
 }
