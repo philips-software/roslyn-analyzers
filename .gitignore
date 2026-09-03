@@ -264,3 +264,10 @@ __pycache__/
 tools/mcp/Directory.Build.props.backup
 tools/mcp/*.log
 tools/mcp/test-results.trx
+
+# Claude Code local/ephemeral state
+.claude/settings.local.json
+.claude/local
+.claude/plans
+.claude/worktrees
+.claude-project
