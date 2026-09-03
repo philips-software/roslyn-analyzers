@@ -7,7 +7,7 @@
     },
     {
       "pattern": "https://github.com/philips-software/roslyn-analyzers/blob/main/",
-      "description": "Self-referencing blob/main links are always valid post-merge but return 404 during any PR that adds new source files"
+      "description": "Self-referencing blob/main links return 404 during PRs that add new files (the file does not exist on main until merged). Trade-off: this also skips validation of these links in future PRs, so stale links caused by renames or deletions will not be caught automatically"
     }
   ]
 }
