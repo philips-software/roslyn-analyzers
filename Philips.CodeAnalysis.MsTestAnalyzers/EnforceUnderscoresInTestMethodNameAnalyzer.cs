@@ -18,7 +18,8 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.EnforceUnderscoresInTestMethodName.ToId(),
 												Title, MessageFormat, Categories.Naming, DiagnosticSeverity.Error, isEnabledByDefault: false, description: Description, helpLinkUri: DiagnosticId.EnforceUnderscoresInTestMethodName.ToHelpLinkUrl());
 
-		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+		private static readonly ImmutableArray<DiagnosticDescriptor> _diagnostics = ImmutableArray.Create(Rule);
+		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => _diagnostics;
 
 		protected override TestMethodImplementation OnInitializeTestMethodAnalyzer(AnalyzerOptions options, Compilation compilation, MsTestAttributeDefinitions definitions)
 		{
