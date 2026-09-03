@@ -27,7 +27,10 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			var newName = ToPascalCase(name);
 
 			SemanticModel semanticModel = await document.GetSemanticModelAsync(cancellationToken);
-			var methodSymbol = (IMethodSymbol)semanticModel.GetDeclaredSymbol(node, cancellationToken);
+			if (semanticModel.GetDeclaredSymbol(node, cancellationToken) is not IMethodSymbol methodSymbol)
+			{
+				return document.Project.Solution;
+			}
 
 			SymbolRenameOptions renameOptions = new()
 			{
