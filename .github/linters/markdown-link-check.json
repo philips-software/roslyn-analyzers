@@ -1,7 +1,13 @@
 {
   "aliveStatusCodes": [200, 403, 429],
   "ignorePatterns": [
-    { "pattern": "https://www.nuget.org/packages/Philips.CodeAnalysis.SecurityAnalyzers" },
-    { "pattern": "https://github.com/philips-software/roslyn-analyzers/blob/main/" }
+    {
+      "pattern": "https://www.nuget.org/packages/Philips.CodeAnalysis.SecurityAnalyzers",
+      "description": "SecurityAnalyzers package is not published to NuGet.org; link is kept for when it is eventually released"
+    },
+    {
+      "pattern": "https://github.com/philips-software/roslyn-analyzers/blob/main/",
+      "description": "Self-referencing blob/main links are always valid post-merge but return 404 during any PR that adds new source files"
+    }
   ]
 }
