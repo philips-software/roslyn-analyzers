@@ -1,0 +1,4 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+
+# Reuse the repository's existing Claude guidance as the single source of authority.
+project_doc_fallback_filenames = ["CLAUDE.md"]

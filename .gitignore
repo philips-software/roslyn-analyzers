@@ -271,3 +271,7 @@ tools/mcp/test-results.trx
 .claude/plans
 .claude/worktrees
 .claude-project
+
+# Codex local/ephemeral state
+.codex/*.local.toml
+.codex/local
