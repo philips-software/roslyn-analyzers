@@ -145,8 +145,6 @@ namespace Philips.CodeAnalysis.Common
 		AvoidUnlicensedPackages = 2155,
 		AvoidPkcsPaddingWithRsaEncryption = 2158,
 		AvoidUnnecessaryAttributeParentheses = 2159,
-		MockDisposableObjectsShouldSetupDispose = 2160,
-		AvoidUnderscoresInTestMethodName = 2161,
-		EnforceUnderscoresInTestMethodName = 2162
+		MockDisposableObjectsShouldSetupDispose = 2160
 	}
 }
