@@ -1,6 +1,7 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -34,7 +35,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 			protected override void OnTestMethod(SyntaxNodeAnalysisContext context, MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol, bool isDataTestMethod)
 			{
 				var name = methodDeclaration.Identifier.Text;
-				if (name.Contains("_"))
+				if (name.Contains("_") && name.Any(c => c != '_'))
 				{
 					Location location = methodDeclaration.Identifier.GetLocation();
 					context.ReportDiagnostic(Diagnostic.Create(Rule, location, name));

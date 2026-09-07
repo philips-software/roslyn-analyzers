@@ -29,6 +29,7 @@ namespace Philips.CodeAnalysis.Test.MsTest
 		[DataRow("Has_One_Underscore", false)]
 		[DataRow("PascalCaseMethodName", true)]
 		[DataRow("SimpleTest", true)]
+		[DataRow("___", true)]
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task UnderscoreInTestMethodName(string methodName, bool isCorrect)

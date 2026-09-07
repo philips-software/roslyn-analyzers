@@ -7,7 +7,16 @@ description: Create a new Roslyn diagnostic analyzer with tests and documentatio
 
 Follow these steps to create a new Roslyn diagnostic analyzer. Gather requirements first, then generate all files.
 
-## 1. Gather Requirements
+## 1. Check for Existing Rules
+
+Before implementing, check whether the rule already exists in an analyzer set already in use across Philips repos:
+
+- **CS / IDE / CA** — built-in SDK rules (`AnalysisLevel=latest-Recommended` is set in `Directory.Build.Common.props`). Search [learn.microsoft.com/dotnet/fundamentals/code-analysis/rule-categories](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/rule-categories) by keyword.
+- **BannedApiAnalyzers** (`Microsoft.CodeAnalysis.BannedApiAnalyzers`) — already in use across repos. If the rule is "disallow use of specific API X", a `BannedSymbols.txt` entry may suffice instead of a custom analyzer.
+
+If an equivalent rule exists, report it to the user rather than implementing a new one. Only proceed if no suitable rule covers the scenario.
+
+## 2. Gather Requirements
 
 Ask the user (if not already provided):
 - What should the analyzer detect? (the rule)
