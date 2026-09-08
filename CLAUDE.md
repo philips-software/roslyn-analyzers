@@ -141,22 +141,10 @@ Analyzers run during every compilation and must be fast:
 
 ## Maintaining AI Agent Config
 
-When CLAUDE.md changes, regenerate `copilot-instructions.md` before committing — the `aiconfigparity` CI check will fail if they drift:
+When CLAUDE.md or a canonical skill changes, regenerate the Copilot instructions and skill wrappers before committing — the `aiconfigparity` CI check will fail if generated content, adapter metadata, or runtime configuration drifts:
 
 ```bash
-{ echo "# Philips Roslyn Analyzers — AI Coding Instructions"; echo ""; echo "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."; tail -n +2 CLAUDE.md; } > .github/copilot-instructions.md
-```
-
-When adding a new skill (`.claude/skills/<name>/SKILL.md`), also add a shim at `.agents/skills/<name>/SKILL.md`:
-
-```markdown
----
-name: <name>
-description: <description from SKILL.md frontmatter>
----
-
-Read and follow `../../../.claude/skills/<name>/SKILL.md` as the authoritative workflow.
-Resolve all relative paths and supporting resources from `../../../.claude/skills/<name>/`.
+python .github/scripts/ai_config.py --write
 ```
 
 ## CI / Dogfooding

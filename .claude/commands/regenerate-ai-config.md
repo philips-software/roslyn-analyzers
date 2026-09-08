@@ -1,7 +1,7 @@
-Regenerate `.github/copilot-instructions.md` from `CLAUDE.md` by running this bash command from the repo root:
+Regenerate `.github/copilot-instructions.md` and the `.agents/skills/` wrappers from their authoritative Claude files by running this command from the repo root:
 
 ```bash
-{ echo "# Philips Roslyn Analyzers — AI Coding Instructions"; echo ""; echo "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."; tail -n +2 CLAUDE.md; } > .github/copilot-instructions.md
+python .github/scripts/ai_config.py --write
 ```
 
-Then stage the result with `git add .github/copilot-instructions.md`.
+Then review and stage the generated files.

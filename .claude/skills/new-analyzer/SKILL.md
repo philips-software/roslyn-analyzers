@@ -26,11 +26,11 @@ Ask the user (if not already provided):
 - How strict should the rule be? If the detection has a spectrum (e.g., "any violation" vs "only severe cases"), clarify the threshold before implementing. Make sure the diagnostic message matches the actual strictness.
 - Is there a natural inverse rule? (e.g., "avoid X" vs "enforce X") If so, consider creating both as mutually exclusive analyzers with separate IDs. Document the mutual exclusivity in both PH docs.
 
-## 2. Assign a DiagnosticId
+## 3. Assign a DiagnosticId
 
 Read `Philips.CodeAnalysis.Common/DiagnosticId.cs` and find the highest numeric ID in the enum. Add the new entry with the next available number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
 
-## 3. Choose the Analyzer Pattern
+## 4. Choose the Analyzer Pattern
 
 First check if the target project has its own base class hierarchy. **MsTestAnalyzers** has specialized bases that handle test attribute resolution via the semantic model — use these instead of `SingleDiagnosticAnalyzer`:
 - `TestMethodDiagnosticAnalyzer` — for rules that apply to test methods (resolves `[TestMethod]`, `[DataTestMethod]`, `[STATestMethod]` and derived attributes)
@@ -47,7 +47,7 @@ Use when the analyzer targets a single `SyntaxKind`. The generic base auto-maps 
 **Pattern B — `SingleDiagnosticAnalyzer` with `InitializeCompilation` override**
 Use when the analyzer needs to register for multiple `SyntaxKind`s or uses non-SyntaxNode actions (e.g., symbol actions, operation actions). Override `InitializeCompilation` directly.
 
-## 4. Create the Analyzer
+## 5. Create the Analyzer
 
 Place in the appropriate project and subfolder matching the category:
 - `Philips.CodeAnalysis.<Project>/<Category>/<AnalyzerName>Analyzer.cs`
@@ -90,7 +90,7 @@ namespace Philips.CodeAnalysis.<Project>.<Category>
 
 For Pattern B, override `InitializeCompilation` directly in the analyzer class.
 
-## 5. Evaluate Code Fixer Opportunity
+## 6. Evaluate Code Fixer Opportunity
 
 Before proceeding, evaluate whether a code fixer is appropriate. A code fixer IS warranted when:
 - The fix is mechanical and deterministic (e.g., remove a node, rename, add a modifier)
@@ -103,7 +103,7 @@ A code fixer is NOT warranted when:
 
 If a fixer is warranted, inform the user and ask if they'd like to create it now. If yes, use the `new-code-fixer` skill.
 
-## 6. Create Tests
+## 7. Create Tests
 
 Place tests in `Philips.CodeAnalysis.Test/<matching subfolder>/` mirroring the analyzer's location.
 
@@ -158,7 +158,7 @@ Write tests covering:
 - At least one case that passes cleanly
 - Edge cases relevant to the rule (generated code, nested classes, aliases, etc.)
 
-## 7. Create Documentation
+## 8. Create Documentation
 
 Create `Documentation/Diagnostics/PH<id>.md`:
 
@@ -170,7 +170,7 @@ Create `Documentation/Diagnostics/PH<id>.md`:
 | Package | [Philips.CodeAnalysis.<Project>](https://www.nuget.org/packages/Philips.CodeAnalysis.<Project>) |
 | Diagnostic ID | PH<id> |
 | Category  | [<Category>](../<Category>.md) |
-| Analyzer | [<Name>Analyzer](https://github.com/philips-software/roslyn-analyzers/blob/main/Philips.CodeAnalysis.<Project>/<Category>/<Name>Analyzer.cs) |
+| Analyzer | Link `<Name>Analyzer` to its source file in `Philips.CodeAnalysis.<Project>/<Category>/<Name>Analyzer.cs` |
 | CodeFix  | Yes/No |
 | Severity | Error |
 | Enabled By Default | Yes/No |
@@ -200,7 +200,7 @@ And the replacement code:
 This analyzer does not offer any special configuration. The general ways of [suppressing](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/suppress-warnings) diagnostics apply.
 ```
 
-## 8. Fix Formatting
+## 9. Fix Formatting
 
 New files will not have correct CRLF line endings. Run `dotnet format` on all new files before building:
 ```bash
@@ -209,7 +209,7 @@ dotnet format style --no-restore --include <space-separated list of new file pat
 
 Re-run this after any subsequent edits to those files — the Edit tool writes LF, not CRLF.
 
-## 9. Validate
+## 10. Validate
 
 Run the full validation:
 ```bash
