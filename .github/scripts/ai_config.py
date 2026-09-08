@@ -170,10 +170,10 @@ def validate_generated_files(root: Path) -> list[str]:
 		if actual != expected:
 			diff = "".join(
 				difflib.unified_diff(
-					expected.splitlines(keepends=True),
 					actual.splitlines(keepends=True),
-					fromfile=f"expected/{relative_path}",
-					tofile=str(relative_path),
+					expected.splitlines(keepends=True),
+					fromfile=str(relative_path),
+					tofile=f"expected/{relative_path}",
 				)
 			)
 			errors.append(
