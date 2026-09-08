@@ -131,6 +131,14 @@ Defined in `Common/Categories.cs`: Documentation, Maintainability, Naming, Reada
 5. Write tests extending `DiagnosticVerifier` or `CodeFixVerifier` in the matching test subfolder.
 6. Add documentation in `Documentation/Diagnostics/PH<id>.md`.
 
+## Analyzer Performance
+
+Analyzers run during every compilation and must be fast:
+- Do string/syntax comparisons before accessing the semantic model — semantic operations are expensive
+- Return early when the node clearly doesn't match
+- Avoid regex in hot paths; use `string.Contains` / `string.StartsWith` instead
+- Cache results of expensive operations within a compilation via `CompilationStartAnalysisContext`
+
 ## CI / Dogfooding
 
 - CI runs build, test, and format checks. SonarCloud enforces 80% code coverage.
