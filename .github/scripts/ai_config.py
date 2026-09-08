@@ -13,6 +13,7 @@ import tomllib
 
 COPILOT_TITLE = "# Philips Roslyn Analyzers — AI Coding Instructions"
 COPILOT_BANNER = "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."
+SKILL_GLOB = "*/SKILL.md"
 
 
 def read_text(path: Path) -> str:
@@ -111,7 +112,7 @@ def expected_generated_files(root: Path) -> tuple[dict[Path, str], list[str]]:
 		except ValueError as error:
 			errors.append(f"INVALID: CLAUDE.md: {error}")
 
-	canonical_skills = sorted((root / ".claude/skills").glob("*/SKILL.md"))
+	canonical_skills = sorted((root / ".claude/skills").glob(SKILL_GLOB))
 	for skill_path in canonical_skills:
 		try:
 			name, content = expected_skill_shim(skill_path)
@@ -125,11 +126,11 @@ def expected_generated_files(root: Path) -> tuple[dict[Path, str], list[str]]:
 
 def orphaned_skill_shims(root: Path) -> list[Path]:
 	canonical_names = {
-		path.parent.name for path in (root / ".claude/skills").glob("*/SKILL.md")
+		path.parent.name for path in (root / ".claude/skills").glob(SKILL_GLOB)
 	}
 	return sorted(
 		path
-		for path in (root / ".agents/skills").glob("*/SKILL.md")
+		for path in (root / ".agents/skills").glob(SKILL_GLOB)
 		if path.parent.name not in canonical_names
 	)
 
