@@ -14,39 +14,72 @@ jobs:
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
 
-      - name: Check skill shim parity
+      - name: Check copilot-instructions.md is up to date
+        run: |
+          {
+            echo "# Philips Roslyn Analyzers — AI Coding Instructions"
+            echo ""
+            echo "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."
+            tail -n +2 CLAUDE.md
+          } > /tmp/expected-copilot.md
+
+          if ! diff -q /tmp/expected-copilot.md .github/copilot-instructions.md > /dev/null 2>&1; then
+            echo "DRIFT: .github/copilot-instructions.md does not match what would be generated from CLAUDE.md"
+            echo ""
+            echo "Regenerate it with:"
+            echo "  { echo '# Philips Roslyn Analyzers — AI Coding Instructions'; echo ''; echo '> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead.'; tail -n +2 CLAUDE.md; } > .github/copilot-instructions.md"
+            diff /tmp/expected-copilot.md .github/copilot-instructions.md || true
+            exit 1
+          fi
+
+      - name: Check .codex/config.toml content
+        run: |
+          if [ ! -f ".codex/config.toml" ]; then
+            echo "MISSING: .codex/config.toml"
+            exit 1
+          fi
+
+          if ! grep -qF 'project_doc_fallback_filenames = ["CLAUDE.md"]' .codex/config.toml; then
+            echo "INVALID: .codex/config.toml must contain: project_doc_fallback_filenames = [\"CLAUDE.md\"]"
+            exit 1
+          fi
+
+      - name: Check skill shim parity and content
         run: |
           fail=0
 
-          # Every .claude/skills/<name>.md must have .agents/skills/<name>/SKILL.md
-          for skill_file in .claude/skills/*.md; do
-            name=$(basename "$skill_file" .md)
+          # Every .claude/skills/<name>/SKILL.md must have a matching .agents/skills/<name>/SKILL.md
+          for skill_file in .claude/skills/*/SKILL.md; do
+            name=$(basename "$(dirname "$skill_file")")
             shim=".agents/skills/$name/SKILL.md"
+
             if [ ! -f "$shim" ]; then
-              echo "MISSING: $shim (no shim for .claude/skills/$name.md)"
+              echo "MISSING: $shim (no shim for .claude/skills/$name/SKILL.md)"
+              fail=1
+              continue
+            fi
+
+            # Validate shim references the correct canonical path
+            expected_ref="../../../.claude/skills/$name/SKILL.md"
+            if ! grep -qF "$expected_ref" "$shim"; then
+              echo "INVALID: $shim does not reference '$expected_ref'"
               fail=1
             fi
           done
 
-          # Every .agents/skills/<name>/SKILL.md must have a matching .claude/skills/<name>.md
+          # Every .agents/skills/<name>/SKILL.md must have a matching .claude/skills/<name>/SKILL.md
           for shim_dir in .agents/skills/*/; do
             name=$(basename "$shim_dir")
-            skill=".claude/skills/$name.md"
+            skill=".claude/skills/$name/SKILL.md"
             if [ ! -f "$skill" ]; then
-              echo "ORPHAN: ${shim_dir}SKILL.md (no matching .claude/skills/$name.md)"
+              echo "ORPHAN: ${shim_dir}SKILL.md (no matching .claude/skills/$name/SKILL.md)"
               fail=1
             fi
           done
-
-          # .codex/config.toml must exist
-          if [ ! -f ".codex/config.toml" ]; then
-            echo "MISSING: .codex/config.toml"
-            fail=1
-          fi
 
           if [ "$fail" -ne 0 ]; then
             echo ""
-            echo "AI config parity check failed. Add missing files or update as needed."
+            echo "Skill shim parity check failed."
             exit 1
           fi
 

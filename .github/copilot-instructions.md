@@ -1,228 +1,168 @@
-# Philips Roslyn Analyzers
-The Philips Roslyn Analyzers repository contains customized Roslyn diagnostic analyzers for C# that provide real-time feedback to developers. This is a .NET 8.0 solution with multiple analyzer projects that compile to NuGet packages.
+# Philips Roslyn Analyzers — AI Coding Instructions
 
-Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
+> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead.
 
-## Working Effectively
+This file provides authoritative guidance to AI coding agents working with code in this repository.
 
-### Prerequisites
-- .NET 8.0 SDK is required and available
-- Solution targets both .NET 8.0 and .NET Standard 2.0
+## Overview
 
-### Core Build and Test Commands
-Always run these commands in the repository root directory:
+Philips Roslyn Analyzers — custom Roslyn diagnostic analyzers for C# shipped as NuGet packages. The analyzers provide real-time compiler feedback and many include automatic code fixers. Open-sourced by Philips in 2020; all rules originate from real code review feedback.
+
+## Build and Test Commands
+
+Run from the repository root. All commands use `--configuration Release`.
 
 ```bash
-# Clean build artifacts (quick - ~1 second)
-dotnet clean
-
-# Restore dependencies (quick - ~1 second if already restored)
-dotnet restore
-
-# Build the entire solution -- takes ~1m 21s. NEVER CANCEL. Set timeout to 3+ minutes.
+# Build — generates NuGet packages in ./Packages/
 dotnet build --configuration Release
 
-# Run the full test suite -- takes ~48 seconds, runs 1903 tests. NEVER CANCEL. Set timeout to 2+ minutes.
+# Run all tests (MSTest)
 dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"
 
-# Validate code formatting -- takes ~23 seconds. NEVER CANCEL. Set timeout to 1+ minutes.
+# Run a single test class
+dotnet test --configuration Release --filter "FullyQualifiedName~AvoidThreadSleepTest"
+
+# Run a single test method
+dotnet test --configuration Release --filter "FullyQualifiedName~AvoidThreadSleepTest.BehindAlias"
+
+# Verify code formatting
 dotnet format style --verify-no-changes --no-restore --verbosity detailed
+
+# Fix formatting violations
+dotnet format style --no-restore
 ```
 
-### Package Creation
-The build process automatically creates NuGet packages in the `./Packages/` directory:
-- `Philips.CodeAnalysis.MaintainabilityAnalyzers.*.nupkg`
-- `Philips.CodeAnalysis.DuplicateCodeAnalyzer.*.nupkg`  
-- `Philips.CodeAnalysis.MoqAnalyzers.*.nupkg`
-- `Philips.CodeAnalysis.MsTestAnalyzers.*.nupkg`
-- `Philips.CodeAnalysis.SecurityAnalyzers.*.nupkg`
+## Formatting Rules (zero tolerance — IDE0055 is severity error)
 
-Each package includes both `.nupkg` and `.snupkg` (symbol) packages.
+- Line endings: CRLF
+- Indentation: tabs, size 4
+- Encoding: UTF-8 with BOM for .cs files
+- Braces: Allman style (new line before all braces)
+- Parameters: camelCase
+- See `.editorconfig` for the full set; `TreatWarningsAsErrors` is enabled in `Directory.Build.Common.props`
 
-## Validation
+## Architecture
 
-### Complete Validation Workflow
-Before submitting any changes, ALWAYS run this complete validation sequence:
+### Analyzer Class Hierarchy
+
+All analyzers flow through a common base in `Philips.CodeAnalysis.Common`:
+
+```
+DiagnosticAnalyzer (Roslyn)
+  └─ DiagnosticAnalyzerBase — sealed Initialize(), enables concurrent execution,
+  │    creates Helper on CompilationStart, delegates to InitializeCompilation()
+  │  └─ SingleDiagnosticAnalyzer — one DiagnosticId + one Rule
+  │    └─ SingleDiagnosticAnalyzer<TNode, TSyntaxNodeAction> — auto-registers
+  │         SyntaxNodeAction for the SyntaxKind inferred from TNode; handles
+  │         generated-code filtering; instantiates TSyntaxNodeAction per node
+  └─ SolutionAnalyzer — operates on the full Compilation (opt-in by default)
+```
+
+**Most analyzers** inherit `SingleDiagnosticAnalyzer<TNode, TSyntaxNodeAction>` and pair with a `SyntaxNodeAction<T>` subclass that implements `Analyze()`. The generic base auto-maps `TNode` to a `SyntaxKind` — override `GetSyntaxKind()` only if the default mapping doesn't fit.
+
+### SyntaxNodeAction Pattern
+
+The analysis logic lives in a `SyntaxNodeAction<T>` subclass (not in the analyzer). It receives `Context`, `Node`, `Rule`, `Helper`, and calls `ReportDiagnostic(location)`.
+
+### Code Fix Hierarchy
+
+```
+CodeFixProvider (Roslyn)
+  └─ SingleDiagnosticCodeFixProvider<TSyntax> — one fixable ID, BatchFixer FixAll,
+  │    override ApplyFix()
+  └─ SolutionCodeFixProvider<TSyntax> — operates across the solution
+```
+
+Code fix providers must be annotated with `[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(...)), Shared]`.
+
+### Helper System
+
+`Helper` (inherits `CodeFixHelper`) is created per compilation and provides domain helpers accessed via properties:
+- `ForAttributes` — attribute detection
+- `ForNamespaces` — using/alias resolution
+- `ForTypes`, `ForLiterals`, `ForModifiers`, `ForConstructors`, `ForTests`, `ForAssemblies`, `ForGeneratedCode`
+- `ForAdditionalFiles` — reads .editorconfig settings and AdditionalFiles (exceptions lists)
+- `ForAllowedSymbols` — allowlist support with wildcards
+- `ForDocumentationOf(node)` — XML doc helpers
+
+### DiagnosticId Enum
+
+All diagnostic IDs live in `Philips.CodeAnalysis.Common/DiagnosticId.cs`. IDs use the `PH` prefix (e.g., `PH2160`). The enum's numeric value maps directly to the ID number.
+
+### Project Layout
+
+| Project | Purpose |
+|---|---|
+| `Common` | Base classes, helpers, DiagnosticId enum |
+| `MaintainabilityAnalyzers` | Largest set — subcategories: Maintainability, Documentation, Naming, Readability, RuntimeFailure, Cardinality |
+| `DuplicateCodeAnalyzer` | Duplicate code detection (uses Mono.Cecil) |
+| `MoqAnalyzers` | Moq framework misuse detection |
+| `MsTestAnalyzers` | MSTest framework rules |
+| `SecurityAnalyzers` | Security rules (passwords, RSA padding, licensing) |
+| `Test` | All unit tests (single project, mirrors analyzer structure) |
+| `Benchmark` | BenchmarkDotNet performance tests |
+| `AnalyzerPerformance` | Performance analysis tooling |
+
+### Packaging and ILRepack
+
+Each analyzer project targets `net8.0;netstandard2.0`. The `Directory.Build.Analyzer.props` configures ILRepack to merge `Common.dll` (and Mono.Cecil if present) into each analyzer DLL for the `netstandard2.0` target, so each NuGet package is self-contained. Packages output to `./Packages/`.
+
+### Categories
+
+Defined in `Common/Categories.cs`: Documentation, Maintainability, Naming, Readability, RuntimeFailure, Security, FunctionalProgramming, MsTest.
+
+## Test Conventions
+
+- Test framework: MSTest. All tests are in `Philips.CodeAnalysis.Test`.
+- Test directory structure mirrors the analyzer project structure (e.g., `Test/Maintainability/Maintainability/`, `Test/Moq/`).
+- Tests extend `DiagnosticVerifier` (analyzer-only) or `CodeFixVerifier` (analyzer + fixer).
+- Key test methods: `VerifyDiagnostic(source)`, `VerifySuccessfulCompilation(source)`, `VerifyFix(oldSource, newSource)`.
+- Use `VerifyDiagnostic(source, DiagnosticId.XXX)` when the analyzer doesn't extend `SingleDiagnosticAnalyzer` (e.g., `TestMethodDiagnosticAnalyzer` subclasses).
+- Override `GetDiagnosticAnalyzer()` and optionally `GetCodeFixProvider()`.
+- Every test method needs `[TestCategory(TestDefinitions.UnitTests)]`.
+- Source code under test is provided as inline string literals with `{{` for brace escaping in `string.Format` patterns.
+- `CodeFixVerifier` subclasses automatically get a `CheckFixAllProvider` test.
+- Copyright header: `// © <year> Koninklijke Philips N.V. See License.md in the project root for license information.`
+
+## Creating a New Analyzer
+
+1. Add the next ID to the `DiagnosticId` enum in `Common/DiagnosticId.cs`.
+2. Create the analyzer class inheriting `SingleDiagnosticAnalyzer<TNode, TSyntaxNodeAction>` and a companion `SyntaxNodeAction<T>` class — typically in the same file. Annotate with `[DiagnosticAnalyzer(LanguageNames.CSharp)]`.
+3. Set `isEnabled: false` initially in the constructor for safe rollout.
+4. Optionally create a `SingleDiagnosticCodeFixProvider<TSyntax>` subclass.
+5. Write tests extending `DiagnosticVerifier` or `CodeFixVerifier` in the matching test subfolder.
+6. Add documentation in `Documentation/Diagnostics/PH<id>.md`.
+
+## Analyzer Performance
+
+Analyzers run during every compilation and must be fast:
+- Do string/syntax comparisons before accessing the semantic model — semantic operations are expensive
+- Return early when the node clearly doesn't match
+- Avoid regex in hot paths; use `string.Contains` / `string.StartsWith` instead
+- Cache results of expensive operations within a compilation via `CompilationStartAnalysisContext`
+
+## Maintaining AI Agent Config
+
+When CLAUDE.md changes, regenerate `copilot-instructions.md` before committing — the `aiconfigparity` CI check will fail if they drift:
 
 ```bash
-# 1. Clean and build
-dotnet clean
-dotnet build --configuration Release  # NEVER CANCEL: ~1m 21s
-
-# 2. Run tests  
-dotnet test --configuration Release --logger "trx;LogFileName=test-results.trx"  # NEVER CANCEL: ~48s
-
-# 3. Check formatting
-dotnet format style --verify-no-changes --no-restore --verbosity detailed  # NEVER CANCEL: ~23s
-
-# 4. Run dogfooding process (validate analyzers work on own codebase)
-# Use MCP server run_dogfood tool or manual process via CI workflow
-
-# 5. Verify code coverage meets 80% SonarCloud requirement
-# Use MCP server analyze_coverage tool to check coverage gaps
+{ echo "# Philips Roslyn Analyzers — AI Coding Instructions"; echo ""; echo "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."; tail -n +2 CLAUDE.md; } > .github/copilot-instructions.md
 ```
 
-Total validation time: ~2m 32s + dogfood/coverage checks - NEVER CANCEL these commands.
+When adding a new skill (`.claude/skills/<name>/SKILL.md`), also add a shim at `.agents/skills/<name>/SKILL.md`:
 
-### Dogfooding Process
-This repository uses a "dogfooding" process where the analyzers analyze their own code:
-- Build creates analyzer packages with `.Dogfood` suffix
-- Analyzers are then applied to the codebase itself
-- All analyzer violations must be fixed, not suppressed
+```markdown
+---
+name: <name>
+description: <description from SKILL.md frontmatter>
+---
 
-### Code Coverage Requirements
-SonarCloud enforces **80% code coverage** and will fail the build if this threshold is not met:
-- Current coverage is over 90%, so maintain this high standard
-- Use the **MCP server `analyze_coverage` tool** to identify coverage gaps and get actionable suggestions
-- Tool provides specific test templates and prioritizes areas needing coverage
-- Focus testing on error handling, edge cases, and complex logic paths
-
-### Mandatory CI Requirements
-The CI process enforces these checks that will cause build failures:
-- All tests must pass (1903 tests)
-- Code formatting must be perfect (no deviations from .editorconfig)
-- **80% code coverage minimum** (enforced by SonarCloud)
-- All analyzer warnings must be addressed (no suppressions allowed)
-- Dogfood process must complete successfully
-
-## Project Structure
-
-### Key Projects
-- **Philips.CodeAnalysis.Common** - Shared utilities and base classes
-- **Philips.CodeAnalysis.MaintainabilityAnalyzers** - Code maintainability rules
-- **Philips.CodeAnalysis.DuplicateCodeAnalyzer** - Duplicate code detection
-- **Philips.CodeAnalysis.MoqAnalyzers** - Moq testing framework rules
-- **Philips.CodeAnalysis.MsTestAnalyzers** - MSTest framework rules  
-- **Philips.CodeAnalysis.SecurityAnalyzers** - Security-focused rules
-- **Philips.CodeAnalysis.Test** - All unit tests (1903 tests)
-- **Philips.CodeAnalysis.Benchmark** - Performance benchmarking
-- **Philips.CodeAnalysis.AnalyzerPerformance** - Performance analysis tools
-
-### Solution Structure
-```
-Philips.CodeAnalysis.sln - Main solution file
-├── Philips.CodeAnalysis.Common/ - Shared utilities
-├── Philips.CodeAnalysis.MaintainabilityAnalyzers/ - Core analyzers  
-├── Philips.CodeAnalysis.DuplicateCodeAnalyzer/ - Duplicate detection
-├── Philips.CodeAnalysis.MoqAnalyzers/ - Moq-specific rules
-├── Philips.CodeAnalysis.MsTestAnalyzers/ - MSTest rules
-├── Philips.CodeAnalysis.SecurityAnalyzers/ - Security rules
-├── Philips.CodeAnalysis.Test/ - All unit tests
-├── Philips.CodeAnalysis.Benchmark/ - Benchmarking
-├── Philips.CodeAnalysis.AnalyzerPerformance/ - Performance tools
-├── Documentation/ - Rule documentation by category
-├── Packages/ - Generated NuGet packages (created during build)
-└── .github/workflows/ - CI/CD pipelines
+Read and follow `../../../.claude/skills/<name>/SKILL.md` as the authoritative workflow.
+Resolve all relative paths and supporting resources from `../../../.claude/skills/<name>/`.
 ```
 
-### Important Configuration Files
-- **.editorconfig** - Strict formatting rules (311 lines) - all violations cause build failures
-- **Directory.Build.Common.props** - Common MSBuild properties
-- **Directory.Build.Analyzer.props** - Analyzer-specific build configuration
-- **copilot-instructions.md** - Additional development guidelines (separate from this file)
+## CI / Dogfooding
 
-## Development Guidelines
-
-### ⚠️ CRITICAL: Code Formatting Requirements ⚠️
-**The #1 cause of CoPilot Coding Agent struggles is formatting violations (IDE0055)**
-
-All code MUST strictly follow these .editorconfig rules:
-- **❗ Line endings**: CRLF (Windows-style) - NOT LF
-- **❗ Indentation**: Tabs with size 4 - NOT spaces  
-- **❗ Encoding**: UTF-8 with BOM for C# files
-- **❗ Braces**: New line before all braces
-- **❗ Naming**: Parameters must be camelCase
-
-**FORMATTING IS ZERO-TOLERANCE**: Any violation fails the build (IDE0055.severity = error)
-
-**Auto-fix available**: Use the MCP server `fix_formatting` tool to auto-correct all formatting violations.
-
-### Creating New Analyzers
-When creating new analyzers:
-
-1. **Check DiagnosticId.cs** for the next available ID (current highest: 2145)
-2. **Set `isEnabledByDefault: false`** initially for testing
-3. **Add to appropriate project** (Maintainability, Security, etc.)
-4. **Create comprehensive tests** in Philips.CodeAnalysis.Test
-5. **Update documentation** in Documentation/ folder
-6. **Use current year in copyright** headers: `// © 2025 Koninklijke Philips N.V.`
-
-### Performance Considerations
-Analyzers run during compilation and must be performant:
-- **String comparisons first** before loading semantic models
-- **Cache expensive operations** when possible  
-- **Early returns** when no issues exist
-- **Avoid regex in hot paths** - use string methods instead
-
-### Pull Request Requirements
-- **Title format**: Must follow Conventional Commits (feat:, fix:, docs:, etc.)
-- **All tests pass**: 1903 tests must pass
-- **Formatting perfect**: Zero formatting violations
-- **80% code coverage**: Maintained or improved coverage required
-- **No suppressions**: Fix underlying issues, don't suppress warnings
-- **Documentation**: Update relevant docs in Documentation/ folder
-
-## Common Tasks
-
-### Running Individual Projects
-```bash
-# Build specific analyzer
-dotnet build ./Philips.CodeAnalysis.MaintainabilityAnalyzers/Philips.CodeAnalysis.MaintainabilityAnalyzers.csproj --configuration Release
-
-# Run specific tests
-dotnet test ./Philips.CodeAnalysis.Test/Philips.CodeAnalysis.Test.csproj --configuration Release
-```
-
-### Working with Packages
-```bash
-# Check generated packages
-ls -la ./Packages/
-
-# Clean packages  
-dotnet clean  # Removes packages automatically
-```
-
-### Documentation Locations
-- **Rule documentation**: `./Documentation/` (by category)
-- **Individual analyzer docs**: Each project has a `.md` file
-- **CI/CD information**: `./cicd.md`
-- **Contributing guidelines**: `./CONTRIBUTING.md`
-- **Development tips**: `./copilot-instructions.md` (existing file with additional guidelines)
-
-## Troubleshooting
-
-### Troubleshooting
-
-### Formatting Issues (IDE0055)
-**Common CoPilot failure**: Formatting violations consume significant agent effort.
-
-**Quick fix**: Use the MCP server `fix_formatting` tool to automatically correct CRLF line endings, tabs, braces, and other .editorconfig violations.
-
-**Manual check**: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
-
-### Build Failures
-If builds fail:
-1. Run clean build: `dotnet clean && dotnet build --configuration Release`
-2. Check formatting: `dotnet format style --verify-no-changes --no-restore --verbosity detailed`
-3. Review analyzer violations - fix the code, don't suppress warnings
-4. Verify code coverage meets 80% requirement
-
-### Test Failures  
-If tests fail:
-1. Run tests with detailed output: `dotnet test --configuration Release --verbosity detailed`
-2. Check if new code introduced failures
-3. All 1903 tests must pass for CI to succeed
-
-### Performance Issues
-If analyzers are slow:
-1. Use the performance analysis tools in `Philips.CodeAnalysis.AnalyzerPerformance`
-2. Review the performance workflow in `.github/workflows/performance.yml`
-3. Follow performance guidelines for analyzer development
-
-## Critical Reminders
-- **NEVER CANCEL** build, test, or format commands - they must complete
-- **NEVER SUPPRESS** analyzer warnings - fix the underlying code issues  
-- **ALWAYS VALIDATE** using the complete workflow before submitting changes
-- **TIMEOUT VALUES**: Build (3+ min), Test (2+ min), Format (1+ min)
-- **1903 TESTS** must all pass for successful CI
-- **ZERO TOLERANCE** for formatting violations
+- CI runs build, test, and format checks. SonarCloud enforces 80% code coverage.
+- The dogfooding process builds the analyzers with a `.Dogfood` suffix and applies them to the codebase itself. All analyzer violations must be fixed, not suppressed.
+- PR titles must follow Conventional Commits (e.g., `feat:`, `fix:`, `docs:`).
