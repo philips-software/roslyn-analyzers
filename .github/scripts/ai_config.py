@@ -72,7 +72,8 @@ def canonical_frontmatter(skill_path: Path) -> tuple[str, str, str]:
 	name_line = name_lines[0]
 	description_line = description_lines[0]
 	name = name_line.split(":", 1)[1].strip().strip("\"'")
-	if not name or description_line.split(":", 1)[1].strip() in {"", ">", "|"}:
+	description = description_line.split(":", 1)[1].strip()
+	if not name or not description or description.startswith((">", "|")):
 		raise ValueError("frontmatter name and description must be single-line values")
 	if name != skill_path.parent.name:
 		raise ValueError(
@@ -119,16 +120,18 @@ def expected_generated_files(root: Path) -> tuple[dict[Path, str], list[str]]:
 			continue
 		outputs[root / f".agents/skills/{name}/SKILL.md"] = content
 
-	canonical_names = {path.parent.name for path in canonical_skills}
-	shim_names = {
-		path.parent.name for path in (root / ".agents/skills").glob("*/SKILL.md")
-	}
-	for orphan in sorted(shim_names - canonical_names):
-		errors.append(
-			f"ORPHAN: .agents/skills/{orphan}/SKILL.md has no matching canonical skill"
-		)
-
 	return outputs, errors
+
+
+def orphaned_skill_shims(root: Path) -> list[Path]:
+	canonical_names = {
+		path.parent.name for path in (root / ".claude/skills").glob("*/SKILL.md")
+	}
+	return sorted(
+		path
+		for path in (root / ".agents/skills").glob("*/SKILL.md")
+		if path.parent.name not in canonical_names
+	)
 
 
 def validate_codex_config(root: Path) -> list[str]:
@@ -153,6 +156,10 @@ def validate_codex_config(root: Path) -> list[str]:
 
 def validate_generated_files(root: Path) -> list[str]:
 	expected_files, errors = expected_generated_files(root)
+	for orphan in orphaned_skill_shims(root):
+		errors.append(
+			f"ORPHAN: {orphan.relative_to(root).as_posix()} has no matching canonical skill"
+		)
 	for path, expected in expected_files.items():
 		relative_path = path.relative_to(root).as_posix()
 		if not path.is_file():
@@ -183,6 +190,18 @@ def regenerate(root: Path) -> list[str]:
 	expected_files, errors = expected_generated_files(root)
 	if errors:
 		return errors
+	for orphan in orphaned_skill_shims(root):
+		try:
+			orphan.unlink()
+			try:
+				orphan.parent.rmdir()
+			except OSError:
+				# Preserve non-generated supporting files in the adapter directory.
+				pass
+		except OSError as error:
+			return [
+				f"ERROR: could not remove {orphan.relative_to(root).as_posix()}: {error}"
+			]
 	for path, content in sorted(expected_files.items()):
 		try:
 			write_text(path, content)

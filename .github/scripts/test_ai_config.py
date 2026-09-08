@@ -69,6 +69,33 @@ class AiConfigTests(unittest.TestCase):
 		errors = ai_config.validate(self.root)
 		self.assertTrue(any("DRIFT: .agents/skills/demo/SKILL.md" in error for error in errors), errors)
 
+	def test_block_scalar_description_modifiers_fail(self) -> None:
+		skill = self.root / ".claude/skills/demo/SKILL.md"
+		for indicator in (">-", ">+", "|-", "|+"):
+			with self.subTest(indicator=indicator):
+				skill.write_text(
+					f"---\nname: demo\ndescription: {indicator}\n  Multiline description.\n---\n",
+					encoding="utf-8",
+				)
+				errors = ai_config.validate(self.root)
+				self.assertTrue(
+					any("description must be single-line values" in error for error in errors),
+					errors,
+				)
+
+	def test_regenerate_removes_only_orphaned_skill_wrapper(self) -> None:
+		skill = self.root / ".claude/skills/demo/SKILL.md"
+		shim = self.root / ".agents/skills/demo/SKILL.md"
+		supporting_file = shim.parent / "supporting-file.md"
+		supporting_file.write_text("Preserve me.\n", encoding="utf-8")
+		skill.unlink()
+
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("ORPHAN: .agents/skills/demo/SKILL.md" in error for error in errors))
+		self.assertEqual([], ai_config.regenerate(self.root))
+		self.assertFalse(shim.exists())
+		self.assertTrue(supporting_file.exists())
+
 	def test_copilot_drift_fails(self) -> None:
 		(self.root / ".github/copilot-instructions.md").write_text(
 			"stale instructions\n", encoding="utf-8"
