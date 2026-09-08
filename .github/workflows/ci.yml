@@ -17,6 +17,10 @@ jobs:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/doc-update.yml
 
+  aiconfigparity:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
+    uses: ./.github/workflows/ai-config-parity.yml
+
   format:
     if: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
     uses: ./.github/workflows/format.yml

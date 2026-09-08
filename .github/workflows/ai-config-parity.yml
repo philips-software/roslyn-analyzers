@@ -1,0 +1,53 @@
+name: AI Config Parity
+
+on:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  parity-check:
+    name: AI Config Parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Check skill shim parity
+        run: |
+          fail=0
+
+          # Every .claude/skills/<name>.md must have .agents/skills/<name>/SKILL.md
+          for skill_file in .claude/skills/*.md; do
+            name=$(basename "$skill_file" .md)
+            shim=".agents/skills/$name/SKILL.md"
+            if [ ! -f "$shim" ]; then
+              echo "MISSING: $shim (no shim for .claude/skills/$name.md)"
+              fail=1
+            fi
+          done
+
+          # Every .agents/skills/<name>/SKILL.md must have a matching .claude/skills/<name>.md
+          for shim_dir in .agents/skills/*/; do
+            name=$(basename "$shim_dir")
+            skill=".claude/skills/$name.md"
+            if [ ! -f "$skill" ]; then
+              echo "ORPHAN: ${shim_dir}SKILL.md (no matching .claude/skills/$name.md)"
+              fail=1
+            fi
+          done
+
+          # .codex/config.toml must exist
+          if [ ! -f ".codex/config.toml" ]; then
+            echo "MISSING: .codex/config.toml"
+            fail=1
+          fi
+
+          if [ "$fail" -ne 0 ]; then
+            echo ""
+            echo "AI config parity check failed. Add missing files or update as needed."
+            exit 1
+          fi
+
+          echo "AI config parity check passed."
