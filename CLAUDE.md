@@ -147,13 +147,27 @@ When CLAUDE.md or a canonical skill changes, regenerate the Copilot instructions
 python .github/scripts/ai_config.py --write
 ```
 
+## MCP Tools
+
+The `roslyn-analyzers-dev` MCP server (registered in `.claude/settings.json`) provides tools that automate common development tasks. Use these instead of running the equivalent commands manually:
+
+| Tool | Purpose |
+|---|---|
+| `next_diagnosticId` | Allocate the next DiagnosticId — scans main and all open PRs to avoid conflicts |
+| `search_helpers` | Find `Helper.For*` methods and utilities in `Philips.CodeAnalysis.Common` |
+| `build_strict` | Build with warnings as errors |
+| `run_tests` | Run the test suite |
+| `run_dogfood` | Build dogfood packages and apply analyzers to the codebase itself |
+| `fix_formatting` | Auto-fix IDE0055 formatting violations (CRLF, tabs, braces) |
+| `analyze_coverage` | Identify uncovered lines and suggest tests to reach 80% coverage |
+
 ## CI / Dogfooding
 
 - CI runs build, test, and format checks. SonarCloud enforces 80% code coverage — new code must meet this threshold or the PR will fail.
-- The dogfooding workflow is an actual CI pipeline (not just a local step): it builds the analyzers with a `.Dogfood` suffix and applies them to the codebase itself. All analyzer violations must be fixed, not suppressed.
+- The dogfooding workflow is an actual CI pipeline (not just a local step): it builds the analyzers with a `.Dogfood` suffix and applies them to the codebase itself. All analyzer violations must be fixed, not suppressed. Use the `run_dogfood` MCP tool to run this locally before pushing.
 - **Never disable an analyzer** — do not suppress, disable, or lower the severity of any analyzer rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers a new analyzer, fix the code.
 - PR titles must follow Conventional Commits (e.g., `feat:`, `fix:`, `docs:`). Use `feat:` only for user-facing analyzer changes — it triggers a minor version bump on the NuGet packages.
 
 ## DiagnosticId Allocation
 
-When multiple agents or branches are in flight simultaneously, they may independently pick the same next `DiagnosticId`. The repository has an MCP server for ID allocation that evaluates all in-flight branches — use it when available (configured at the repository's Copilot MCP settings). Otherwise, verify the chosen ID is not already claimed by another in-progress branch before committing.
+When multiple agents or branches are in flight simultaneously, they may independently pick the same next `DiagnosticId`. Use the `next_diagnosticId` MCP tool to allocate IDs — it examines main and all open PRs to find a conflict-free ID. If the MCP server is unavailable, verify the chosen ID is not already claimed by another in-progress branch before committing.

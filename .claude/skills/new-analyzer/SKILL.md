@@ -28,11 +28,9 @@ Ask the user (if not already provided):
 
 ## 3. Assign a DiagnosticId
 
-If an MCP server for DiagnosticId allocation is available (configured at the repository's Copilot MCP settings), use it to obtain the next ID — it evaluates all in-flight branches to prevent conflicts.
+Use the `next_diagnosticId` MCP tool to allocate the next available ID. It examines main and all open PRs to avoid conflicts. Add the new entry to the `DiagnosticId` enum with the returned number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
 
-Otherwise, read `Philips.CodeAnalysis.Common/DiagnosticId.cs` and find the highest numeric ID in the enum. Add the new entry with the next available number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
-
-**Conflict warning:** When multiple agents or branches are in flight, they may independently pick the same next ID. If you did not use the MCP server, verify the chosen ID is not already claimed by another in-progress branch before committing.
+If the MCP tool is unavailable, read `Philips.CodeAnalysis.Common/DiagnosticId.cs`, find the highest numeric ID, and use the next number — but verify it is not already claimed by another in-progress branch before committing.
 
 ## 4. Choose the Analyzer Pattern
 
@@ -84,9 +82,9 @@ namespace Philips.CodeAnalysis.<Project>.<Category>
 	{
 		public override void Analyze()
 		{
-			// Analysis logic here
-			// Use Helper.ForAttributes, Helper.ForNamespaces, etc.
-			// Call ReportDiagnostic(location) to report violations
+			// Analysis logic here.
+			// Use the search_helpers MCP tool to discover available Helper.For* methods.
+			// Call ReportDiagnostic(location) to report violations.
 		}
 	}
 }
@@ -206,7 +204,7 @@ This analyzer does not offer any special configuration. The general ways of [sup
 
 ## 9. Fix Formatting
 
-New files will not have correct CRLF line endings. Run `dotnet format` on all new files before building:
+New files will not have correct CRLF line endings. Use the `fix_formatting` MCP tool to auto-fix all IDE0055 violations (CRLF, tabs, braces). Alternatively:
 ```bash
 dotnet format style --no-restore --include <space-separated list of new file paths>
 ```
@@ -215,21 +213,23 @@ Re-run this after any subsequent edits to those files — the Edit tool writes L
 
 ## 10. Validate
 
-Run the full validation:
+Use the MCP tools to validate, or run the equivalent commands:
+- `build_strict` — builds with warnings as errors
+- `run_tests` — runs the full test suite
+
+To run only the new tests first:
 ```bash
-dotnet build --configuration Release
 dotnet test --configuration Release --filter "FullyQualifiedName~<Name>Test"
-dotnet format style --verify-no-changes --no-restore --verbosity detailed
 ```
 
-Then run the full test suite to check for regressions.
+Then run the full suite (via `run_tests` or `dotnet test --configuration Release`) to check for regressions.
 
 ## 11. Dogfooding and CI
 
-The dogfooding CI workflow builds the analyzers and applies them to this codebase itself. Your new analyzer (and any code you wrote) must pass:
+Run `run_dogfood` to build the analyzers and apply them to this codebase before pushing. This mirrors the CI dogfooding pipeline. Your new analyzer (and any code you wrote) must pass:
 
 - **Never disable an analyzer** — do not suppress, disable, or lower the severity of any rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers the new analyzer, fix the code.
-- **SonarCloud** must pass — new code must meet the 80% coverage threshold. The agent may not have direct access to SonarCloud results; if CI fails on coverage, add more tests.
+- **SonarCloud** must pass — new code must meet the 80% coverage threshold. Use `analyze_coverage` to identify uncovered lines and get test suggestions before pushing.
 - If the dogfooding build surfaces violations from your new analyzer in existing code, fix those violations rather than weakening the rule or disabling it.
 
 ### Completeness checklist

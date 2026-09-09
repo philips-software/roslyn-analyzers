@@ -115,7 +115,7 @@ Edit `Documentation/Diagnostics/PH<id>.md`:
 
 ## 5. Fix Formatting
 
-New files will not have correct CRLF line endings. Run `dotnet format` on all new files before building:
+New files will not have correct CRLF line endings. Use the `fix_formatting` MCP tool to auto-fix all IDE0055 violations (CRLF, tabs, braces). Alternatively:
 ```bash
 dotnet format style --no-restore --include <space-separated list of new file paths>
 ```
@@ -124,18 +124,21 @@ Re-run this after any subsequent edits to those files — the Edit tool writes L
 
 ## 6. Validate
 
+Use the MCP tools to validate, or run the equivalent commands:
+- `build_strict` — builds with warnings as errors
+- `run_tests` — runs the full test suite
+
+To run only the relevant tests first:
 ```bash
-dotnet build --configuration Release
 dotnet test --configuration Release --filter "FullyQualifiedName~<Name>Test"
-dotnet format style --verify-no-changes --no-restore --verbosity detailed
 ```
 
-Then run the full test suite to check for regressions.
+Then run the full suite (via `run_tests` or `dotnet test --configuration Release`) to check for regressions.
 
 ## 7. Dogfooding and CI
 
-The dogfooding CI workflow builds the analyzers and applies them to this codebase itself. Your new code fixer (and any code you wrote) must pass:
+Run `run_dogfood` to build the analyzers and apply them to this codebase before pushing. This mirrors the CI dogfooding pipeline. Your new code fixer (and any code you wrote) must pass:
 
 - **Never disable an analyzer** — do not suppress, disable, or lower the severity of any rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers a diagnostic, fix the code.
-- **SonarCloud** must pass — new code must meet the 80% coverage threshold. The agent may not have direct access to SonarCloud results; if CI fails on coverage, add more tests.
+- **SonarCloud** must pass — new code must meet the 80% coverage threshold. Use `analyze_coverage` to identify uncovered lines and get test suggestions before pushing.
 - If the dogfooding build surfaces violations in your code, fix those violations rather than weakening any rule.
