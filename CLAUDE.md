@@ -156,4 +156,4 @@ python .github/scripts/ai_config.py --write
 
 ## DiagnosticId Allocation
 
-When multiple agents or branches are in flight simultaneously, they may independently pick the same next `DiagnosticId`. To avoid merge conflicts, verify the chosen ID is not already claimed by another in-progress branch before committing.
+When multiple agents or branches are in flight simultaneously, they may independently pick the same next `DiagnosticId`. The repository has an MCP server for ID allocation that evaluates all in-flight branches — use it when available (configured at the repository's Copilot MCP settings). Otherwise, verify the chosen ID is not already claimed by another in-progress branch before committing.

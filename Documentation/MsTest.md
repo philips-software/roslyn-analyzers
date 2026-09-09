@@ -60,6 +60,15 @@ These Philips rules have similar functionality in Microsoft's analyzers, often w
 | [PH2056](../Documentation/Diagnostics/PH2056.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Avoid Assert.AreEqual(true, true) | ⚠️ **Consider MSTEST0037** (broader assert validation) |
 | [PH2076](../Documentation/Diagnostics/PH2076.md) | [MSTEST0025](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0025) | Assert.Fail alternatives | ⚠️ **Consider MSTEST0025** (similar intent) |
 
+### Removed Rules
+
+These Philips rules were removed from the codebase because Microsoft's official analyzers fully supersede them:
+
+| Removed Rule | Replaced By | Reason |
+|--------------|-------------|--------|
+| PH2033 | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataRow validation — removed in [#851](https://github.com/philips-software/roslyn-analyzers/pull/851) |
+| PH2035 | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataTestMethod parameter count — removed in [#861](https://github.com/philips-software/roslyn-analyzers/pull/861) |
+
 ### Philips-Specific Rules (Keep if Needed)
 
 These rules provide functionality not available in Microsoft's official analyzers:

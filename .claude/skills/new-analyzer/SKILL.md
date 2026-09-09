@@ -28,9 +28,11 @@ Ask the user (if not already provided):
 
 ## 3. Assign a DiagnosticId
 
-Read `Philips.CodeAnalysis.Common/DiagnosticId.cs` and find the highest numeric ID in the enum. Add the new entry with the next available number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
+If an MCP server for DiagnosticId allocation is available (configured at the repository's Copilot MCP settings), use it to obtain the next ID — it evaluates all in-flight branches to prevent conflicts.
 
-**Conflict warning:** When multiple agents or branches are in flight, they may independently pick the same next ID. Verify the chosen ID is not already claimed by another in-progress branch before committing.
+Otherwise, read `Philips.CodeAnalysis.Common/DiagnosticId.cs` and find the highest numeric ID in the enum. Add the new entry with the next available number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
+
+**Conflict warning:** When multiple agents or branches are in flight, they may independently pick the same next ID. If you did not use the MCP server, verify the chosen ID is not already claimed by another in-progress branch before committing.
 
 ## 4. Choose the Analyzer Pattern
 
