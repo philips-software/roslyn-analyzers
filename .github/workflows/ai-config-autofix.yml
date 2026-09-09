@@ -1,0 +1,44 @@
+name: AI Config Autofix
+
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - 'CLAUDE.md'
+      - '.claude/skills/*/SKILL.md'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  autofix:
+    name: Regenerate AI Config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          ref: ${{ github.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+
+      - name: Regenerate derived files
+        run: python3 .github/scripts/ai_config.py --write
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: Regenerate AI config from CLAUDE.md"
+            git push
+          fi
