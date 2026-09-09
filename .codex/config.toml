@@ -2,3 +2,14 @@
 
 # Reuse the repository's existing Claude guidance as the single source of authority.
 project_doc_fallback_filenames = ["CLAUDE.md"]
+
+[mcp_servers.roslyn-analyzers-dev]
+command = "python"
+args = ["tools/mcp/mcp_server.py"]
+startup_timeout_sec = 30
+tool_timeout_sec = 900
+
+[mcp_servers.roslyn-analyzers-dev.env]
+DOTNET_SKIP_FIRST_TIME_EXPERIENCE = "1"
+DOTNET_CLI_TELEMETRY_OPTOUT = "1"
+DOTNET_NOLOGO = "1"

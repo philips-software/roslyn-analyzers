@@ -14,6 +14,13 @@ import tomllib
 COPILOT_TITLE = "# Philips Roslyn Analyzers — AI Coding Instructions"
 COPILOT_BANNER = "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."
 SKILL_GLOB = "*/SKILL.md"
+CODEX_MCP_SERVER = "roslyn-analyzers-dev"
+CODEX_MCP_COMMAND = "python"
+CODEX_MCP_ARGS = ["tools/mcp/mcp_server.py"]
+APP_TOKEN_ACTION = (
+	"actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1"
+)
+APP_TOKEN_REFERENCE = "${{ steps.app-token.outputs.token }}"
 
 
 def read_text(path: Path) -> str:
@@ -152,6 +159,24 @@ def validate_codex_config(root: Path) -> list[str]:
 			"INVALID: .codex/config.toml must set "
 			f"project_doc_fallback_filenames to exactly ['CLAUDE.md']; found {actual!r}"
 		]
+
+	mcp_servers = config.get("mcp_servers")
+	mcp_server = mcp_servers.get(CODEX_MCP_SERVER) if isinstance(mcp_servers, dict) else None
+	if not isinstance(mcp_server, dict):
+		return [
+			"INVALID: .codex/config.toml must register "
+			f"[mcp_servers.{CODEX_MCP_SERVER}]"
+		]
+	if mcp_server.get("command") != CODEX_MCP_COMMAND:
+		return [
+			f"INVALID: Codex MCP server command must be {CODEX_MCP_COMMAND!r}; "
+			f"found {mcp_server.get('command')!r}"
+		]
+	if mcp_server.get("args") != CODEX_MCP_ARGS:
+		return [
+			f"INVALID: Codex MCP server args must be {CODEX_MCP_ARGS!r}; "
+			f"found {mcp_server.get('args')!r}"
+		]
 	return []
 
 
@@ -183,8 +208,38 @@ def validate_generated_files(root: Path) -> list[str]:
 	return errors
 
 
+def validate_autofix_workflow(root: Path) -> list[str]:
+	workflow_path = root / ".github/workflows/ai-config-autofix.yml"
+	if not workflow_path.is_file():
+		return ["MISSING: .github/workflows/ai-config-autofix.yml"]
+
+	content = read_text(workflow_path)
+	errors: list[str] = []
+	for required in (
+		APP_TOKEN_ACTION,
+		"client-id: ${{ vars.AI_CONFIG_APP_CLIENT_ID }}",
+		"private-key: ${{ secrets.AI_CONFIG_APP_PRIVATE_KEY }}",
+		"permission-contents: write",
+		f"token: {APP_TOKEN_REFERENCE}",
+	):
+		if required not in content:
+			errors.append(
+				"INVALID: .github/workflows/ai-config-autofix.yml must contain "
+				f"{required!r}"
+			)
+	if "${{ secrets.GITHUB_TOKEN }}" in content:
+		errors.append(
+			"INVALID: AI config autofix pushes must not authenticate with GITHUB_TOKEN"
+		)
+	return errors
+
+
 def validate(root: Path) -> list[str]:
-	return validate_codex_config(root) + validate_generated_files(root)
+	return (
+		validate_codex_config(root)
+		+ validate_autofix_workflow(root)
+		+ validate_generated_files(root)
+	)
 
 
 def regenerate(root: Path) -> list[str]:

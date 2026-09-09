@@ -18,6 +18,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install MCP server dependency
+        run: python3 -m pip install --requirement tools/mcp/requirements.txt
+
+      - name: Smoke-test MCP stdio server
+        run: python3 tools/mcp/test_stdio_server.py
+
       - name: Test AI config parity validator
         run: python3 .github/scripts/test_ai_config.py
 

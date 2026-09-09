@@ -14,6 +14,7 @@ class AiConfigTests(unittest.TestCase):
 		self.root = Path(self.temp_directory.name)
 		(self.root / ".claude/skills/demo").mkdir(parents=True)
 		(self.root / ".codex").mkdir()
+		(self.root / ".github/workflows").mkdir(parents=True)
 		(self.root / "CLAUDE.md").write_text(
 			"# CLAUDE.md\n\nAuthoritative instructions.\n", encoding="utf-8"
 		)
@@ -22,7 +23,19 @@ class AiConfigTests(unittest.TestCase):
 			encoding="utf-8",
 		)
 		(self.root / ".codex/config.toml").write_text(
-			'project_doc_fallback_filenames = ["CLAUDE.md"]\n', encoding="utf-8"
+			'project_doc_fallback_filenames = ["CLAUDE.md"]\n\n'
+			'[mcp_servers.roslyn-analyzers-dev]\n'
+			'command = "python"\n'
+			'args = ["tools/mcp/mcp_server.py"]\n',
+			encoding="utf-8",
+		)
+		(self.root / ".github/workflows/ai-config-autofix.yml").write_text(
+			"uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1\n"
+			"client-id: ${{ vars.AI_CONFIG_APP_CLIENT_ID }}\n"
+			"private-key: ${{ secrets.AI_CONFIG_APP_PRIVATE_KEY }}\n"
+			"permission-contents: write\n"
+			"token: ${{ steps.app-token.outputs.token }}\n",
+			encoding="utf-8",
 		)
 		self.assertEqual([], ai_config.regenerate(self.root))
 
@@ -47,6 +60,58 @@ class AiConfigTests(unittest.TestCase):
 		)
 		errors = ai_config.validate(self.root)
 		self.assertTrue(any("not valid TOML" in error for error in errors), errors)
+
+	def test_missing_codex_mcp_server_fails(self) -> None:
+		(self.root / ".codex/config.toml").write_text(
+			'project_doc_fallback_filenames = ["CLAUDE.md"]\n', encoding="utf-8"
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(
+			any("must register [mcp_servers.roslyn-analyzers-dev]" in error for error in errors),
+			errors,
+		)
+
+	def test_wrong_codex_mcp_command_fails(self) -> None:
+		config = self.root / ".codex/config.toml"
+		config.write_text(
+			config.read_text(encoding="utf-8").replace('command = "python"', 'command = "wrong"'),
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("MCP server command" in error for error in errors), errors)
+
+	def test_wrong_codex_mcp_args_fail(self) -> None:
+		config = self.root / ".codex/config.toml"
+		config.write_text(
+			config.read_text(encoding="utf-8").replace(
+				'args = ["tools/mcp/mcp_server.py"]', 'args = ["wrong.py"]'
+			),
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("MCP server args" in error for error in errors), errors)
+
+	def test_autofix_requires_app_token_action(self) -> None:
+		workflow = self.root / ".github/workflows/ai-config-autofix.yml"
+		workflow.write_text(
+			workflow.read_text(encoding="utf-8").replace(
+				ai_config.APP_TOKEN_ACTION, "actions/create-github-app-token@wrong"
+			),
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any(ai_config.APP_TOKEN_ACTION in error for error in errors), errors)
+
+	def test_autofix_rejects_github_token(self) -> None:
+		workflow = self.root / ".github/workflows/ai-config-autofix.yml"
+		workflow.write_text(
+			workflow.read_text(encoding="utf-8").replace(
+				ai_config.APP_TOKEN_REFERENCE, "${{ secrets.GITHUB_TOKEN }}"
+			),
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("must not authenticate with GITHUB_TOKEN" in error for error in errors), errors)
 
 	def test_canonical_path_in_comment_does_not_mask_wrong_shim(self) -> None:
 		(self.root / ".agents/skills/demo/SKILL.md").write_text(
