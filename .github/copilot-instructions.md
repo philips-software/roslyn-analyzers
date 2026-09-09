@@ -149,8 +149,6 @@ When CLAUDE.md or a canonical skill changes, regenerate the Copilot instructions
 python .github/scripts/ai_config.py --write
 ```
 
-The branch autofix workflow uses a GitHub App so its generated commit triggers the normal PR validation suite. Repository administrators must configure the `AI_CONFIG_APP_CLIENT_ID` variable and `AI_CONFIG_APP_PRIVATE_KEY` secret for an App installed on this repository with Contents read/write permission. Do not replace that token with `GITHUB_TOKEN`; pushes authenticated with `GITHUB_TOKEN` do not trigger ordinary follow-up workflows.
-
 ## MCP Tools
 
 The `roslyn-analyzers-dev` MCP server (registered for Claude Code in `.claude/settings.json` and for Codex in `.codex/config.toml`) provides tools that automate common development tasks. Install its Python dependency with `python -m pip install --requirement tools/mcp/requirements.txt`. Use these tools instead of running the equivalent commands manually:

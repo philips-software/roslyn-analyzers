@@ -17,10 +17,6 @@ SKILL_GLOB = "*/SKILL.md"
 CODEX_MCP_SERVER = "roslyn-analyzers-dev"
 CODEX_MCP_COMMAND = "python"
 CODEX_MCP_ARGS = ["tools/mcp/mcp_server.py"]
-APP_TOKEN_ACTION = (
-	"actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1"
-)
-APP_TOKEN_REFERENCE = "${{ steps.app-token.outputs.token }}"
 
 
 def read_text(path: Path) -> str:
@@ -208,38 +204,8 @@ def validate_generated_files(root: Path) -> list[str]:
 	return errors
 
 
-def validate_autofix_workflow(root: Path) -> list[str]:
-	workflow_path = root / ".github/workflows/ai-config-autofix.yml"
-	if not workflow_path.is_file():
-		return ["MISSING: .github/workflows/ai-config-autofix.yml"]
-
-	content = read_text(workflow_path)
-	errors: list[str] = []
-	for required in (
-		APP_TOKEN_ACTION,
-		"client-id: ${{ vars.AI_CONFIG_APP_CLIENT_ID }}",
-		"private-key: ${{ secrets.AI_CONFIG_APP_PRIVATE_KEY }}",
-		"permission-contents: write",
-		f"token: {APP_TOKEN_REFERENCE}",
-	):
-		if required not in content:
-			errors.append(
-				"INVALID: .github/workflows/ai-config-autofix.yml must contain "
-				f"{required!r}"
-			)
-	if "${{ secrets.GITHUB_TOKEN }}" in content:
-		errors.append(
-			"INVALID: AI config autofix pushes must not authenticate with GITHUB_TOKEN"
-		)
-	return errors
-
-
 def validate(root: Path) -> list[str]:
-	return (
-		validate_codex_config(root)
-		+ validate_autofix_workflow(root)
-		+ validate_generated_files(root)
-	)
+	return validate_codex_config(root) + validate_generated_files(root)
 
 
 def regenerate(root: Path) -> list[str]:
