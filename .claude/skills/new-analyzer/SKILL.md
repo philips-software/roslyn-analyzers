@@ -30,6 +30,8 @@ Ask the user (if not already provided):
 
 Read `Philips.CodeAnalysis.Common/DiagnosticId.cs` and find the highest numeric ID in the enum. Add the new entry with the next available number. The enum member name should be PascalCase describing the rule (e.g., `AvoidThreadSleep = 2020`).
 
+**Conflict warning:** When multiple agents or branches are in flight, they may independently pick the same next ID. Verify the chosen ID is not already claimed by another in-progress branch before committing.
+
 ## 4. Choose the Analyzer Pattern
 
 First check if the target project has its own base class hierarchy. **MsTestAnalyzers** has specialized bases that handle test attribute resolution via the semantic model — use these instead of `SingleDiagnosticAnalyzer`:
@@ -219,6 +221,14 @@ dotnet format style --verify-no-changes --no-restore --verbosity detailed
 ```
 
 Then run the full test suite to check for regressions.
+
+## 11. Dogfooding and CI
+
+The dogfooding CI workflow builds the analyzers and applies them to this codebase itself. Your new analyzer (and any code you wrote) must pass:
+
+- **Never disable an analyzer** — do not suppress, disable, or lower the severity of any rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers the new analyzer, fix the code.
+- **SonarCloud** must pass — new code must meet the 80% coverage threshold. The agent may not have direct access to SonarCloud results; if CI fails on coverage, add more tests.
+- If the dogfooding build surfaces violations from your new analyzer in existing code, fix those violations rather than weakening the rule or disabling it.
 
 ### Completeness checklist
 

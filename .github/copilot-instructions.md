@@ -151,6 +151,11 @@ python .github/scripts/ai_config.py --write
 
 ## CI / Dogfooding
 
-- CI runs build, test, and format checks. SonarCloud enforces 80% code coverage.
-- The dogfooding process builds the analyzers with a `.Dogfood` suffix and applies them to the codebase itself. All analyzer violations must be fixed, not suppressed.
-- PR titles must follow Conventional Commits (e.g., `feat:`, `fix:`, `docs:`).
+- CI runs build, test, and format checks. SonarCloud enforces 80% code coverage — new code must meet this threshold or the PR will fail.
+- The dogfooding workflow is an actual CI pipeline (not just a local step): it builds the analyzers with a `.Dogfood` suffix and applies them to the codebase itself. All analyzer violations must be fixed, not suppressed.
+- **Never disable an analyzer** — do not suppress, disable, or lower the severity of any analyzer rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers a new analyzer, fix the code.
+- PR titles must follow Conventional Commits (e.g., `feat:`, `fix:`, `docs:`). Use `feat:` only for user-facing analyzer changes — it triggers a minor version bump on the NuGet packages.
+
+## DiagnosticId Allocation
+
+When multiple agents or branches are in flight simultaneously, they may independently pick the same next `DiagnosticId`. To avoid merge conflicts, verify the chosen ID is not already claimed by another in-progress branch before committing.

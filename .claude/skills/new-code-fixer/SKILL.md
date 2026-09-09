@@ -131,3 +131,11 @@ dotnet format style --verify-no-changes --no-restore --verbosity detailed
 ```
 
 Then run the full test suite to check for regressions.
+
+## 7. Dogfooding and CI
+
+The dogfooding CI workflow builds the analyzers and applies them to this codebase itself. Your new code fixer (and any code you wrote) must pass:
+
+- **Never disable an analyzer** — do not suppress, disable, or lower the severity of any rule in `.editorconfig`, `GlobalSuppressions.cs`, or any other mechanism. If the codebase triggers a diagnostic, fix the code.
+- **SonarCloud** must pass — new code must meet the 80% coverage threshold. The agent may not have direct access to SonarCloud results; if CI fails on coverage, add more tests.
+- If the dogfooding build surfaces violations in your code, fix those violations rather than weakening any rule.
