@@ -1,6 +1,4 @@
-# Philips Roslyn Analyzers — AI Coding Instructions
-
-> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead.
+# CLAUDE.md
 
 This file provides authoritative guidance to AI coding agents working with code in this repository.
 

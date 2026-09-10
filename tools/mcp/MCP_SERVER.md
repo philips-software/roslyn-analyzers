@@ -1,35 +1,40 @@
 # Roslyn Analyzers MCP Server
 
-A focused Model Context Protocol (MCP) server that helps the Copilot Coding Agent navigate common problems, such as finding existing Helper.For methods, strict build rules, dogfooding analyzers on ourselves, and 80% code coverage on modified code.
+A focused Model Context Protocol (MCP) server that helps Claude Code, Codex, and the Copilot Coding Agent navigate common problems, such as finding existing Helper.For methods, strict build rules, dogfooding analyzers on ourselves, and 80% code coverage on modified code.
 
 ## Core Problem Solved
 
-The Copilot Coding Agent often overlooks existing Helper.ForXXX methods and creates new utility methods instead of using the comprehensive helper utilities already available in `Philips.CodeAnalysis.Common`. This server provides focused functionality to surface these existing helpers.
+Coding agents can overlook existing Helper.ForXXX methods and create new utility methods instead of using the comprehensive helper utilities already available in `Philips.CodeAnalysis.Common`. This server provides focused functionality to surface these existing helpers.
 
 ## Features
 
-The MCP server provides streamlined endpoints for essential development tasks:
+The MCP server provides streamlined tools for essential development tasks:
 
 ### Helper Discovery (Primary Focus)
-- **`/search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
+
+- **`search_helpers`** - Find Helper.For methods and related utilities that developers commonly miss
 
 ### Diagnostic ID Management (New!)
-- **`/next_diagnosticId`** - Determine the next available DiagnosticId by examining main branch and all open PRs to avoid conflicts
+
+- **`next_diagnosticId`** - Determine the next available DiagnosticId by examining main branch and all open PRs to avoid conflicts
 
 ### Code Formatting
-- **`/fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
+
+- **`fix_formatting`** - Auto-fix code formatting issues using `dotnet format`. Addresses IDE0055 violations including CRLF line endings and tab indentation to reduce CoPilot struggles with formatting
 
 ### Code Coverage Analysis
-- **`/analyze_coverage`** - Analyze code coverage and provide actionable suggestions to reach SonarCloud's 80% requirement
+
+- **`analyze_coverage`** - Analyze code coverage and provide actionable suggestions to reach SonarCloud's 80% requirement
 
 ### Build & Test Automation  
-- **`/build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
-- **`/run_tests`** - Execute tests (security-hardened, fixed target)
-- **`/run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
+
+- **`build_strict`** - Build the solution with warnings treated as errors (`-warnaserror`)
+- **`run_tests`** - Execute tests (security-hardened, fixed target)
+- **`run_dogfood`** - Run the complete dogfooding process (build analyzers and apply them to the codebase)
 
 ## Diagnostic ID Management
 
-The `/next_diagnosticId` endpoint solves the problem of concurrent Pull Requests trying to claim the same diagnostic ID number. When multiple developers work on new analyzers in parallel, they often pick the same "next" ID, causing conflicts during code review.
+The `next_diagnosticId` tool solves the problem of concurrent Pull Requests trying to claim the same diagnostic ID number. When multiple developers work on new analyzers in parallel, they often pick the same "next" ID, causing conflicts during code review.
 
 **Key Benefits:**
 - **Conflict prevention** - Scans both main branch and open PRs to find truly available IDs
@@ -59,7 +64,7 @@ The `/next_diagnosticId` endpoint solves the problem of concurrent Pull Requests
 
 ## Code Formatting Assistance
 
-The `/fix_formatting` endpoint specifically addresses the CoPilot Coding Agent's struggle with IDE0055 formatting violations. This repository enforces strict formatting rules:
+The `fix_formatting` tool specifically addresses the Copilot Coding Agent's struggle with IDE0055 formatting violations. This repository enforces strict formatting rules:
 
 - **Line endings**: CRLF (Windows-style) - not LF
 - **Indentation**: Tabs (not spaces) with size 4
@@ -85,7 +90,7 @@ The `/fix_formatting` endpoint specifically addresses the CoPilot Coding Agent's
 
 ## Coverage Analysis for SonarCloud
 
-The `/analyze_coverage` endpoint specifically addresses SonarCloud's 80% code coverage requirement that often causes the Copilot Coding Agent to fall short. This endpoint:
+The `analyze_coverage` tool specifically addresses SonarCloud's 80% code coverage requirement that often causes the Copilot Coding Agent to fall short. This tool:
 
 **Key Benefits:**
 - **Identifies coverage gaps** - Pinpoints exact uncovered lines and methods
@@ -109,68 +114,36 @@ The `/analyze_coverage` endpoint specifically addresses SonarCloud's 80% code co
 }
 ```
 
-### Information
-- **`/manifest`** - Get server manifest with endpoint descriptions
-- **`/health`** - Health check endpoint
-
 ## Installation
 
 1. **Install Python dependencies:**
    ```bash
-   pip install -r tools/mcp/requirements.txt
+   python -m pip install --requirement tools/mcp/requirements.txt
    ```
 
-2. **Start the server:**
+2. **Start the stdio server:**
    ```bash
    cd tools/mcp
    python mcp_server.py
    ```
 
-   The server will start on `http://localhost:8000`
+   Claude Code and Codex start this command automatically from their checked-in
+   project configuration. Running it manually starts the same stdio transport.
 
-## Usage Examples
+## Usage
 
-### Starting the Server
+After installing the dependency, restart Claude Code or Codex so it loads the
+checked-in project MCP configuration. The server exposes the tools listed above
+through the client's normal MCP tool interface.
+
+Run the stdio integration test directly to verify the entry point and complete
+tool catalog:
+
 ```bash
-# From the repository root
-cd tools/mcp
-python mcp_server.py
+python tools/mcp/test_stdio_server.py
 ```
 
-### Using the Startup Script
-```bash
-# From the repository root
-./tools/mcp/start_mcp_server.sh
-```
-
-### Example API Calls
-
-#### Search for Helper Methods (Primary Feature)
-```bash
-curl -X POST "http://localhost:8000/search_helpers"
-```
-
-#### Run Strict Build
-```bash
-curl -X POST "http://localhost:8000/build_strict"
-```
-
-#### Run Tests (Security-Hardened)
-```bash
-curl -X POST "http://localhost:8000/run_tests"
-```
-
-#### Run Dogfood Process
-```bash
-curl -X POST "http://localhost:8000/run_dogfood"
-```
-
-#### Analyze Code Coverage (New!)
-```bash
-curl -X POST "http://localhost:8000/analyze_coverage"
-```
-
-This endpoint helps reach SonarCloud's 80% coverage requirement by:
+The `analyze_coverage` tool helps reach SonarCloud's 80% coverage requirement by:
 - Running tests with coverage analysis
 - Identifying specific uncovered lines and methods
 - Providing actionable suggestions for improving coverage
@@ -178,7 +151,7 @@ This endpoint helps reach SonarCloud's 80% coverage requirement by:
 
 ## Dogfood Process
 
-The dogfood process (`/run_dogfood`) automates the complete self-analysis workflow:
+The `run_dogfood` tool automates the complete self-analysis workflow:
 
 1. **Build Dogfood Packages**: Creates `.Dogfood` versions of all analyzer packages by setting `PackageId=$(MSBuildProjectName).Dogfood` in Directory.Build.props and building with Release configuration
 2. **Add Package Source**: Adds the local `Packages/` directory as a NuGet source for consuming the dogfood packages
@@ -192,22 +165,20 @@ This process follows the same workflow as `.github/workflows/dogfood.yml` to ens
 
 ## Development
 
-The server is designed to be run from the repository root directory. It automatically:
-- Uses the current working directory as the base for all operations
+The server can be started from any directory. It automatically:
+
+- Resolves the repository root from the location of `mcp_server.py`
 - Skips binary files and build artifacts when listing files
 - Provides detailed error messages and logging
 - Handles temporary file cleanup automatically
 
-## API Documentation
-
-When the server is running, visit `http://localhost:8000/docs` for interactive API documentation powered by FastAPI's automatic Swagger UI generation.
-
 ## Error Handling
 
 The server provides comprehensive error handling:
-- File not found errors (404)
-- Invalid parameters (400)  
+
+- File-not-found results
+- Invalid-parameter results
 - Build/test failures with detailed logs
 - Automatic cleanup of temporary files
 
-All endpoints return structured JSON responses with status indicators and detailed error messages when applicable.
+All tools return structured results with status indicators and detailed error messages when applicable.

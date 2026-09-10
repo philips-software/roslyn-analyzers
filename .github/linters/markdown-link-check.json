@@ -1,3 +1,25 @@
 {
-  "aliveStatusCodes": [200,429]
+  "aliveStatusCodes": [200, 429],
+  "ignorePatterns": [
+    {
+      "pattern": "https://www.nuget.org/packages/Philips.CodeAnalysis.SecurityAnalyzers",
+      "description": "SecurityAnalyzers package is not published to NuGet.org; link is kept for when it is eventually released"
+    },
+    {
+      "pattern": "https://visualstudiomagazine.com/blogs/tool-tracker/2018/11/test-exceptions.aspx",
+      "description": "The article rejects automated link-check requests with HTTP 403"
+    },
+    {
+      "pattern": "https://www.pkisolutions.com/accessing-and-using-certificate-private-keys-in-net-framework-net-core/",
+      "description": "The article rejects automated link-check requests with HTTP 403"
+    },
+    {
+      "pattern": "https://dzone.com/articles/void-methods-considered-anti-pattern",
+      "description": "The article rejects automated link-check requests with HTTP 403"
+    },
+    {
+      "pattern": "https://crypto.stackexchange.com/questions/47436/how-much-safer-is-rsa-oaep-compared-to-rsa-with-pkcs1-v1-5-padding",
+      "description": "The page rejects automated link-check requests with HTTP 403"
+    }
+  ]
 }
