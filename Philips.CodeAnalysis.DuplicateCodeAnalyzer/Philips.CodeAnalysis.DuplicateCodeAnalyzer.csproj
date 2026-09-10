@@ -3,10 +3,7 @@
   <Import Project="..\Directory.Build.Analyzer.props" />
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFrameworks>net8.0;netstandard2.0;net10.0</TargetFrameworks>
     <Description>Detects Duplicate Code Shapes</Description>
     <PackageTags>CSharp MsTest Roslyn CodeAnalysis analyzers cpd duplicate Philips</PackageTags>
   </PropertyGroup>
