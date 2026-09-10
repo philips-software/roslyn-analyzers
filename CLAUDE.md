@@ -147,6 +147,20 @@ When CLAUDE.md or a canonical skill changes, regenerate the Copilot instructions
 python .github/scripts/ai_config.py --write
 ```
 
+## Local Validation Before Pushing
+
+Run the key CI checks locally before pushing to avoid failed PR checks:
+
+```bash
+# AI config parity (regenerate, then validate)
+python .github/scripts/ai_config.py --write
+python .github/scripts/test_ai_config.py
+python .github/scripts/ai_config.py --check
+
+# Trailing whitespace (flags issues git will reject)
+git diff --check origin/main...HEAD
+```
+
 ## MCP Tools
 
 The `roslyn-analyzers-dev` MCP server (registered for Claude Code in `.mcp.json` and for Codex in `.codex/config.toml`) provides tools that automate common development tasks. Install its Python dependency with `python -m pip install --requirement tools/mcp/requirements.txt`. Use these tools instead of running the equivalent commands manually:
