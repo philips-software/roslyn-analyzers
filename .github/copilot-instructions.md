@@ -159,7 +159,7 @@ python .github/scripts/ai_config.py --write
 python .github/scripts/test_ai_config.py
 python .github/scripts/ai_config.py --check
 
-# Trailing whitespace (flags issues git will reject)
+# Trailing whitespace (catches errors before review)
 git diff --check origin/main...HEAD
 ```
 
