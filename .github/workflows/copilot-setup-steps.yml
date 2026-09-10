@@ -13,7 +13,7 @@ jobs:
       - name: Python deps for MCP server
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install --requirement tools/mcp/requirements.txt
+          python3 -m pip install --require-hashes --requirement tools/mcp/requirements.lock
       - name: Setup .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # @v6.0.0
         with:

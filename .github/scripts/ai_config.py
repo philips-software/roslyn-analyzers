@@ -14,9 +14,9 @@ import tomllib
 COPILOT_TITLE = "# Philips Roslyn Analyzers — AI Coding Instructions"
 COPILOT_BANNER = "> AUTO-GENERATED from CLAUDE.md. Do not edit directly — update CLAUDE.md instead."
 SKILL_GLOB = "*/SKILL.md"
-CODEX_MCP_SERVER = "roslyn-analyzers-dev"
-CODEX_MCP_COMMAND = "python"
-CODEX_MCP_ARGS = ["tools/mcp/mcp_server.py"]
+MCP_SERVER = "roslyn-analyzers-dev"
+MCP_COMMAND = "python"
+MCP_ARGS = ["tools/mcp/mcp_server.py"]
 
 
 def read_text(path: Path) -> str:
@@ -138,6 +138,33 @@ def orphaned_skill_shims(root: Path) -> list[Path]:
 	)
 
 
+def validate_mcp_json(root: Path) -> list[str]:
+	mcp_path = root / ".mcp.json"
+	if not mcp_path.is_file():
+		return ["MISSING: .mcp.json"]
+
+	import json
+	try:
+		config = json.loads(read_text(mcp_path))
+	except json.JSONDecodeError as error:
+		return [f"INVALID: .mcp.json is not valid JSON: {error}"]
+
+	server = config.get(MCP_SERVER)
+	if not isinstance(server, dict):
+		return [f"INVALID: .mcp.json must contain a {MCP_SERVER!r} entry"]
+	if server.get("command") != MCP_COMMAND:
+		return [
+			f"INVALID: .mcp.json MCP server command must be {MCP_COMMAND!r}; "
+			f"found {server.get('command')!r}"
+		]
+	if server.get("args") != MCP_ARGS:
+		return [
+			f"INVALID: .mcp.json MCP server args must be {MCP_ARGS!r}; "
+			f"found {server.get('args')!r}"
+		]
+	return []
+
+
 def validate_codex_config(root: Path) -> list[str]:
 	config_path = root / ".codex/config.toml"
 	if not config_path.is_file():
@@ -157,20 +184,20 @@ def validate_codex_config(root: Path) -> list[str]:
 		]
 
 	mcp_servers = config.get("mcp_servers")
-	mcp_server = mcp_servers.get(CODEX_MCP_SERVER) if isinstance(mcp_servers, dict) else None
+	mcp_server = mcp_servers.get(MCP_SERVER) if isinstance(mcp_servers, dict) else None
 	if not isinstance(mcp_server, dict):
 		return [
 			"INVALID: .codex/config.toml must register "
-			f"[mcp_servers.{CODEX_MCP_SERVER}]"
+			f"[mcp_servers.{MCP_SERVER}]"
 		]
-	if mcp_server.get("command") != CODEX_MCP_COMMAND:
+	if mcp_server.get("command") != MCP_COMMAND:
 		return [
-			f"INVALID: Codex MCP server command must be {CODEX_MCP_COMMAND!r}; "
+			f"INVALID: Codex MCP server command must be {MCP_COMMAND!r}; "
 			f"found {mcp_server.get('command')!r}"
 		]
-	if mcp_server.get("args") != CODEX_MCP_ARGS:
+	if mcp_server.get("args") != MCP_ARGS:
 		return [
-			f"INVALID: Codex MCP server args must be {CODEX_MCP_ARGS!r}; "
+			f"INVALID: Codex MCP server args must be {MCP_ARGS!r}; "
 			f"found {mcp_server.get('args')!r}"
 		]
 	return []
@@ -205,7 +232,7 @@ def validate_generated_files(root: Path) -> list[str]:
 
 
 def validate(root: Path) -> list[str]:
-	return validate_codex_config(root) + validate_generated_files(root)
+	return validate_mcp_json(root) + validate_codex_config(root) + validate_generated_files(root)
 
 
 def regenerate(root: Path) -> list[str]:

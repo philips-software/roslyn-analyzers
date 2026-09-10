@@ -28,6 +28,10 @@ class AiConfigTests(unittest.TestCase):
 			'args = ["tools/mcp/mcp_server.py"]\n',
 			encoding="utf-8",
 		)
+		(self.root / ".mcp.json").write_text(
+			'{"roslyn-analyzers-dev": {"command": "python", "args": ["tools/mcp/mcp_server.py"]}}\n',
+			encoding="utf-8",
+		)
 		self.assertEqual([], ai_config.regenerate(self.root))
 
 	def tearDown(self) -> None:
@@ -77,6 +81,27 @@ class AiConfigTests(unittest.TestCase):
 			config.read_text(encoding="utf-8").replace(
 				'args = ["tools/mcp/mcp_server.py"]', 'args = ["wrong.py"]'
 			),
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("MCP server args" in error for error in errors), errors)
+
+	def test_missing_mcp_json_fails(self) -> None:
+		(self.root / ".mcp.json").unlink()
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("MISSING: .mcp.json" in error for error in errors), errors)
+
+	def test_wrong_mcp_json_command_fails(self) -> None:
+		(self.root / ".mcp.json").write_text(
+			'{"roslyn-analyzers-dev": {"command": "wrong", "args": ["tools/mcp/mcp_server.py"]}}',
+			encoding="utf-8",
+		)
+		errors = ai_config.validate(self.root)
+		self.assertTrue(any("MCP server command" in error for error in errors), errors)
+
+	def test_wrong_mcp_json_args_fails(self) -> None:
+		(self.root / ".mcp.json").write_text(
+			'{"roslyn-analyzers-dev": {"command": "python", "args": ["wrong.py"]}}',
 			encoding="utf-8",
 		)
 		errors = ai_config.validate(self.root)

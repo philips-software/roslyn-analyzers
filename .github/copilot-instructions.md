@@ -151,7 +151,7 @@ python .github/scripts/ai_config.py --write
 
 ## MCP Tools
 
-The `roslyn-analyzers-dev` MCP server (registered for Claude Code in `.claude/settings.json` and for Codex in `.codex/config.toml`) provides tools that automate common development tasks. Install its Python dependency with `python -m pip install --requirement tools/mcp/requirements.txt`. Use these tools instead of running the equivalent commands manually:
+The `roslyn-analyzers-dev` MCP server (registered for Claude Code in `.mcp.json` and for Codex in `.codex/config.toml`) provides tools that automate common development tasks. Install its Python dependency with `python -m pip install --requirement tools/mcp/requirements.txt`. Use these tools instead of running the equivalent commands manually:
 
 | Tool | Purpose |
 |---|---|

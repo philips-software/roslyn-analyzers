@@ -86,7 +86,10 @@ public class <Name>Test : CodeFixVerifier
 		var fixedText = @"
 // expected source after fix is applied
 ";
+		// For SingleDiagnosticAnalyzer subclasses:
 		await VerifyDiagnostic(givenText).ConfigureAwait(false);
+		// For other hierarchies (e.g., TestMethodDiagnosticAnalyzer):
+		// await VerifyDiagnostic(givenText, DiagnosticId.<EnumMember>).ConfigureAwait(false);
 		await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 	}
 

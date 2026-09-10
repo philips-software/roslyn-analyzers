@@ -134,7 +134,10 @@ namespace Philips.CodeAnalysis.Test.<TestSubfolder>
 // inline source code that triggers the diagnostic
 // use {{ for literal braces if using string.Format
 ";
+			// For SingleDiagnosticAnalyzer subclasses:
 			await VerifyDiagnostic(givenText).ConfigureAwait(false);
+			// For other hierarchies (e.g., TestMethodDiagnosticAnalyzer):
+			// await VerifyDiagnostic(givenText, DiagnosticId.<EnumMember>).ConfigureAwait(false);
 		}
 
 		[TestMethod]

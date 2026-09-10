@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "roslyn-analyzers-dev": {
-      "type": "stdio",
-      "command": "python",
-      "args": ["tools/mcp/mcp_server.py"]
-    }
-  }
-}
