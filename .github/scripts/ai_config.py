@@ -149,9 +149,12 @@ def validate_mcp_json(root: Path) -> list[str]:
 	except json.JSONDecodeError as error:
 		return [f"INVALID: .mcp.json is not valid JSON: {error}"]
 
-	server = config.get(MCP_SERVER)
+	mcp_servers = config.get("mcpServers")
+	if not isinstance(mcp_servers, dict):
+		return ["INVALID: .mcp.json must contain a top-level 'mcpServers' object"]
+	server = mcp_servers.get(MCP_SERVER)
 	if not isinstance(server, dict):
-		return [f"INVALID: .mcp.json must contain a {MCP_SERVER!r} entry"]
+		return [f"INVALID: .mcp.json mcpServers must contain a {MCP_SERVER!r} entry"]
 	if server.get("command") != MCP_COMMAND:
 		return [
 			f"INVALID: .mcp.json MCP server command must be {MCP_COMMAND!r}; "

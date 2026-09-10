@@ -1,6 +1,8 @@
 {
-  "roslyn-analyzers-dev": {
-    "command": "python",
-    "args": ["tools/mcp/mcp_server.py"]
+  "mcpServers": {
+    "roslyn-analyzers-dev": {
+      "command": "python",
+      "args": ["tools/mcp/mcp_server.py"]
+    }
   }
 }
