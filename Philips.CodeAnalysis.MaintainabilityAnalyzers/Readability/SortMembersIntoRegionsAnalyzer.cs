@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,11 +24,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			ImmutableDictionary<string, string> regionNames = MemberRegionClassifier.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key));
-			context.RegisterSyntaxNodeAction(c => Analyze(c, regionNames), SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
+			HashSet<string> allowedRegions = MemberRegionClassifier.ParseAllowedRegions(Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.AllowedRegionsKey));
+			ImmutableDictionary<string, string> regionNames = MemberRegionClassifier
+				.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key))
+				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions));
+			context.RegisterSyntaxNodeAction(c => Analyze(c, regionNames, allowedRegions), SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableDictionary<string, string> regionNames)
+		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableDictionary<string, string> regionNames, HashSet<string> allowedRegions)
 		{
 			var type = (TypeDeclarationSyntax)context.Node;
 			if (type.Members.Count == 0 || type.Parent is TypeDeclarationSyntax)
@@ -48,6 +52,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var isTestClass = MemberRegionClassifier.IsTestClass(type);
 			for (var i = 0; i < type.Members.Count; i++)
 			{
+				if (currentRegions[i].Any(allowedRegions.Contains))
+				{
+					continue;
+				}
+
 				MemberDeclarationSyntax member = type.Members[i];
 				var expected = MemberRegionClassifier.GetRegionName(MemberRegionClassifier.GetExpectedRegion(member, isTestClass), regionNames);
 				if (!Contains(currentRegions[i], expected))

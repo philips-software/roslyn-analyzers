@@ -53,6 +53,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return names.ToImmutable();
 		}
 
+		public const string AllowedRegionsKey = "allowed_regions";
+
+		public static HashSet<string> ParseAllowedRegions(string commaSeparated)
+		{
+			return new HashSet<string>(
+				(commaSeparated ?? string.Empty).Split(',').Select(name => name.Trim()).Where(name => name.Length > 0),
+				StringComparer.Ordinal);
+		}
+
 		public static string GetRegionName(string region, ImmutableDictionary<string, string> names)
 		{
 			return names != null && names.TryGetValue(SettingKeys[region], out var name) ? name : region;

@@ -82,12 +82,115 @@ class Foo
 			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
 		}
 
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AnyMemberIsAcceptedInAllowedRegion()
+		{
+			var givenText = @"
+class Foo
+{
+	#region Event Handlers
+	private int _count;
+	private void OnA() { }
+	public void OnB() { }
+	#endregion
+
+	#region Public Interface
+	#region IDisposable Members
+	private void Dispose(bool disposing) { }
+	#endregion
+	#endregion
+}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task AllowedRegionIsKeptVerbatimAfterPublicInterface()
+		{
+			var givenText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class FooTests
+{
+	// Handlers
+	#region Event Handlers
+	private void OnA() { }
+
+	public void OnB() { }
+	#endregion
+	[TestMethod]
+	public void TestA() { }
+	public void A() { }
+	private int _b;
+}
+";
+			var fixedText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class FooTests
+{
+	#region Private Data
+
+	private int _b;
+
+	#endregion
+
+	#region Public Interface
+
+	public void A() { }
+
+	#endregion
+
+	// Handlers
+	#region Event Handlers
+	private void OnA() { }
+
+	public void OnB() { }
+	#endregion
+
+	#region Test Methods
+
+	[TestMethod]
+	public void TestA() { }
+
+	#endregion
+}
+";
+			await VerifyDiagnostic(givenText, regex: "TestA").ConfigureAwait(false);
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixIsSkippedWhenCommentsWouldBeLost()
+		{
+			var givenText = @"
+class Foo
+{
+	public void A() { }
+	#region Public Interface
+	public void B() { }
+	// trailing note
+	#endregion
+	#region Event Handlers
+	private void OnA() { }
+	#endregion
+}
+";
+			await VerifyFix(givenText, givenText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
 		protected override ImmutableDictionary<string, string> GetAdditionalAnalyzerConfigOptions()
 		{
 			var prefix = $@"dotnet_code_quality.{DiagnosticId.SortMembersIntoRegions.ToId()}";
 			return base.GetAdditionalAnalyzerConfigOptions()
 				.Add($@"{prefix}.non_public_data_members_region", @"Private Data")
-				.Add($@"{prefix}.non_public_properties_methods_region", @" Private Interface ");
+				.Add($@"{prefix}.non_public_properties_methods_region", @" Private Interface ")
+				.Add($@"{prefix}.allowed_regions", @"Event Handlers, IDisposable Members");
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()
