@@ -9,6 +9,8 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 	[TestClass]
 	public class MemberRegionClassifierTest
 	{
+		private static readonly MemberRegionClassifier Classifier = new();
+
 		private const string Default = "Test Mocks|Non-Public Data Members|Non-Public Properties/Methods|Public Interface|<allowed regions>|Test Methods|Test Classes";
 
 		[TestMethod]
@@ -24,7 +26,7 @@ namespace Philips.CodeAnalysis.Test.Maintainability.Readability
 		[TestCategory(TestDefinitions.UnitTests)]
 		public void ParseSectionOrder(string setting, string expected)
 		{
-			Assert.AreEqual(expected, string.Join("|", MemberRegionClassifier.ParseSectionOrder(setting)));
+			Assert.AreEqual(expected, string.Join("|", Classifier.ParseSectionOrder(setting)));
 		}
 	}
 }

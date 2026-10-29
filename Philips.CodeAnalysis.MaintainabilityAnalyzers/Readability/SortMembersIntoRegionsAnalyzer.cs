@@ -18,14 +18,16 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		public const string MessageFormat = @"Members of '{0}' are not sorted into regions: '{1}' belongs in '#region {2}'";
 		private const string Description = @"Members should be grouped into the regions 'Non-Public Data Members', 'Non-Public Properties/Methods' and 'Public Interface'. Test classes additionally use 'Test Methods', 'Test Mocks' and 'Test Classes'.";
 
+		private static readonly MemberRegionClassifier Classifier = new();
+
 		public SortMembersIntoRegionsAnalyzer()
 			: base(DiagnosticId.SortMembersIntoRegions, Title, MessageFormat, Description, Categories.Readability, isEnabled: false)
 		{ }
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			HashSet<string> allowedRegions = MemberRegionClassifier.ParseAllowedRegions(Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.AllowedRegionsKey));
-			ImmutableDictionary<string, string> regionNames = MemberRegionClassifier
+			HashSet<string> allowedRegions = Classifier.ParseAllowedRegions(Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.AllowedRegionsKey));
+			ImmutableDictionary<string, string> regionNames = Classifier
 				.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key))
 				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions))
 				.Add(MemberRegionClassifier.RegionOrderKey, Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.RegionOrderKey));
@@ -40,7 +42,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			if (!MemberRegionClassifier.TryGetCurrentRegions(type, out List<IReadOnlyCollection<string>> currentRegions))
+			if (!Classifier.TryGetCurrentRegions(type, out List<IReadOnlyCollection<string>> currentRegions))
 			{
 				return;
 			}
@@ -50,7 +52,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				return;
 			}
 
-			var isTestClass = MemberRegionClassifier.IsTestClass(type);
+			var isTestClass = Classifier.IsTestClass(type);
 			for (var i = 0; i < type.Members.Count; i++)
 			{
 				if (currentRegions[i].Any(allowedRegions.Contains))
@@ -59,10 +61,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 
 				MemberDeclarationSyntax member = type.Members[i];
-				var expected = MemberRegionClassifier.GetRegionName(MemberRegionClassifier.GetExpectedRegion(member, isTestClass), regionNames);
+				var expected = Classifier.GetRegionName(Classifier.GetExpectedRegion(member, isTestClass), regionNames);
 				if (!Contains(currentRegions[i], expected))
 				{
-					var memberName = MemberRegionClassifier.GetMemberName(member);
+					var memberName = Classifier.GetMemberName(member);
 					context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), regionNames, type.Identifier.Text, memberName, expected));
 					return;
 				}

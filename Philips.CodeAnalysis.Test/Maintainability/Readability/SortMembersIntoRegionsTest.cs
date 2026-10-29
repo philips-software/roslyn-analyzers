@@ -54,7 +54,7 @@ class Foo
 		[DataRow("[TestInitialize] public void Init() { }", "Public Interface")]
 		[DataRow("private int _a;", "Non-Public Data Members")]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestClassMemberInExpectedRegionIsAccepted(string member, string region)
+		public async Task MemberOfTestClassInExpectedRegionIsAccepted(string member, string region)
 		{
 			var givenText = $@"
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -365,7 +365,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task TestClassIsSortedIntoTestRegions()
+		public async Task UnsortedTestClassIsSortedIntoTestRegions()
 		{
 			var givenText = @"
 using Microsoft.VisualStudio.TestTools.UnitTesting;

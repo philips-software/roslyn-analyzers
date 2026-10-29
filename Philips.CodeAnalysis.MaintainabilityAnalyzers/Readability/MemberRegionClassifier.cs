@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 {
-	public static class MemberRegionClassifier
+	public class MemberRegionClassifier
 	{
 		public const string NonPublicDataMembers = "Non-Public Data Members";
 		public const string NonPublicPropertiesAndMethods = "Non-Public Properties/Methods";
@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		public const string TestMocks = "Test Mocks";
 		public const string TestClasses = "Test Classes";
 
-		public static IReadOnlyList<string> RegionOrder { get; } =
+		private static readonly string[] Regions =
 		[
 			TestMocks,
 			NonPublicDataMembers,
@@ -42,10 +42,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// <summary>
 		/// Maps each region's setting key to its configured name, falling back to the default name.
 		/// </summary>
-		public static ImmutableDictionary<string, string> LoadRegionNames(Func<string, string> readSetting)
+		public ImmutableDictionary<string, string> LoadRegionNames(Func<string, string> readSetting)
 		{
 			ImmutableDictionary<string, string>.Builder names = ImmutableDictionary.CreateBuilder<string, string>();
-			foreach (var region in RegionOrder)
+			foreach (var region in Regions)
 			{
 				var configured = readSetting(SettingKeys[region]);
 				names.Add(SettingKeys[region], string.IsNullOrWhiteSpace(configured) ? region : configured.Trim());
@@ -72,7 +72,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// Parses a digit string (e.g. "12435") where each digit is a 1-based index into the default section order.
 		/// Omitted sections follow in default order; invalid input yields the default order.
 		/// </summary>
-		public static IReadOnlyList<string> ParseSectionOrder(string digits)
+		public IReadOnlyList<string> ParseSectionOrder(string digits)
 		{
 			var order = new List<string>();
 			foreach (var c in (digits ?? string.Empty).Trim())
@@ -89,24 +89,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return order;
 		}
 
-		public static HashSet<string> ParseAllowedRegions(string commaSeparated)
+		public HashSet<string> ParseAllowedRegions(string commaSeparated)
 		{
 			return new HashSet<string>(
 				(commaSeparated ?? string.Empty).Split(',').Select(name => name.Trim()).Where(name => name.Length > 0),
 				StringComparer.Ordinal);
 		}
 
-		public static string GetRegionName(string region, ImmutableDictionary<string, string> names)
+		public string GetRegionName(string region, ImmutableDictionary<string, string> names)
 		{
 			return names != null && names.TryGetValue(SettingKeys[region], out var name) ? name : region;
 		}
 
-		public static bool IsTestClass(TypeDeclarationSyntax type)
+		public bool IsTestClass(TypeDeclarationSyntax type)
 		{
 			return type is ClassDeclarationSyntax && HasAttributeEndingWith(type.AttributeLists, "TestClass");
 		}
 
-		public static string GetExpectedRegion(MemberDeclarationSyntax member, bool isTestClass)
+		public string GetExpectedRegion(MemberDeclarationSyntax member, bool isTestClass)
 		{
 			var isPublic = member.Modifiers.Any(SyntaxKind.PublicKeyword);
 			if (isTestClass)
@@ -137,7 +137,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		/// Determines the region each member currently sits in. Returns false if the member-level directives
 		/// cannot be safely reorganized (unbalanced regions, or conditional/pragma directives between members).
 		/// </summary>
-		public static bool TryGetCurrentRegions(TypeDeclarationSyntax type, out List<IReadOnlyCollection<string>> regionsPerMember)
+		public bool TryGetCurrentRegions(TypeDeclarationSyntax type, out List<IReadOnlyCollection<string>> regionsPerMember)
 		{
 			regionsPerMember = [];
 			var openRegions = new Stack<string>();
@@ -153,7 +153,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return TrackDirectives(type.CloseBraceToken.LeadingTrivia, openRegions) && openRegions.Count == 0;
 		}
 
-		public static string GetMemberName(MemberDeclarationSyntax member)
+		public string GetMemberName(MemberDeclarationSyntax member)
 		{
 			return member switch
 			{
@@ -168,7 +168,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			};
 		}
 
-		private static bool TrackDirectives(SyntaxTriviaList trivia, Stack<string> openRegions)
+		private bool TrackDirectives(SyntaxTriviaList trivia, Stack<string> openRegions)
 		{
 			foreach (SyntaxTrivia t in trivia)
 			{
@@ -192,7 +192,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return true;
 		}
 
-		public static string GetDirectiveName(RegionDirectiveTriviaSyntax region)
+		public string GetDirectiveName(RegionDirectiveTriviaSyntax region)
 		{
 			SyntaxTrivia message = region.EndOfDirectiveToken.LeadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.PreprocessingMessageTrivia));
 			return message.ToString().Trim();

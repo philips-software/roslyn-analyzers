@@ -19,13 +19,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 	[ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SortMembersIntoRegionsCodeFixProvider)), Shared]
 	public class SortMembersIntoRegionsCodeFixProvider : SingleDiagnosticCodeFixProvider<TypeDeclarationSyntax>
 	{
+		private static readonly MemberRegionClassifier Classifier = new();
+
 		protected override string Title => "Sort members into regions";
 
 		protected override DiagnosticId DiagnosticId => DiagnosticId.SortMembersIntoRegions;
 
 		protected override async Task<Document> ApplyFix(Document document, TypeDeclarationSyntax node, ImmutableDictionary<string, string> properties, CancellationToken cancellationToken)
 		{
-			if (node == null || !MemberRegionClassifier.TryGetCurrentRegions(node, out _))
+			if (node == null || !Classifier.TryGetCurrentRegions(node, out _))
 			{
 				return document;
 			}
@@ -37,7 +39,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			List<OriginalRegion> originalRegions = FindOriginalRegions(node, text);
 			_ = properties.TryGetValue(MemberRegionClassifier.AllowedRegionsKey, out var allowedSetting);
-			HashSet<string> allowedNames = MemberRegionClassifier.ParseAllowedRegions(allowedSetting);
+			HashSet<string> allowedNames = Classifier.ParseAllowedRegions(allowedSetting);
 			var allowedBlocks = originalRegions.Where(r => r.IsOutermost(allowedNames)).ToList();
 			if (allowedBlocks.Exists(r => r.LosesComments))
 			{
@@ -45,10 +47,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 			var keptMembers = new HashSet<MemberDeclarationSyntax>(allowedBlocks.SelectMany(r => r.Members));
 
-			var isTestClass = MemberRegionClassifier.IsTestClass(node);
+			var isTestClass = Classifier.IsTestClass(node);
 			ILookup<string, MemberDeclarationSyntax> membersByRegion = node.Members
 				.Where(m => !keptMembers.Contains(m))
-				.ToLookup(m => MemberRegionClassifier.GetExpectedRegion(m, isTestClass));
+				.ToLookup(m => Classifier.GetExpectedRegion(m, isTestClass));
 
 			var body = new StringBuilder();
 			if (!node.OpenBraceToken.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia))
@@ -67,7 +69,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 
 			_ = properties.TryGetValue(MemberRegionClassifier.RegionOrderKey, out var orderSetting);
-			foreach (var region in MemberRegionClassifier.ParseSectionOrder(orderSetting))
+			foreach (var region in Classifier.ParseSectionOrder(orderSetting))
 			{
 				if (region == MemberRegionClassifier.AllowedRegionsSection)
 				{
@@ -85,7 +87,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 
 				StartSection();
-				var regionName = MemberRegionClassifier.GetRegionName(region, properties);
+				var regionName = Classifier.GetRegionName(region, properties);
 				var members = membersByRegion[region].ToList();
 				OriginalRegion unchanged = originalRegions.Find(r => r.IsSimple && r.Name == regionName && r.Members.SequenceEqual(members));
 				if (unchanged != null)
@@ -168,7 +170,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				{
 					OriginalRegion parent = open.Count > 0 ? open.Peek() : null;
 					parent?.IsSimple = false;
-					var name = MemberRegionClassifier.GetDirectiveName((RegionDirectiveTriviaSyntax)t.GetStructure());
+					var name = Classifier.GetDirectiveName((RegionDirectiveTriviaSyntax)t.GetStructure());
 					var start = text.Lines.GetLineFromPosition(t.SpanStart).Start;
 					var blockStart = text.Lines.GetLineFromPosition(contentStart ?? t.SpanStart).Start;
 					open.Push(new OriginalRegion(name, parent, start, blockStart, !hasContent, hasContentBeforeDirective));
