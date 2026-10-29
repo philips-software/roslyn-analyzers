@@ -155,6 +155,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			public string TypeIndent { get; }
 
 			public string MemberIndent { get; }
+
+			private static string GetIndentation(SyntaxTriviaList trivia, string fallback)
+			{
+				if (trivia.Count > 0 && trivia[trivia.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
+				{
+					return trivia[trivia.Count - 1].ToString();
+				}
+				return fallback;
+			}
 		}
 
 		/// <summary>
@@ -338,7 +347,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var fullText = member.ToFullString();
 			var rest = fullText.Substring(member.GetLeadingTrivia().FullSpan.Length);
 			_ = body.Append(indent).Append(leading).Append(rest);
-			if (!rest.EndsWith("\n"))
+			SyntaxTriviaList trailing = member.GetTrailingTrivia();
+			if (trailing.Count == 0 || !trailing[trailing.Count - 1].IsKind(SyntaxKind.EndOfLineTrivia))
 			{
 				_ = body.Append(eol);
 			}
@@ -362,15 +372,6 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 			IEnumerable<SyntaxTrivia> withoutLeadingBlanks = kept.SkipWhile(t => t.IsKind(SyntaxKind.WhitespaceTrivia) || t.IsKind(SyntaxKind.EndOfLineTrivia));
 			return SyntaxFactory.TriviaList(withoutLeadingBlanks);
-		}
-
-		private static string GetIndentation(SyntaxTriviaList trivia, string fallback)
-		{
-			if (trivia.Count > 0 && trivia[trivia.Count - 1].IsKind(SyntaxKind.WhitespaceTrivia))
-			{
-				return trivia[trivia.Count - 1].ToString();
-			}
-			return fallback;
 		}
 	}
 }
