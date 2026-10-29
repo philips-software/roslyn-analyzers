@@ -96,6 +96,28 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task NestedTypesAreNotAnalyzed()
+		{
+			var givenText = @"
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+[TestClass]
+public class FooTests
+{
+	#region Test Mocks
+	private class FooMock
+	{
+		public void A() { }
+		private int _b;
+	}
+	#endregion
+}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConditionalDirectivesBetweenMembersAreSkipped()
 		{
 			var givenText = @"

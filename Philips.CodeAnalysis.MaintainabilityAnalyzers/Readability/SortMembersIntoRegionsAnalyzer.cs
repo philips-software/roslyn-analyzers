@@ -30,7 +30,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableDictionary<string, string> regionNames)
 		{
 			var type = (TypeDeclarationSyntax)context.Node;
-			if (type.Members.Count == 0)
+			if (type.Members.Count == 0 || type.Parent is TypeDeclarationSyntax)
 			{
 				return;
 			}
