@@ -93,3 +93,4 @@
 | [PH2141](../Documentation/Diagnostics/PH2141.md)  | Avoid Empty Regions                          | Avoid writing regions that have no code inside. |
 | [PH2143](../Documentation/Diagnostics/PH2143.md)  | Avoid Assembly.GetEntryAssembly()            | Avoid using Assembly.GetEntryAssembly(), as it might give different results when your code runs under a TestRunner. |
 | [PH2146](../Documentation/Diagnostics/PH2146.md)  | Avoid calling ToString() on string type      | Calling ToString() on an expression that is already of type string is redundant and should be removed. |
+| [PH2165](../Documentation/Diagnostics/PH2165.md)  | Sort members into regions                    | Members should be sorted into the `Non-Public Data Members`, `Non-Public Properties/Methods` and `Public Interface` regions (plus `Test Methods`, `Test Mocks` and `Test Classes` in test classes). |
