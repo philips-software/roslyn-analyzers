@@ -27,7 +27,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			HashSet<string> allowedRegions = MemberRegionClassifier.ParseAllowedRegions(Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.AllowedRegionsKey));
 			ImmutableDictionary<string, string> regionNames = MemberRegionClassifier
 				.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key))
-				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions));
+				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions))
+				.Add(MemberRegionClassifier.RegionOrderKey, Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.RegionOrderKey));
 			context.RegisterSyntaxNodeAction(c => Analyze(c, regionNames, allowedRegions), SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
 		}
 

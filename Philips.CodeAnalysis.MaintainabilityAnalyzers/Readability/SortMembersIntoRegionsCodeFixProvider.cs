@@ -66,15 +66,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				isFirstSection = false;
 			}
 
-			foreach (var region in MemberRegionClassifier.RegionOrder)
+			_ = properties.TryGetValue(MemberRegionClassifier.RegionOrderKey, out var orderSetting);
+			foreach (var region in MemberRegionClassifier.ParseSectionOrder(orderSetting))
 			{
-				if (region == MemberRegionClassifier.TestMethods)
+				if (region == MemberRegionClassifier.AllowedRegionsSection)
 				{
 					foreach (OriginalRegion allowed in allowedBlocks)
 					{
 						StartSection();
 						_ = body.Append(text.ToString(allowed.BlockSpan));
 					}
+					continue;
 				}
 
 				if (!membersByRegion.Contains(region))

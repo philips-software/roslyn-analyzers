@@ -66,15 +66,15 @@ class Foo
 
 	#endregion
 
-	#region Private Interface
-
-	private void C() { }
-
-	#endregion
-
 	#region Public Interface
 
 	public void A() { }
+
+	#endregion
+
+	#region Private Interface
+
+	private void C() { }
 
 	#endregion
 }
@@ -190,7 +190,8 @@ class Foo
 			return base.GetAdditionalAnalyzerConfigOptions()
 				.Add($@"{prefix}.non_public_data_members_region", @"Private Data")
 				.Add($@"{prefix}.non_public_properties_methods_region", @" Private Interface ")
-				.Add($@"{prefix}.allowed_regions", @"Event Handlers, IDisposable Members");
+				.Add($@"{prefix}.allowed_regions", @"Event Handlers, IDisposable Members")
+				.Add($@"{prefix}.region_order", @"2435");
 		}
 
 		protected override DiagnosticAnalyzer GetDiagnosticAnalyzer()

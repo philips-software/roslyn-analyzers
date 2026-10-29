@@ -54,6 +54,40 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		}
 
 		public const string AllowedRegionsKey = "allowed_regions";
+		public const string RegionOrderKey = "region_order";
+		public const string AllowedRegionsSection = "<allowed regions>";
+
+		private static readonly string[] DefaultSectionOrder =
+		[
+			TestMocks,
+			NonPublicDataMembers,
+			NonPublicPropertiesAndMethods,
+			PublicInterface,
+			AllowedRegionsSection,
+			TestMethods,
+			TestClasses,
+		];
+
+		/// <summary>
+		/// Parses a digit string (e.g. "12435") where each digit is a 1-based index into the default section order.
+		/// Omitted sections follow in default order; invalid input yields the default order.
+		/// </summary>
+		public static IReadOnlyList<string> ParseSectionOrder(string digits)
+		{
+			var order = new List<string>();
+			foreach (var c in (digits ?? string.Empty).Trim())
+			{
+				var index = c - '1';
+				if (index < 0 || index >= DefaultSectionOrder.Length || order.Contains(DefaultSectionOrder[index]))
+				{
+					return DefaultSectionOrder;
+				}
+				order.Add(DefaultSectionOrder[index]);
+			}
+
+			order.AddRange(DefaultSectionOrder.Where(section => !order.Contains(section)));
+			return order;
+		}
 
 		public static HashSet<string> ParseAllowedRegions(string commaSeparated)
 		{
