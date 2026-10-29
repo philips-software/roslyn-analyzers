@@ -205,6 +205,38 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task StaticInitializerMayMovePastInstanceInitializers()
+		{
+			var givenText = @"
+class Foo
+{
+	public static Foo Instance { get; } = new Foo();
+	private readonly int _a = 1;
+	private readonly int _b = 2;
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+
+	private readonly int _a = 1;
+	private readonly int _b = 2;
+
+	#endregion
+
+	#region Public Interface
+
+	public static Foo Instance { get; } = new Foo();
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConstantsAndStaticFieldsWithoutInitializerMayMove()
 		{
 			var givenText = @"

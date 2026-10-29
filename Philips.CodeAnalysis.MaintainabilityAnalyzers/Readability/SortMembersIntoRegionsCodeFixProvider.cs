@@ -116,11 +116,24 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return document.WithText(newText);
 		}
 
+		/// <summary>
+		/// Static and instance initializers run as separate sequences, so their relative order is compared per group.
+		/// </summary>
 		private static bool ChangesOrderOfSensitiveMembers(TypeDeclarationSyntax node, IEnumerable<MemberDeclarationSyntax> newOrder)
 		{
-			IEnumerable<MemberDeclarationSyntax> original = node.Members.Where(m => Classifier.IsOrderSensitive(m, node));
-			IEnumerable<MemberDeclarationSyntax> reordered = newOrder.Where(m => Classifier.IsOrderSensitive(m, node));
-			return !original.SequenceEqual(reordered);
+			foreach (var isStatic in new[] { true, false })
+			{
+				bool InGroup(MemberDeclarationSyntax m)
+				{
+					return Classifier.IsOrderSensitive(m, node) && m.Modifiers.Any(SyntaxKind.StaticKeyword) == isStatic;
+				}
+
+				if (!node.Members.Where(InGroup).SequenceEqual(newOrder.Where(InGroup)))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private static void AppendMembers(StringBuilder body, TypeDeclarationSyntax node, List<MemberDeclarationSyntax> members, string indent, string eol)
