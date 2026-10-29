@@ -243,7 +243,7 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
-		public async Task FieldsAreNotSeparatedButMethodsAre()
+		public async Task SpacingIsPreservedUnlessMembersMove()
 		{
 			var givenText = @"
 class Foo
@@ -269,6 +269,8 @@ class Foo
 
 	private int _a;
 	private int _b;
+
+
 	private int _c;
 
 	#endregion
@@ -285,8 +287,75 @@ class Foo
 
 	public int D;
 	public int E;
-
 	public void F() { }
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task UnchangedRegionIsKeptVerbatim()
+		{
+			var givenText = @"
+class Foo
+{
+	#region Non-Public Data Members
+	private int _a;
+
+	private int _b;
+	#endregion
+	public void A() { }
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+	private int _a;
+
+	private int _b;
+	#endregion
+
+	#region Public Interface
+
+	public void A() { }
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task RegionPrecededByCommentIsRebuilt()
+		{
+			var givenText = @"
+class Foo
+{
+	// Data
+	#region Non-Public Data Members
+	private int _a;
+	#endregion
+	public void A() { }
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+
+	// Data
+	private int _a;
+
+	#endregion
+
+	#region Public Interface
+
+	public void A() { }
 
 	#endregion
 }

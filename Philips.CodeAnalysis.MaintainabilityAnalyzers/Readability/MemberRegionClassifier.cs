@@ -131,7 +131,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			{
 				if (t.IsKind(SyntaxKind.RegionDirectiveTrivia))
 				{
-					openRegions.Push(GetRegionName((RegionDirectiveTriviaSyntax)t.GetStructure()));
+					openRegions.Push(GetDirectiveName((RegionDirectiveTriviaSyntax)t.GetStructure()));
 				}
 				else if (t.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
 				{
@@ -149,7 +149,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			return true;
 		}
 
-		private static string GetRegionName(RegionDirectiveTriviaSyntax region)
+		public static string GetDirectiveName(RegionDirectiveTriviaSyntax region)
 		{
 			SyntaxTrivia message = region.EndOfDirectiveToken.LeadingTrivia.FirstOrDefault(t => t.IsKind(SyntaxKind.PreprocessingMessageTrivia));
 			return message.ToString().Trim();

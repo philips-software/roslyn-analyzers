@@ -44,6 +44,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				_ = body.Append(eol);
 			}
 
+			List<OriginalRegion> originalRegions = FindOriginalRegions(node, text);
 			var isFirstRegion = true;
 			foreach (var region in MemberRegionClassifier.RegionOrder.Where(membersByRegion.Contains))
 			{
@@ -53,18 +54,17 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 				isFirstRegion = false;
 
-				_ = body.Append(memberIndent).Append("#region ").Append(MemberRegionClassifier.GetRegionName(region, properties)).Append(eol).Append(eol);
-				MemberDeclarationSyntax previous = null;
-				foreach (MemberDeclarationSyntax member in membersByRegion[region])
+				var regionName = MemberRegionClassifier.GetRegionName(region, properties);
+				var members = membersByRegion[region].ToList();
+				OriginalRegion unchanged = originalRegions.Find(r => r.Name == regionName && r.Members.SequenceEqual(members));
+				if (unchanged != null)
 				{
-					var isConsecutiveField = previous is FieldDeclarationSyntax && member is FieldDeclarationSyntax;
-					if (previous != null && !isConsecutiveField)
-					{
-						_ = body.Append(eol);
-					}
-					previous = member;
-					AppendMember(body, member, memberIndent, eol);
+					_ = body.Append(text.ToString(unchanged.Span));
+					continue;
 				}
+
+				_ = body.Append(memberIndent).Append("#region ").Append(regionName).Append(eol).Append(eol);
+				AppendMembers(body, node, members, memberIndent, eol);
 				_ = body.Append(eol).Append(memberIndent).Append("#endregion").Append(eol);
 			}
 
@@ -73,6 +73,120 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var span = TextSpan.FromBounds(node.OpenBraceToken.FullSpan.End, node.CloseBraceToken.SpanStart);
 			SourceText newText = text.Replace(span, body.ToString());
 			return document.WithText(newText);
+		}
+
+		private static void AppendMembers(StringBuilder body, TypeDeclarationSyntax node, List<MemberDeclarationSyntax> members, string indent, string eol)
+		{
+			MemberDeclarationSyntax previous = null;
+			foreach (MemberDeclarationSyntax member in members)
+			{
+				var blankLines = GetBlankLinesBefore(node, previous, member);
+				for (var i = 0; i < blankLines; i++)
+				{
+					_ = body.Append(eol);
+				}
+				previous = member;
+				AppendMember(body, member, indent, eol);
+			}
+		}
+
+		/// <summary>
+		/// Members that keep their original predecessor keep their original spacing; moved members get one blank line, except between fields.
+		/// </summary>
+		private static int GetBlankLinesBefore(TypeDeclarationSyntax node, MemberDeclarationSyntax previous, MemberDeclarationSyntax member)
+		{
+			if (previous == null)
+			{
+				return 0;
+			}
+
+			SyntaxTriviaList leading = member.GetLeadingTrivia();
+			var keptPredecessor = node.Members.IndexOf(member) == node.Members.IndexOf(previous) + 1 && !HasRegionDirective(leading);
+			if (keptPredecessor)
+			{
+				return leading.TakeWhile(IsWhitespaceOrEndOfLine).Count(t => t.IsKind(SyntaxKind.EndOfLineTrivia));
+			}
+
+			return previous is FieldDeclarationSyntax && member is FieldDeclarationSyntax ? 0 : 1;
+		}
+
+		private static List<OriginalRegion> FindOriginalRegions(TypeDeclarationSyntax node, SourceText text)
+		{
+			var result = new List<OriginalRegion>();
+			var open = new Stack<OriginalRegion>();
+			foreach (MemberDeclarationSyntax member in node.Members)
+			{
+				TrackRegions(member.GetLeadingTrivia(), text, open, result);
+				if (open.Count > 0)
+				{
+					open.Peek().Members.Add(member);
+				}
+			}
+			TrackRegions(node.CloseBraceToken.LeadingTrivia, text, open, result);
+			return result;
+		}
+
+		private static void TrackRegions(SyntaxTriviaList trivia, SourceText text, Stack<OriginalRegion> open, List<OriginalRegion> result)
+		{
+			var onlyWhitespaceSoFar = true;
+			foreach (SyntaxTrivia t in trivia)
+			{
+				if (t.IsKind(SyntaxKind.RegionDirectiveTrivia))
+				{
+					if (open.Count > 0)
+					{
+						open.Peek().IsSimple = false;
+					}
+					var name = MemberRegionClassifier.GetDirectiveName((RegionDirectiveTriviaSyntax)t.GetStructure());
+					open.Push(new OriginalRegion(name, text.Lines.GetLineFromPosition(t.SpanStart).Start, onlyWhitespaceSoFar));
+				}
+				else if (t.IsKind(SyntaxKind.EndRegionDirectiveTrivia))
+				{
+					OriginalRegion region = open.Pop();
+					region.End = text.Lines.GetLineFromPosition(t.SpanStart).EndIncludingLineBreak;
+					if (region.IsSimple && region.Members.Count > 0)
+					{
+						result.Add(region);
+					}
+				}
+				else if (!IsWhitespaceOrEndOfLine(t))
+				{
+					onlyWhitespaceSoFar = false;
+				}
+			}
+		}
+
+		private static bool HasRegionDirective(SyntaxTriviaList trivia)
+		{
+			return trivia.Any(SyntaxKind.RegionDirectiveTrivia) || trivia.Any(SyntaxKind.EndRegionDirectiveTrivia);
+		}
+
+		private static bool IsWhitespaceOrEndOfLine(SyntaxTrivia trivia)
+		{
+			return trivia.IsKind(SyntaxKind.WhitespaceTrivia) || trivia.IsKind(SyntaxKind.EndOfLineTrivia);
+		}
+
+		private sealed class OriginalRegion
+		{
+			public OriginalRegion(string name, int start, bool isSimple)
+			{
+				Name = name;
+				Start = start;
+				IsSimple = isSimple;
+			}
+
+			public string Name { get; }
+
+			public int Start { get; }
+
+			public int End { get; set; }
+
+			// A region is copied verbatim only if it has no nested regions and no comments precede its #region line.
+			public bool IsSimple { get; set; }
+
+			public List<MemberDeclarationSyntax> Members { get; } = [];
+
+			public TextSpan Span => TextSpan.FromBounds(Start, End);
 		}
 
 		private static void AppendMember(StringBuilder body, MemberDeclarationSyntax member, string indent, string eol)
