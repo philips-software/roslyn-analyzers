@@ -79,25 +79,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 				MemberDeclarationSyntax member = type.Members[i];
 				var expected = Classifier.GetRegionName(Classifier.GetExpectedRegion(member, isTestClass), regionNames);
-				if (!Contains(currentRegions[i], expected))
+				if (!currentRegions[i].Contains(expected))
 				{
 					var memberName = Classifier.GetMemberName(member);
 					context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), regionNames, type.Identifier.Text, memberName, expected));
 					return;
 				}
 			}
-		}
-
-		private static bool Contains(IReadOnlyCollection<string> regions, string expected)
-		{
-			foreach (var region in regions)
-			{
-				if (region == expected)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		private sealed class TreeSettings

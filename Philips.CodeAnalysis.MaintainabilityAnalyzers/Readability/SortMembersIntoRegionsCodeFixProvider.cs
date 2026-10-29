@@ -33,20 +33,31 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			}
 
 			SourceText text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-			var eol = text.ToString().Contains("\r\n") ? "\r\n" : "\n";
-			var typeIndent = GetIndentation(node.GetLeadingTrivia(), string.Empty);
-			var memberIndent = GetIndentation(node.Members[0].GetLeadingTrivia(), typeIndent + "\t");
+			Layout layout = TryPlanLayout(node, text, properties);
+			if (layout == null)
+			{
+				return document;
+			}
 
+			var span = TextSpan.FromBounds(node.OpenBraceToken.FullSpan.End, node.CloseBraceToken.SpanStart);
+			return document.WithText(text.Replace(span, BuildBody(layout)));
+		}
+
+		/// <summary>
+		/// Decides which members go into which section, or returns null if regrouping is not safe.
+		/// </summary>
+		private static Layout TryPlanLayout(TypeDeclarationSyntax node, SourceText text, ImmutableDictionary<string, string> properties)
+		{
 			List<OriginalRegion> originalRegions = FindOriginalRegions(node, text);
 			_ = properties.TryGetValue(MemberRegionClassifier.AllowedRegionsKey, out var allowedSetting);
 			HashSet<string> allowedNames = Classifier.ParseAllowedRegions(allowedSetting);
 			var allowedBlocks = originalRegions.Where(r => r.IsOutermost(allowedNames)).ToList();
 			if (allowedBlocks.Exists(r => r.LosesComments))
 			{
-				return document;
+				return null;
 			}
-			var keptMembers = new HashSet<MemberDeclarationSyntax>(allowedBlocks.SelectMany(r => r.Members));
 
+			var keptMembers = new HashSet<MemberDeclarationSyntax>(allowedBlocks.SelectMany(r => r.Members));
 			var isTestClass = Classifier.IsTestClass(node);
 			ILookup<string, MemberDeclarationSyntax> membersByRegion = node.Members
 				.Where(m => !keptMembers.Contains(m))
@@ -58,62 +69,92 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				section == MemberRegionClassifier.AllowedRegionsSection ? allowedBlocks.SelectMany(r => r.Members) : membersByRegion[section]);
 			if (ChangesOrderOfSensitiveMembers(node, newOrder))
 			{
-				return document;
+				return null;
 			}
 
+			return new Layout(node, text, properties, originalRegions, allowedBlocks, membersByRegion, sectionOrder);
+		}
+
+		private static string BuildBody(Layout layout)
+		{
+			TypeDeclarationSyntax node = layout.Node;
 			var body = new StringBuilder();
 			if (!node.OpenBraceToken.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia))
 			{
-				_ = body.Append(eol);
+				_ = body.Append(layout.Eol);
 			}
 
-			var isFirstSection = true;
-			void StartSection()
+			IEnumerable<string> sections = layout.SectionOrder.SelectMany(section => RenderSection(layout, section));
+			_ = body.Append(string.Join(layout.Eol, sections));
+			_ = body.Append(layout.TypeIndent).Append(StripRegions(node.CloseBraceToken.LeadingTrivia).ToFullString());
+			return body.ToString();
+		}
+
+		private static IEnumerable<string> RenderSection(Layout layout, string section)
+		{
+			if (section == MemberRegionClassifier.AllowedRegionsSection)
 			{
-				if (!isFirstSection)
-				{
-					_ = body.Append(eol);
-				}
-				isFirstSection = false;
+				return layout.AllowedBlocks.Select(block => layout.Text.ToString(block.BlockSpan));
 			}
 
-			foreach (var region in sectionOrder)
+			if (!layout.MembersByRegion.Contains(section))
 			{
-				if (region == MemberRegionClassifier.AllowedRegionsSection)
-				{
-					foreach (OriginalRegion allowed in allowedBlocks)
-					{
-						StartSection();
-						_ = body.Append(text.ToString(allowed.BlockSpan));
-					}
-					continue;
-				}
-
-				if (!membersByRegion.Contains(region))
-				{
-					continue;
-				}
-
-				StartSection();
-				var regionName = Classifier.GetRegionName(region, properties);
-				var members = membersByRegion[region].ToList();
-				OriginalRegion unchanged = originalRegions.Find(r => r.IsSimple && r.Name == regionName && r.Members.SequenceEqual(members));
-				if (unchanged != null)
-				{
-					_ = body.Append(text.ToString(unchanged.Span));
-					continue;
-				}
-
-				_ = body.Append(memberIndent).Append("#region ").Append(regionName).Append(eol).Append(eol);
-				AppendMembers(body, node, members, memberIndent, eol);
-				_ = body.Append(eol).Append(memberIndent).Append("#endregion").Append(eol);
+				return [];
 			}
 
-			_ = body.Append(typeIndent).Append(StripRegions(node.CloseBraceToken.LeadingTrivia).ToFullString());
+			var regionName = Classifier.GetRegionName(section, layout.Properties);
+			var members = layout.MembersByRegion[section].ToList();
+			OriginalRegion unchanged = layout.OriginalRegions.Find(r => r.IsSimple && r.Name == regionName && r.Members.SequenceEqual(members));
+			if (unchanged != null)
+			{
+				return [layout.Text.ToString(unchanged.Span)];
+			}
 
-			var span = TextSpan.FromBounds(node.OpenBraceToken.FullSpan.End, node.CloseBraceToken.SpanStart);
-			SourceText newText = text.Replace(span, body.ToString());
-			return document.WithText(newText);
+			var eol = layout.Eol;
+			var indent = layout.MemberIndent;
+			var region = new StringBuilder();
+			_ = region.Append(indent).Append("#region ").Append(regionName).Append(eol).Append(eol);
+			AppendMembers(region, layout.Node, members, indent, eol);
+			_ = region.Append(eol).Append(indent).Append("#endregion").Append(eol);
+			return [region.ToString()];
+		}
+
+		private sealed class Layout
+		{
+			public Layout(TypeDeclarationSyntax node, SourceText text, ImmutableDictionary<string, string> properties, List<OriginalRegion> originalRegions,
+				List<OriginalRegion> allowedBlocks, ILookup<string, MemberDeclarationSyntax> membersByRegion, IReadOnlyList<string> sectionOrder)
+			{
+				Node = node;
+				Text = text;
+				Properties = properties;
+				OriginalRegions = originalRegions;
+				AllowedBlocks = allowedBlocks;
+				MembersByRegion = membersByRegion;
+				SectionOrder = sectionOrder;
+				Eol = text.ToString().Contains("\r\n") ? "\r\n" : "\n";
+				TypeIndent = GetIndentation(node.GetLeadingTrivia(), string.Empty);
+				MemberIndent = GetIndentation(node.Members[0].GetLeadingTrivia(), TypeIndent + "\t");
+			}
+
+			public TypeDeclarationSyntax Node { get; }
+
+			public SourceText Text { get; }
+
+			public ImmutableDictionary<string, string> Properties { get; }
+
+			public List<OriginalRegion> OriginalRegions { get; }
+
+			public List<OriginalRegion> AllowedBlocks { get; }
+
+			public ILookup<string, MemberDeclarationSyntax> MembersByRegion { get; }
+
+			public IReadOnlyList<string> SectionOrder { get; }
+
+			public string Eol { get; }
+
+			public string TypeIndent { get; }
+
+			public string MemberIndent { get; }
 		}
 
 		/// <summary>
