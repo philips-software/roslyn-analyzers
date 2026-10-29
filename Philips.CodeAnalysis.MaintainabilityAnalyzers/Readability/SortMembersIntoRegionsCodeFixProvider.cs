@@ -53,7 +53,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 				isFirstRegion = false;
 
-				_ = body.Append(memberIndent).Append("#region ").Append(region).Append(eol).Append(eol);
+				_ = body.Append(memberIndent).Append("#region ").Append(MemberRegionClassifier.GetRegionName(region, properties)).Append(eol).Append(eol);
 				var isFirstMember = true;
 				foreach (MemberDeclarationSyntax member in membersByRegion[region])
 				{

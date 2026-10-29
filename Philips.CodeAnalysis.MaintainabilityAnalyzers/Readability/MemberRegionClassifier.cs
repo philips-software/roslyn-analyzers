@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,6 +28,35 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			TestMethods,
 			TestClasses,
 		];
+
+		private static readonly Dictionary<string, string> SettingKeys = new()
+		{
+			{ TestMocks, "test_mocks_region" },
+			{ NonPublicDataMembers, "non_public_data_members_region" },
+			{ NonPublicPropertiesAndMethods, "non_public_properties_methods_region" },
+			{ PublicInterface, "public_interface_region" },
+			{ TestMethods, "test_methods_region" },
+			{ TestClasses, "test_classes_region" },
+		};
+
+		/// <summary>
+		/// Maps each region's setting key to its configured name, falling back to the default name.
+		/// </summary>
+		public static ImmutableDictionary<string, string> LoadRegionNames(Func<string, string> readSetting)
+		{
+			ImmutableDictionary<string, string>.Builder names = ImmutableDictionary.CreateBuilder<string, string>();
+			foreach (var region in RegionOrder)
+			{
+				var configured = readSetting(SettingKeys[region]);
+				names.Add(SettingKeys[region], string.IsNullOrWhiteSpace(configured) ? region : configured.Trim());
+			}
+			return names.ToImmutable();
+		}
+
+		public static string GetRegionName(string region, ImmutableDictionary<string, string> names)
+		{
+			return names != null && names.TryGetValue(SettingKeys[region], out var name) ? name : region;
+		}
 
 		public static bool IsTestClass(TypeDeclarationSyntax type)
 		{

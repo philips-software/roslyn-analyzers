@@ -1,6 +1,7 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,10 +23,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			context.RegisterSyntaxNodeAction(Analyze, SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
+			ImmutableDictionary<string, string> regionNames = MemberRegionClassifier.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key));
+			context.RegisterSyntaxNodeAction(c => Analyze(c, regionNames), SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context)
+		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableDictionary<string, string> regionNames)
 		{
 			var type = (TypeDeclarationSyntax)context.Node;
 			if (type.Members.Count == 0)
@@ -47,11 +49,11 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			for (var i = 0; i < type.Members.Count; i++)
 			{
 				MemberDeclarationSyntax member = type.Members[i];
-				var expected = MemberRegionClassifier.GetExpectedRegion(member, isTestClass);
+				var expected = MemberRegionClassifier.GetRegionName(MemberRegionClassifier.GetExpectedRegion(member, isTestClass), regionNames);
 				if (!Contains(currentRegions[i], expected))
 				{
 					var memberName = MemberRegionClassifier.GetMemberName(member);
-					context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), type.Identifier.Text, memberName, expected));
+					context.ReportDiagnostic(Diagnostic.Create(Rule, type.Identifier.GetLocation(), regionNames, type.Identifier.Text, memberName, expected));
 					return;
 				}
 			}
