@@ -221,6 +221,59 @@ class Foo
 
 		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FieldsAreNotSeparatedButMethodsAre()
+		{
+			var givenText = @"
+class Foo
+{
+	private int _a;
+
+	private void M() { }
+
+	private int _b;
+
+
+	private int _c;
+	private void N() { }
+	public int D;
+	public int E;
+	public void F() { }
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+
+	private int _a;
+	private int _b;
+	private int _c;
+
+	#endregion
+
+	#region Non-Public Properties/Methods
+
+	private void M() { }
+
+	private void N() { }
+
+	#endregion
+
+	#region Public Interface
+
+	public int D;
+	public int E;
+
+	public void F() { }
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task TestClassIsSortedIntoTestRegions()
 		{
 			var givenText = @"

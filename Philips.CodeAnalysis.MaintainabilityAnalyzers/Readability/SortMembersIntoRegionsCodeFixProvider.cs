@@ -54,14 +54,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				isFirstRegion = false;
 
 				_ = body.Append(memberIndent).Append("#region ").Append(MemberRegionClassifier.GetRegionName(region, properties)).Append(eol).Append(eol);
-				var isFirstMember = true;
+				MemberDeclarationSyntax previous = null;
 				foreach (MemberDeclarationSyntax member in membersByRegion[region])
 				{
-					if (!isFirstMember)
+					var isConsecutiveField = previous is FieldDeclarationSyntax && member is FieldDeclarationSyntax;
+					if (previous != null && !isConsecutiveField)
 					{
 						_ = body.Append(eol);
 					}
-					isFirstMember = false;
+					previous = member;
 					AppendMember(body, member, memberIndent, eol);
 				}
 				_ = body.Append(eol).Append(memberIndent).Append("#endregion").Append(eol);
