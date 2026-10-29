@@ -1,5 +1,6 @@
 ﻿// © 2026 Koninklijke Philips N.V. See License.md in the project root for license information.
 
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -26,16 +27,32 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 
 		protected override void InitializeCompilation(CompilationStartAnalysisContext context)
 		{
-			HashSet<string> allowedRegions = Classifier.ParseAllowedRegions(Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.AllowedRegionsKey));
-			ImmutableDictionary<string, string> regionNames = Classifier
-				.LoadRegionNames(key => Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, key))
-				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions))
-				.Add(MemberRegionClassifier.RegionOrderKey, Helper.ForAdditionalFiles.GetValueFromEditorConfig(Rule.Id, MemberRegionClassifier.RegionOrderKey));
-			context.RegisterSyntaxNodeAction(c => Analyze(c, regionNames, allowedRegions), SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
+			var settingsPerTree = new ConcurrentDictionary<SyntaxTree, TreeSettings>();
+			context.RegisterSyntaxNodeAction(
+				c => Analyze(c, settingsPerTree.GetOrAdd(c.Node.SyntaxTree, tree => LoadSettings(c.Options, tree))),
+				SyntaxKind.ClassDeclaration, SyntaxKind.StructDeclaration, SyntaxKind.RecordDeclaration, SyntaxKind.RecordStructDeclaration);
 		}
 
-		private void Analyze(SyntaxNodeAnalysisContext context, ImmutableDictionary<string, string> regionNames, HashSet<string> allowedRegions)
+		private TreeSettings LoadSettings(AnalyzerOptions options, SyntaxTree tree)
 		{
+			AnalyzerConfigOptions config = options.AnalyzerConfigOptionsProvider.GetOptions(tree);
+			string Read(string key)
+			{
+				return config.TryGetValue($@"dotnet_code_quality.{Rule.Id}.{key}", out var value) ? value : string.Empty;
+			}
+
+			HashSet<string> allowedRegions = Classifier.ParseAllowedRegions(Read(MemberRegionClassifier.AllowedRegionsKey));
+			ImmutableDictionary<string, string> properties = Classifier
+				.LoadRegionNames(Read)
+				.Add(MemberRegionClassifier.AllowedRegionsKey, string.Join(",", allowedRegions))
+				.Add(MemberRegionClassifier.RegionOrderKey, Read(MemberRegionClassifier.RegionOrderKey));
+			return new TreeSettings(properties, allowedRegions);
+		}
+
+		private void Analyze(SyntaxNodeAnalysisContext context, TreeSettings settings)
+		{
+			ImmutableDictionary<string, string> regionNames = settings.Properties;
+			HashSet<string> allowedRegions = settings.AllowedRegions;
 			var type = (TypeDeclarationSyntax)context.Node;
 			if (type.Members.Count == 0 || type.Parent is TypeDeclarationSyntax)
 			{
@@ -81,6 +98,19 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 			}
 			return false;
+		}
+
+		private sealed class TreeSettings
+		{
+			public TreeSettings(ImmutableDictionary<string, string> properties, HashSet<string> allowedRegions)
+			{
+				Properties = properties;
+				AllowedRegions = allowedRegions;
+			}
+
+			public ImmutableDictionary<string, string> Properties { get; }
+
+			public HashSet<string> AllowedRegions { get; }
 		}
 	}
 }

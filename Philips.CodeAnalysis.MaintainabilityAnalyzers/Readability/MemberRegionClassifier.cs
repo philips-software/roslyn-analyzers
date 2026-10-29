@@ -143,7 +143,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var openRegions = new Stack<string>();
 			foreach (MemberDeclarationSyntax member in type.Members)
 			{
-				if (!TrackDirectives(member.GetLeadingTrivia(), openRegions))
+				if (!TrackDirectives(member.GetLeadingTrivia(), openRegions) || !HasBalancedInnerDirectives(member))
 				{
 					return false;
 				}
@@ -190,6 +190,75 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				}
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Directives inside a member (after its leading trivia) must open and close within that member, otherwise moving it breaks pairing.
+		/// </summary>
+		private static bool HasBalancedInnerDirectives(MemberDeclarationSyntax member)
+		{
+			var ifDepth = 0;
+			var regionDepth = 0;
+			foreach (SyntaxTrivia t in member.DescendantTrivia().Where(t => t.IsDirective && t.SpanStart >= member.SpanStart))
+			{
+				switch (t.Kind())
+				{
+					case SyntaxKind.IfDirectiveTrivia:
+						ifDepth++;
+						break;
+					case SyntaxKind.EndIfDirectiveTrivia:
+						ifDepth--;
+						break;
+					case SyntaxKind.ElifDirectiveTrivia:
+					case SyntaxKind.ElseDirectiveTrivia:
+						if (ifDepth == 0)
+						{
+							return false;
+						}
+						break;
+					case SyntaxKind.RegionDirectiveTrivia:
+						regionDepth++;
+						break;
+					case SyntaxKind.EndRegionDirectiveTrivia:
+						regionDepth--;
+						break;
+				}
+
+				if (ifDepth < 0 || regionDepth < 0)
+				{
+					return false;
+				}
+			}
+			return ifDepth == 0 && regionDepth == 0;
+		}
+
+		/// <summary>
+		/// Declarations whose relative order affects behavior: initializers run in textual order,
+		/// and field order defines the layout of structs and types with an explicit StructLayout.
+		/// </summary>
+		public bool IsOrderSensitive(MemberDeclarationSyntax member, TypeDeclarationSyntax type)
+		{
+			if (member.Modifiers.Any(SyntaxKind.ConstKeyword))
+			{
+				return false;
+			}
+
+			switch (member)
+			{
+				case BaseFieldDeclarationSyntax field:
+					var hasInitializer = field.Declaration.Variables.Any(v => v.Initializer != null);
+					var isLayoutField = !member.Modifiers.Any(SyntaxKind.StaticKeyword) && HasSequentialLayout(type);
+					return hasInitializer || isLayoutField;
+				case PropertyDeclarationSyntax property:
+					return property.Initializer != null;
+				default:
+					return false;
+			}
+		}
+
+		private static bool HasSequentialLayout(TypeDeclarationSyntax type)
+		{
+			return type is StructDeclarationSyntax || type.IsKind(SyntaxKind.RecordStructDeclaration) || HasAttributeEndingWith(type.AttributeLists, "StructLayout");
 		}
 
 		public string GetDirectiveName(RegionDirectiveTriviaSyntax region)

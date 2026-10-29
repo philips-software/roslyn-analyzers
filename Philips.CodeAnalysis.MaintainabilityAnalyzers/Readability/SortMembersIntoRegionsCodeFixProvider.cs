@@ -52,6 +52,15 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				.Where(m => !keptMembers.Contains(m))
 				.ToLookup(m => Classifier.GetExpectedRegion(m, isTestClass));
 
+			_ = properties.TryGetValue(MemberRegionClassifier.RegionOrderKey, out var orderSetting);
+			IReadOnlyList<string> sectionOrder = Classifier.ParseSectionOrder(orderSetting);
+			IEnumerable<MemberDeclarationSyntax> newOrder = sectionOrder.SelectMany(section =>
+				section == MemberRegionClassifier.AllowedRegionsSection ? allowedBlocks.SelectMany(r => r.Members) : membersByRegion[section]);
+			if (ChangesOrderOfSensitiveMembers(node, newOrder))
+			{
+				return document;
+			}
+
 			var body = new StringBuilder();
 			if (!node.OpenBraceToken.TrailingTrivia.Any(SyntaxKind.EndOfLineTrivia))
 			{
@@ -68,8 +77,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				isFirstSection = false;
 			}
 
-			_ = properties.TryGetValue(MemberRegionClassifier.RegionOrderKey, out var orderSetting);
-			foreach (var region in Classifier.ParseSectionOrder(orderSetting))
+			foreach (var region in sectionOrder)
 			{
 				if (region == MemberRegionClassifier.AllowedRegionsSection)
 				{
@@ -106,6 +114,13 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 			var span = TextSpan.FromBounds(node.OpenBraceToken.FullSpan.End, node.CloseBraceToken.SpanStart);
 			SourceText newText = text.Replace(span, body.ToString());
 			return document.WithText(newText);
+		}
+
+		private static bool ChangesOrderOfSensitiveMembers(TypeDeclarationSyntax node, IEnumerable<MemberDeclarationSyntax> newOrder)
+		{
+			IEnumerable<MemberDeclarationSyntax> original = node.Members.Where(m => Classifier.IsOrderSensitive(m, node));
+			IEnumerable<MemberDeclarationSyntax> reordered = newOrder.Where(m => Classifier.IsOrderSensitive(m, node));
+			return !original.SequenceEqual(reordered);
 		}
 
 		private static void AppendMembers(StringBuilder body, TypeDeclarationSyntax node, List<MemberDeclarationSyntax> members, string indent, string eol)

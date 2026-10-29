@@ -117,6 +117,127 @@ public class FooTests
 		}
 
 		[TestMethod]
+		[DataRow("#if true", "#endif")]
+		[DataRow("#region Inner", "#endregion")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task DirectivesSpanningMemberBodiesAreSkipped(string open, string close)
+		{
+			var givenText = $@"
+class Foo
+{{
+	public void A()
+	{{
+{open}
+	}}
+
+	private void B()
+	{{
+{close}
+	}}
+}}
+";
+			await VerifySuccessfulCompilation(givenText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task BalancedDirectivesInsideMemberAreAllowed()
+		{
+			var givenText = @"
+class Foo
+{
+	public void A()
+	{
+#if DEBUG
+		System.Console.WriteLine();
+#else
+		System.Console.Write(string.Empty);
+#endif
+	}
+
+	private int _b;
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+
+	private int _b;
+
+	#endregion
+
+	#region Public Interface
+
+	public void A()
+	{
+#if DEBUG
+		System.Console.WriteLine();
+#else
+		System.Console.Write(string.Empty);
+#endif
+	}
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[DataRow("class", "public static readonly int A = 1;", "private static readonly int B = A;")]
+		[DataRow("class", "public int A { get; } = 1;", "private readonly int _b = 2;")]
+		[DataRow("struct", "public int X;", "private int _y;")]
+		[DataRow("[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)] class", "public int X;", "private int _y;")]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task FixIsWithheldWhenOrderSensitiveMembersWouldBeReordered(string kind, string first, string second)
+		{
+			var givenText = $@"
+{kind} Foo
+{{
+	{first}
+	{second}
+}}
+";
+			await VerifyDiagnostic(givenText).ConfigureAwait(false);
+			await VerifyFix(givenText, givenText, shouldAllowNewCompilerDiagnostics: true).ConfigureAwait(false);
+		}
+
+		[TestMethod]
+		[TestCategory(TestDefinitions.UnitTests)]
+		public async Task ConstantsAndStaticFieldsWithoutInitializerMayMove()
+		{
+			var givenText = @"
+class Foo
+{
+	public const int A = 1;
+	private static readonly int B = A;
+	public static int C;
+	private static int D;
+}
+";
+			var fixedText = @"
+class Foo
+{
+	#region Non-Public Data Members
+
+	private static readonly int B = A;
+	private static int D;
+
+	#endregion
+
+	#region Public Interface
+
+	public const int A = 1;
+	public static int C;
+
+	#endregion
+}
+";
+			await VerifyFix(givenText, fixedText).ConfigureAwait(false);
+		}
+
+		[TestMethod]
 		[TestCategory(TestDefinitions.UnitTests)]
 		public async Task ConditionalDirectivesBetweenMembersAreSkipped()
 		{
