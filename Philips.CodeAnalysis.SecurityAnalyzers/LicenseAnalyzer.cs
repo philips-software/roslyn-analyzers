@@ -40,8 +40,8 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 
 		// Default acceptable licenses (permissive licenses)
 		private static readonly HashSet<string> DefaultAcceptableLicenses =
-			new(StringComparer.OrdinalIgnoreCase)
-		{
+			[
+			with(StringComparer.OrdinalIgnoreCase),
 			"MIT",
 			"Apache-2.0",
 			"BSD-2-Clause",
@@ -54,7 +54,7 @@ namespace Philips.CodeAnalysis.SecurityAnalyzers
 			"github.com/dotnet/standard/blob/master/LICENSE.TXT",
 			"go.microsoft.com/fwlink/?LinkId=329770",
 			"www.bouncycastle.org/csharp/licence.html"
-		};
+		];
 
 		private static readonly char[] LineSeparators = { '\r', '\n' };
 		private static readonly char[] EqualsSeparator = { '=' };
