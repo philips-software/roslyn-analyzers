@@ -247,7 +247,10 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				if (t.IsKind(SyntaxKind.RegionDirectiveTrivia))
 				{
 					OriginalRegion parent = open.Count > 0 ? open.Peek() : null;
-					parent?.IsSimple = false;
+					if (parent != null)
+					{
+						parent.IsSimple = false;
+					}
 					var name = Classifier.GetDirectiveName((RegionDirectiveTriviaSyntax)t.GetStructure());
 					var start = text.Lines.GetLineFromPosition(t.SpanStart).Start;
 					var blockStart = text.Lines.GetLineFromPosition(contentStart ?? t.SpanStart).Start;
