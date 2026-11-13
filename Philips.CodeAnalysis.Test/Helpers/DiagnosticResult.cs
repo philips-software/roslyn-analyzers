@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public DiagnosticResultLocation Location
 		{
-			get => locations[0];
+			readonly get => locations[0];
 			set => locations = new[] { value };
 		}
 
@@ -38,10 +38,10 @@ namespace Philips.CodeAnalysis.Test.Helpers
 
 		public Regex Message { get; set; }
 
-		public string Path => locations.Length > 0 ? locations[0].Path : "";
+		public readonly string Path => locations.Length > 0 ? locations[0].Path : "";
 
-		public int? Line => locations.Length > 0 ? locations[0].Line : -1;
+		public readonly int? Line => locations.Length > 0 ? locations[0].Line : -1;
 
-		public int? Column => locations.Length > 0 ? locations[0].Column : -1;
+		public readonly int? Column => locations.Length > 0 ? locations[0].Column : -1;
 	}
 }

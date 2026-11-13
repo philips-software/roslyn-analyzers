@@ -1,3 +1,17 @@
+### [2.1.2](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.1...v2.1.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* PH2160 auto-fixer NullReferenceException on implicit object creation ([#1123](https://github.com/philips-software/roslyn-analyzers/issues/1123)) ([720517f](https://github.com/philips-software/roslyn-analyzers/commit/720517f956eaf0bf7ba7027c72a9aafdf4b55a18))
+
+
+### Continuous Integration
+
+* Fix performance workflow dogfood build failures and harden analyzer summary parsing ([#1120](https://github.com/philips-software/roslyn-analyzers/issues/1120)) ([ded212c](https://github.com/philips-software/roslyn-analyzers/commit/ded212c5d49f3db4b6216b003cc4f100747ff7c9))
+
+
+
 ### [2.1.1](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.0...v2.1.1) (2026-07-29)
 
 

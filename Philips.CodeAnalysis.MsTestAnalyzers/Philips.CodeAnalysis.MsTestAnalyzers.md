@@ -2,7 +2,7 @@
 
 **Microsoft now provides official MSTest analyzers** that cover most of the functionality provided by these Philips analyzers. 
 **Migration Recommendation:** Use Microsoft's official analyzers for overlapping functionality and keep only Philips-specific rules that provide unique value (like PH2000, PH2012, PH2015, etc.).
-📖 **[Read the Migration Guide](../Documentation/MSTest-Migration-Guide.md)** for detailed mapping and migration steps.
+📖 **[Read the Migration Guide](../Documentation/MsTest.md)** for detailed mapping and migration steps.
 
 ---
 

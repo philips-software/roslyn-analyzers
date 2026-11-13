@@ -15,6 +15,7 @@
       "tools": [
         "hot_reload",
         "search_helpers",
+        "next_diagnosticId",
         "build_strict",
         "run_tests",
         "run_dogfood",

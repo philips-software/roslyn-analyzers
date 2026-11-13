@@ -41,7 +41,6 @@ These Philips rules have direct equivalents in Microsoft's official analyzers:
 | [PH2017](../Documentation/Diagnostics/PH2017.md) | [MSTEST0010](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0010) | ClassInitialize validation | ✅ **Migrate to MSTEST0010** |
 | [PH2018](../Documentation/Diagnostics/PH2018.md) | [MSTEST0011](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0011) | ClassCleanup validation | ✅ **Migrate to MSTEST0011** |
 | [PH2019](../Documentation/Diagnostics/PH2019.md) | [MSTEST0009](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0009) | TestCleanup validation | ✅ **Migrate to MSTEST0009** |
-| [PH2033](../Documentation/Diagnostics/PH2033.md) | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataRow validation | ✅ **Migrate to MSTEST0014** |
 | [PH2034](../Documentation/Diagnostics/PH2034.md) | [MSTEST0030](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0030) | TestMethod requires TestClass | ✅ **Migrate to MSTEST0030** |
 | [PH2036](../Documentation/Diagnostics/PH2036.md) | [MSTEST0003](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0003) | TestMethod must be public | ✅ **Migrate to MSTEST0003** |
 | [PH2038](../Documentation/Diagnostics/PH2038.md) | [MSTEST0002](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0002) | TestClass must be public | ✅ **Migrate to MSTEST0002** |
@@ -57,10 +56,18 @@ These Philips rules have similar functionality in Microsoft's analyzers, often w
 | [PH2003](../Documentation/Diagnostics/PH2003.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Assert.AreEqual usage patterns | ⚠️ **Consider MSTEST0037** (broader assert validation) |
 | [PH2008](../Documentation/Diagnostics/PH2008.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Assert parameter types match | ⚠️ **Consider MSTEST0037** (broader assert validation) |
 | [PH2009](../Documentation/Diagnostics/PH2009.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Assert.IsTrue/IsFalse usage | ⚠️ **Consider MSTEST0037** (broader assert validation) |
-| [PH2035](../Documentation/Diagnostics/PH2035.md) | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataTestMethod parameter count | ⚠️ **Consider MSTEST0014** (broader DataRow validation) |
 | [PH2055](../Documentation/Diagnostics/PH2055.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Avoid Assert.IsTrue(true) | ⚠️ **Consider MSTEST0037** (broader assert validation) |
 | [PH2056](../Documentation/Diagnostics/PH2056.md) | [MSTEST0037](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0037) | Avoid Assert.AreEqual(true, true) | ⚠️ **Consider MSTEST0037** (broader assert validation) |
 | [PH2076](../Documentation/Diagnostics/PH2076.md) | [MSTEST0025](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0025) | Assert.Fail alternatives | ⚠️ **Consider MSTEST0025** (similar intent) |
+
+### Removed Rules
+
+These Philips rules were removed from the codebase because Microsoft's official analyzers fully supersede them:
+
+| Removed Rule | Replaced By | Reason |
+|--------------|-------------|--------|
+| PH2033 | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataRow validation — removed in [#851](https://github.com/philips-software/roslyn-analyzers/pull/851) |
+| PH2035 | [MSTEST0014](https://learn.microsoft.com/dotnet/core/testing/mstest-analyzers/mstest0014) | DataTestMethod parameter count — removed in [#861](https://github.com/philips-software/roslyn-analyzers/pull/861) |
 
 ### Philips-Specific Rules (Keep if Needed)
 
@@ -111,7 +118,6 @@ dotnet_diagnostic.PH2016.severity = none  # Use MSTEST0008 instead
 dotnet_diagnostic.PH2017.severity = none  # Use MSTEST0010 instead
 dotnet_diagnostic.PH2018.severity = none  # Use MSTEST0011 instead
 dotnet_diagnostic.PH2019.severity = none  # Use MSTEST0009 instead
-dotnet_diagnostic.PH2033.severity = none  # Use MSTEST0014 instead
 dotnet_diagnostic.PH2034.severity = none  # Use MSTEST0030 instead
 dotnet_diagnostic.PH2036.severity = none  # Use MSTEST0003 instead
 dotnet_diagnostic.PH2038.severity = none  # Use MSTEST0002 instead
@@ -122,7 +128,6 @@ dotnet_diagnostic.PH2059.severity = none  # Use MSTEST0029 instead
 dotnet_diagnostic.PH2003.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2008.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2009.severity = none  # Consider MSTEST0037 instead
-dotnet_diagnostic.PH2035.severity = none  # Consider MSTEST0014 instead
 dotnet_diagnostic.PH2055.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2056.severity = none  # Consider MSTEST0037 instead
 dotnet_diagnostic.PH2076.severity = none  # Consider MSTEST0025 instead
