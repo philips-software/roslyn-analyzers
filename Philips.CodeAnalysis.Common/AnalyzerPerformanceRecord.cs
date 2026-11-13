@@ -10,10 +10,29 @@ namespace Philips.CodeAnalysis.Common
 	{
 		public static AnalyzerPerformanceRecord TryParse(string name)
 		{
-			var analyzerAndId = name.Split(' ');
-			var id = analyzerAndId[1].Substring(1, analyzerAndId[1].Length - 2);
+			if (string.IsNullOrWhiteSpace(name))
+			{
+				return null;
+			}
+
+			var analyzerAndId = name.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+			if (analyzerAndId.Length < 4)
+			{
+				return null;
+			}
+
+			var idPart = analyzerAndId[1];
+			if (idPart.Length < 2 || idPart[0] != '"' || idPart[idPart.Length - 1] != '"')
+			{
+				return null;
+			}
+			var id = idPart.Substring(1, idPart.Length - 2);
 
 			var analyzerParts = analyzerAndId[0].Split('.');
+			if (analyzerParts.Length < 3)
+			{
+				return null;
+			}
 			var package = analyzerParts[2];
 			var analyzer = analyzerParts[analyzerParts.Length - 1];
 

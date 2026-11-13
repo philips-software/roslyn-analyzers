@@ -60,6 +60,8 @@ public class Foo
 		public async Task DefaultWhiteSpaceWithBaseTest()
 		{
 			var content = $@"
+public class DoubleList : BaseList
+{{
 		/// <summary>
 		/// 
 		/// </summary>
@@ -67,15 +69,18 @@ public class Foo
 			: base(capacity)
 		{{
 		}}
+}}
 ";
 
 			var newContent = $@"
+public class DoubleList : BaseList
+{{
 		public DoubleList(int capacity)
 			: base(capacity)
 		{{
 		}}
+}}
 ";
-
 			await VerifyDiagnostic(content, DiagnosticId.EmptyXmlComments).ConfigureAwait(false);
 			await VerifyFix(content, newContent);
 		}

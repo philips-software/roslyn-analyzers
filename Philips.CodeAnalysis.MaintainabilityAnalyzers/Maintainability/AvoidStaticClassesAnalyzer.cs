@@ -20,7 +20,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 		public const string MessageFormat = Title;
 		private const string Description = @"Static Classes are not easily mockable. Avoid them so that your code is Unit Testable.";
 		private const string Category = Categories.Maintainability;
-		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidStaticClasses.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidStaticClasses.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.AvoidStaticClasses.ToHelpLinkUrl());
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
 
@@ -103,7 +103,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 				}
 			}
 
-			Location location = classDeclarationSyntax.Modifiers.First(t => t.Kind() == SyntaxKind.StaticKeyword).GetLocation();
+			Location location = classDeclarationSyntax.Modifiers.First(t => t.IsKind(SyntaxKind.StaticKeyword)).GetLocation();
 			var diagnostic = Diagnostic.Create(AvoidStaticClassesAnalyzer.Rule, location);
 			context.ReportDiagnostic(diagnostic);
 		}

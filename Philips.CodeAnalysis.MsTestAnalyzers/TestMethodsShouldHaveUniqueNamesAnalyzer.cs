@@ -19,7 +19,7 @@ namespace Philips.CodeAnalysis.MsTestAnalyzers
 		private const string Category = Categories.Naming;
 
 		private static readonly DiagnosticDescriptor Rule = new(DiagnosticId.TestMethodsMustHaveUniqueNames.ToId(),
-												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+												Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.TestMethodsMustHaveUniqueNames.ToHelpLinkUrl());
 
 
 		public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);

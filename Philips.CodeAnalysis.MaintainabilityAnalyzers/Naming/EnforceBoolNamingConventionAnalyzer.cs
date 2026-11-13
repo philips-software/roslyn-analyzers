@@ -232,12 +232,12 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Naming
 
 		private bool IsFieldPublic(FieldDeclarationSyntax fieldDeclaration)
 		{
-			return fieldDeclaration.Modifiers.Any(x => x.Kind() == SyntaxKind.PublicKeyword);
+			return fieldDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.PublicKeyword));
 		}
 
 		private bool IsFieldConst(FieldDeclarationSyntax fieldDeclaration)
 		{
-			return fieldDeclaration.Modifiers.Any(x => x.Kind() == SyntaxKind.ConstKeyword);
+			return fieldDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.ConstKeyword));
 		}
 	}
 }

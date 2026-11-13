@@ -74,7 +74,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private bool IfConditionHasLogicalAnd(IfStatementSyntax ifStatement)
 		{
-			return ifStatement.Condition.DescendantTokens().Any((token) => { return token.Kind() == SyntaxKind.BarBarToken; });
+			return ifStatement.Condition.DescendantTokens().Any((token) => { return token.IsKind(SyntaxKind.BarBarToken); });
 		}
 	}
 }

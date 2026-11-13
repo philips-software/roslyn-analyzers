@@ -26,22 +26,22 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 
 		public int DefaultDuplicateTokenThreshold { get; set; } = 100;
 
-		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidDuplicateCode.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description);
+		public static readonly DiagnosticDescriptor Rule = new(DiagnosticId.AvoidDuplicateCode.ToId(), Title, MessageFormat, Category, DiagnosticSeverity.Error, isEnabledByDefault: true, description: Description, helpLinkUri: DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string InvalidTokenCountTitle = @"The token_count specified in the EditorConfig is invalid.";
 		private const string InvalidTokenCountMessage = @"The token_count {0} specified in the EditorConfig is invalid.";
-		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor InvalidTokenCountRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), InvalidTokenCountTitle, InvalidTokenCountMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string TokenCountTooBigTitle = @"The token_count specified in the EditorConfig is too big.";
 		private const string TokenCountTooBigMessage = @"The token_count {0} specified in the EditorConfig cannot be greater than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooBigRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooBigTitle, TokenCountTooBigMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string TokenCountTooSmallTitle = @"The token_count specified in the EditorConfig is too small.";
 		private const string TokenCountTooSmallMessage = @"The token_count {0} specified in the EditorConfig cannot be less than {1}.";
-		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description);
+		private static readonly DiagnosticDescriptor TokenCountTooSmallRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), TokenCountTooSmallTitle, TokenCountTooSmallMessage, Category, DiagnosticSeverity.Error, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const string UnhandledException = @"AvoidDuplicateCodeAnalyzer had an internal error. ({0}) Details: {1}";
-		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description);
+		private static readonly DiagnosticDescriptor UnhandledExceptionRule = new(DiagnosticId.AvoidDuplicateCode.ToId(), UnhandledException, UnhandledException, Category, DiagnosticSeverity.Info, true, Description, DiagnosticId.AvoidDuplicateCode.ToHelpLinkUrl());
 
 		private const int MaxTokenCount = 200;
 		private const int MinTokenCount = 20;
@@ -107,7 +107,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 		private sealed class CompilationAnalyzer
 		{
 			private readonly DuplicateDetector _library = new();
-			private readonly List<Diagnostic> _diagnostics = [];
+			private readonly Diagnostic _configurationError;
 			private readonly int _duplicateTokenThreshold;
 			private readonly Helper _helper;
 			private readonly bool _shouldGenerateExceptionsFile;
@@ -118,10 +118,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				_duplicateTokenThreshold = duplicateTokenThreshold;
 				_helper = helper;
 				_shouldGenerateExceptionsFile = shouldGenerateExceptionsFile;
-				if (configurationError != null)
-				{
-					_diagnostics.Add(configurationError);
-				}
+				_configurationError = configurationError;
 			}
 
 			private string ToPrettyReference(FileLinePositionSpan fileSpan)
@@ -163,7 +160,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 							{
 								Location location = evidence.LocationEnvelope.Contents();
 								Location existingEvidenceLocation = existingEvidence.LocationEnvelope.Contents();
-								CreateDuplicateDiagnostic(location, existingEvidenceLocation, token, methodDeclarationSyntax);
+								ReportDuplicateDiagnostic(obj, location, existingEvidenceLocation, token, methodDeclarationSyntax);
 
 								// Don't pile on.  Move on to the next method.
 								return;
@@ -177,7 +174,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 			}
 
-			private void CreateDuplicateDiagnostic(Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
+			private void ReportDuplicateDiagnostic(SyntaxNodeAnalysisContext context, Location location, Location existingEvidenceLocation, SyntaxToken token, MethodDeclarationSyntax methodDeclarationSyntax)
 			{
 				// We found a duplicate, but if it's partially duplicated with itself, ignore it.
 				if (!location.SourceSpan.IntersectsWith(existingEvidenceLocation.SourceSpan))
@@ -186,7 +183,7 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 					FileLinePositionSpan existingEvidenceLineSpan = existingEvidenceLocation.GetLineSpan();
 					var reference = ToPrettyReference(existingEvidenceLineSpan);
 
-					_diagnostics.Add(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
+					context.ReportDiagnostic(Diagnostic.Create(Rule, location, new List<Location>() { existingEvidenceLocation }, reference, shapeDetails));
 
 					if (_shouldGenerateExceptionsFile)
 					{
@@ -216,14 +213,14 @@ namespace Philips.CodeAnalysis.DuplicateCodeAnalyzer
 				}
 
 				Location location = syntaxNodeAnalysisContext.Node.GetLocation();
-				_diagnostics.Add(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
+				syntaxNodeAnalysisContext.ReportDiagnostic(Diagnostic.Create(UnhandledExceptionRule, location, result, ex.Message));
 			}
 
 			public void EndCompilationAction(CompilationAnalysisContext context)
 			{
-				foreach (Diagnostic diagnostic in _diagnostics)
+				if (_configurationError != null)
 				{
-					context.ReportDiagnostic(diagnostic);
+					context.ReportDiagnostic(_configurationError);
 				}
 			}
 

@@ -31,7 +31,8 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 				Category,
 				DiagnosticSeverity.Error,
 				isEnabledByDefault: false,
-				description: Description);
+				description: Description,
+				helpLinkUri: DiagnosticId.LimitConditionComplexity.ToHelpLinkUrl());
 
 		private int _maxOperators;
 

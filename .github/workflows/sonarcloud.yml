@@ -10,15 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # ratchet:actions/setup-java@v5
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # ratchet:actions/setup-java@v5
         with:
           java-version: '17'
           distribution: temurin
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # @v5.0.0
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # @v6.0.0
         with:
           dotnet-version: |
             3.1.x
@@ -28,12 +28,12 @@ jobs:
           dotnet tool update dotnet-sonarscanner --global
           dotnet tool update dotnet-coverage --global
       - name: Build and analyze
-        if: ${{ env.SONAR_TOKEN != null }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.sonar-auth-token }}
         run: |
-          dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.login="${{ secrets.sonar-auth-token }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.host.url="https://sonarcloud.io"
+          # CI-only Python helpers have their own enforced regression suite in ai-config-parity.yml.
+          dotnet sonarscanner begin /k:"philips-software_roslyn-analyzers" /o:"philips-software" /d:sonar.token="$SONAR_TOKEN" /d:sonar.cs.vscoveragexml.reportsPaths="coverage.xml" /d:sonar.coverage.exclusions=".github/scripts/**,tools/mcp/test_stdio_server.py" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build --configuration Debug
-          dotnet coverage collect 'dotnet test' -f xml  -o 'coverage.xml'
-          dotnet sonarscanner end /d:sonar.login="${{ secrets.sonar-auth-token }}"
+          dotnet coverage collect 'dotnet test' -f xml -o 'coverage.xml'
+          dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"

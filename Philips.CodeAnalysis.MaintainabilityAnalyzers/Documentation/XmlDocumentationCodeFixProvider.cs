@@ -27,7 +27,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Documentation
 			SyntaxNode newRoot = root;
 			foreach (SyntaxTrivia trivia in node.GetLeadingTrivia())
 			{
-				if (trivia.Kind() == SyntaxKind.SingleLineDocumentationCommentTrivia)
+				if (trivia.IsKind(SyntaxKind.SingleLineDocumentationCommentTrivia))
 				{
 					newRoot = newRoot.ReplaceTrivia(trivia, SyntaxTriviaList.Empty);
 				}

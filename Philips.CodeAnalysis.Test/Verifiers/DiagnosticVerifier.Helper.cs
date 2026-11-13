@@ -97,6 +97,8 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				_configOptions = new TestAnalyzerConfigOptions(options);
 			}
 
+			public override AnalyzerConfigOptions GlobalOptions => _configOptions;
+
 			public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
 			{
 				return _configOptions;
@@ -107,7 +109,6 @@ namespace Philips.CodeAnalysis.Test.Verifiers
 				return _configOptions;
 			}
 		}
-
 
 		/// <summary>
 		/// Given an analyzer and a document to apply it to, run the analyzer and gather an array of diagnostics found in it.

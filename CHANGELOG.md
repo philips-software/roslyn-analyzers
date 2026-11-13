@@ -1,3 +1,123 @@
+### [2.1.2](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.1...v2.1.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* PH2160 auto-fixer NullReferenceException on implicit object creation ([#1123](https://github.com/philips-software/roslyn-analyzers/issues/1123)) ([720517f](https://github.com/philips-software/roslyn-analyzers/commit/720517f956eaf0bf7ba7027c72a9aafdf4b55a18))
+
+
+### Continuous Integration
+
+* Fix performance workflow dogfood build failures and harden analyzer summary parsing ([#1120](https://github.com/philips-software/roslyn-analyzers/issues/1120)) ([ded212c](https://github.com/philips-software/roslyn-analyzers/commit/ded212c5d49f3db4b6216b003cc4f100747ff7c9))
+
+
+
+### [2.1.1](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.0...v2.1.1) (2026-07-29)
+
+
+### Bug Fixes
+
+* add helpLinkUri to all DiagnosticDescriptors ([#1109](https://github.com/philips-software/roslyn-analyzers/issues/1109)) ([27e3ebd](https://github.com/philips-software/roslyn-analyzers/commit/27e3ebd6fd92349758965d3fe7835e0f4d5f5578))
+
+
+
+## [2.1.0](https://github.com/philips-software/roslyn-analyzers/compare/v2.0.0...v2.1.0) (2026-04-23)
+
+
+### Features
+
+* Detect Implicit Object Creation (Mock<T> myMock = new()) ([#1090](https://github.com/philips-software/roslyn-analyzers/issues/1090)) ([d98ad1f](https://github.com/philips-software/roslyn-analyzers/commit/d98ad1f56166fc62917974da16e96c0d1c8044a8))
+
+
+
+## [2.0.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.12.0...v2.0.0) (2026-04-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* Migrate to CodeAnalysis 4.4, ending support for VS2019 ([#1095](https://github.com/philips-software/roslyn-analyzers/issues/1095)) ([9a2d73b](https://github.com/philips-software/roslyn-analyzers/commit/9a2d73b80a98ea6f99849b8fe4793282875497eb))
+
+
+### Continuous Integration
+
+* Add workflow to detect major version upgrades ([#1099](https://github.com/philips-software/roslyn-analyzers/issues/1099)) ([dfc3665](https://github.com/philips-software/roslyn-analyzers/commit/dfc366584e37dfd32ef98d5f3daae8a3946b9dba))
+
+
+
+## [1.12.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.1...v1.12.0) (2026-04-11)
+
+
+### Features
+
+* CodeFixer for PH2160 Mock<T> -> DisposableObjectMock<T> ([#1088](https://github.com/philips-software/roslyn-analyzers/issues/1088)) ([9ff77a2](https://github.com/philips-software/roslyn-analyzers/commit/9ff77a201edbf36a502845e60642e88682f72cb1))
+* ILRepack Common.dll into each analyzer for independent versioning ([#1086](https://github.com/philips-software/roslyn-analyzers/issues/1086)) ([92d401c](https://github.com/philips-software/roslyn-analyzers/commit/92d401ccd5dc6333d107185d6fdbddbdc47f4625))
+* Introduce PH2160 v1 ([#1083](https://github.com/philips-software/roslyn-analyzers/issues/1083)) ([0464ad5](https://github.com/philips-software/roslyn-analyzers/commit/0464ad5f284bc52a1195ac59d9a1bfb3b2d0352b))
+
+
+
+### [1.11.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.11.0...v1.11.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* Report PH2071 diagnostics inline for IDE support ([#1084](https://github.com/philips-software/roslyn-analyzers/issues/1084)) ([b0d17db](https://github.com/philips-software/roslyn-analyzers/commit/b0d17db26779bbdc8f2cb041645909f284b39825))
+
+
+### Continuous Integration
+
+* Update SonarCloud workflow to use token variable ([#1077](https://github.com/philips-software/roslyn-analyzers/issues/1077)) ([de84bf8](https://github.com/philips-software/roslyn-analyzers/commit/de84bf8acef2878fef29c4d3a46770feb9ed7382))
+
+
+
+## [1.11.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.10.0...v1.11.0) (2026-04-05)
+
+
+### Features
+
+* Add CodeFixer for PH2153 (AvoidUnusedToString) ([#1075](https://github.com/philips-software/roslyn-analyzers/issues/1075)) ([374eada](https://github.com/philips-software/roslyn-analyzers/commit/374eada06154fdadd455311cac0fe4781c24a24e))
+
+
+
+## [1.10.0](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.1...v1.10.0) (2026-04-05)
+
+
+### Features
+
+* Add analyzer to detect unnecessary parentheses in attributes ([#972](https://github.com/philips-software/roslyn-analyzers/issues/972)) ([48a406a](https://github.com/philips-software/roslyn-analyzers/commit/48a406af50f2d386d920c969c423416ff0dc53dc))
+* add fix_formatting tool to MCP server and enhance IDE0055 guidance ([#983](https://github.com/philips-software/roslyn-analyzers/issues/983)) ([a522c58](https://github.com/philips-software/roslyn-analyzers/commit/a522c589c6c735abc7d36d52825c25ae70d3fb51))
+* add next_diagnosticId MCP tool and fix MCP server import issues ([#1012](https://github.com/philips-software/roslyn-analyzers/issues/1012)) ([91badc9](https://github.com/philips-software/roslyn-analyzers/commit/91badc944064581860b87f9b6f6ec342057392d0))
+* Enable PH2153 analyzer by default ([#975](https://github.com/philips-software/roslyn-analyzers/issues/975)) ([a0736d0](https://github.com/philips-software/roslyn-analyzers/commit/a0736d0aa2842cd07bb70781ddfb8a6a7d1ef75c))
+* enhance run_tests MCP tool with structured output parsing and reliable execution ([#994](https://github.com/philips-software/roslyn-analyzers/issues/994)) ([1d7f31d](https://github.com/philips-software/roslyn-analyzers/commit/1d7f31d399da6df0d1145689509869331cf92a41))
+* Implement LicenseAnalyzer using project.assets.json for offline package license checking with enhanced diagnostics (enabled by default) ([#906](https://github.com/philips-software/roslyn-analyzers/issues/906)) ([09ed512](https://github.com/philips-software/roslyn-analyzers/commit/09ed5121692d91a978424cfe2678aa0accecb402))
+* PH2155: Add support for type=file licenses, PostgreSQL license, secure combined package+license whitelisting, prefix handling, and fix cache normalization ([#1005](https://github.com/philips-software/roslyn-analyzers/issues/1005)) ([0bdc2e3](https://github.com/philips-software/roslyn-analyzers/commit/0bdc2e3de1cd1f63ec342defff7d5b4c7d03fe3f))
+
+
+### Bug Fixes
+
+* Correct dogfood MCP server implementation to follow actual workflow ([#981](https://github.com/philips-software/roslyn-analyzers/issues/981)) ([f290436](https://github.com/philips-software/roslyn-analyzers/commit/f290436cf722ad2e7e0f02b9b37cd7e88c97451c))
+* correct YAML structure in copilot-setup-steps.yml dotnet-version configuration ([#997](https://github.com/philips-software/roslyn-analyzers/issues/997)) ([c6c1520](https://github.com/philips-software/roslyn-analyzers/commit/c6c152036f2fe8e88051d58a7a539adbe516c7d8))
+* Increase MCP test timeout from 180s to 240s ([#1030](https://github.com/philips-software/roslyn-analyzers/issues/1030)) ([45b8b2f](https://github.com/philips-software/roslyn-analyzers/commit/45b8b2f6b8c6496972652dd7c89d377560fa2df3))
+* MCP server run_tests tool by allowing semicolons in command arguments ([#987](https://github.com/philips-software/roslyn-analyzers/issues/987)) ([85a7254](https://github.com/philips-software/roslyn-analyzers/commit/85a7254f8b042a0a7b1f964d4d67233b3c59c1c9))
+* PH2151: TODO flag should not be part of another word ([#928](https://github.com/philips-software/roslyn-analyzers/issues/928)) ([c694a99](https://github.com/philips-software/roslyn-analyzers/commit/c694a99c5548345540b5f1572cde26b64ed956e0))
+
+
+### Performance Improvements
+
+* Optimize DuplicateCodeAnalyzer performance by removing expensive operations from hot path ([#989](https://github.com/philips-software/roslyn-analyzers/issues/989)) ([df907b3](https://github.com/philips-software/roslyn-analyzers/commit/df907b30905e92dabdd23a82a1a34eb1b0457bbb))
+
+
+### Documentation
+
+* cleanup copilot-instructions.md with dogfooding and coverage validation ([#1010](https://github.com/philips-software/roslyn-analyzers/issues/1010)) ([f94b942](https://github.com/philips-software/roslyn-analyzers/commit/f94b942031af43344b22b0da008f0c0775f2b0a9))
+* Fixing small typo in documentation of PH2021 ([#1050](https://github.com/philips-software/roslyn-analyzers/issues/1050)) ([cc8d1ea](https://github.com/philips-software/roslyn-analyzers/commit/cc8d1ea7740660df238ba96b572ff5961030a591))
+
+
+### Build Systems
+
+* license tags in nuspec - use MIT expression instead of file reference ([#992](https://github.com/philips-software/roslyn-analyzers/issues/992)) ([5740e61](https://github.com/philips-software/roslyn-analyzers/commit/5740e6137b5a7ec94b24ecda5277c2aa3e3e50d1))
+
+
+
 ### [1.9.1](https://github.com/philips-software/roslyn-analyzers/compare/v1.9.0...v1.9.1) (2025-08-27)
 
 

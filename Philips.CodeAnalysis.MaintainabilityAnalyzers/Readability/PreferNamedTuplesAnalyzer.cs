@@ -28,7 +28,7 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Readability
 		{
 			foreach (TupleElementSyntax element in Node.Elements)
 			{
-				if (element.Identifier.Kind() == SyntaxKind.None)
+				if (element.Identifier.IsKind(SyntaxKind.None))
 				{
 					Location location = element.GetLocation();
 					ReportDiagnostic(location);

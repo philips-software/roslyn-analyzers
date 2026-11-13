@@ -13,9 +13,9 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 	public class ProhibitDynamicKeywordAnalyzer : SingleDiagnosticAnalyzer
 	{
 		private const string Title = @"Prohibit the ""dynamic"" Keyword";
-		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It it not compile time type safe.";
+		private const string MessageFormat = @"Do not use the ""dynamic"" keyword.  It is not compile time type safe.";
 		private const string Description = @"The ""dynamic"" keyword is not checked for type safety at compile time.";
-		private const string DynamicIdentifier = "dynamic";
+		private const string DynamicIdentifier = @"dynamic";
 
 		public ProhibitDynamicKeywordAnalyzer()
 			: base(DiagnosticId.DynamicKeywordProhibited, Title, MessageFormat, Description, Categories.Maintainability)
@@ -70,17 +70,14 @@ namespace Philips.CodeAnalysis.MaintainabilityAnalyzers.Maintainability
 
 		private static bool IsDynamicType(SyntaxNodeAnalysisContext context, TypeSyntax typeSyntax)
 		{
-			if (typeSyntax is SimpleNameSyntax { Identifier.ValueText: DynamicIdentifier })
+			if (typeSyntax is IdentifierNameSyntax { Identifier.ValueText: DynamicIdentifier })
 			{
-				// Double check the semantic model (to distinguish a variable named 'dynamic').
-				SymbolInfo symbol = context.SemanticModel.GetSymbolInfo(typeSyntax);
-				if (symbol.Symbol is IDynamicTypeSymbol)
-				{
-					return true;
-				}
+				TypeInfo typeInfo = context.SemanticModel.GetTypeInfo(typeSyntax);
+				return typeInfo.Type is IDynamicTypeSymbol;
 			}
 
-			if (typeSyntax is GenericNameSyntax generic && generic.TypeArgumentList.Arguments.Any(gen => IsDynamicType(context, gen)))
+			if (typeSyntax is GenericNameSyntax generic &&
+				generic.TypeArgumentList.Arguments.Any(gen => IsDynamicType(context, gen)))
 			{
 				return true;
 			}
