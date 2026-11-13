@@ -1,3 +1,17 @@
+## [2.2.0](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.2...v2.2.0) (2026-11-13)
+
+
+### Features
+
+* Add PH2165 to sort members into regions ([#1147](https://github.com/philips-software/roslyn-analyzers/issues/1147)) ([b01fa6e](https://github.com/philips-software/roslyn-analyzers/commit/b01fa6e3fb0167a97d864b6edc30e8d10e104236))
+
+
+### Documentation
+
+* Add CLAUDE.md and AI agent skills for analyzer development ([#1140](https://github.com/philips-software/roslyn-analyzers/issues/1140)) ([aa810db](https://github.com/philips-software/roslyn-analyzers/commit/aa810db95b8523574e9a6728e11ddb9f83feec05))
+
+
+
 ### [2.1.2](https://github.com/philips-software/roslyn-analyzers/compare/v2.1.1...v2.1.2) (2026-07-30)
 
 
